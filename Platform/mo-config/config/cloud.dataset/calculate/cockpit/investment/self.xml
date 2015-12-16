@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="718b4213-ade3-4ed1-800e-5af19c4e03a7" name="calculate.cockpit.investment.self" label="M#12cn16金融大额自投" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Investment.Self" data_name="CL_COK_INVESTMENT_SELF" data_alias="CL_COK_INV_SEL" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="605b8ea3-8aba-492f-970d-3c3b03f89957" name="department_id" label="M#12cn14部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_ID" />
+  <FieldRecordId _uuid="9bf99b06-e850-4761-89fa-6d162f88052f" name="department_lid" label="M#12cn17e租宝部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LID" />
+  <FieldString _uuid="f46ae954-c4cc-4fb8-90ea-5ec8102e9953" name="department_label" label="M#12cn14部门名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LABEL" data_size="80" />
+  <FieldRecordId _uuid="a1af866e-f475-41cb-8d7b-c3ab2fdbba81" name="marketer_id" label="M#12cn15理财师编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_ID" />
+  <FieldRecordId _uuid="6b81e217-cb8d-4b6a-9aec-83d35d56405b" name="marketer_lid" label="M#12cn18e租宝理财师编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_LID" />
+  <FieldString _uuid="12d7a007-9ae0-487d-98e2-5f2cb17bf30a" name="marketer_label" label="M#12cn15理财师名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_LABEL" data_size="80" />
+  <FieldInteger _uuid="84942ca2-211f-4ee4-bae3-057cbe17d43e" name="investment_count" label="M#12cn14投资次数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_COUNT" />
+  <FieldDouble _uuid="a2385de8-6d86-4e12-8299-812e92dcb2b5" name="investment_total" label="M#12cn14投资总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_TOTAL" />
+  <FieldDouble _uuid="a7894673-fa98-4c5a-bcb7-21081dbe8710" name="redemption_total" label="M#12cn14赎回总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_TOTAL" />
+  <FieldDouble _uuid="25d4a361-0f70-49ab-aa23-6d2ce4a635bf" name="netinvestment_total" label="M#12cn14净投总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NETINVESTMENT_TOTAL" />
+  <FieldTemplate _uuid="6f5bdca5-3efe-4b75-b0d6-1683faac520a" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

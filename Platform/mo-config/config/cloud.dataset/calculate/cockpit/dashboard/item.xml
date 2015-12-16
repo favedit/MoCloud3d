@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="7daabf72-67ec-4bea-9744-b40752d0e0c3" name="calculate.cockpit.dashboard.item" label="M#12cn16仪表盘数据表" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Dashboard.Item" data_name="CL_COK_DASHBOARD_ITEM" data_alias="CL_COK_DAS_ITM" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="4644973e-dbd1-497d-aa12-934c21503817" name="dashborad_id" label="M#12cn15仪表盘编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DASHBOARD_ID" />
+  <FieldString _uuid="9f93eeb9-da0d-4656-b503-3cbf67ddf2da" name="date_segment" label="M#12cn13时间段" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DATE_SEGMENT" data_size="20" />
+  <FieldDouble _uuid="820791d0-0170-48fc-ba7f-23c9a343db6e" name="rate" label="M#12cn12占比" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RATE" />
+  <FieldString _uuid="1598b715-a520-4731-9df4-1840583662bb" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="5c336b1a-209d-4e41-964e-92b769d25b1e" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldString _uuid="1d907336-4707-43b6-8478-6412aa8ff5e7" name="parameter3" label="M#12cn13参数3" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER3" data_size="40" />
+  <FieldString _uuid="265ed0f4-acf8-4fdd-b4d0-4f467abeb6a5" name="parameter4" label="M#12cn13参数4" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER4" data_size="40" />
+  <FieldString _uuid="3487d9ac-a677-447c-bc7b-1feb9c671221" name="parameter5" label="M#12cn13参数5" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER5" data_size="40" />
+  <FieldString _uuid="643e4a7b-549a-44c7-9124-77687fd61c3b" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="716302be-2706-47ff-9609-766f6c295d2e" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

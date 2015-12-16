@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content update_date="20150904140610">
+  <FormFrame _guid="5F37951F47D745DAAEB5D29306F9D387" valid="N" name="editor.design.frame.property.TemplateForm" label="模板属性" type="FEditorDsPropertyForm" nowrap="N" location="0,0" size="0,0" logic_group="item" logic_service="editor.design.frame">
+    <ToolBar _guid="0681CD5387F24B489F4A95410F47AF70" name="toolBar" label="工具栏" width="100%" height="24">
+      <ToolButton _guid="5305CF46EE684F53990A60471D2DA51B" name="saveButton" label="保存" attributes="action=save" icon="editor.common.save" hotkey="F8" />
+      <ToolButton _guid="2B25EEA87AAF43B0B602BBD9E3374777" name="deleteButton" label="删除" attributes="action=delete" icon="editor.common.delete" hotkey="F6" />
+    </ToolBar>
+    <Template _guid="C66A16B3C7C348C7AD64A828FDD24821" name="componentTemplate" frame_source="editor.design.frame.property.template.ComponentTemplate" />
+    <Template _guid="10542F9D21A141C59FC006D212C17882" name="controlTemplate" frame_source="editor.design.frame.property.template.ControlTemplate" />
+  </FormFrame>
+</Content>

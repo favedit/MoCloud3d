@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="4d75700d-3550-4b6c-acf1-0ad4f8a580b2" name="calculate.cockpit.customer.unique" label="M#12cn212驾驶舱理财师单客户统计表" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Customer.Unique" data_name="CL_COK_CUSTOMER_UNIQUE" data_alias="CL_COK_CUS" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="146a6d59-86f7-4aa9-931c-eb7893a396c0" name="code" label="M#12cn12代码" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CODE" data_alias="CO" data_size="80" />
+  <FieldString _uuid="f368acd9-3562-4b4e-89b0-2d1a21b9879f" name="name" label="M#12cn12名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NAME" data_alias="NA" data_size="80" />
+  <FieldString _uuid="0264debc-1725-4e98-8be2-8a71e588e164" name="label" label="M#12cn12标签" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LABEL" data_alias="LA" data_size="80" />
+  <FieldRecordId _uuid="4740115d-e57d-4fec-9fd9-1280dc69973f" name="department_id" label="M#12cn14部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_ID" data_alias="DEPT" />
+  <FieldRecordId _uuid="b28cd20e-8250-43fe-93dd-56d338466175" name="department_lid" label="M#12cn17e租宝部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LID" />
+  <FieldString _uuid="c49fdac8-0365-4889-98c5-4ad42c53b707" name="department_label" label="M#12cn14公司名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LABEL" data_alias="DE" data_size="80" />
+  <FieldDouble _uuid="53c4d4ba-e330-4b4f-b341-7a04fd54ea55" name="average_time_on_job" label="M#12cn16平均在职时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="AVERAGE_TIME_ON_JOB" data_alias="AV" />
+  <FieldInteger _uuid="4fc17d78-9af9-4cdf-aa85-c99d60abaf52" name="marketer_count" label="M#12cn12人数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_COUNT" data_alias="MA" data_size="80" />
+  <FieldDouble _uuid="57603946-4fcd-4626-a9a4-66b3f9080f69" name="marketer_rate" label="M#12cn12占比" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_RATE" data_alias="MA" />
+  <FieldDouble _uuid="1dcc5cc4-72b5-47fc-b76d-78614432b573" name="customer_investment_total" label="M#12cn16客户投资总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CUSTOMER_INVESTMENT_TOTAL" data_alias="CUS_IN" />
+  <FieldDouble _uuid="f0e9c6a8-1a0d-4861-90fd-102096e0d871" name="average_achievement" label="M#12cn14人均业绩" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="AVERAGE_ACHIEVEMENT" />
+  <FieldString _uuid="4065228a-fa57-4303-a480-2efae287aea7" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="d37dbe49-fbdc-4feb-9333-95e8dc6bcf6e" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

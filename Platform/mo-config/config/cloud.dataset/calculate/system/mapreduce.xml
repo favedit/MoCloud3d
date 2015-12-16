@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="fe2c25bc-3ad3-4f2b-bee1-f5da06dadf2a" name="calculate.system.mapreduce" label="M#12cn16系统计算信息" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.System.Mapreduce" data_name="CL_SYS_MAPREDUCE" data_alias="CL_SYS_MRD" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="eb8b80d6-13ad-4c93-8eba-d01e26075e24" name="code" label="M#12cn12代码" is_valid="Y" note="M#" is_unique="Y" is_store="Y" is_abstract="N" data_name="CODE" data_alias="COD" data_size="200" />
+  <FieldString _uuid="103a0c97-7938-4895-9293-5b69c0a003fb" name="value" label="M#12cn12内容" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="VALUE" data_size="2000" />
+  <FieldTemplate _uuid="9fe9ab97-5eb0-409c-8162-cb98b0e6efbb" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

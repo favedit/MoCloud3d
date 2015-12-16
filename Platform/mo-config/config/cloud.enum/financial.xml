@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group _uuid="39311855-cf93-4686-858a-fd9ade2ca2fb" name="financial" label="金融常量" is_valid="Y" note="M#" is_server="Y" is_server_cpp="N" is_server_java="Y" is_client="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" source_name="MoMgEnumConstant" code="Egr" code_name="GmConstant" full_code="EnumConstant" display_index="24" project_name="/Common/MoMessage" project_code="Mg" is_include="Y">
+  <Enum _uuid="92844899-1a62-4671-ac33-859080dbf847" name="GcFinancialCustomerGender" label="客户性别" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="f70f3d1e-4851-492d-b341-3d2e8a482f28" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="8d1ac047-99fe-405f-917f-e47cf444a6a8" name="Male" label="男性" is_valid="Y" note="M#" />
+    <Item _uuid="dc12078a-0774-4780-8ee2-70759e7fe757" name="Female" label="女性" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="2bce7b28-e48d-4e71-8b56-480db3a1fe8f" name="GcFinancialCustomerAction" label="客户命令" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="4a7538dd-7c42-4112-bcbd-2bee5a768f81" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="8a555725-3b22-4e27-8563-13527603db83" name="Investment" label="投资" is_valid="Y" note="M#" />
+    <Item _uuid="9d2db97a-e1b0-47a0-ba4f-2d779d7ab72b" name="Redemption" label="赎回" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="1f877514-6647-46fe-a88e-4dcb3ad02e92" name="GcFinancialMemberAction" label="用户动作" is_valid="Y" note="M#" is_server_cpp="Y" is_server_java="N" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="N" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="692d20e3-ac50-46d6-8b9e-4d424a8f189f" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="d930af30-44a2-44c0-a54c-25315ae96594" name="Login" label="登录" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="8064a2f9-5286-4ca6-941d-f08f73db80cc" name="GcFinancialMemberRelation" label="理财师客户关系类型" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="5738bf89-ee15-430b-8df9-aa3c44b29ead" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="135a4f2f-c39e-4a39-8f0f-76686053f060" name="Follow" label="关注" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="434dc65d-0ac1-4717-8549-9091f793d947" name="GcFinancialMemberContact" label="理财师客户短信提示类型" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="74990740-4bca-4626-868d-9a3aaf1e671b" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="2cd91b05-b546-4a8c-8a47-513f7ed32299" name="Online" label="上线提醒" is_valid="Y" note="M#" />
+    <Item _uuid="3cb49f2b-68d7-47e0-ad86-fb706c3835ce" name="Follow" label="关注提醒" is_valid="Y" note="M#" />
+    <Item _uuid="a8f97506-36e7-4f65-8f0e-fca78ec84706" name="Purchase" label="购买提醒" is_valid="Y" note="M#" />
+    <Item _uuid="978253a2-58de-4295-85aa-7b5fe09685ed" name="Recharge" label="充值提醒" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="6391cef1-0fad-4006-99b7-fc5539a4a8f7" name="GcFinancialMemberFeedback" label="理财师客户关系解除反馈类型" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="ceaeee0d-3288-40c4-a6e0-1a9e44f419b5" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="c0f7d64b-32a2-4bf0-b8bc-f9191c8cf132" name="ConfiMaketer" label="已确认理财师" is_valid="Y" note="M#" />
+    <Item _uuid="853798bd-ea76-4b1b-8768-111d91c4b387" name="POFProduct" label="已购买其它理财产品" is_valid="Y" note="M#" />
+    <Item _uuid="659cfe28-d12b-44d1-bdb8-8ca0c93ff386" name="NIIntentions" label="没有投资意向" is_valid="Y" note="M#" />
+    <Item _uuid="150d2a83-99f2-4894-8044-ee382d218b75" name="NSWithProduct" label="对产品不满意" is_valid="Y" note="M#" />
+    <Item _uuid="70bc1191-f7bf-4c42-97e7-3aac0ae179d7" name="EndOfCycle" label="周期结束" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="a2173d30-0099-473f-871c-910096b50515" name="GcFinancialAmountLevel" label="金融资金分级" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="dd5ceef3-a476-40d9-b293-e2e6004708c6" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="fb64c3be-f211-42c9-bed9-a4f0cbc51dcf" name="Level1" label="小于1W" is_valid="Y" note="M#" />
+    <Item _uuid="b7703b84-5610-409d-af7a-7e0ac3962183" name="Level2" label="不小于1W并且小于10W" is_valid="Y" note="M#" />
+    <Item _uuid="2b78323b-85a0-4d91-86cd-479163f27ceb" name="Level3" label="不小于10W并且小于50W" is_valid="Y" note="M#" />
+    <Item _uuid="1140d790-e1ce-444d-b4f6-fcbf0dc3d9f9" name="Level4" label="不小于50W并且小于100W" is_valid="Y" note="M#" />
+    <Item _uuid="18810aca-e939-4bcc-9147-1ef14621a9db" name="Level5" label="不小于100W并且小于500W" is_valid="Y" note="M#" />
+    <Item _uuid="f23bc891-7ca0-46e4-922f-2e3c24314604" name="Level6" label="不小于500W并且小于1000W" is_valid="Y" note="M#" />
+    <Item _uuid="9da5a95b-8fd4-4a4f-bda3-09fb57baa0fd" name="Level7" label="不小于1000W" is_valid="Y" note="M#" />
+  </Enum>
+</Group>

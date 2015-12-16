@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="1f633803-722a-48f1-b0a8-387e64a14740" name="data.financial.tender" label="M#12cn16金融投标信息" is_valid="Y" note="M#" data_engine="InnoDB" data_group="data" data_factory="Data.Financial.Tender" data_name="DT_FIN_TENDER" data_alias="DT_FIN_TDR" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="932527c5-9bb4-4600-9813-5c4f31aa25a1" name="link_id" label="M#12cn14期次编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LINK_ID" />
+  <FieldRecordId _uuid="06204bec-409a-42e5-9056-e2659ebc966f" name="product_id" label="M#12cn14产品编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PRODUCT_ID" data_alias="PRODUCT" data_refer="data.financial.product" />
+  <FieldString _uuid="d85da8d1-3b40-4b0d-b829-fef058f6c335" name="label" label="M#12cn12名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LABEL" data_size="800" />
+  <FieldDouble _uuid="85067541-ef35-4b8e-a158-6106abdb9df2" name="borrow_money" label="M#12cn14预借钱数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="BORROW_MONEY" />
+  <FieldTemplate _uuid="2221e93b-8147-44da-9561-2e473a37e1a7" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

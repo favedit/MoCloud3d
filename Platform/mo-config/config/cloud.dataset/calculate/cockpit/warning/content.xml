@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="b3f9b448-4048-4120-bd83-679f7d76e471" name="calculate.cockpit.warning.content" label="M#12cn17驾驶舱预警内容" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Warning.Content" data_name="CL_COK_WARNING_CONTENT" data_alias="CL_COK_WAR_CON" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="05d2671e-52bd-461b-b2c2-59a0aa11e917" name="rule_id" label="M#12cn16预警规则id" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RULE_ID" />
+  <FieldString _uuid="d40a9848-0e9a-46bf-9a67-d89077108a59" name="title" label="M#12cn12标题" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="TITLE" data_size="200" />
+  <FieldContent _uuid="1bd6d067-4913-411d-aa47-45845c0be378" name="content" label="M#12cn12内容" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CONTENT" />
+  <FieldDateTime _uuid="157b1cda-56b5-4dc1-a467-03cf90680dee" name="calculate_time" label="M#12cn14计算时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CALCULATE_TIME" />
+  <FieldString _uuid="8fc651e6-4b1c-46fa-9f2e-293cc4743556" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="874c3752-a19f-4986-b8e6-81b77fe1bf82" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldString _uuid="6487a74c-7309-428e-a8f7-6e0e722457bd" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="7370331d-ad56-41be-b93c-4d1e81fa542a" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content update_date="20150904142353">
+  <TemplateFrame guid="23B3F262243B4B1BAA90FE5E6264A4AB" valid="N" name="editor.design.frame.property.template.EditTemplate" label="编辑属性模板" nowrap="N" location="0,0" size="0,0">
+    <Panel guid="2BBD01DB376543C4B9C096224B407EBF" name="editPanel" label="编辑属性" icon="design.panel.icon">
+      <Check guid="5857591D22514172A33295535C63455E" name="editView" label="显示可" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" data_name="edit_view" data_default="Y" />
+      <Check guid="44A7C38ACFAC49A49C51924361E48B1C" name="editInsert" label="新建可" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" data_name="edit_insert" data_default="Y" />
+      <Check guid="FAEFFEAB534C42FC8E00E5397879BD5A" name="editUpdate" label="更新可" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" data_name="edit_update" data_default="Y" />
+      <Check guid="0C330B777CDC4FB2BE5AB8AE3F0DC8B0" name="editDelete" label="删除可" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" data_name="edit_delete" />
+      <Check guid="AE81F0426A9047C29E150934EE921DE0" name="editLink" label="是否关联" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" edit_zoom="N" label_size="80,0" data_name="edit_link" />
+      <Check guid="6FF6783D62C04F03BC7771BADB8190C9" name="editZoom" label="放大可" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" data_name="edit_zoom" />
+      <ColorPicker guid="63950222819544B3A58977DCFBA70D36" name="editColor" label="编辑颜色" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" data_name="edit_color" />
+    </Panel>
+  </TemplateFrame>
+</Content>

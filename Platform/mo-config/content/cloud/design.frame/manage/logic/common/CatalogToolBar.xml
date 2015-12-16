@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content>
+   <ToolBar name="system.design.frame.CatalogToolBar" label="目录工具栏">
+      <ToolButtonEdit name='searchEdit' linker='_controlSearchEdit' edit_size='124,0' hint='搜索内容'/>
+   </ToolBar>
+</Content>

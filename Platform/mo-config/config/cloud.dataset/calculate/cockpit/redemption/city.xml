@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="a904baf7-702b-44c6-a965-ce3d7f0e3b6f" name="calculate.cockpit.redemption.city" label="M#12cn16城市赎回统计" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Redemption.City" data_name="CL_COK_REDEMPTION_CITY" data_alias="CL_COK_RDP_CT" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="4ff686b8-202d-4267-bbda-17eddd5ca2dc" name="province_code" label="M#12cn14省份代码" is_valid="Y" note="M#" is_store="Y" is_abstract="N" data_name="PROVINCE_CODE" data_alias="COD" data_size="80" />
+  <FieldString _uuid="1cacdafc-0ea3-48df-9c0c-f2d6fa449851" name="province_label" label="M#12cn16省份中文名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PROVINCE_LABEL" data_size="80" />
+  <FieldString _uuid="c5fedc9c-750d-4824-853a-4ffc076616e5" name="city_code" label="M#12cn14城市代码" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CITY_CODE" data_alias="CT_COD" data_size="80" />
+  <FieldString _uuid="34ae3a2b-364c-4ef3-ba6a-f82cb1aec877" name="city_label" label="M#12cn14城市名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CITY_LABEL" data_alias="CT_LB" data_size="80" />
+  <FieldDateTime _uuid="a0e5f345-f813-409b-8065-c4adb90eb888" name="record_date" label="M#12cn14记录时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RECORD_DATE" />
+  <FieldDouble _uuid="f469ecbc-ada6-435e-a205-3d0af029a3a3" name="redemption_total" label="M#12cn14赎回总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_TOTAL" data_alias="rdp_tt" />
+  <FieldInteger _uuid="b76a9b85-29e5-4300-8c62-837b5debb4fb" name="redemption_user_count" label="M#12cn14赎回人数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_USER_COUNT" data_alias="RDP_USER_CT" />
+  <FieldDouble _uuid="efa4d3cd-a9a0-4397-a68a-91e1055a2944" name="percapita_redemption" label="M#12cn14人均赎回" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERCAPITA_REDEMPTION" />
+  <FieldDateTime _uuid="eec60c70-309e-4abb-81d6-74591f952ce7" name="statistical_time" label="M#12cn14统计时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="STATISTICAL_TIME" />
+  <FieldString _uuid="4e875b95-1a85-488a-83dd-50a58bf524fa" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="4b99fe42-6467-415c-a66b-aab46cd0594a" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldTemplate _uuid="43e0cb86-b300-4521-b38f-0a9a247a752d" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

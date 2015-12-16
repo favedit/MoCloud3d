@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="eec23c72-6c44-436a-b92e-5602704731a9" name="calculate.cockpit.redemption.area" label="M#12cn16地域赎回统计" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Redemption.Area" data_name="CL_COK_REDEMPTION_AREA" data_alias="CL_COK_RDP_AREA" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="1bc872e0-57a7-4f10-bd55-15bf6b29f349" name="area_code" label="M#12cn12代码" is_valid="Y" note="M#" is_store="Y" is_abstract="N" data_name="AREA_CODE" data_alias="COD" data_size="80" />
+  <FieldString _uuid="2c23c738-5340-4fb0-92b7-ed7684df8da9" name="area_label" label="M#12cn14中文名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="AREA_LABEL" data_size="80" />
+  <FieldDateTime _uuid="2403dcd7-6424-4556-86f2-f5bbc06dab09" name="record_date" label="M#12cn14记录时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RECORD_DATE" />
+  <FieldDouble _uuid="a853c73a-8e42-499f-8e1c-08fa8ef80501" name="redemption" label="M#12cn14赎回金额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION" />
+  <FieldDateTime _uuid="9993e26f-89f2-40b2-aa0f-2190bfbd766f" name="statistical_time" label="M#12cn14统计时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="STATISTICAL_TIME" />
+  <FieldString _uuid="f0b02495-de5f-4cc6-9110-06444aabfd13" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="344fdcc5-66d8-488b-9b76-18c1c4649228" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldTemplate _uuid="95116028-382b-492c-9f38-e9c9c72a3cac" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

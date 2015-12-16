@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="192a2a1e-e840-4cbd-9654-840c0a3ab437" name="data.financial.user" label="M#12cn14金融用户" is_valid="Y" note="M#" data_engine="InnoDB" data_group="data" data_factory="Data.Financial.User" data_name="DT_FIN_USER" data_alias="DT_FIN_USR" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="04db6fcf-6cbf-4d53-9594-42cfe7bb4de7" name="passport" label="M#12cn12账号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PASSPORT" data_size="40" />
+  <FieldString _uuid="46fe5c7d-8b93-4995-ad59-c5f47e839b48" name="password" label="M#12cn12密码" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PASSWORD" data_size="40" />
+  <FieldString _uuid="254e32bb-0fa7-448c-8bb4-6d8ee462b663" name="label" label="M#12cn12名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LABEL" data_size="800" />
+  <FieldString _uuid="28ee8e7d-372e-4b23-97e1-df11ce1a3c30" name="role_codes" label="M#12cn16权限代码集合" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="ROLE_CODES" data_size="800" />
+  <FieldTemplate _uuid="ee1d11b9-dd6f-4f65-869b-c58d5ce301e2" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

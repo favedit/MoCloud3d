@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="70ef8753-2f97-40a5-ae1d-5ea15527c9fa" name="calculate.cockpit.achievements.department" label="M#12cn14公司业绩" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Achievements.Department" data_name="CL_COK_ACHIEVEMENTS_DEPARTMENT" data_alias="CL_COK_ACH_DEP" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="c0f3b874-38f3-498c-8758-d93639b248ce" name="department_id" label="M#12cn14部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_ID" />
+  <FieldRecordId _uuid="ffc0e5d7-d4d6-4759-a85b-2d699f699e4e" name="department_lid" label="M#12cn17e租宝部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LID" />
+  <FieldString _uuid="a49356f3-2539-46a3-9842-690e26fca9a3" name="department_label" label="M#12cn14部门名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LABEL" data_size="80" />
+  <FieldDouble _uuid="470b65ce-4390-46a8-a843-a6b9792f0407" name="investment_total" label="M#12cn14投资总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_TOTAL" />
+  <FieldDouble _uuid="0a27c67b-89c1-4384-8e79-a4e662e162fc" name="netinvestment_total" label="M#12cn14净投总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NETINVESTMENT_TOTAL" />
+  <FieldDouble _uuid="14c6069d-566f-408c-bfdf-f4fd0d9c1f3d" name="performance_total" label="M#12cn14业绩总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERFORMANCE_TOTAL" />
+  <FieldString _uuid="7a6405fa-5578-4fd6-9253-25cd7f4ae06b" name="property1" label="M#12cn14扩充字段" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PROPERTY1" data_size="40" />
+  <FieldString _uuid="600ef6f5-008d-4bd6-94a8-d38519e74d64" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="191e21ea-9a16-4599-981b-22aac655da8b" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

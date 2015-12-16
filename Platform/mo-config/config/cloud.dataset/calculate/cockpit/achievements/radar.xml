@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="ab3f8bd0-7df2-4411-94c0-9e3182c4ab38" name="calculate.cockpit.achievements.radar" label="M#12cn13雷达图" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Achievements.Radar" data_name="CL_COK_ACHIEVEMENTS_RADAR" data_alias="CL_COK_ACH_RAD" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="dc147864-1770-4886-bc77-98a9964d58d7" name="department_id" label="M#12cn14部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_ID" />
+  <FieldRecordId _uuid="bf367d1b-f917-4ac5-a427-bd6c5f1d29dc" name="department_lid" label="M#12cn17e租宝部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LID" />
+  <FieldString _uuid="e75a3281-4305-41e3-bd55-684029ceb94c" name="department_label" label="M#12cn14部门名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LABEL" data_size="80" />
+  <FieldDouble _uuid="35b152c9-14a8-434c-8a81-3a411ec84f44" name="score" label="M#12cn16部门总体评分" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="SCORE" />
+  <FieldDouble _uuid="b382cf3a-a845-41af-9296-8bd7466b0a32" name="performance" label="M#12cn12业绩" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERFORMANCE" />
+  <FieldInteger _uuid="5f55764e-4439-4f82-9c1f-8e887b5d906c" name="manpower" label="M#12cn12人力" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MANPOWER" />
+  <FieldDouble _uuid="8538f408-a2bc-4bf5-bc4e-24c57007a5d2" name="percapita" label="M#12cn12人均" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERCAPITA" />
+  <FieldDouble _uuid="61031c12-6ef6-476c-bec2-67085c737d91" name="task" label="M#12cn12任务" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="TASK" />
+  <FieldDouble _uuid="6816f6fa-29a5-4901-aa18-e13015f7244a" name="completion_rate" label="M#12cn13完成度" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="COMPLETION_RATE" />
+  <FieldInteger _uuid="9e1f7af2-8b59-44fa-a261-d54d42321bea" name="trend_cd" label="M#12cn12趋势" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="TREND_CD" />
+  <FieldString _uuid="ab025796-c24a-41d6-bea7-4e4d7b1cbe06" name="advice" label="M#12cn12建议" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="ADVICE" data_size="400" />
+  <FieldDouble _uuid="b382cf3a-a845-41af-9296-8bd7466b0a321" name="performance_score" label="M#12cn14业绩评分" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERFORMANCE_SCORE" />
+  <FieldDouble _uuid="5f55764e-4439-4f82-9c1f-8e887b5d906c1" name="manpower_score" label="M#12cn14人力评分" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MANPOWER_SCORE" />
+  <FieldDouble _uuid="8538f408-a2bc-4bf5-bc4e-24c57007a5d21" name="percapita_score" label="M#12cn14人均评分" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERCAPITA_SCORE" />
+  <FieldDouble _uuid="61031c12-6ef6-476c-bec2-67085c737d911" name="task_score" label="M#12cn14任务评分" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="TASK_SCORE" />
+  <FieldDouble _uuid="61031c12-6ef6-476c-bec2-67085c737d9131" name="trend_score" label="M#12cn14任务评分" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="TREND_SCORE" />
+  <FieldTemplate _uuid="e12d9e6f-c7d2-4a26-984a-76fe934441b6" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="467345d1-88ec-4476-b47b-34ed4b297f2f" name="calculate.financial.customer.product" label="M#12cn18计算客户产品信息" is_valid="Y" note="M#" access_insert="Y" access_update="Y" access_delete="Y" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Financial.Customer.Product" data_name="CL_FIN_CUSTOMER_PRODUCT" data_alias="CL_FIN_CST_PRD" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store">
+  <FieldRecordId _uuid="0f2fd440-9640-4c7a-9810-a597097b0dfb" name="member_id" label="M#12cn14成员编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MEMBER_ID" />
+  <FieldRecordId _uuid="d09cd8c5-a67f-4edb-969f-f65493b46901" name="member_link_id" label="M#12cn16成员关联编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MEMBER_LINK_ID" data_uniques="PRD" />
+  <FieldDateTime _uuid="c8bd5853-96dc-47f2-a657-9b04ba36303a" name="period_date" label="M#12cn14期间日期" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERIOD_DATE" data_uniques="PRD" />
+  <FieldString _uuid="d0e109fc-7374-4a33-92e1-0093f4b9e9e2" name="product_code" label="M#12cn14产品代码" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PRODUCT_CODE" data_size="40" data_uniques="PRD" />
+  <FieldInteger _uuid="cbe25c8b-f604-4dd8-9021-9be0add7a9fd" name="view_count" label="M#12cn13浏览量" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="VIEW_COUNT" />
+  <FieldDateTime _uuid="7fb5a925-5b16-4bbe-b81b-948f43169c29" name="last_view_date" label="M#12cn16最后浏览时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LAST_VIEW_DATE" />
+  <FieldTemplate _uuid="5cf69cbc-1b31-448d-a58b-fc3e6c1f2ea7" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

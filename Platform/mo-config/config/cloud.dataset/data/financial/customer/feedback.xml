@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="4c22d7bc-0861-4747-a84e-7c397f99a782" name="data.financial.customer.feedback" label="M#12cn17客户跟进记录表" is_valid="Y" note="M#" data_engine="InnoDB" data_group="data" data_factory="Data.Financial.Customer.FeedBack" data_name="DT_FIN_CUSTOMER_FEEDBACK" data_alias="DT_FIN_CST_FEE" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="8a4b3752-1431-4b49-b637-4a48eb2e205e" name="marketer_lid" label="M#12cn15理财师编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_LID" />
+  <FieldRecordId _uuid="3bae9fe2-2e60-4f9d-a1a2-6cf31fbb10a2" name="customer_lid" label="M#12cn14客户编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CUSTOMER_LID" />
+  <FieldString _uuid="54410775-fead-4d16-9c26-faaf98c5466f" name="content" label="M#12cn14行为内容" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CONTENT" data_alias="CON" data_size="2000" />
+  <FieldDateTime _uuid="cf4c5aeb-55aa-409b-8d47-02bee896185c" name="record_date" label="M#12cn14记录日期" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RECORD_DATE" data_alias="REC" />
+  <FieldDateTime _uuid="96db19e3-2d05-4353-8b4b-1e36e6abd4ef" name="reminded_date" label="M#12cn14反馈时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REMINDED_DATE" data_alias="REMINDED_D" />
+  <FieldString _uuid="a7e90ce5-eac2-4d0f-a083-127eb1e6e226" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="2000" />
+  <FieldTemplate _uuid="96a0a303-cdbb-49d2-b8b9-571526a36d42" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

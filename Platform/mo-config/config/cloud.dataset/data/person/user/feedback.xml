@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="6cef06df-0f57-43b4-892b-89a3bb8ad83c" name="data.person.user.feedback" label="M#12cn16人员公告访问" is_valid="Y" note="M#" data_engine="InnoDB" data_group="data" data_factory="Data.Person.User.Feedback" data_name="DT_PSN_USER_FEEDBACK" data_alias="DT_PSN_USR_FBC" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.logger" data_type="D">
+  <FieldRecordId _uuid="af31865a-0b8e-4d7e-a461-d645239dc966" name="user_id" label="M#12cn14用户编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="USER_ID" />
+  <FieldInteger _uuid="d3b77654-7483-4767-b6b8-528dbe387825" name="anonymous_cd" label="M#12cn14命名标识" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="ANONYMOUS_CD" />
+  <FieldDateTime _uuid="9df4971d-4d84-4ed7-b96d-969008d2789f" name="record_date" label="M#12cn14记录时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RECORD_DATE" />
+  <FieldContent _uuid="57cc33af-e4d1-4fab-a535-571f232195d1" name="content" label="M#12cn12内容" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CONTENT" />
+  <FieldString _uuid="3b99c865-da39-400a-a86b-1ad04eb1ff50" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="7a1f8ea9-679d-4d57-9d8d-225871132701" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.logger.track" />
+</DataStore>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="ea52db79-4349-41ae-b46d-e97c99d2890a" name="statistics.financial.product.phase" label="M#12cn17统计产品阶段表" is_valid="Y" note="M#" data_engine="MyISAM" data_group="statistics" data_factory="Statistics.Financial.Product.Phase" data_name="ST_FIN_PRODUCT_PHASE" data_alias="ST_FIN_PDT_PHS" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.statistics" data_type="D">
+  <FieldRecordId _uuid="52b0910d-a940-40ce-91f4-1296961aac74" name="product_id" label="M#12cn14产品编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PRODUCT_ID" data_uniques="DAT" />
+  <FieldString _uuid="75a9520c-4bd8-4ebe-941e-39895caa8cdc" name="code" label="M#12cn12代码" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CODE" data_size="40" />
+  <FieldInteger _uuid="c39aab53-1986-43ac-a190-1d4732a6a80c" name="customer_count" label="M#12cn14客户总数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CUSTOMER_COUNT" />
+  <FieldInteger _uuid="b65ed5c4-2efb-4bef-a522-c22a6d5dd6bc" name="customer_total" label="M#12cn14客户总数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CUSTOMER_TOTAL" />
+  <FieldInteger _uuid="5fa5fe93-8700-4189-85f2-149baae5817a" name="investment_user_count" label="M#12cn15投资用户数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_USER_COUNT" />
+  <FieldInteger _uuid="04546a18-cbd5-4f57-a5cd-90a929c117a1" name="investment_count" label="M#12cn14投资次数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_COUNT" />
+  <FieldDouble _uuid="15bc35b2-e8fb-49e0-ab2c-a45e24f090c9" name="investment" label="M#12cn12投资" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT" />
+  <FieldDouble _uuid="237b488f-effb-4aae-8049-645896e14aab" name="investment_total" label="M#12cn14投资总计" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_TOTAL" />
+  <FieldInteger _uuid="694a881d-57c6-4158-b114-b4a6372ac3fc" name="redemption_user_count" label="M#12cn15赎回用户数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_USER_COUNT" />
+  <FieldInteger _uuid="73332491-a0b0-4dfa-81ea-6fc0fd52be8a" name="redemption_count" label="M#12cn14赎回次数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_COUNT" />
+  <FieldDouble _uuid="35ea4c8e-927e-4c64-beb3-0cfab0515a55" name="redemption" label="M#12cn12赎回" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION" />
+  <FieldDouble _uuid="e5ec68f2-ae7f-4b72-8fa2-6eb19b4be3a0" name="redemption_total" label="M#12cn14赎回总计" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_TOTAL" />
+  <FieldDouble _uuid="e0f202ec-e636-4da7-bfa9-a8ce051a8a56" name="interest" label="M#12cn12利息" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INTEREST" />
+  <FieldDouble _uuid="a7bf3548-65fe-4d63-b2e2-b0d462a29bc1" name="interest_total" label="M#12cn14利息总计" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INTEREST_TOTAL" />
+  <FieldDouble _uuid="69c109e0-777d-4a02-85dd-09d72640ffcc" name="netinvestment" label="M#12cn12净投" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NETINVESTMENT" />
+  <FieldDouble _uuid="1066c4d4-4578-473f-9629-bc322f95f14a" name="netinvestment_total" label="M#12cn14净投总数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NETINVESTMENT_TOTAL" />
+  <FieldDouble _uuid="c027a2b1-206e-42d0-9892-ab9ce89c02cd" name="performance" label="M#12cn12业绩" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERFORMANCE" />
+  <FieldDouble _uuid="57dc8971-0a2a-42e6-b437-79ca27f0fc25" name="performance_total" label="M#12cn14业绩总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PERFORMANCE_TOTAL" />
+  <FieldTemplate _uuid="7983e69a-bd80-4086-bbfb-9ebfd5060fc7" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

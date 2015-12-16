@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="9b46b5b5-f1e3-4da2-8edf-acd869e1366d" name="data.logic.notice" label="M#12cn15业务公告表" is_valid="Y" note="M#" data_engine="InnoDB" data_group="data" data_factory="Data.Logic.Notice" data_name="DT_LGC_NOTICE" data_alias="DT_LGC_NTC" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store">
+  <FieldRecordId _uuid="08cb9083-63fe-4112-b272-643f204b9394" name="user_id" label="M#12cn14用户编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="USER_ID" data_alias="USER" data_refer="data.person.user" />
+  <FieldString _uuid="9a568d55-dc1f-4ae0-a011-7732a1b477ca" name="label" label="M#12cn14资讯标题" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LABEL" data_size="200" />
+  <FieldInteger _uuid="79f3e754-abc4-4141-8168-47e3c8da7997" name="type_cd" label="M#12cn12类型" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="TYPE_CD" />
+  <FieldInteger _uuid="a21cd9fb-cc58-45d1-bb67-3f86c633e13e" name="display_cd" label="M#12cn14是否显示" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DISPLAY_CD" />
+  <FieldInteger _uuid="0949adf5-2114-4772-bed6-4956b3448f0d" name="display_order" label="M#12cn13排序值" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DISPLAY_ORDER" />
+  <FieldInteger _uuid="e5ac8985-2028-4706-a4f9-e1d68eb35eef" name="important_cd" label="M#12cn13重要性" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="IMPORTANT_CD" data_alias="IMPORTANT" />
+  <FieldInteger _uuid="6f397030-e106-48a5-9af4-8b6c73de7711" name="destroy_cd" label="M#12cn14阅后即焚" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DESTROY_CD" />
+  <FieldDateTime _uuid="45eb12a5-d30d-455b-98ec-47f5e8096f36" name="begin_date" label="M#12cn14开始时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="BEGIN_DATE" data_alias="BEGIN" />
+  <FieldDateTime _uuid="166f0e5a-32f7-49bd-a0a2-8c5a153d3430" name="end_date" label="M#12cn14结束时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="END_DATE" data_alias="END" />
+  <FieldDateTime _uuid="b732897d-37dd-4fd3-bf45-f7243036b949" name="publish_date" label="M#12cn14发布时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PUBLISH_DATE" data_alias="publish" />
+  <FieldInteger _uuid="5464287d-66d9-4218-a092-2e758aca80fc" name="link_cd" label="M#12cn14外链状态" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LINK_CD" />
+  <FieldString _uuid="f731a4e4-93b5-4a63-a233-4860b030f268" name="link_url" label="M#12cn14外链地址" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LINK_URL" data_size="800" />
+  <FieldString _uuid="bab4d24e-4b8d-4d16-931b-414c7894d01d" name="description" label="M#12cn12描述" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DESCRIPTION" data_size="2000" />
+  <FieldContent _uuid="a25b651c-b128-4c77-a333-22a2ddab43af" name="content" label="M#12cn14资讯内容" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CONTENT" />
+  <FieldInteger _uuid="157f1afc-8def-440c-9c6c-5ea4e492e7d6" name="view_count" label="M#12cn14浏览次数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="VIEW_COUNT" />
+  <FieldTemplate _uuid="6cb535a2-5577-4dd2-9638-d23da3ef49e8" name="track" label="M#12cn14跟踪模版" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

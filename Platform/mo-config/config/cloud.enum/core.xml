@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Group _uuid="68cfc3b1-457d-45b9-86b3-0a51b8013668" name="core" label="逻辑核心" is_valid="Y" note="M#" is_server="Y" is_server_cpp="N" is_server_java="Y" is_client="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" source_name="MoMgEnumCore" code="Egr" code_name="GmCore" full_code="EnumCore" display_index="23" project_name="/Common/MoMessage" project_code="Mg" is_include="Y">
+  <Enum _uuid="31b74835-fc1e-430d-b6b1-26f874f74914" name="GcPersonUserStatus" label="人员用户状态" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="7a9988da-1b66-43c9-aa36-852077e7c117" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="0219e6b8-6ebd-4fdf-9db5-cf137ce03b11" name="Normal" label="正常" is_valid="Y" note="M#" />
+    <Item _uuid="e1b7375a-872b-4b42-bb78-415449635eb3" name="Lock" label="锁定" is_valid="Y" note="M#" />
+    <Item _uuid="5252dc55-e0ef-4414-9635-09432433dec2" name="Forbid" label="禁止" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="ac7844e2-3326-4573-9265-9de171228ef8" name="GcPersonUserFrom" label="人员用户来源" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="cae64121-6862-481a-bdbb-e253fa3c6810" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="1e2f7598-4f37-4acf-ade5-357be359770c" name="Passport" label="账号" is_valid="Y" note="M#" />
+    <Item _uuid="047e9c71-6f84-4782-b2c5-452d04fb7f4d" name="EaiOa" label="EAI-OA系统" is_valid="Y" note="M#" />
+    <Item _uuid="ed6b35ff-c177-4fc4-aad3-2364f975b4c7" name="EaiHost" label="EAI-白名单" is_valid="Y" note="M#" />
+    <Item _uuid="5382880d-a73a-485d-81c2-4cc2b04dc540" name="EaiEzubao" label="EAI-e租宝账号" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="dfd0c144-619a-47f9-bcab-d2c37560e20f" name="GcPersonUserVerify" label="人员用户验证" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="a0a55b1b-d3e4-4bf9-96ec-e7f855255c60" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="193535f1-7e15-49f6-97b5-09db6ee66701" name="Invalid" label="无效" is_valid="Y" note="M#" />
+    <Item _uuid="bda1c261-eb34-403a-8295-b89621190296" name="Valid" label="有效" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="17006413-c807-4b32-b3bd-ab5e20bbe8c2" name="GcAccountFrom" label="帐号来源" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="af31b7ff-97c4-492c-a163-62b4f3a5d6e8" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="79e5978a-3d37-4902-aa29-75edc69c1ba6" name="Service" label="服务" is_valid="Y" note="M#" />
+    <Item _uuid="973dbfdc-436c-438d-b771-e9406a74b9c6" name="Web" label="网页站点" is_valid="Y" note="M#" />
+    <Item _uuid="16a87b7f-f459-4bcc-9b1c-096d3d65a848" name="Mobile" label="移动设备" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="9f8c87bf-1432-46db-9b91-a00449a488c6" name="GcResource" label="资源类型" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="51450946-2194-48bf-a2ae-55568e9b968e" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="72c689de-3cd3-4bcc-93db-3d3f3c02818a" name="Bitmap" label="位图" is_valid="Y" note="M#" />
+    <Item _uuid="0df48a80-4816-40db-980a-4268c4b460c6" name="Material" label="材质" is_valid="Y" note="M#" />
+    <Item _uuid="6e5c5a4f-66b5-4370-a98c-c77ebe95055f" name="Mesh" label="网格" is_valid="Y" note="M#" />
+    <Item _uuid="792eb627-574d-4e16-9f38-53825a84f6b7" name="Model" label="模型" is_valid="Y" note="M#" />
+    <Item _uuid="7d083269-abaa-4021-917f-aead9204c870" name="Template" label="模板" is_valid="Y" note="M#" />
+    <Item _uuid="89d6a15f-84ce-4cff-bfdd-1361103773c1" name="Scene" label="场景" is_valid="Y" note="M#" />
+    <Item _uuid="ea55f41b-eea8-42e1-b60b-5d417c230c49" name="Project" label="项目" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="b5f6d974-8f15-4c47-9650-342499fb9ad9" name="GcHostAccess" label="主机访问" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="424d8f10-efa7-4dca-9c4d-42fab3dfbb4f" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="30c39044-9c81-4e64-a7e0-22ced5e7f66b" name="Allow" label="允许" is_valid="Y" note="M#" />
+    <Item _uuid="e076de31-7265-4586-9787-ef961fe28e17" name="Forbid" label="禁止" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="c498e89e-5ec2-4051-ad53-3cb0a6a95e81" name="GcAuthorityType" label="授权方式" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="ea91f232-63ad-4f7e-a966-d39a4de60bab" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="f3c95d1d-60b4-4db8-bbcb-91634f53de0e" name="Permanent" label="永久" is_valid="Y" note="M#" />
+    <Item _uuid="2d1029d4-91fd-44fb-b0ca-87117283266b" name="Temporary" label="临时" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="9bc112cb-1d8c-4d19-9216-e2c05ded1902" name="GcAuthorityAccess" label="授权数据" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="b8cbc1fb-a885-4d4d-9b34-52a8b264c5c0" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="4a94c572-5c5a-4d0a-bdec-a9b181575721" name="Allow" label="允许" is_valid="Y" note="M#" />
+    <Item _uuid="b31a609d-8b6a-4818-9a84-e8d1a8a2acf2" name="Forbid" label="禁止" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="1e84539b-1d56-4769-9777-7d45323318ba" name="GcAuthorityResult" label="授权结果" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="3d87166f-20e1-47f7-8669-aa3e663bc5be" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="e0f19ada-b16d-4c2c-9ee3-818456ffc8f9" name="Success" label="成功" is_valid="Y" note="M#" />
+    <Item _uuid="537841ff-8971-4452-858d-8c88489256f0" name="PassportInvalid" label="账号错误" is_valid="Y" note="M#" />
+    <Item _uuid="ba7ef348-45ef-46fe-a5e5-dd2482f8af92" name="PasswordInvalid" label="密码错误" is_valid="Y" note="M#" />
+    <Item _uuid="2ce2687d-2bc2-4d8d-a9d6-aa636adbb5ad" name="DateInvalid" label="日期错误" is_valid="Y" note="M#" />
+    <Item _uuid="f57f68e7-91bb-4020-85a8-fa8a46f4cc69" name="OaSuccess" label="OA系统登录成功" is_valid="Y" note="M#" />
+    <Item _uuid="389eac85-5149-4c67-83a7-e4dba63d2eef" name="OaPasswordInvald" label="OA密码错误" is_valid="Y" note="M#" />
+    <Item _uuid="816ca6c5-031c-46c2-9e98-bb85c0319901" name="OaHostInvalid" label="OA主机非法" is_valid="Y" note="M#" />
+    <Item _uuid="e9980316-a86c-4462-8fa0-68f1f23c0320" name="PassportIllegal" label="用户名非法" is_valid="Y" note="M#" />
+    <Item _uuid="8f7aaf43-9b68-4099-b0cb-3bfec9e11cc6" name="PasswordIllegal" label="密码非法" is_valid="Y" note="M#" />
+    <Item _uuid="573ce2eb-f8d5-4220-9042-3a614d02c876" name="PasswordLengthFail" label="密码长度不够" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="a64f52a7-989e-4e4b-b1c9-eaaa69497dae" name="GcPersonUserRole" label="用户角色状态" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="b9460008-806b-439c-a7f6-b4e797e70595" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="0210008a-dd00-4c9a-a1f7-2bd63e034230" name="Normal" label="正常" is_valid="Y" note="M#" />
+    <Item _uuid="4644efd2-a306-4d82-86aa-308e6a0787a0" name="Admin" label="管理员" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="a3e25b54-1d59-444e-b56c-6860573f2f46" name="GcValidationValidate" label="短信校验类型" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="1d76af47-03b4-4059-a2ec-e0c313deae10" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="0b3ddaec-c7f7-4677-80ce-7715992df927" name="EaiMarketer" label="理财师帐号绑定" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="0979bc9e-46d4-4919-b485-e93ca0c69b70" name="GcControlRoleModuleValid" label="控制角色模块有效性" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="6be699b3-61fe-41ee-b299-81bfb7af5fc6" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="58337db9-3504-4811-b075-44cab34f4fec" name="Valid" label="有效" is_valid="Y" note="M#" />
+    <Item _uuid="30f9dce2-ed10-4065-8f46-977ec547075a" name="Invlaid" label="非法" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="98c9aa46-867d-421a-b57f-1f4d10d1cd51" name="GcPersonGender" label="姓别" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="e30a9c54-4694-4167-9e25-6d871389ef52" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="ec9061bd-e34e-4e89-8a85-611ae7814692" name="Male" label="男" is_valid="Y" note="M#" />
+    <Item _uuid="b943eed8-93b2-40b2-81c6-5b7ac5eca539" name="Female" label="女" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="2c687559-6888-4d52-b788-ac2025b0fbd3" name="GcPersonMarry" label="婚姻状态" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="ceea9cc0-5498-4b4f-9e9e-76ee3a664ad4" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="47e4e723-fee7-4071-8cbe-ee1b77b0444e" name="Married" label="已婚" is_valid="Y" note="M#" />
+    <Item _uuid="62d307a8-d117-42b4-9058-bb7f12097bf0" name="Unmarried" label="未婚" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="5f0e5bbc-fe3d-4f18-b07e-a436406e2d4d" name="GcPersonEducation" label="教育" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="5c7f54b6-75bf-412a-a6cc-fe19b3aa185c" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="5c7d0ddf-67aa-407f-91df-a5a0091b6fda" name="HighschoolLess" label="高中以下" is_valid="Y" note="M#" />
+    <Item _uuid="31ac1758-a0a7-4445-bf6f-3c80fa69db06" name="CollegeOrBachelor" label="大专或本科" is_valid="Y" note="M#" />
+    <Item _uuid="ee48f98b-5d2d-4ab2-a088-465473028284" name="MasterOrMasterUp" label="硕士或硕士以上" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="90851f72-f7b6-4dfb-bc2d-56f8239a2b1a" name="GcPersonBusiness" label="职业" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="52eec210-ce2f-42e4-95bf-8173ab257210" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="f8ba1775-e8e7-4138-8eeb-8d4b483cd708" name="Financial" label="金融" is_valid="Y" note="M#" />
+    <Item _uuid="8ed4f6e7-86d3-4db0-8fd3-53a8f68a8845" name="Science" label="科技" is_valid="Y" note="M#" />
+    <Item _uuid="e3d640ad-7819-4c76-88bf-c93a715d9f9d" name="Education" label="教育" is_valid="Y" note="M#" />
+    <Item _uuid="1e00cca0-0364-4e76-b7d8-444ea630a67e" name="Transport" label="运输" is_valid="Y" note="M#" />
+    <Item _uuid="c71e08a5-698c-4998-a75c-7fc351c4498a" name="HouseProperty" label="房产" is_valid="Y" note="M#" />
+    <Item _uuid="5289dfdb-359b-45a2-9048-1fdabf727441" name="Manufacture" label="制造" is_valid="Y" note="M#" />
+    <Item _uuid="28b7d1ae-7974-4c15-800b-96ed718375a1" name="Restaurant" label="餐饮" is_valid="Y" note="M#" />
+    <Item _uuid="601f47ce-452d-41c0-aac6-5933af704bca" name="Advertisement" label="广告" is_valid="Y" note="M#" />
+    <Item _uuid="6bbeecd8-e43d-49a8-8e8d-183651d5a631" name="Tourism" label="旅游" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="a38f29dd-173b-48a1-a384-a6c5b777108d" name="GcPersonIncome" label="月收入" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="9bdb7927-4727-45b0-94b9-1008c2b441a8" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="a6ff8c55-1c9c-4360-9e05-28318c41ba43" name="LessThan5000" label="5000以下" is_valid="Y" note="M#" />
+    <Item _uuid="1b743aa6-f4c7-4df6-9b4d-8240684397e3" name="In5000to10000" label="5000－10000" is_valid="Y" note="M#" />
+    <Item _uuid="cd744c63-cdc7-42b8-a589-6820d3a94bcb" name="In10000to50000" label="10000－50000" is_valid="Y" note="M#" />
+    <Item _uuid="48e6ff45-ac0d-4695-974c-9ea4683e2369" name="MoreThan50000" label="50000以上" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="52bd0ae2-4829-47e6-9217-1a9c56394f5d" name="GcResourceStatus" label="资源状态" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="cbd727c9-26a9-42ce-9d19-85cfe11245d6" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="42db91d3-44e9-431b-8a45-53edfe2efaca" name="Apply" label="申请" is_valid="Y" note="M#" />
+    <Item _uuid="9a9b2640-638d-4989-bfc1-2df12a550886" name="Publish" label="发布" is_valid="Y" note="M#" />
+    <Item _uuid="bea57374-ab48-40eb-babb-108c4452e578" name="CheckFail" label="审核未通过" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="312e8ce2-ba81-49e4-9551-d67ff94dcf65" name="GcVersionForce" label="版本更新规则" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="e8dc910b-862f-442e-9ec3-dccb45fd95b9" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="1066ae7d-7af3-4af9-9c56-fc30fe8d8554" name="Optional" label="可选" is_valid="Y" note="M#" />
+    <Item _uuid="1db51481-faa2-4828-9d77-a76ac917269c" name="Force" label="强制" is_valid="Y" note="M#" />
+    <Item _uuid="a1aa4a9f-1a88-4b10-9635-be4f2aa868de" name="Auto" label="自动" is_valid="Y" note="M#" />
+    <Item _uuid="fa11f02b-eeaa-484b-a927-49b91cb29098" name="NoUpdate" label="不更新" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="1326fc12-1393-4618-a39f-8fa020e92b5a" name="GcRule" label="数据挖掘规则类型" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="810ea8fa-0094-45fa-82eb-22143c0c8ccf" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="765f1ece-5222-4ccb-9284-1a30c3b0bc42" name="LastLogin" label="最后登录" is_valid="Y" note="M#" />
+    <Item _uuid="5889ec5d-4b63-4af8-a2e9-6cc090eafaeb" name="BrowseCount" label="周浏览次数" is_valid="Y" note="M#" />
+    <Item _uuid="a95701ea-29c3-4c8e-9f5b-489ea005e082" name="Income" label="月收入" is_valid="Y" note="M#" />
+    <Item _uuid="bb27c180-9385-4a2a-a03a-8a81aa949e3a" name="Age" label="年龄" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="e9540ee8-ec36-48c9-81cb-29ca36db256d" name="GcLink" label="是否是外链新闻" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="1b718dba-3eb5-4a0c-aefa-5cfdf75bd80a" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="7cc03f51-aac9-4093-908f-33203d717de2" name="Content" label="内容" is_valid="Y" note="M#" />
+    <Item _uuid="f28d7234-8e5d-4670-8832-d10bb406f4db" name="Link" label="外链" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="fea5f986-84b0-4aaf-aa93-e67c4ca5507f" name="GcEmploy" label="是否雇佣" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="4900c2f2-5382-4ae5-bc18-296b69216b60" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="d5b2d9b8-0786-4372-8ef1-aeed3bc939e6" name="Incumbency" label="在职" is_valid="Y" note="M#" />
+    <Item _uuid="e658cbad-ba00-4c98-ab41-e7f8c2384967" name="Leave" label="离职" is_valid="Y" note="M#" />
+    <Item _uuid="425d3f47-66ba-4180-91d3-685fb8b678a7" name="Undetermined" label="待定" is_valid="Y" note="M#" />
+  </Enum>
+  <Enum _uuid="60ac349a-c313-48f9-b4dd-4f6a9ac23b40" name="GcAnonymous" label="是否匿名" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="734a4d17-23f8-478e-b0cc-cfd05bbd28d2" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="97644c80-adae-445b-8dbd-4e8029b69365" name="Anonymous" label="匿名" is_valid="Y" note="M#" />
+    <Item _uuid="a6e86aca-7132-4556-8033-d9016a3da74a" name="Autonym" label="真名" is_valid="Y" note="M#" />
+  </Enum>
+</Group>

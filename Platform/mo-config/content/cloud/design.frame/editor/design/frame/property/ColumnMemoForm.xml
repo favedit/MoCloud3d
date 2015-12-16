@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content update_date="20150907133603">
+  <FormFrame guid="C5AE3F7F5F7F432F859D8BC2E419638B" valid="N" name="editor.design.frame.property.ColumnMemoForm" label="表格多行文本列属性" type="FEditorDsPropertyForm" nowrap="N" location="0,0" size="0,0" logic_group="item" logic_service="editor.design.frame">
+    <ToolBar guid="CEB680B972E2407889806D2278BCB630" name="toolBar" label="工具栏" width="100%" height="24">
+      <ToolButton guid="66B3C0404A9E4AD48E1E53566C4DDC91" name="saveButton" label="保存" attributes="action=save" icon="editor.common.save" hotkey="F8" />
+      <ToolButton guid="C5A70C99975748298C27A72F2DF5206C" name="deleteButton" label="删除" attributes="action=delete" icon="editor.common.delete" hotkey="F6" />
+    </ToolBar>
+    <Template guid="FA34BA7E925B4072AEBDBDCF167D545C" name="componentTemplate" frame_source="editor.design.frame.property.template.ComponentTemplate" />
+    <Template guid="123E1CE4289D4D70A2BBFAFDB2BA00D2" name="controlTemplate" frame_source="editor.design.frame.property.template.ControlTemplate" />
+    <Template guid="46CCB52AA565430388BD4B47F8C2EBC7" name="labelTemplate" frame_source="editor.design.frame.property.template.LabelTemplate" />
+    <Template guid="3E6155690ABE4897BFE86004258C3673" name="displayTemplate" frame_source="editor.design.frame.property.template.DisplayTemplate" />
+    <Template guid="E4BF09A812E44FF9B4F2AF89E65A6669" name="dataTemplate" frame_source="editor.design.frame.property.template.DataTemplate" />
+    <Template guid="6FAED8796E884009A525C8F9322B4156" name="editTemplate" frame_source="editor.design.frame.property.template.EditTemplate" />
+    <Template guid="FF8EEE20FF9C48E8850CB121B8729BB5" name="columnTemplate" frame_source="editor.design.frame.property.template.ColumnTemplate" />
+    <Template guid="05DDF20F2B2E4392AE86F23E40B9B443" name="verifyTemplate" frame_source="editor.design.frame.property.template.VerifyTemplate" />
+    <Template guid="2033FF6A964142AD9007A97A645E06AC" name="noteTemplate" frame_source="editor.design.frame.property.template.NoteTemplate" />
+  </FormFrame>
+</Content>

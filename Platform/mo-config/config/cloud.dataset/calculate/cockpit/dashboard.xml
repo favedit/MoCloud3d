@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="ab3f8bd0-7df2-4411-94c0-9e3182c4ab38" name="calculate.cockpit.dashboard" label="M#12cn13仪表盘" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Dashboard" data_name="CL_COK_DASHBOARD" data_alias="CL_COK_DAS" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="d87a18ed-4281-4e2d-9b69-3a8ff8603a71" name="code" label="M#12cn12代码" is_valid="Y" note="M#" is_unique="Y" is_store="Y" is_abstract="N" data_name="CODE" data_alias="COD" data_size="80" />
+  <FieldString _uuid="6c112425-6ab0-4617-86d7-88da4512e39b" name="name" label="M#12cn14英文名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NAME" data_size="80" />
+  <FieldString _uuid="e75a3281-4305-41e3-bd55-684029ceb94c" name="label" label="M#12cn14中文名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LABEL" data_size="80" />
+  <FieldDouble _uuid="98a4743e-c5a8-4ce4-825a-f5d38108c0b1" name="rate" label="M#12cn12比率" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RATE" />
+  <FieldString _uuid="240bd3e6-05ea-4640-8e14-a7a6c59ade29" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="4b39ab07-63a5-428e-a973-061c2bf84d83" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldString _uuid="9fb62254-e4d7-4896-8d42-4b0ca840c779" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="e12d9e6f-c7d2-4a26-984a-76fe934441b6" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

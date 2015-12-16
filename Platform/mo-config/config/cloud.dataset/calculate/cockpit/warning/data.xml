@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="c04a3643-9b12-4dba-aa14-8364f3a6c545" name="calculate.cockpit.warning.data" label="M#12cn18驾驶舱预警数据表" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Warning.Data" data_name="CL_COK_WARNING_DATA" data_alias="CL_COK_WAR_DAT" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="19a49b33-8cad-4c9c-b4fd-4cf9fd5cc355" name="rule_id" label="M#12cn14规则编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RULE_ID" />
+  <FieldRecordId _uuid="b5988b7f-fc09-4dd9-8d9a-a3d061aff405" name="content_id" label="M#12cn14内容编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CONTENT_ID" />
+  <FieldString _uuid="7200a284-8e00-40e9-9699-b09d14833ed5" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="1f621b6d-0518-4b6a-8ddf-8dc879216e5b" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldString _uuid="69536995-62b2-47f6-86e8-0dcd6f4a6889" name="parameter3" label="M#12cn13参数3" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER3" data_size="40" />
+  <FieldString _uuid="1abda5de-b58e-4bdc-b334-b0a506b742af" name="parameter4" label="M#12cn13参数4" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER4" data_size="40" />
+  <FieldString _uuid="7b770746-e45e-4699-b37b-23ef91a32aa7" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="e96aff54-ba5c-4fc2-a271-87f937e9406b" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

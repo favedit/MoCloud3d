@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content update_date="20150904142520">
+  <FormFrame guid="E73F9B1EB46F4BE0BBC6AE264DD5A8DE" valid="N" name="editor.design.frame.property.MemoForm" label="按键属性" type="FEditorDsPropertyForm" nowrap="N" location="0,0" size="0,0" logic_group="item" logic_service="editor.design.frame">
+    <ToolBar guid="E3B5C062234C4CE989D697ED8C8ABFB9" name="toolBar" label="M#12cn13工具栏" width="100%" height="24">
+      <ToolButton guid="20205D7FD7B7473FBC5487408B86C7F9" name="saveButton" label="保存" attributes="action=save" icon="editor.common.save" hotkey="F8" />
+      <ToolButton guid="D43986805B3440D99C35703997C06423" name="deleteButton" label="删除" attributes="action=delete" icon="editor.common.delete" hotkey="F6" />
+    </ToolBar>
+    <Template guid="2301D5DDC4BF4B13B0A7FE699742AD7B" name="componentTemplate" frame_source="editor.design.frame.property.template.ComponentTemplate" />
+    <Template guid="138E796861604E61B92F0C00BD45A040" name="controlTemplate" frame_source="editor.design.frame.property.template.ControlTemplate" />
+    <Template guid="973DACA63C0042EEAEE5E4A1AED17C8F" name="labelTemplate" frame_source="editor.design.frame.property.template.LabelTemplate" />
+    <Template guid="93E752F13CF14E3F8D699A56379ADAD9" name="displayTemplate" frame_source="editor.design.frame.property.template.DisplayTemplate" />
+    <Template guid="B575BA05F3A7401E977F775A85B1624D" name="dataTemplate" frame_source="editor.design.frame.property.template.DataTemplate" />
+    <Template guid="496F3B9057CA4CB4A0B6DACE25EAC4FD" name="editTemplate" frame_source="editor.design.frame.property.template.EditTemplate" />
+    <Template guid="190DFA3D03C44487959C5A6854FFD7C2" name="verifyTemplate" frame_source="editor.design.frame.property.template.VerifyTemplate" />
+    <Template guid="0D0155B07CC5425C9338208604A2A4E7" name="noteTemplate" frame_source="editor.design.frame.property.template.NoteTemplate" />
+  </FormFrame>
+</Content>

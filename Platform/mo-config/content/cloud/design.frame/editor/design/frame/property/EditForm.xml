@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content update_date="20150904142533">
+  <FormFrame guid="75B4E1AFBC124E6EA62D5207AA9B33CC" valid="N" name="editor.design.frame.property.EditForm" label="按键属性" type="FEditorDsPropertyForm" nowrap="N" location="0,0" size="0,0" logic_group="item" logic_service="editor.design.frame">
+    <ToolBar guid="AF70008B94A14E679B54BC28586583A4" name="toolBar" label="工具栏" width="100%" height="24">
+      <ToolButton guid="622D69F8B1A54A23859EE287AE1E3D23" name="saveButton" label="保存" attributes="action=save" icon="editor.common.save" hotkey="F8" />
+      <ToolButton guid="49F2714A3C9C4166BA44FE0113752A75" name="deleteButton" label="删除" attributes="action=delete" icon="editor.common.delete" hotkey="F6" />
+    </ToolBar>
+    <Template guid="6C12154E3DA14B95ADA8FB4FD24EA5C9" name="componentTemplate" frame_source="editor.design.frame.property.template.ComponentTemplate" />
+    <Template guid="916B23FA8A10435D8AD7B0FD5AEBF212" name="controlTemplate" frame_source="editor.design.frame.property.template.ControlTemplate" />
+    <Template guid="DD133DE5DB0B49B1AC5477628D528196" name="labelTemplate" frame_source="editor.design.frame.property.template.LabelTemplate" />
+    <Template guid="9DC412E8254C4F3BA6A8C8C90D71E7D5" name="displayTemplate" frame_source="editor.design.frame.property.template.DisplayTemplate" />
+    <Template guid="EBDAF4363FD843C3864051F30CDBDAFA" name="dataTemplate" frame_source="editor.design.frame.property.template.DataTemplate" />
+    <Template guid="5DEEC0DFE4934D088A2F2D4B9A6087D7" name="editTemplate" frame_source="editor.design.frame.property.template.EditTemplate" />
+    <Panel guid="46AF5720034D4EF0AD5F6CEA8E98F89F" name="editControlPanel" label="编辑控件属性" icon="design.panel.icon">
+      <Edit guid="23E12423C3394DEC80E454B774EE6EF5" name="editParent" label="编辑父" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="160,0" data_name="edit_parent" />
+      <Edit guid="6AE6149157864BD7AE525EB63CFD0785" name="editUnit" label="计量单位" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="160,0" data_name="edit_unit" />
+      <Select guid="592636230BA64C01A725BCD62819C0C8" name="editAlignCd" label="编辑对齐" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="100,0" data_name="edit_align_cd" edit_refer="editor.design.frame.Align" />
+      <Number2 guid="7CC51AE701F74CB3B4ADFF211E0726CA" name="editSize" label="编辑尺寸" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="220,0" data_name="edit_size" />
+      <Select guid="040D821D03424B7FAD543F1FD9512508" name="editCaseCd" label="输入格式" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="100,0" data_name="edit_case_cd" edit_refer="editor.design.frame.EditCase" />
+      <Number guid="FC0E89CE0C5F475E8FDB17954D65E061" name="editLength" label="最大长度" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="100,0" data_name="edit_length" />
+      <Check guid="3CAF28D39A1B484EADCD9EEE8827B234" name="editComplete" label="自动完成" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="100,0" data_name="edit_complete" />
+      <Edit guid="DF34A049480C4BBE9F4D907A6074FBDB" name="editFormat" label="编辑格式" nowrap="Y" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="160,0" data_name="edit_format" />
+      <Edit guid="AC0AB655A6AD406A8C0D3F4897895A5B" name="editPattern" label="输入模板" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="160,0" data_name="edit_pattern" />
+      <Edit guid="12772DBCE48E4781A92D9DB53A51A6AB" name="lovRefer" label="选取引用" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="400,0" data_name="lov_refer" />
+      <Edit guid="4834A3852DB24B32B5B36C1E7D7493ED" name="lovWhere" label="选取条件" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="400,0" data_name="lov_where" />
+      <Edit guid="D8079CEA9C184E619FDF2DE8515125DE" name="lovOrder" label="选取顺序" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="400,0" data_name="lov_order" />
+      <Edit guid="BEC8F451419B4B35A6E5F89BA62FB47D" name="lovFields" label="选取字段" edit_mode="IU" edit_insert="Y" edit_update="Y" label_size="80,0" edit_size="400,0" data_name="lov_fields" />
+    </Panel>
+    <Template guid="CE0F22FF9B92485D98F25E77FACD1118" name="verifyTemplate" frame_source="editor.design.frame.property.template.VerifyTemplate" />
+    <Template guid="9AA666D549F34278A267BEFCF05A2583" name="noteTemplate" frame_source="editor.design.frame.property.template.NoteTemplate" />
+  </FormFrame>
+</Content>

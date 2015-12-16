@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="ab3f8bd0-7df2-4411-94c0-9e3182c4ab67" name="calculate.cockpit.redemption.phase" label="M#12cn18赎回金额阶段统计" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Redemption.Phase" data_name="CL_COK_REDEMPTION_PHASE" data_alias="CL_COK_RED_PH" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="8752a3e6-0d33-4bc8-99ef-0b8b9e101255" name="money_phase" label="M#12cn14金额阶段" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MONEY_PHASE" data_alias="MO_PH" data_size="40" />
+  <FieldInteger _uuid="5e3c14a9-9c0f-4a87-8cc4-3c9b19f100cf" name="redemption_people" label="M#12cn14赎回人数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_PEOPLE" data_alias="RE_PEO" />
+  <FieldInteger _uuid="8a04c925-6143-4f71-be6d-75f990a03c76" name="redemption_count" label="M#12cn14赎回次数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_COUNT" data_alias="RE_CO" />
+  <FieldInteger _uuid="43c1c3ae-d326-467c-9002-65f3708b4125" name="redemption_per_avg_count" label="M#12cn16赎回人均次数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_PER_AVG_COUNT" data_alias="RED_PE_AV_CO" />
+  <FieldDouble _uuid="7a9f830c-32ea-4412-a88e-a56f00073091" name="redemption_total" label="M#12cn14赎回总额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_TOTAL" data_alias="RED_TO" />
+  <FieldDouble _uuid="5ae01eb9-e716-4cbb-800b-0b6451a15451" name="redemption_per_avg_money" label="M#12cn16赎回人均金额" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_PER_AVG_MONEY" data_alias="RED_PER_AVG" />
+  <FieldString _uuid="240bd3e6-05ea-4640-8e14-a7a6009ade29" name="parameter1" label="M#12cn13参数1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER1" data_size="40" />
+  <FieldString _uuid="4b39ab07-63a5-428e-a973-06002bf84d83" name="parameter2" label="M#12cn13参数2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER2" data_size="40" />
+  <FieldString _uuid="f3711bbb-3f6d-4615-0099-f3206d3e0a24" name="parameter3" label="M#12cn13参数3" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PARAMETER3" data_alias="PAM" data_size="40" />
+  <FieldDateTime _uuid="9b3187a9-0b8c-0008-9394-7b7b7b586c50" name="record_time" label="M#12cn12日期" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RECORD_TIME" data_alias="REC" />
+  <FieldString _uuid="9fb62254-e007-4896-8d42-4b0ca840c779" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="e12d9e00-c7d2-4a26-984a-76fe934441b6" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

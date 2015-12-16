@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="47d867ef-cf0f-4d24-af21-6469b4acee99" name="calculate.cockpit.department.crad" label="M#12cn14公司名片" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Department.Crad" data_name="CL_COK_DEPARTMENT_CRAD" data_alias="CL_COK_DEP_CRD" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="43e4b2b3-f813-4ecb-a75a-9d87f12d505a" name="department_id" label="M#12cn14部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_ID" />
+  <FieldRecordId _uuid="e43b3116-677d-404c-9a02-ca70484f88be" name="department_lid" label="M#12cn17e租宝部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LID" />
+  <FieldString _uuid="69d190c4-0fc6-435b-9fb1-7bb03db85828" name="department_label" label="M#12cn14部门名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_LABEL" data_size="80" />
+  <FieldString _uuid="76ee7f76-29a2-4513-9b75-d181a3555173" name="supervisor" label="M#12cn12主管" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="SUPERVISOR" data_size="20" />
+  <FieldInteger _uuid="13f24b1b-e865-4686-b831-f813c40371fc" name="department_count" label="M#12cn14分公司数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="DEPARTMENT_COUNT" />
+  <FieldInteger _uuid="e7e56d2d-a8ab-4b2f-8808-3010d2eee8e1" name="marketer_count" label="M#12cn14理财师数" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="MARKETER_COUNT" />
+  <FieldDouble _uuid="4875cdc0-b2ac-4eb0-8853-b05559818d19" name="investment_day" label="M#12cn14当日投资" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="INVESTMENT_DAY" />
+  <FieldDouble _uuid="17a10fc2-f294-471e-8dec-69db79c817df" name="redemption_day" label="M#12cn14当日赎回" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_DAY" />
+  <FieldDouble _uuid="2b3271d4-8502-4de0-ba1d-783eee75a7d1" name="netinvestment_day" label="M#12cn14当日净投" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NETINVESTMENT_DAY" />
+  <FieldDouble _uuid="ccff65a7-b1f6-40e9-b1d6-48c171f90f1a" name="redemption_rate" label="M#12cn13赎回率" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REDEMPTION_RATE" />
+  <FieldString _uuid="916836e7-7204-4a21-9741-ef5a429d2e43" name="property" label="M#12cn14扩充属性" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PROPERTY" data_size="40" />
+  <FieldString _uuid="4aecc641-15c2-45b4-9f10-05e801645d60" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="341a8850-265e-4f2c-9e15-8c01f805cd1a" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

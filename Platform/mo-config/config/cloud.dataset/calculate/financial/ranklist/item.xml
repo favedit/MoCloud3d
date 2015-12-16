@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="bf6f1f7d-2143-4c2e-bb51-fc89d4d44266" name="calculate.financial.ranklist.item" label="M#12cn13排行榜" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Financial.Ranklist.Item" data_name="CL_FIN_RANKLIST_ITEM" data_alias="CL_FIN_RKL_ITM" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldString _uuid="35f593b7-4fc3-4679-be84-1a01c3d03b33" name="code" label="M#12cn12代码" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="CODE" data_size="80" />
+  <FieldString _uuid="108ec0ec-30e7-4347-abf7-6756ae620841" name="name" label="M#12cn14英文名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NAME" data_size="80" />
+  <FieldString _uuid="aee02576-0dfe-4591-b37f-6382a210484b" name="label" label="M#12cn14中文名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LABEL" data_size="80" />
+  <FieldInteger _uuid="d8f38bd8-38ac-4605-bef1-914b5db46c33" name="rank_order" label="M#12cn12排名" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RANK_ORDER" />
+  <FieldRecordId _uuid="b8e8018f-7e36-4e79-a4c4-3d274382038f" name="ranklist_id" label="M#12cn15排行榜类型" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="RANKLIST_ID" />
+  <FieldString _uuid="8eaab06a-6786-40d9-aeaf-983eb8ea49e3" name="property1" label="M#12cn13属性1" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PROPERTY1" data_size="40" />
+  <FieldString _uuid="c57db929-40a8-4b9f-abb5-1d0ea11514a8" name="property1" label="M#12cn13属性2" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="PROPERTY2" data_size="40" />
+  <FieldTemplate _uuid="b3c1e817-99b9-47c6-9304-81274ee81a7a" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

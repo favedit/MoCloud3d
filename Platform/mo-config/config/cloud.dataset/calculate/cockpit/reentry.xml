@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataStore _uuid="ab3f8bd0-7df2-4411-94c0-9e3182c4ab38" name="calculate.cockpit.reentry" label="M#12cn15离职再入职" is_valid="Y" note="M#" data_engine="MyISAM" data_group="calculate" data_factory="Calculate.Cockpit.Reentry" data_name="CL_COK_REENTRY" data_alias="CL_COK_RET" data_logic="GM_ACCOUNT_DI" logic_insert="doInsert" logic_update="doUpdate" logic_delete="doDelete" parent_name="define.store" data_type="D">
+  <FieldRecordId _uuid="dc147864-1770-4886-bc77-98a9964d58d7" name="employee_id" label="M#12cn14员工编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="EMPLOYEE_ID" />
+  <FieldRecordId _uuid="bf367d1b-f917-4ac5-a427-bd6c5f1d29dc" name="employee_lid" label="M#12cn17e租宝员工编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="EMPLOYEE_LID" />
+  <FieldString _uuid="e75a3281-4305-41e3-bd55-684029ceb94c" name="employee_label" label="M#12cn14员工名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="EMPLOYEE_LABEL" data_size="80" />
+  <FieldRecordId _uuid="9c92e3b7-572f-48a2-bd3c-82e4ee9193b1" name="leave_department_id" label="M#12cn16离职部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LEAVE_DEPARTMENT_ID" />
+  <FieldRecordId _uuid="5bfb1178-abd1-4cc2-8d0e-8f3b87644533" name="leave_department_lid" label="M#12cn19e租宝离职部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LEAVE_DEPARTMENT_LID" />
+  <FieldString _uuid="240bd3e6-05ea-4640-8e14-a7a6c59ade29" name="leave_department_label" label="M#12cn16离职部门名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LEAVE_DEPARTMENT_LABEL" data_size="80" />
+  <FieldDateTime _uuid="13c6a8ec-25d1-400c-9200-c3fa906fb5e3" name="leave_department_date" label="M#12cn14离职时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="LEAVE_DEPARTMENT_DATE" />
+  <FieldRecordId _uuid="7e9f8fe8-c3ce-4bda-904d-f6dc9e833acd" name="reentry_department_id" label="M#12cn16入职部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REENTRY_DEPARTMENT_ID" />
+  <FieldRecordId _uuid="5b9f69ea-7b1f-44dd-93b2-625504bfa809" name="reentry_department_lid" label="M#12cn210e租宝再入职部门编号" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REENTRY_DEPARTMENT_LID" />
+  <FieldString _uuid="ab025796-c24a-41d6-bea7-4e4d7b1cbe06" name="reentry_department_label" label="M#12cn17再入职部门名称" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REENTRY_DEPARTMENT_LABEL" data_size="80" />
+  <FieldDateTime _uuid="997cdd7e-fdd0-4783-87c0-f4e55d4377a3" name="reentry_department_date" label="M#12cn15再入职时间" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="REENTRY_DEPARTMENT_DATE" />
+  <FieldString _uuid="9fb62254-e4d7-4896-8d42-4b0ca840c779" name="note" label="M#12cn12备注" is_valid="Y" note="M#" is_null="Y" is_store="Y" is_abstract="N" data_name="NOTE" data_size="800" />
+  <FieldTemplate _uuid="e12d9e6f-c7d2-4a26-984a-76fe934441b6" name="track" label="M#12cn14跟踪模板" is_valid="Y" note="M#" template_name="define.track" />
+</DataStore>

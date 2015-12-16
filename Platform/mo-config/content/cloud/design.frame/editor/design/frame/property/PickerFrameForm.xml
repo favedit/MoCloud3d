@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Content update_date="20150906090556">
+  <FormFrame guid="BCC31E2472BE45F2805FFD9A0B7FEBB2" valid="N" name="editor.design.frame.property.PickerFrameForm" label="停靠栏属性" type="FEditorDsPropertyForm" nowrap="N" location="0,0" size="0,0" logic_group="container" logic_service="editor.design.frame">
+    <ToolBar guid="CB3DC6B0691149F69F465A14813EA8F4" name="toolBar" label="M#12cn13工具栏" width="100%" height="24">
+      <ToolButton guid="AC295DFD5E684298AE253DA8F79D43E4" name="saveButton" label="保存" attributes="action=save" icon="editor.common.save" hotkey="F8" />
+      <ToolButton guid="98621B1C572C4344ADBF0232BB973699" name="deleteButton" label="删除" attributes="action=delete" icon="editor.common.delete" hotkey="F6" />
+      <ToolButtonSplit guid="72A1F0E827344DAE9450535488649AB0" name="split1Button" label="分割" />
+      <ToolButtonMenu guid="0FCD869AE29844F1BED6658C8DFE5FE1" name="insertButtonMenu" label="新建控件" icon="editor.common.save">
+        <MenuButton guid="8ECD0A2C1ADA4FCFAEC6A499FA48C873" name="insertColumnText" label="文本列" attributes="_type=IconPicker\nsel_type=component\nframe_name=editor.design.frame.property.ColumnTextForm" icon="editor.design.frame.iconPickerNew" />
+      </ToolButtonMenu>
+      <ToolButtonSplit guid="4AAF1FE59A56417EBB6D36E897F72084" name="split4Button" label="分割" />
+      <ToolButton guid="856C0E1B8C76477AB13475E2246FBD39" name="sortButton" label="排序" attributes="sel_type=collection" icon="editor.common.sort" />
+    </ToolBar>
+    <Template guid="01674B6A58AE46EFB33BCB0ECCDD217A" name="componentTemplate" frame_source="editor.design.frame.property.template.ComponentTemplate" />
+    <Template guid="DA51C614044C492BBC398F0282EE4EB9" name="controlTemplate" frame_source="editor.design.frame.property.template.ControlTemplate" />
+    <Template guid="EE552854765D4CDD84F0776498B16095" name="datasetTemplate" frame_source="editor.design.frame.property.template.DatasetTemplate" />
+  </FormFrame>
+</Content>
