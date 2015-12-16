@@ -1,10 +1,9 @@
 package org.mo.content.engine.core.model.skeleton;
 
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonInfo;
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
-import org.mo.cloud.logic.data.resource.model.skeleton.IGcResModelSkeletonConsole;
-
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
+import org.mo.content.access.data.resource.model.skeleton.IGcResModelSkeletonConsole;
 import org.mo.content.resource.common.FResSkeleton;
 import org.mo.content.resource.common.FResSkeletonSkin;
 import org.mo.data.logic.ILogicContext;

@@ -1,9 +1,8 @@
 package org.mo.content.engine.core.model.animation;
 
-import org.mo.cloud.logic.data.resource.model.animation.FGcResModelAnimationTrackInfo;
-import org.mo.cloud.logic.data.resource.model.animation.IGcResModelAnimationTrackConsole;
-
 import org.mo.com.lang.EResult;
+import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackInfo;
+import org.mo.content.access.data.resource.model.animation.IGcResModelAnimationTrackConsole;
 import org.mo.content.resource.common.FResTrack;
 import org.mo.data.logic.ILogicContext;
 

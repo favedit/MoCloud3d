@@ -1,10 +1,9 @@
 package org.mo.content.engine.core.scene;
 
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-
-import org.mo.cloud.logic.data.resource.scene.FGcResSceneInfo;
-import org.mo.cloud.logic.data.resource.scene.IGcResSceneConsole;
 import org.mo.com.lang.EResult;
+import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
+import org.mo.content.access.data.resource.scene.IGcResSceneConsole;
 import org.mo.content.resource.scene.FResScene;
 import org.mo.data.logic.ILogicContext;
 

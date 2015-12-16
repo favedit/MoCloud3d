@@ -2,11 +2,10 @@ package org.mo.content.core.resource.bitmap;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
-
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.content.engine.core.bitmap.FResBitmapConsole;
 import org.mo.data.logic.ILogicContext;
 import org.mo.eng.image.FImage;

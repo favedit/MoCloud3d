@@ -1,6 +1,5 @@
 package org.mo.content.geom.mesh;
 
-import com.cyou.gccloud.define.enums.common.EGcData;
 import org.mo.com.geom.SDoubleOutline3;
 import org.mo.com.geom.SDoublePoint3;
 import org.mo.com.geom.SFloatPoint2;
@@ -12,6 +11,8 @@ import org.mo.com.lang.FObjects;
 import org.mo.content.geom.common.SFloatColor4;
 import org.mo.content.resource.common.FResStream;
 import org.mo.content.resource.mesh.FResMesh;
+
+import com.cyou.gccloud.define.enums.common.EGcData;
 
 //============================================================
 // <T>空间网格。</T>

@@ -1,13 +1,9 @@
 package org.mo.content.face.resource;
 
-import com.cyou.gccloud.define.enums.core.EGcResource;
 import java.awt.image.BufferedImage;
+
 import javax.servlet.http.HttpServletResponse;
-import org.mo.cloud.logic.data.resource.FGcResourceInfo;
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
-import org.mo.cloud.logic.data.resource.model.FGcResModelInfo;
-import org.mo.cloud.logic.data.resource.scene.FGcResSceneInfo;
-import org.mo.cloud.logic.data.resource.template.FGcResTemplateInfo;
+
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -15,6 +11,11 @@ import org.mo.com.lang.RString;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
 import org.mo.com.net.EMime;
+import org.mo.content.access.data.resource.FGcResourceInfo;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
+import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
+import org.mo.content.access.data.resource.template.FGcResTemplateInfo;
 import org.mo.content.core.resource.ICntResourceConsole;
 import org.mo.content.core.resource.bitmap.ICntBitmapConsole;
 import org.mo.content.core.resource.material.ICntMaterialConsole;
@@ -28,6 +29,8 @@ import org.mo.eng.image.FImage;
 import org.mo.web.core.servlet.common.IWebServletRequest;
 import org.mo.web.core.servlet.common.IWebServletResponse;
 import org.mo.web.protocol.context.IWebContext;
+
+import com.cyou.gccloud.define.enums.core.EGcResource;
 
 //============================================================
 // <T>上传处理。</T>

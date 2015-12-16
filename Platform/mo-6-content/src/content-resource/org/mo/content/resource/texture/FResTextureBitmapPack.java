@@ -1,6 +1,7 @@
 package org.mo.content.resource.texture;
 
 import java.awt.image.BufferedImage;
+
 import org.mo.com.geom.SIntSize2;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FFatalError;

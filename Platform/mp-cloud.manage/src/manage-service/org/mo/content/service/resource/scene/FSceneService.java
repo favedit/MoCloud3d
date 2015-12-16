@@ -1,17 +1,15 @@
 package org.mo.content.service.resource.scene;
 
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-
-import org.mo.cloud.logic.data.solution.FGcProjectInfo;
-import org.mo.cloud.logic.data.resource.template.FGcResTemplateInfo;
-import org.mo.cloud.logic.data.resource.scene.FGcResSceneInfo;
-import com.cyou.gccloud.data.data.FDataResourceSceneLogic;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
+import org.mo.content.access.data.resource.template.FGcResTemplateInfo;
+import org.mo.content.access.data.solution.FGcProjectInfo;
 import org.mo.content.core.resource.scene.ICntSceneConsole;
 import org.mo.content.core.resource.template.ICntTemplateConsole;
 import org.mo.content.core.solution.project.ICntProjectConsole;
@@ -31,6 +29,8 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
+
+import com.cyou.gccloud.data.data.FDataResourceSceneLogic;
 
 //============================================================
 // <T>资源3D场景服务。</T>

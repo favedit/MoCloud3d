@@ -1,9 +1,10 @@
 package org.mo.content.resource.model;
 
-import com.cyou.gccloud.data.data.FDataResourceModelMeshUnit;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.content.resource.common.FResGeometry;
+
+import com.cyou.gccloud.data.data.FDataResourceModelMeshUnit;
 
 //============================================================
 // <T>资源模型网格。</T>

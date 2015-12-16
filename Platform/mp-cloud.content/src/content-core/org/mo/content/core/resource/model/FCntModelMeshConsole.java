@@ -1,10 +1,10 @@
 package org.mo.content.core.resource.model;
 
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshConsole;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.IGcResModelMeshConsole;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshConsole;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.mesh.IGcResModelMeshConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.FLogicUnit;

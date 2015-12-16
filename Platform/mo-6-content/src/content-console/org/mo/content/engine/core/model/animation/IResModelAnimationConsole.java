@@ -1,8 +1,7 @@
 package org.mo.content.engine.core.model.animation;
 
-import org.mo.cloud.logic.data.resource.model.animation.FGcResModelAnimationInfo;
-import org.mo.cloud.logic.data.resource.model.animation.IGcResModelAnimationConsole;
-
+import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
+import org.mo.content.access.data.resource.model.animation.IGcResModelAnimationConsole;
 import org.mo.content.resource.common.FResAnimation;
 import org.mo.data.logic.ILogicContext;
 

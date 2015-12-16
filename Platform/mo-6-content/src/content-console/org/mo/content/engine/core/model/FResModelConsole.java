@@ -2,23 +2,19 @@ package org.mo.content.engine.core.model;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
-
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshStreamInfo;
-import org.mo.cloud.logic.data.resource.model.animation.FGcResModelAnimationInfo;
-import org.mo.cloud.logic.data.resource.model.animation.FGcResModelAnimationTrackInfo;
-import org.mo.cloud.logic.data.resource.model.FGcResModelConsole;
-import org.mo.cloud.logic.data.resource.model.FGcResModelInfo;
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelUnit;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RString;
+import org.mo.content.access.data.resource.model.FGcResModelConsole;
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
+import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
+import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackInfo;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshStreamInfo;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
 import org.mo.content.engine.core.model.animation.IResModelAnimationConsole;
 import org.mo.content.engine.core.model.animation.IResModelAnimationTrackConsole;
 import org.mo.content.engine.core.model.skeleton.IResModelSkeletonConsole;
@@ -40,6 +36,10 @@ import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
 import org.mo.mime.compress.ECompressMode;
 import org.mo.mime.compress.FCompressStream;
+
+import com.cyou.gccloud.data.data.FDataResourceModelAnimationLogic;
+import com.cyou.gccloud.data.data.FDataResourceModelSkeletonLogic;
+import com.cyou.gccloud.data.data.FDataResourceModelUnit;
 
 //============================================================
 // <T>资源模型控制台。</T>

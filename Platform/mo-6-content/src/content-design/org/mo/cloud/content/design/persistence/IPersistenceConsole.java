@@ -52,9 +52,9 @@ public interface IPersistenceConsole
    // @return 持久化定义
    //============================================================
    @Override
-   FContentObject findDefine(String storgeName,
-                             String persistenceName,
-                             EPersistenceMode modeCd);
+                  FContentObject findDefine(String storgeName,
+                                            String persistenceName,
+                                            EPersistenceMode modeCd);
 
    //============================================================
    // <T>根据节点名称获得内容节点。</T>

@@ -44,11 +44,4 @@ public interface IGcWebSession
    // @param userLabel 用户标签
    //============================================================
    void setUserLabel(String userLabel);
-
-   //============================================================
-   // <T>获得会话信息。</T>
-   //
-   // @return 会话信息
-   //============================================================
-   FGcSessionInfo sessionInfo();
 }

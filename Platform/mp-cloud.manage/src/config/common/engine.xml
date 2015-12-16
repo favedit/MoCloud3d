@@ -124,20 +124,6 @@
    </Component> -->
 
    <!-- ==================================================== -->
-   <!-- Global                                               -->
-   <!-- ==================================================== -->
-   <Component
-         face  = 'org.mo.eng.cache.ICacheConsole'
-         class = 'org.mo.eng.cache.FCacheConsole'
-         scope = 'global' >
-      <Property name='workpath'>${application.temp}/eng.cache</Property>
-      <Property name='interval'>1000</Property>
-      <Initialize name='initializeConfig'/>
-      <Initialize name='initializeMonitor'/>
-      <Release name='release'/>
-   </Component>
-
-   <!-- ==================================================== -->
    <!-- security                                             -->
    <!-- ==================================================== -->
    <Component

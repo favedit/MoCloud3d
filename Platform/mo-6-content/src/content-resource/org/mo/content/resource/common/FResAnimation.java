@@ -1,14 +1,14 @@
 package org.mo.content.resource.common;
 
-import org.mo.cloud.logic.data.resource.model.animation.FGcResModelAnimationInfo;
-
 import java.text.DecimalFormat;
+
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FDictionary;
 import org.mo.com.lang.FObjects;
 import org.mo.com.lang.RInteger;
+import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
 import org.mo.content.geom.common.SFloatMatrixQuat;
 
 //============================================================

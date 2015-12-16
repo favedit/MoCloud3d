@@ -1,9 +1,8 @@
 package org.mo.content.core.resource.model;
 
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.IGcResModelMeshConsole;
-
 import org.mo.com.lang.EResult;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.mesh.IGcResModelMeshConsole;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.FLogicUnit;
 import org.mo.data.logic.ILogicContext;

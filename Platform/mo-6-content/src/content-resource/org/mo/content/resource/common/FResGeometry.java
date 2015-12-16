@@ -1,6 +1,5 @@
 package org.mo.content.resource.common;
 
-import com.cyou.gccloud.define.enums.common.EGcData;
 import org.mo.com.geom.SFloatOutline3;
 import org.mo.com.io.FByteStream;
 import org.mo.com.io.IDataOutput;
@@ -9,6 +8,8 @@ import org.mo.com.xml.FXmlNode;
 import org.mo.content.geom.mesh.FGeomMesh;
 import org.mo.content.geom.mesh.SGeomFace;
 import org.mo.content.geom.mesh.SGeomVertex;
+
+import com.cyou.gccloud.define.enums.common.EGcData;
 
 //============================================================
 // <T>资源模型网格。</T>

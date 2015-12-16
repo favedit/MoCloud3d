@@ -1,7 +1,7 @@
 package org.mo.content.core.resource;
 
-import org.mo.cloud.logic.data.resource.IGcResourceConsole;
 import org.mo.com.lang.EResult;
+import org.mo.content.access.data.resource.IGcResourceConsole;
 import org.mo.data.logic.ILogicContext;
 
 //============================================================

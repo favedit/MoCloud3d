@@ -1,6 +1,5 @@
 package org.mo.content.resource.model;
 
-import com.cyou.gccloud.data.data.FDataResourceModelUnit;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FObjects;
@@ -10,6 +9,8 @@ import org.mo.com.xml.FXmlNode;
 import org.mo.content.resource.common.FResAnimation;
 import org.mo.content.resource.common.FResSkeleton;
 import org.mo.content.resource.common.FResSpace;
+
+import com.cyou.gccloud.data.data.FDataResourceModelUnit;
 
 //============================================================
 // <T>资源模型。</T>

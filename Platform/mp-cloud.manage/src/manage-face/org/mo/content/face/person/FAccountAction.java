@@ -2,9 +2,9 @@ package org.mo.content.face.person;
 
 import com.cyou.gccloud.define.enums.core.EGcAccountFrom;
 import org.mo.cloud.core.web.FGcWebSession;
-import org.mo.cloud.logic.data.person.FGcUserInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
+import org.mo.content.access.data.person.FGcUserInfo;
 import org.mo.content.core.person.IAccountConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;

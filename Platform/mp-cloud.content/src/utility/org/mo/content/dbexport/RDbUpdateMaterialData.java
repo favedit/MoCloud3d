@@ -1,16 +1,17 @@
 package org.mo.content.dbexport;
 
-import com.cyou.gccloud.data.data.FDataResourceMaterialLogic;
-import com.cyou.gccloud.data.data.FDataResourceMaterialUnit;
-import org.mo.cloud.logic.data.resource.FGcResourceInfo;
-import org.mo.cloud.logic.data.resource.IGcResourceConsole;
 import org.mo.com.logging.RLogger;
+import org.mo.content.access.data.resource.FGcResourceInfo;
+import org.mo.content.access.data.resource.IGcResourceConsole;
 import org.mo.content.common.RRs3Configuration;
 import org.mo.core.aop.RAop;
 import org.mo.data.logic.FLogicContext;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
 import org.mo.eng.data.IDatabaseConsole;
+
+import com.cyou.gccloud.data.data.FDataResourceMaterialLogic;
+import com.cyou.gccloud.data.data.FDataResourceMaterialUnit;
 
 public class RDbUpdateMaterialData
 {

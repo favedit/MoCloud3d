@@ -1,11 +1,5 @@
 package org.mo.content.service.resource.template;
 
-import com.cyou.gccloud.data.data.FDataSolutionProjectLogic;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialInfo;
-import org.mo.cloud.logic.data.resource.model.FGcResModelInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
-import org.mo.cloud.logic.data.resource.template.FGcResTemplateInfo;
-import org.mo.cloud.logic.data.resource.template.FGcResTemplateMaterialInfo;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
@@ -14,6 +8,11 @@ import org.mo.com.lang.FObject;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.material.FGcResMaterialInfo;
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.template.FGcResTemplateInfo;
+import org.mo.content.access.data.resource.template.FGcResTemplateMaterialInfo;
 import org.mo.content.core.resource.material.ICntMaterialConsole;
 import org.mo.content.core.resource.model.ICntModelConsole;
 import org.mo.content.core.resource.model.ICntModelMeshConsole;
@@ -29,6 +28,8 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
+
+import com.cyou.gccloud.data.data.FDataSolutionProjectLogic;
 
 //============================================================
 // <T>资源模板服务。</T>

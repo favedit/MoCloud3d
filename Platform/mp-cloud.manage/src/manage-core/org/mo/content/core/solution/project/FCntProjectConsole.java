@@ -1,6 +1,6 @@
 package org.mo.content.core.solution.project;
 
-import org.mo.cloud.logic.data.solution.FGcProjectConsole;
+import org.mo.content.access.data.solution.FGcProjectConsole;
 
 //============================================================
 // <T>方案项目控制台。</T>

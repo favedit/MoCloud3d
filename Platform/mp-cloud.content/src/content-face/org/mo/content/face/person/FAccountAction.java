@@ -1,14 +1,17 @@
 package org.mo.content.face.person;
 
-import com.cyou.gccloud.define.enums.core.EGcAccountFrom;
-import org.mo.cloud.logic.data.person.FGcUserInfo;
 import org.mo.com.lang.EResult;
+import org.mo.content.access.data.person.FGcUserInfo;
+import org.mo.content.core.common.EGcFromCode;
+import org.mo.content.core.common.EGcLogicCode;
 import org.mo.content.core.person.IAccountConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
-import org.mo.web.core.action.common.FWebCookie;
-import org.mo.web.core.container.AContainer;
+import org.mo.web.core.session.IWebSessionConsole;
 import org.mo.web.protocol.context.IWebContext;
+
+import com.cyou.gccloud.define.enums.core.EGcAccountFrom;
 
 //============================================================
 // <T>人员账号逻辑。</T>
@@ -23,6 +26,10 @@ public class FAccountAction
    //用户控制台
    @ALink
    protected IAccountConsole _accountConsole;
+
+   // 会话控制台
+   @ALink
+   protected IWebSessionConsole _sessionConsole;
 
    //============================================================
    // <T>注册用户</T>
@@ -58,14 +65,16 @@ public class FAccountAction
    // <T>用户登录</T>
    //
    // @param context 网络环境
+   // @param session 会话环境
    // @param logicContext 逻辑环境
    // @param page 容器
    // @return 页面
    //============================================================
    @Override
    public String login(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
-                       @AContainer(name = "page") FAccountPage page){
+                       FAccountPage page){
       // 获得参数
       String passport = context.parameter("passport");
       String password = context.parameter("password");
@@ -73,10 +82,19 @@ public class FAccountAction
       FGcUserInfo user = _accountConsole.doLogin(logicContext, passport, password, EGcAccountFrom.Web);
       if(user == null){
          page.setResult("用户不存在。");
+      }else{
+         // 打开用户会话
+         long userId = user.ouid();
+         session.setLogicCode(EGcLogicCode.CloudWeb);
+         session.setFromCode(EGcFromCode.Local);
+         _sessionConsole.open(context, logicContext, session);
+         // 绑定用户会话
+         session.setUserId(userId);
+         _sessionConsole.update(logicContext, session);
       }
       // 设置客户端信息
-      String sessionGuid = user.sessionGuid();
-      context.outputCookies().push(new FWebCookie("session_guid", sessionGuid));
+      //String sessionGuid = user.sessionGuid();
+      //context.outputCookies().push(new FWebCookie("session_guid", sessionGuid));
       return "account/LoginSuccess";
    }
 }

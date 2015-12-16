@@ -2,6 +2,7 @@ package org.mo.content.geom.boundary;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.mo.com.geom.SDoubleOutline3;
 import org.mo.com.lang.FObjects;
 import org.mo.com.lang.FString;

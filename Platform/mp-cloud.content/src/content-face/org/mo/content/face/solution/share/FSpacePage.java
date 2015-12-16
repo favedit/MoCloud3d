@@ -1,8 +1,8 @@
 package org.mo.content.face.solution.share;
 
-import org.mo.cloud.logic.data.person.FGcUserInfo;
-import org.mo.cloud.logic.data.solution.FGcProjectInfo;
 import org.mo.com.lang.FObjectId;
+import org.mo.content.access.data.person.FGcUserInfo;
+import org.mo.content.access.data.solution.FGcProjectInfo;
 
 //============================================================
 // <P>共享页面。</P>

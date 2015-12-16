@@ -1,13 +1,11 @@
 package org.mo.content.engine.core.model.skeleton;
 
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonConsole;
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonInfo;
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonSkinStreamInfo;
-
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonSkinLogic;
 import org.mo.com.lang.FFatalError;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonConsole;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonSkinStreamInfo;
 import org.mo.content.engine.core.model.IResModelMeshConsole;
 import org.mo.content.resource.common.FResSkeleton;
 import org.mo.content.resource.common.FResSkeletonSkin;
@@ -15,6 +13,8 @@ import org.mo.content.resource.common.FResStream;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
+
+import com.cyou.gccloud.data.data.FDataResourceModelSkeletonSkinLogic;
 
 //============================================================
 // <T>资源模型骨骼控制台。</T>

@@ -1,22 +1,22 @@
 package org.mo.content.service.resource;
 
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-
-import org.mo.cloud.logic.data.resource.FGcResourceCatalogInfo;
-import org.mo.cloud.logic.data.resource.IGcResourceCatalogConsole;
-import com.cyou.gccloud.data.data.FDataResourceCatalogLogic;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.RBoolean;
 import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.FGcResourceCatalogInfo;
+import org.mo.content.access.data.resource.IGcResourceCatalogConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
+
+import com.cyou.gccloud.data.data.FDataResourceCatalogLogic;
 
 //============================================================
 // <T>资源3D服务。</T>

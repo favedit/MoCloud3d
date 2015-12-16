@@ -1,14 +1,13 @@
 package org.mo.content.core.person;
 
 import org.mo.cloud.logic.data.system.IGcSessionConsole;
-
-import org.mo.cloud.logic.data.person.FGcUserConsole;
-import org.mo.cloud.logic.data.person.FGcUserInfo;
-import org.mo.cloud.logic.data.person.IGcUserConsole;
 import org.mo.com.encoding.RSha1;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RString;
+import org.mo.content.access.data.person.FGcUserConsole;
+import org.mo.content.access.data.person.FGcUserInfo;
+import org.mo.content.access.data.person.IGcUserConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
 

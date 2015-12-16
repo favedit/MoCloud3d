@@ -1,6 +1,5 @@
 package org.mo.cloud.core.web;
 
-import org.mo.cloud.logic.data.person.IGcUserConsole;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.cloud.logic.data.system.IGcSessionConsole;
 import org.mo.com.data.FSql;
@@ -30,14 +29,6 @@ public class FGcWebSessionConsole
    // 日志输出接口
    protected static ILogger _logger = RLogger.find(FGcWebSessionConsole.class);
 
-   // 逻辑代码
-   //@AProperty
-   //protected String _logicCode;
-
-   // 服务代码
-   //@AProperty
-   //protected String _serverCode;
-
    // 数据库管理器接口
    @ALink
    protected IDatabaseConsole _databaseConsole;
@@ -45,10 +36,6 @@ public class FGcWebSessionConsole
    // 数据库管理器接口
    @ALink
    protected IGcSessionConsole _sessionConsole;
-
-   // 用户管理器接口
-   @ALink
-   protected IGcUserConsole _userConsole;
 
    //============================================================
    // <T>建立线程对象。</T>

@@ -1,13 +1,12 @@
 package org.mo.content.service.resource.bitmap;
 
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.content.core.resource.bitmap.ICntBitmapConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;

@@ -2,7 +2,6 @@ package org.mo.content.resource;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
-
 import org.mo.com.logging.RLogger;
 import org.mo.content.common.RRs3Configuration;
 import org.mo.core.aop.RAop;

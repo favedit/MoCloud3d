@@ -17,6 +17,7 @@ cloud.content: 8010
 cloud.service: 8020
 cloud.storage: 8030
 cloud.manage:  8040
+cloud.editor:  8050
 cloud.develop: 8070
 cloud.develop: 8080
 cloud.logger:  8090

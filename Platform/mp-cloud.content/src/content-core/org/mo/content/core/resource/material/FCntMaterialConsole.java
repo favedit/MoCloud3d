@@ -2,13 +2,12 @@ package org.mo.content.core.resource.material;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
-
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialBitmapInfo;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RString;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
+import org.mo.content.access.data.resource.material.FGcResMaterialBitmapInfo;
+import org.mo.content.access.data.resource.material.FGcResMaterialInfo;
 import org.mo.content.engine.core.material.FResMaterialConsole;
 import org.mo.content.engine.core.material.IResMaterialConsole;
 import org.mo.content.resource.texture.FResTextureBitmapPack;

@@ -1,12 +1,11 @@
 package org.mo.content.resource.common;
 
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
-
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FObjects;
 import org.mo.com.xml.FXmlDocument;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
 
 //============================================================
 // <T>资源3D蒙皮。</T>

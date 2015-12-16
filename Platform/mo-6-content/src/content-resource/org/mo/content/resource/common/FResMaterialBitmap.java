@@ -1,9 +1,10 @@
 package org.mo.content.resource.common;
 
-import com.cyou.gccloud.data.data.FDataResourceMaterialBitmapUnit;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.RUuid;
 import org.mo.com.xml.FXmlNode;
+
+import com.cyou.gccloud.data.data.FDataResourceMaterialBitmapUnit;
 
 //============================================================
 // <T>资源模型。</T>

@@ -2,11 +2,10 @@ package org.mo.content.core.resource;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
-
-import org.mo.cloud.logic.data.resource.FGcResourceConsole;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RString;
+import org.mo.content.access.data.resource.FGcResourceConsole;
 import org.mo.data.logic.ILogicContext;
 
 //============================================================

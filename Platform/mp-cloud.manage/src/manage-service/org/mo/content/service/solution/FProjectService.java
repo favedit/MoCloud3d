@@ -1,12 +1,6 @@
 package org.mo.content.service.solution;
 
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-
-import org.mo.cloud.logic.data.solution.FGcProjectInfo;
-import org.mo.cloud.logic.data.resource.scene.FGcResSceneInfo;
-import com.cyou.gccloud.data.data.FDataResourceSceneLogic;
-import com.cyou.gccloud.data.data.FDataSolutionProjectLogic;
-import com.cyou.gccloud.data.data.FDataSolutionProjectUnit;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -14,6 +8,8 @@ import org.mo.com.lang.FObject;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
+import org.mo.content.access.data.solution.FGcProjectInfo;
 import org.mo.content.core.resource.scene.ICntSceneConsole;
 import org.mo.content.core.solution.project.ICntProjectConsole;
 import org.mo.core.aop.face.ALink;
@@ -22,6 +18,10 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
+
+import com.cyou.gccloud.data.data.FDataResourceSceneLogic;
+import com.cyou.gccloud.data.data.FDataSolutionProjectLogic;
+import com.cyou.gccloud.data.data.FDataSolutionProjectUnit;
 
 //============================================================
 // <T>资源3D服务。</T>

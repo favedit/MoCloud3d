@@ -16,12 +16,12 @@
    <!-- ==================================================== -->
    <Component
          face  = 'org.mo.web.core.session.IWebSessionConsole'
-         class = 'org.mo.cloud.core.web.FGcWebSessionConsole'
+         class = 'org.mo.content.core.web.FGcSessionConsole'
          scope = 'global' >
       <Property name='valid'>Y</Property>
-      <Property name='sessionClassName'>org.mo.cloud.core.web.FGcWebSession</Property>
-      <Property name='logic_code'>cloud</Property>
-      <Property name='server_code'>cloud.editor</Property>
+      <Property name='sessionClassName'>org.mo.content.core.web.FGcSession</Property>
+      <Property name='logic_code'>content</Property>
+      <Property name='server_code'>cloud.content</Property>
       <Property name='interval'>600000</Property>
       <Property name='memoryTimeout'>604800000</Property>
       <Property name='timeout'>604800000</Property>
@@ -165,9 +165,10 @@
    <!-- WebAction                                            -->
    <!-- ==================================================== -->
    <Component
-         face      = 'org.mo.web.core.action.IActionConsole'
-         class     = 'org.mo.cloud.core.web.FGcActionConsole'
-         scope     = 'global' >
+         face  = 'org.mo.web.core.action.IActionConsole'
+         class = 'org.mo.content.core.web.FGcActionConsole'
+         scope = 'global' >
+      <Property name='access_rule'>org.mo.content.core.web.FGcAccessRule</Property>
       <Initialize name='addContext'>
          <Parameter>/content</Parameter>
          <Parameter>/content</Parameter>
@@ -184,6 +185,7 @@
          <Parameter>/system</Parameter>
          <Parameter>/system</Parameter>
       </Initialize>
+      <Initialize name='initializeConfig'/>
    </Component>
 
    <!-- ==================================================== -->
@@ -191,9 +193,10 @@
    <!-- ==================================================== -->
    <Component
          face  = 'org.mo.web.core.service.IServiceConsole'
-         class = 'org.mo.cloud.core.web.FGcServiceConsole'
+         class = 'org.mo.content.core.web.FGcServiceConsole'
          scope = 'global' >
       <Property name='encoding'>UTF-8</Property>
+      <Property name='access_rule'>org.mo.content.core.web.FGcAccessRule</Property>
       <Initialize name='initializeConfig'/>
    </Component>
 
@@ -202,9 +205,11 @@
    <!-- ==================================================== -->
    <Component
          face  = 'org.mo.web.core.servlet.IWebServletConsole'
-         class = 'org.mo.cloud.core.web.FGcServletConsole'
+         class = 'org.mo.content.core.web.FGcServletConsole'
          scope = 'global' >
       <Property name='encoding'>UTF-8</Property>
+      <Property name='access_rule'>org.mo.content.core.web.FGcAccessRule</Property>
+      <Initialize name='initializeConfig'/>
    </Component>
 
    <!-- ==================================================== -->

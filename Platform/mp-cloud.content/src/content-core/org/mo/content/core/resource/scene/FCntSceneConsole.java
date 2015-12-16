@@ -1,8 +1,8 @@
 package org.mo.content.core.resource.scene;
 
-import org.mo.cloud.logic.data.resource.scene.FGcResSceneInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
+import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
 import org.mo.content.engine.core.scene.FResSceneConsole;
 import org.mo.data.logic.ILogicContext;
 

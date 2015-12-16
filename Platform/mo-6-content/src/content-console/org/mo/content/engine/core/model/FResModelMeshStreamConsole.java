@@ -2,12 +2,11 @@ package org.mo.content.engine.core.model;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
-
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshInfo;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshStreamConsole;
-import org.mo.cloud.logic.data.resource.model.mesh.FGcResModelMeshStreamInfo;
-import org.mo.cloud.logic.data.resource.model.FGcResModelInfo;
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshStreamConsole;
+import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshStreamInfo;
 import org.mo.content.resource.common.FResStream;
 import org.mo.data.logic.ILogicContext;
 

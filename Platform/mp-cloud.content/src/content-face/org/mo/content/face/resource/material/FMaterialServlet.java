@@ -1,11 +1,8 @@
 package org.mo.content.face.resource.material;
 
-import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
-
 import javax.servlet.http.HttpServletResponse;
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialBitmapInfo;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialInfo;
+
+import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.RFile;
@@ -16,6 +13,9 @@ import org.mo.com.lang.RString;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
 import org.mo.com.net.EMime;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
+import org.mo.content.access.data.resource.material.FGcResMaterialBitmapInfo;
+import org.mo.content.access.data.resource.material.FGcResMaterialInfo;
 import org.mo.content.core.resource.bitmap.ICntBitmapConsole;
 import org.mo.content.core.resource.material.ICntMaterialConsole;
 import org.mo.content.engine.core.material.IResMaterialBitmapConsole;

@@ -1,10 +1,10 @@
 package org.mo.content.face.resource.mesh;
 
-import org.mo.cloud.logic.data.resource.IGcResourceCatalogConsole;
-import org.mo.cloud.logic.data.resource.IGcResourceConsole;
-import org.mo.cloud.logic.data.resource.model.mesh.IGcResModelMeshConsole;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.FObject;
+import org.mo.content.access.data.resource.IGcResourceCatalogConsole;
+import org.mo.content.access.data.resource.IGcResourceConsole;
+import org.mo.content.access.data.resource.model.mesh.IGcResModelMeshConsole;
 import org.mo.content.core.resource.model.ICntModelMeshConsole;
 import org.mo.content.engine.core.model.IResModelMeshConsole;
 import org.mo.core.aop.face.ALink;

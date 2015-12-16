@@ -1,19 +1,18 @@
 package org.mo.content.service.resource.material;
 
-import com.cyou.gccloud.data.data.FDataResourceMaterialBitmapLogic;
-import org.mo.cloud.logic.data.resource.IGcResourceConsole;
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
-import org.mo.cloud.logic.data.resource.bitmap.IGcResBitmapConsole;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialBitmapInfo;
-import org.mo.cloud.logic.data.resource.material.FGcResMaterialInfo;
-import org.mo.cloud.logic.data.resource.material.IGcResMaterialBitmapConsole;
-import org.mo.cloud.logic.data.resource.material.IGcResMaterialConsole;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.IGcResourceConsole;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
+import org.mo.content.access.data.resource.bitmap.IGcResBitmapConsole;
+import org.mo.content.access.data.resource.material.FGcResMaterialBitmapInfo;
+import org.mo.content.access.data.resource.material.FGcResMaterialInfo;
+import org.mo.content.access.data.resource.material.IGcResMaterialBitmapConsole;
+import org.mo.content.access.data.resource.material.IGcResMaterialConsole;
 import org.mo.content.resource.common.FResMaterial;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
@@ -21,6 +20,8 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
+
+import com.cyou.gccloud.data.data.FDataResourceMaterialBitmapLogic;
 
 //============================================================
 // <T>资源3D网格服务。</T>

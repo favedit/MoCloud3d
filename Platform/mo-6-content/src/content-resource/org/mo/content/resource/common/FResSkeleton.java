@@ -1,7 +1,5 @@
 package org.mo.content.resource.common;
 
-import org.mo.cloud.logic.data.resource.model.skeleton.FGcResModelSkeletonInfo;
-
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
@@ -9,6 +7,7 @@ import org.mo.com.lang.FObjects;
 import org.mo.com.lang.generic.TDumpInfo;
 import org.mo.com.xml.FXmlDocument;
 import org.mo.com.xml.FXmlNode;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
 
 //============================================================
 // <T>资源3D骨骼。</T>

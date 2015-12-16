@@ -2,16 +2,15 @@ package org.mo.content.engine.core.bitmap;
 
 import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
 import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
-
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapConsole;
-import org.mo.cloud.logic.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
 import org.mo.com.xml.FXmlDocument;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapConsole;
+import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.content.resource.texture.FResTexture;
 import org.mo.content.resource.texture.FResTextureBitmap;
 import org.mo.data.logic.ILogicContext;
