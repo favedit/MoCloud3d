@@ -1311,9 +1311,9 @@ MO.FE3sObject_dispose = function FE3sObject_dispose(){
 }
 MO.FE3sProjection = function FE3sProjection(o){
    o = MO.Class.inherits(this, o, MO.FE3sObject);
-   o._angle      = MO.Class.register(o, MO.AGetter('_angle'), 90);
-   o._znear      = MO.Class.register(o, MO.AGetter('_znear'), 1);
-   o._zfar       = MO.Class.register(o, MO.AGetter('_zfar'), 200);
+   o._angle      = MO.Class.register(o, new MO.AGetter('_angle'), 90);
+   o._znear      = MO.Class.register(o, new MO.AGetter('_znear'), 1);
+   o._zfar       = MO.Class.register(o, new MO.AGetter('_zfar'), 200);
    o.unserialize = MO.FE3sProjection_unserialize;
    o.saveConfig  = MO.FE3sProjection_saveConfig;
    return o;
@@ -1752,18 +1752,18 @@ MO.FE3sSceneRenderable_unserialize = function FE3sSceneRenderable_unserialize(in
    o.__base.FE3sObject.unserialize.call(o, input);
 }
 MO.FE3sShape = function FE3sShape(o){
-   o = MO.Class.inherits(this, o, FE3sRenderable);
+   o = MO.Class.inherits(this, o, MO.FE3sRenderable);
    o._modelGuid    = MO.Class.register(o, new MO.AGetter('_modelGuid'));
    o._model        = null;
    o._meshGuid     = MO.Class.register(o, new MO.AGetter('_meshGuid'));
    o._mesh         = null;
    o._materialGuid = MO.Class.register(o, new MO.AGetter('_materialGuid'));
    o._material     = null;
-   o.construct     = FE3sShape_construct;
-   o.model         = FE3sShape_model;
-   o.mesh          = FE3sShape_mesh;
-   o.material      = FE3sShape_material;
-   o.unserialize   = FE3sShape_unserialize;
+   o.construct     = MO.FE3sShape_construct;
+   o.model         = MO.FE3sShape_model;
+   o.mesh          = MO.FE3sShape_mesh;
+   o.material      = MO.FE3sShape_material;
+   o.unserialize   = MO.FE3sShape_unserialize;
    return o;
 }
 MO.FE3sShape_construct = function FE3sShape_construct(){

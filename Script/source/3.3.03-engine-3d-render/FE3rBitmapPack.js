@@ -17,6 +17,7 @@ MO.FE3rBitmapPack = function FE3rBitmapPack(o){
    //..........................................................
    // @method
    o.construct  = MO.FE3rBitmapPack_construct;
+   o.setup      = MO.Method.empty;
    // @method
    o.testReady  = MO.FE3rBitmapPack_testReady;
    o.loadUrl    = MO.Method.virtual(o, 'loadUrl');

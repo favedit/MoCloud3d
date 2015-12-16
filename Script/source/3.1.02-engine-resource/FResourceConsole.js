@@ -63,11 +63,11 @@ MO.FResourceConsole_onComplete = function FResourceConsole_onComplete(resource, 
 // @method
 // @param connection:FHttpConnection 链接
 //==========================================================
-MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
+MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(event){
    var o = this;
    // 设置资源
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    // 加载数据
    var storage = MO.Class.create(MO.FResourceSingleStorage);
    storage.setResource(resource);
@@ -85,13 +85,13 @@ MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
 // @method
 // @param connection:FHttpConnection 链接
 //==========================================================
-MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(connection){
+MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(event){
    var o = this;
-   var data = connection.outputData();
+   var data = event.content;
    // 获得资源
-   var resource = connection._resource;
+   var resource = event.connection._resource;
    resource._compressLength = data.byteLength;
-   resource._compressStartTick = RTimer.current();
+   resource._compressStartTick = MO.Timer.current();
    // 加载数据
    var storage = MO.Class.create(MO.FResourceBlockStorage);
    storage.setResource(resource);
@@ -217,6 +217,9 @@ MO.FResourceConsole_factory = function FResourceConsole_factory(){
 MO.FResourceConsole_load = function FResourceConsole_load(resource){
    var o = this;
    var guid = resource.guid();
+   if(MO.Lang.String.isEmpty(guid)){
+      guid = resource.code();
+   }
    // 检查编号
    var resources = o._resources;
    if(resources.contains(guid)){

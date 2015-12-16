@@ -254,7 +254,7 @@ MO.FE3dTemplate_loadAnimations = function FE3dTemplate_loadAnimations(p){
 MO.FE3dTemplate_loadResource = function FE3dTemplate_loadResource(resource){
    var o = this;
    // 加载技术
-   var technique = o.selectTechnique(o, FE3dGeneralTechnique);
+   var technique = o.selectTechnique(o, MO.FE3dGeneralTechnique);
    technique.setResource(resource.technique());
    // 父处理
    o.__base.FE3dSpace.loadResource.call(o, resource);

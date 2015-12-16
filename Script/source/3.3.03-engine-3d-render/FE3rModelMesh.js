@@ -10,8 +10,8 @@ MO.FE3rModelMesh = function FE3rModelMesh(o){
    // @attribute
    o._ready            = false;
    o._resourceMaterial = null;
-   o._skins            = MO.Class.register(o, new AGetter('_skins'));
-   o._boneIds          = MO.Class.register(o, new AGetter('_boneIds'));
+   o._skins            = MO.Class.register(o, new MO.AGetter('_skins'));
+   o._boneIds          = MO.Class.register(o, new MO.AGetter('_boneIds'));
    //..........................................................
    // @method
    o.construct         = MO.FE3rModelMesh_construct;

@@ -5,7 +5,7 @@
 // @history 150129
 //==========================================================
 MO.FE3sShape = function FE3sShape(o){
-   o = MO.Class.inherits(this, o, FE3sRenderable);
+   o = MO.Class.inherits(this, o, MO.FE3sRenderable);
    //..........................................................
    // @attribute
    o._modelGuid    = MO.Class.register(o, new MO.AGetter('_modelGuid'));
@@ -16,13 +16,13 @@ MO.FE3sShape = function FE3sShape(o){
    o._material     = null;
    //..........................................................
    // @method
-   o.construct     = FE3sShape_construct;
+   o.construct     = MO.FE3sShape_construct;
    // @method
-   o.model         = FE3sShape_model;
-   o.mesh          = FE3sShape_mesh;
-   o.material      = FE3sShape_material;
+   o.model         = MO.FE3sShape_model;
+   o.mesh          = MO.FE3sShape_mesh;
+   o.material      = MO.FE3sShape_material;
    // @method
-   o.unserialize   = FE3sShape_unserialize;
+   o.unserialize   = MO.FE3sShape_unserialize;
    return o;
 }
 

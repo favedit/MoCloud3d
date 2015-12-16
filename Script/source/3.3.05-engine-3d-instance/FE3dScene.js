@@ -10,7 +10,6 @@ MO.FE3dScene = function FE3dScene(o){
    // @attribute
    o._ready                = false;
    o._dataReady            = false;
-   o._resource             = MO.Class.register(o, new MO.AGetter('_resource'));
    o._dirty                = false;
    //..........................................................
    // @event
@@ -117,26 +116,26 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    var rl = p.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
-   var l = o.directionalLight();
-   l._resource = rl;
-   var lc = l._camera;
-   var lp = lc._projection;
+   var light = o.directionalLight();
+   light._resource = rl;
+   var lightCamera = light.camera();
+   var lightProjection = lightCamera.projection();
    // 设置光源相机
-   lc.position().set(1, 1, -1);
-   lc.lookAt(0, 0, 0);
+   lightCamera.position().set(1, 1, -1);
+   lightCamera.lookAt(0, 0, 0);
    //lc.direction().assign(rlc.direction());
    //lc.update();
-   lc.position().assign(rlc.position());
+   lightCamera.position().assign(rlc.position());
    //lc.direction().assign(rlc.direction());
-   lc.update();
+   lightCamera.update();
    // 设置光源投影
    //lp.size().set(2048, 2048);
-   lp.size().set(1024, 1024);
+   lightProjection.size().set(1024, 1024);
    //lp._angle = rlv.angle();
-   lp._angle = 60;
-   lp._znear = rlv.znear();
-   lp._zfar = rlv.zfar();
-   lp.update();
+   lightProjection._angle = 60;
+   lightProjection._znear = rlv.znear();
+   lightProjection._zfar = rlv.zfar();
+   lightProjection.update();
 }
 
 //==========================================================

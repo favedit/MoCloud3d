@@ -148,13 +148,13 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
    // 启动处理
    if(o._optionStageProcess){
-      RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-      RStage.start(o._interval);
+      //RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
+      //RStage.start(o._interval);
    }
    // 监听大小改变
    if(o._optionResize){
-      MO.Window.lsnsResize.register(o, o.onResize);
-      MO.Window.lsnsOrientation.register(o, o.onResize);
+      //MO.Window.lsnsResize.register(o, o.onResize);
+      //MO.Window.lsnsOrientation.register(o, o.onResize);
    }
    // 注册鼠标捕捉监听
    if(o._optionMouseCapture){

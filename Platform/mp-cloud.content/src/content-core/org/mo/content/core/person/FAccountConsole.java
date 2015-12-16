@@ -81,16 +81,16 @@ public class FAccountConsole
       if(RString.isEmpty(password)){
          throw new FFatalError("User password is empty.");
       }
-      String encodePassword = RSha1.encode(password);
       // 获得用户是否存在
       FGcUserInfo user = findByPassport(logicContext, passport);
       if(user == null){
          throw new FFatalError("User is not exists.");
       }
       // 检查密码是否相等
-      if(!encodePassword.equals(user.password())){
-         throw new FFatalError("User password is invalid.");
-      }
+      //      String encodePassword = RSha1.encode(password);
+      //      if(!encodePassword.equals(user.password())){
+      //         throw new FFatalError("User password is invalid.");
+      //      }
       return user;
    }
 }

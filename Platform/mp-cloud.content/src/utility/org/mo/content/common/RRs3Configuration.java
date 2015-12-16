@@ -4,9 +4,9 @@ import org.mo.cloud.logic.data.system.FGcSessionInfo;
 
 public class RRs3Configuration
 {
-   public static String RootPath = "D:/Microbject";
+   public static String RootPath = "D:/Microbject/MoCloud3d";
 
-   public static String Config = "application-eai.xml";
+   public static String Config = "application-work.xml";
 
    //============================================================
    // <T>生成一个会话。</T>

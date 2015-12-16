@@ -130,7 +130,7 @@ with(MO){
       column.setName('view');
       o.push(column);
       o.__base.FDsCatalog.onBuild.call(o, event);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=' + o._catalogCode);
+      o.loadDefine(o._catalogCode);
    }
    MO.FDsSceneCatalogContent_onLoadDisplay = function FDsSceneCatalogContent_onLoadDisplay(event){
       var o = this;

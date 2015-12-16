@@ -9,14 +9,14 @@ MO.FE3rGeometry = function FE3rGeometry(o){
    //..........................................................
    // @attribute
    o._ready            = false;
-   o._resource         = MO.Class.register(o, new AGetSet('_resource'));
-   o._vertexCount      = MO.Class.register(o, new AGetter('_vertexCount'), 0);
-   o._vertexBuffers    = MO.Class.register(o, new AGetter('_vertexBuffers'));
-   o._indexBuffer      = MO.Class.register(o, new AGetter('_indexBuffer'));
-   o._indexBuffers     = MO.Class.register(o, new AGetter('_indexBuffers'));
-   o._resourceMaterial = MO.Class.register(o, new AGetter('_resourceMaterial'));
-   o._material         = MO.Class.register(o, new AGetter('_material'));
-   o._textures         = MO.Class.register(o, new AGetter('_textures'));
+   o._resource         = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._vertexCount      = MO.Class.register(o, new MO.AGetter('_vertexCount'), 0);
+   o._vertexBuffers    = MO.Class.register(o, new MO.AGetter('_vertexBuffers'));
+   o._indexBuffer      = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._indexBuffers     = MO.Class.register(o, new MO.AGetter('_indexBuffers'));
+   o._resourceMaterial = MO.Class.register(o, new MO.AGetter('_resourceMaterial'));
+   o._material         = MO.Class.register(o, new MO.AGetter('_material'));
+   o._textures         = MO.Class.register(o, new MO.AGetter('_textures'));
    //..........................................................
    // @method
    o.construct         = MO.FE3rGeometry_construct;
@@ -124,7 +124,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
       var data = streamResource.data();
       if((code == 'index16') || (code == 'index32')){
          // 创建索引缓冲
-         var buffer = o._indexBuffer = context.createIndexBuffer(FE3rIndexBuffer);
+         var buffer = o._indexBuffer = context.createIndexBuffer(MO.FE3rIndexBuffer);
          buffer._resource = streamResource;
          var dataCd = streamResource.elementDataCd();
          if(dataCd == MO.EDataType.Uint16){
@@ -138,7 +138,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          o._indexBuffers.push(buffer);
       }else{
          // 创建顶点缓冲
-         var buffer = context.createVertexBuffer(FE3rVertexBuffer);
+         var buffer = context.createVertexBuffer(MO.FE3rVertexBuffer);
          buffer.setCode(code);
          buffer._resource = streamResource;
          buffer._vertexCount = dataCount;
@@ -146,22 +146,22 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          switch(code){
             case "position":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float3);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
                o._vertexCount = dataCount;
                break;
             case "coord":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float2);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
                break;
             case "color":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             case "normal":
             case "binormal":
             case "tangent":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             default:
                throw new TError(o, "Unknown code");

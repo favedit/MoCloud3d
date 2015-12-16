@@ -1577,22 +1577,24 @@ MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
    o = MO.Class.inherits(this, o, MO.FG3dLight);
-   o._camera    = MO.Class.register(o, new MO.AGetter('_camera'));
-   o._viewport  = MO.Class.register(o, new MO.AGetter('_viewport'));
-   o._direction = MO.Class.register(o, new MO.AGetter('_direction'));
-   o.construct  = MO.FG3dDirectionalLight_construct;
-   o.dispose    = MO.FG3dDirectionalLight_dispose;
+   o._camera      = MO.Class.register(o, new MO.AGetter('_camera'));
+   o._viewport    = MO.Class.register(o, new MO.AGetter('_viewport'));
+   o._direction   = MO.Class.register(o, new MO.AGetter('_direction'));
+   o._classCamera = MO.FG3dCamera;
+   o.construct    = MO.FG3dDirectionalLight_construct;
+   o.dispose      = MO.FG3dDirectionalLight_dispose;
    return o;
 }
 MO.FG3dDirectionalLight_construct = function FG3dDirectionalLight_construct(){
    var o = this;
    o.__base.FG3dLight.construct.call(o);
-   o._camera = MO.Class.create(MO.FG3dCamera);
+   o._camera = MO.Class.create(o._classCamera);
    o._direction = new MO.SVector3();
 }
 MO.FG3dDirectionalLight_dispose = function FG3dDirectionalLight_dispose(){
    var o = this;
    o._camera = MO.Lang.Object.dispose(o._camera);
+   o._direction = MO.Lang.Object.dispose(o._direction);
    o.__base.FG3dLight.dispose.call(o);
 }
 MO.FG3dEffect = function FG3dEffect(o){

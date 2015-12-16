@@ -215,12 +215,8 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    parameters.antialias = o._optionAntialias;
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
    if(o._optionStageProcess){
-      RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-      RStage.start(o._interval);
    }
    if(o._optionResize){
-      MO.Window.lsnsResize.register(o, o.onResize);
-      MO.Window.lsnsOrientation.register(o, o.onResize);
    }
    if(o._optionMouseCapture){
       MO.Console.find(MO.FMouseConsole).register(o);

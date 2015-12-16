@@ -8,10 +8,10 @@ MO.FE3rModel = function FE3rModel(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
    //..........................................................
    // @attribute
-   o._resource            = MO.Class.register(o, new AGetSet('_resource'));
+   o._resource            = MO.Class.register(o, new MO.AGetSet('_resource'));
    // @attribute
-   o._meshes              = MO.Class.register(o, new AGetter('_meshes'));
-   o._skeletons           = MO.Class.register(o, new AGetter('_skeletons'));
+   o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
+   o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
    // @attribute
    o._dataReady           = false;
    //..........................................................

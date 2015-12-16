@@ -57,7 +57,7 @@ MO.FE3dSprite = function FE3dSprite(o){
 MO.FE3dSprite_construct = function FE3dSprite_construct(){
    var o = this;
    o.__base.FE3dDisplayContainer.construct.call(o);
-   o._shapes = new TObjects();
+   o._shapes = new MO.TObjects();
 }
 
 //==========================================================

@@ -391,6 +391,7 @@ MO.FResource = function FResource(o){
    o._guid         = MO.Class.register(o, new MO.AGetSet('_guid'));
    o._code         = MO.Class.register(o, new MO.AGetSet('_code'));
    o._label        = MO.Class.register(o, new MO.AGetSet('_label'));
+   o._sourceUrl    = MO.Class.register(o, new MO.AGetSet('_sourceUrl'));
    return o;
 }
 MO.FResourceBlockStorage = function FResourceBlockStorage(o){
@@ -527,10 +528,10 @@ MO.FResourceConsole_onComplete = function FResourceConsole_onComplete(resource, 
    o._loadingResources.remove(resource);
    resource.onComplete(data);
 }
-MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
+MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(event){
    var o = this;
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    var storage = MO.Class.create(MO.FResourceSingleStorage);
    storage.setResource(resource);
    storage.load(data);
@@ -538,12 +539,12 @@ MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
    o._loadingResources.remove(resource);
    o._processStorages.push(storage);
 }
-MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(connection){
+MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(event){
    var o = this;
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    resource._compressLength = data.byteLength;
-   resource._compressStartTick = RTimer.current();
+   resource._compressStartTick = MO.Timer.current();
    var storage = MO.Class.create(MO.FResourceBlockStorage);
    storage.setResource(resource);
    storage.load(data);
@@ -622,6 +623,9 @@ MO.FResourceConsole_factory = function FResourceConsole_factory(){
 MO.FResourceConsole_load = function FResourceConsole_load(resource){
    var o = this;
    var guid = resource.guid();
+   if(MO.Lang.String.isEmpty(guid)){
+      guid = resource.code();
+   }
    var resources = o._resources;
    if(resources.contains(guid)){
       throw new MO.TError(o, 'Resource is already loaded. (guid={1})', guid);

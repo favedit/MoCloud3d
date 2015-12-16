@@ -31,6 +31,7 @@ public class FLogicContext
    //============================================================
    public FLogicContext(IDatabaseConsole databaseConsole){
       _databaseConsole = databaseConsole;
+      _defaultName = _databaseConsole.defaultName();
    }
 
    //============================================================

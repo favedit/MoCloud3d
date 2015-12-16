@@ -46,11 +46,16 @@ function doCanvasAction(p, f){
 }
 //------------------------------------------------------------
 function onLoad(){
-   // 环境设置
+   // 设置变量
    MO.initialize();
+   MO.Runtime.setVersion('151101');
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
    MO.Runtime.setProcessCd(MO.EProcess.Release);
-   MO.RApplication.initialize();
-   MO.RBrowser.setContentPath('.');
+   //MO.RApplication.initialize();
+   MO.Window.Browser.setContentPath('.');
+   MO.Window.Browser.fullscreen(window, true);
+   //MO.Window.lsnsLoaded.register(null, onLoaded);
+   //MO.Window.lsnsDeviceError.register(null, onDeviceError);
    // 获得场景代码
    var url = window.location.toString();
    var find = url.indexOf('code=');
@@ -61,16 +66,28 @@ function onLoad(){
    if(MO.RString.isEmpty(code)){
       throw new TFatal(this, 'Scnee code is empty.');
    }
-   // 设置资源获取方式
-   MO.RConsole.find(MO.FE3sVendorConsole).setup('net');
+   // 设置环境
+   MO.Console.find(MO.FE3sVendorConsole).setup('net');
+   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
+   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.LogicService, 'http://localhost:8020');
+   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.LogicService, 'http://service.test.eai.ezubo.com');
+   // 设置日志
+   // MO.Console.find(MO.FLoggerConsole).connect('ws://10.21.0.128:8080/logger');
+   // 设置应用
+   var application = MO.Desktop.initialize(MO.FSceneApplication);
+   //application.setSceneCode(MO.EEaiScene.Cockpit);
+   application.setup(document.body);
+   application.loadByCode(code);
+   //application.desktop().setGuiBufferScale(1.5);
+
    // 创建场景画板
-   canvas = canvas = MO.RClass.create(MO.FE3dSceneCanvas);
-   canvas._scaleRate = 1;
-   canvas._optionAlpha = false;
-   canvas.build(document);
-   canvas.setPanel(document.body);
-   canvas.loadByCode(code);
-   canvas.addLoadListener(null, onSceneLoad);
+   //canvas = canvas = MO.RClass.create(MO.FE3dSceneCanvas);
+   //canvas._scaleRate = 1;
+   //canvas._optionAlpha = false;
+   //canvas.build(document);
+   //canvas.setPanel(document.body);
+   //canvas.loadByCode(code);
+   //canvas.addLoadListener(null, onSceneLoad);
 }
 </SCRIPT>
 </HEAD>

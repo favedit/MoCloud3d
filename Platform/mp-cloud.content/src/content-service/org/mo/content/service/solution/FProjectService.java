@@ -1,6 +1,5 @@
 package org.mo.content.service.solution;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -12,6 +11,7 @@ import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
 import org.mo.content.access.data.solution.FGcProjectInfo;
 import org.mo.content.core.resource.scene.ICntSceneConsole;
 import org.mo.content.core.solution.project.ICntProjectConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
@@ -49,15 +49,15 @@ public class FProjectService
    // <T>获取数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult list(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
                        IWebInput input,
                        IWebOutput output){
       FXmlNode xinput = input.config();
@@ -96,15 +96,15 @@ public class FProjectService
    // <T>获取数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult listProject(IWebContext context,
+                              IGcSession session,
                               ILogicContext logicContext,
-                              FGcSessionInfo session,
                               IWebInput input,
                               IWebOutput output){
       // 检查参数
@@ -140,15 +140,15 @@ public class FProjectService
    // <T>查询数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult query(IWebContext context,
+                        IGcSession session,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
                         IWebInput input,
                         IWebOutput output){
       // 检查参数
@@ -178,15 +178,15 @@ public class FProjectService
    // <T>新建数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult create(IWebContext context,
+                         IGcSession session,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -217,15 +217,15 @@ public class FProjectService
    // <T>修改数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult upate(IWebContext context,
+                        IGcSession session,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
                         IWebInput input,
                         IWebOutput output){
       // 获得参数
@@ -266,15 +266,15 @@ public class FProjectService
    // <T>删除数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult delete(IWebContext context,
+                         IGcSession session,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数

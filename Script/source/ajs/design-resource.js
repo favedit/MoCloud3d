@@ -19,7 +19,7 @@ with(MO){
       var o = this;
       o.__base.FDuiDataTreeView.onBuild.call(o, p);
       o.addNodeClickListener(o, o.onNodeClick);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.catalog');
+      o.loadDefine('resource.catalog');
    }
    MO.FDsResourceCatalogContent_onLoadDisplay = function FDsResourceCatalogContent_onLoadDisplay(p){
       var o = this;

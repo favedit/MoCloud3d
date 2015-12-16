@@ -16,7 +16,7 @@ MO.FResource = function FResource(o){
    o._code         = MO.Class.register(o, new MO.AGetSet('_code'));
    o._label        = MO.Class.register(o, new MO.AGetSet('_label'));
    // @attribute
-   //o._sourceUrl    = MO.Class.register(o, new MO.AGetSet('_sourceUrl'));
+   o._sourceUrl    = MO.Class.register(o, new MO.AGetSet('_sourceUrl'));
    // @attribute
    //o._dataCompress = false;
    //o._dataBlock    = false;

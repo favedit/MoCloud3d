@@ -114,6 +114,7 @@ MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
 MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
    o = MO.Class.inherits(this, o, MO.FG3dDirectionalLight, MO.MLinkerResource);
    o._material    = MO.Class.register(o, new MO.AGetter('_material'));
+   o._classCamera = MO.FE3dPerspectiveCamera;
    o.construct    = MO.FE3dDirectionalLight_construct;
    o.loadResource = MO.FE3dDirectionalLight_loadResource;
    o.dispose      = MO.FE3dDirectionalLight_dispose;
@@ -865,7 +866,6 @@ MO.FE3dScene = function FE3dScene(o){
    o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MLinkerResource, MO.MListenerLoad);
    o._ready                = false;
    o._dataReady            = false;
-   o._resource             = MO.Class.register(o, new MO.AGetter('_resource'));
    o._dirty                = false;
    o.onProcess             = MO.FE3dScene_onProcess;
    o.construct             = MO.FE3dScene_construct;
@@ -924,19 +924,19 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    var rl = p.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
-   var l = o.directionalLight();
-   l._resource = rl;
-   var lc = l._camera;
-   var lp = lc._projection;
-   lc.position().set(1, 1, -1);
-   lc.lookAt(0, 0, 0);
-   lc.position().assign(rlc.position());
-   lc.update();
-   lp.size().set(1024, 1024);
-   lp._angle = 60;
-   lp._znear = rlv.znear();
-   lp._zfar = rlv.zfar();
-   lp.update();
+   var light = o.directionalLight();
+   light._resource = rl;
+   var lightCamera = light.camera();
+   var lightProjection = lightCamera.projection();
+   lightCamera.position().set(1, 1, -1);
+   lightCamera.lookAt(0, 0, 0);
+   lightCamera.position().assign(rlc.position());
+   lightCamera.update();
+   lightProjection.size().set(1024, 1024);
+   lightProjection._angle = 60;
+   lightProjection._znear = rlv.znear();
+   lightProjection._zfar = rlv.zfar();
+   lightProjection.update();
 }
 MO.FE3dScene_loadDisplayResource = function FE3dScene_loadDisplayResource(layer, resource){
    var o = this;
@@ -2254,7 +2254,7 @@ MO.FE3dSprite = function FE3dSprite(o){
 MO.FE3dSprite_construct = function FE3dSprite_construct(){
    var o = this;
    o.__base.FE3dDisplayContainer.construct.call(o);
-   o._shapes = new TObjects();
+   o._shapes = new MO.TObjects();
 }
 MO.FE3dSprite_testReady = function FE3dSprite_testReady(){
    var o = this;
@@ -2610,7 +2610,7 @@ MO.FE3dTemplate_loadAnimations = function FE3dTemplate_loadAnimations(p){
 }
 MO.FE3dTemplate_loadResource = function FE3dTemplate_loadResource(resource){
    var o = this;
-   var technique = o.selectTechnique(o, FE3dGeneralTechnique);
+   var technique = o.selectTechnique(o, MO.FE3dGeneralTechnique);
    technique.setResource(resource.technique());
    o.__base.FE3dSpace.loadResource.call(o, resource);
    var displayResources = resource.displays();

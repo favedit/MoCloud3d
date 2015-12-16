@@ -232,7 +232,7 @@ with(MO){
    MO.FDsTemplateCatalogContent_onBuild = function FDsTemplateCatalogContent_onBuild(p){
       var o = this;
       o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.template');
+      o.loadDefine('resource.template');
    }
    MO.FDsTemplateCatalogContent_onNodeClick = function FDsTemplateCatalogContent_onNodeClick(event){
       var o = this;

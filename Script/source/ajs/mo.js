@@ -9346,17 +9346,15 @@ MO.SValue3_unserialize3 = function SValue3_unserialize3(input, dataCd) {
          o.y = input.readInt32();
          o.z = input.readInt32();
          break;
-      case MO.EDataType.Float:
-         o.x = input.readFloat();
-         o.y = input.readFloat();
-         o.z = input.readFloat();
-         break;
       case MO.EDataType.Double:
          o.x = input.readDouble();
          o.y = input.readDouble();
          o.z = input.readDouble();
          break;
       default:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         o.z = input.readFloat();
          break;
    }
 }
@@ -18408,22 +18406,24 @@ MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
    o = MO.Class.inherits(this, o, MO.FG3dLight);
-   o._camera    = MO.Class.register(o, new MO.AGetter('_camera'));
-   o._viewport  = MO.Class.register(o, new MO.AGetter('_viewport'));
-   o._direction = MO.Class.register(o, new MO.AGetter('_direction'));
-   o.construct  = MO.FG3dDirectionalLight_construct;
-   o.dispose    = MO.FG3dDirectionalLight_dispose;
+   o._camera      = MO.Class.register(o, new MO.AGetter('_camera'));
+   o._viewport    = MO.Class.register(o, new MO.AGetter('_viewport'));
+   o._direction   = MO.Class.register(o, new MO.AGetter('_direction'));
+   o._classCamera = MO.FG3dCamera;
+   o.construct    = MO.FG3dDirectionalLight_construct;
+   o.dispose      = MO.FG3dDirectionalLight_dispose;
    return o;
 }
 MO.FG3dDirectionalLight_construct = function FG3dDirectionalLight_construct(){
    var o = this;
    o.__base.FG3dLight.construct.call(o);
-   o._camera = MO.Class.create(MO.FG3dCamera);
+   o._camera = MO.Class.create(o._classCamera);
    o._direction = new MO.SVector3();
 }
 MO.FG3dDirectionalLight_dispose = function FG3dDirectionalLight_dispose(){
    var o = this;
    o._camera = MO.Lang.Object.dispose(o._camera);
+   o._direction = MO.Lang.Object.dispose(o._direction);
    o.__base.FG3dLight.dispose.call(o);
 }
 MO.FG3dEffect = function FG3dEffect(o){
@@ -24583,6 +24583,7 @@ MO.FResource = function FResource(o){
    o._guid         = MO.Class.register(o, new MO.AGetSet('_guid'));
    o._code         = MO.Class.register(o, new MO.AGetSet('_code'));
    o._label        = MO.Class.register(o, new MO.AGetSet('_label'));
+   o._sourceUrl    = MO.Class.register(o, new MO.AGetSet('_sourceUrl'));
    return o;
 }
 MO.FResourceBlockStorage = function FResourceBlockStorage(o){
@@ -24719,10 +24720,10 @@ MO.FResourceConsole_onComplete = function FResourceConsole_onComplete(resource, 
    o._loadingResources.remove(resource);
    resource.onComplete(data);
 }
-MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
+MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(event){
    var o = this;
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    var storage = MO.Class.create(MO.FResourceSingleStorage);
    storage.setResource(resource);
    storage.load(data);
@@ -24730,12 +24731,12 @@ MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
    o._loadingResources.remove(resource);
    o._processStorages.push(storage);
 }
-MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(connection){
+MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(event){
    var o = this;
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    resource._compressLength = data.byteLength;
-   resource._compressStartTick = RTimer.current();
+   resource._compressStartTick = MO.Timer.current();
    var storage = MO.Class.create(MO.FResourceBlockStorage);
    storage.setResource(resource);
    storage.load(data);
@@ -24814,6 +24815,9 @@ MO.FResourceConsole_factory = function FResourceConsole_factory(){
 MO.FResourceConsole_load = function FResourceConsole_load(resource){
    var o = this;
    var guid = resource.guid();
+   if(MO.Lang.String.isEmpty(guid)){
+      guid = resource.code();
+   }
    var resources = o._resources;
    if(resources.contains(guid)){
       throw new MO.TError(o, 'Resource is already loaded. (guid={1})', guid);
@@ -25573,12 +25577,8 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    parameters.antialias = o._optionAntialias;
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
    if(o._optionStageProcess){
-      RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-      RStage.start(o._interval);
    }
    if(o._optionResize){
-      MO.Window.lsnsResize.register(o, o.onResize);
-      MO.Window.lsnsOrientation.register(o, o.onResize);
    }
    if(o._optionMouseCapture){
       MO.Console.find(MO.FMouseConsole).register(o);
@@ -27653,9 +27653,9 @@ MO.FE3sObject_dispose = function FE3sObject_dispose(){
 }
 MO.FE3sProjection = function FE3sProjection(o){
    o = MO.Class.inherits(this, o, MO.FE3sObject);
-   o._angle      = MO.Class.register(o, MO.AGetter('_angle'), 90);
-   o._znear      = MO.Class.register(o, MO.AGetter('_znear'), 1);
-   o._zfar       = MO.Class.register(o, MO.AGetter('_zfar'), 200);
+   o._angle      = MO.Class.register(o, new MO.AGetter('_angle'), 90);
+   o._znear      = MO.Class.register(o, new MO.AGetter('_znear'), 1);
+   o._zfar       = MO.Class.register(o, new MO.AGetter('_zfar'), 200);
    o.unserialize = MO.FE3sProjection_unserialize;
    o.saveConfig  = MO.FE3sProjection_saveConfig;
    return o;
@@ -28094,18 +28094,18 @@ MO.FE3sSceneRenderable_unserialize = function FE3sSceneRenderable_unserialize(in
    o.__base.FE3sObject.unserialize.call(o, input);
 }
 MO.FE3sShape = function FE3sShape(o){
-   o = MO.Class.inherits(this, o, FE3sRenderable);
+   o = MO.Class.inherits(this, o, MO.FE3sRenderable);
    o._modelGuid    = MO.Class.register(o, new MO.AGetter('_modelGuid'));
    o._model        = null;
    o._meshGuid     = MO.Class.register(o, new MO.AGetter('_meshGuid'));
    o._mesh         = null;
    o._materialGuid = MO.Class.register(o, new MO.AGetter('_materialGuid'));
    o._material     = null;
-   o.construct     = FE3sShape_construct;
-   o.model         = FE3sShape_model;
-   o.mesh          = FE3sShape_mesh;
-   o.material      = FE3sShape_material;
-   o.unserialize   = FE3sShape_unserialize;
+   o.construct     = MO.FE3sShape_construct;
+   o.model         = MO.FE3sShape_model;
+   o.mesh          = MO.FE3sShape_mesh;
+   o.material      = MO.FE3sShape_material;
+   o.unserialize   = MO.FE3sShape_unserialize;
    return o;
 }
 MO.FE3sShape_construct = function FE3sShape_construct(){
@@ -29117,7 +29117,7 @@ MO.FE3rBitmap_dispose = function FE3rBitmap_dispose(){
 MO.FE3rBitmapConsole = function FE3rBitmapConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._scopeCd  = MO.EScope.Local;
-   o._bitmaps  = MO.Class.register(o, new AGetter('_bitmaps'));
+   o._bitmaps  = MO.Class.register(o, new MO.AGetter('_bitmaps'));
    o._dataUrl  = '/cloud.resource.material.wv'
    o.construct = MO.FE3rBitmapConsole_construct;
    o.load      = MO.FE3rBitmapConsole_load;
@@ -29138,10 +29138,11 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    }
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?guid=' + guid + '&code=' + code);
    MO.Logger.info(o, 'Load bitmap. (url={1})', url);
+   var graphic = context.graphicContext();
    if(code == 'environment'){
-      bitmap = context.createObject(MO.FE3rBitmapCubePack);
+      bitmap = graphic.createObject(MO.FE3rBitmapCubePack);
    }else{
-      bitmap = context.createObject(MO.FE3rBitmapFlatPack);
+      bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
    o._bitmaps.set(flag, bitmap);
    return bitmap;
@@ -29248,6 +29249,7 @@ MO.FE3rBitmapPack = function FE3rBitmapPack(o){
    o._ready     = false;
    o.onLoad     = MO.Method.virtual(o, 'onLoad');
    o.construct  = MO.FE3rBitmapPack_construct;
+   o.setup      = MO.Method.empty;
    o.testReady  = MO.FE3rBitmapPack_testReady;
    o.loadUrl    = MO.Method.virtual(o, 'loadUrl');
    o.dispose    = MO.FE3rBitmapPack_dispose;
@@ -29565,14 +29567,14 @@ MO.FE3rDynamicModel_update = function FE3rDynamicModel_update(p){
 MO.FE3rGeometry = function FE3rGeometry(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
    o._ready            = false;
-   o._resource         = MO.Class.register(o, new AGetSet('_resource'));
-   o._vertexCount      = MO.Class.register(o, new AGetter('_vertexCount'), 0);
-   o._vertexBuffers    = MO.Class.register(o, new AGetter('_vertexBuffers'));
-   o._indexBuffer      = MO.Class.register(o, new AGetter('_indexBuffer'));
-   o._indexBuffers     = MO.Class.register(o, new AGetter('_indexBuffers'));
-   o._resourceMaterial = MO.Class.register(o, new AGetter('_resourceMaterial'));
-   o._material         = MO.Class.register(o, new AGetter('_material'));
-   o._textures         = MO.Class.register(o, new AGetter('_textures'));
+   o._resource         = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._vertexCount      = MO.Class.register(o, new MO.AGetter('_vertexCount'), 0);
+   o._vertexBuffers    = MO.Class.register(o, new MO.AGetter('_vertexBuffers'));
+   o._indexBuffer      = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._indexBuffers     = MO.Class.register(o, new MO.AGetter('_indexBuffers'));
+   o._resourceMaterial = MO.Class.register(o, new MO.AGetter('_resourceMaterial'));
+   o._material         = MO.Class.register(o, new MO.AGetter('_material'));
+   o._textures         = MO.Class.register(o, new MO.AGetter('_textures'));
    o.construct         = MO.FE3rGeometry_construct;
    o.testReady         = MO.FE3rGeometry_testReady;
    o.findVertexBuffer  = MO.FE3rGeometry_findVertexBuffer;
@@ -29627,7 +29629,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
       var dataCount = streamResource.dataCount();
       var data = streamResource.data();
       if((code == 'index16') || (code == 'index32')){
-         var buffer = o._indexBuffer = context.createIndexBuffer(FE3rIndexBuffer);
+         var buffer = o._indexBuffer = context.createIndexBuffer(MO.FE3rIndexBuffer);
          buffer._resource = streamResource;
          var dataCd = streamResource.elementDataCd();
          if(dataCd == MO.EDataType.Uint16){
@@ -29640,7 +29642,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          buffer.upload(data, 3 * dataCount);
          o._indexBuffers.push(buffer);
       }else{
-         var buffer = context.createVertexBuffer(FE3rVertexBuffer);
+         var buffer = context.createVertexBuffer(MO.FE3rVertexBuffer);
          buffer.setCode(code);
          buffer._resource = streamResource;
          buffer._vertexCount = dataCount;
@@ -29648,22 +29650,22 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          switch(code){
             case "position":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float3);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
                o._vertexCount = dataCount;
                break;
             case "coord":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float2);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
                break;
             case "color":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             case "normal":
             case "binormal":
             case "tangent":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             default:
                throw new TError(o, "Unknown code");
@@ -30061,9 +30063,9 @@ MO.FE3rMeshConsole_loadByCode = function FE3rMeshConsole_loadByCode(pc, pg){
 }
 MO.FE3rModel = function FE3rModel(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
-   o._resource            = MO.Class.register(o, new AGetSet('_resource'));
-   o._meshes              = MO.Class.register(o, new AGetter('_meshes'));
-   o._skeletons           = MO.Class.register(o, new AGetter('_skeletons'));
+   o._resource            = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
+   o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
    o._dataReady           = false;
    o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.testReady            = MO.FE3rModel_testReady;
@@ -30296,8 +30298,8 @@ MO.FE3rModelMesh = function FE3rModelMesh(o){
    o = MO.Class.inherits(this, o, MO.FE3rGeometry);
    o._ready            = false;
    o._resourceMaterial = null;
-   o._skins            = MO.Class.register(o, new AGetter('_skins'));
-   o._boneIds          = MO.Class.register(o, new AGetter('_boneIds'));
+   o._skins            = MO.Class.register(o, new MO.AGetter('_skins'));
+   o._boneIds          = MO.Class.register(o, new MO.AGetter('_boneIds'));
    o.construct         = MO.FE3rModelMesh_construct;
    o.testReady         = MO.FE3rModelMesh_testReady;
    o.guid              = MO.FE3rModelMesh_guid;
@@ -31832,6 +31834,7 @@ MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
 MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
    o = MO.Class.inherits(this, o, MO.FG3dDirectionalLight, MO.MLinkerResource);
    o._material    = MO.Class.register(o, new MO.AGetter('_material'));
+   o._classCamera = MO.FE3dPerspectiveCamera;
    o.construct    = MO.FE3dDirectionalLight_construct;
    o.loadResource = MO.FE3dDirectionalLight_loadResource;
    o.dispose      = MO.FE3dDirectionalLight_dispose;
@@ -32583,7 +32586,6 @@ MO.FE3dScene = function FE3dScene(o){
    o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MLinkerResource, MO.MListenerLoad);
    o._ready                = false;
    o._dataReady            = false;
-   o._resource             = MO.Class.register(o, new MO.AGetter('_resource'));
    o._dirty                = false;
    o.onProcess             = MO.FE3dScene_onProcess;
    o.construct             = MO.FE3dScene_construct;
@@ -32642,19 +32644,19 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    var rl = p.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
-   var l = o.directionalLight();
-   l._resource = rl;
-   var lc = l._camera;
-   var lp = lc._projection;
-   lc.position().set(1, 1, -1);
-   lc.lookAt(0, 0, 0);
-   lc.position().assign(rlc.position());
-   lc.update();
-   lp.size().set(1024, 1024);
-   lp._angle = 60;
-   lp._znear = rlv.znear();
-   lp._zfar = rlv.zfar();
-   lp.update();
+   var light = o.directionalLight();
+   light._resource = rl;
+   var lightCamera = light.camera();
+   var lightProjection = lightCamera.projection();
+   lightCamera.position().set(1, 1, -1);
+   lightCamera.lookAt(0, 0, 0);
+   lightCamera.position().assign(rlc.position());
+   lightCamera.update();
+   lightProjection.size().set(1024, 1024);
+   lightProjection._angle = 60;
+   lightProjection._znear = rlv.znear();
+   lightProjection._zfar = rlv.zfar();
+   lightProjection.update();
 }
 MO.FE3dScene_loadDisplayResource = function FE3dScene_loadDisplayResource(layer, resource){
    var o = this;
@@ -33972,7 +33974,7 @@ MO.FE3dSprite = function FE3dSprite(o){
 MO.FE3dSprite_construct = function FE3dSprite_construct(){
    var o = this;
    o.__base.FE3dDisplayContainer.construct.call(o);
-   o._shapes = new TObjects();
+   o._shapes = new MO.TObjects();
 }
 MO.FE3dSprite_testReady = function FE3dSprite_testReady(){
    var o = this;
@@ -34328,7 +34330,7 @@ MO.FE3dTemplate_loadAnimations = function FE3dTemplate_loadAnimations(p){
 }
 MO.FE3dTemplate_loadResource = function FE3dTemplate_loadResource(resource){
    var o = this;
-   var technique = o.selectTechnique(o, FE3dGeneralTechnique);
+   var technique = o.selectTechnique(o, MO.FE3dGeneralTechnique);
    technique.setResource(resource.technique());
    o.__base.FE3dSpace.loadResource.call(o, resource);
    var displayResources = resource.displays();
@@ -43305,6 +43307,581 @@ MO.FGuiDesktop_dispose = function FGuiDesktop_dispose(){
    var o = this;
    o._canvas3d = MO.Lang.Object.dispose(o._canvas3d);
    o._canvas = MO.Lang.Object.dispose(o._canvas);
+   o.__base.FDesktop.dispose.call(o);
+}
+MO.FSceneApplication = function FSceneApplication(o){
+   o = MO.Class.inherits(this, o, MO.FApplication);
+   o._desktop      = MO.Class.register(o, new MO.AGetter('_desktop'));
+   o._dynamicInfo  = MO.Class.register(o, new MO.AGetter('_dynamicInfo'));
+   o.onDataLoaded  = MO.FSceneApplication_onDataLoaded;
+   o.construct     = MO.FSceneApplication_construct;
+   o.createChapter = MO.FSceneApplication_createChapter;
+   o.setup         = MO.FSceneApplication_setup;
+   o.processResize = MO.FSceneApplication_processResize;
+   o.processEvent  = MO.FSceneApplication_processEvent;
+   o.process       = MO.FSceneApplication_process;
+   o.loadByGuid    = MO.FSceneApplication_loadByGuid;
+   o.loadByCode    = MO.FSceneApplication_loadByCode;
+   o.dispose       = MO.FSceneApplication_dispose;
+   return o;
+}
+MO.FSceneApplication_onDataLoaded = function FSceneApplication_onDataLoaded(event){
+   var o = this;
+   var graphic = o._graphicContext;
+   var space = o._activeSpace;
+   var cs = graphic.size();
+   var rp = space.camera().projection();
+   rp.size().set(cs.width, cs.height);
+   rp.update();
+   var gr = space.region()._resource;
+   o._cameraMoveRate = gr.moveSpeed();
+   o._cameraKeyRotation = gr.rotationKeySpeed();
+   o._cameraMouseRotation = gr.rotationMouseSpeed();
+   var canvas3d = o._desktop.canvas3d();
+   canvas3d.selectStage(space);
+}
+MO.FSceneApplication_construct = function FSceneApplication_construct(){
+   var o = this;
+   o.__base.FApplication.construct.call(o);
+}
+MO.FSceneApplication_createChapter = function FSceneApplication_createChapter(code){
+   var o = this;
+   var chapter = null;
+   switch(code){
+      case MO.ECanvasChapter.Simple:
+         chapter = MO.Class.create(MO.FCanvasSimpleChapter);
+         break;
+   }
+   chapter.linkGraphicContext(o);
+   return chapter;
+}
+MO.FSceneApplication_setup = function FSceneApplication_setup(hPanel){
+   var o = this;
+   var result = o.__base.FApplication.setup.call(o, hPanel);
+   if(!result){
+      return result;
+   }
+   o._hPanel = hPanel;
+   var desktop = o._desktop = MO.Class.create(MO.FSceneDesktop);
+   desktop.build(hPanel);
+   var canvas = desktop.canvas3d();
+   var context = canvas.graphicContext();
+   if(!context.isValid()){
+      return;
+   }
+   o.linkGraphicContext(canvas);
+   var control = o._dynamicInfo = MO.Class.create(MO.FCanvasDynamicInfo);
+   control.linkGraphicContext(canvas);
+   control.setContext(canvas.graphicContext());
+   control.location().set(10, 300);
+   control.build();
+   return true;
+}
+MO.FSceneApplication_processResize = function FSceneApplication_processResize(event){
+   var o = this;
+   o.__base.FApplication.processResize.call(o, event);
+   var desktop = o._desktop;
+   if(desktop){
+      desktop.resize();
+   }
+}
+MO.FSceneApplication_processEvent = function FSceneApplication_processEvent(event){
+   var o = this;
+   o.__base.FApplication.processEvent.call(o, event);
+   var desktop = o._desktop;
+   if(desktop){
+      desktop.processEvent(event);
+   }
+}
+MO.FSceneApplication_process = function FSceneApplication_process(){
+   var o = this;
+   o.__base.FApplication.process.call(o);
+   o._desktop.process();
+   var space = o._activeSpace;
+   if(space){
+      space.process();
+   }
+}
+MO.FSceneApplication_loadByGuid = function FSceneApplication_loadByGuid(guid){
+   var o = this;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(o._activeSpace){
+      sceneConsole.free(o._activeSpace);
+   }
+   var scene = o._activeSpace = sceneConsole.allocByGuid(o._graphicContext, guid);
+   scene.addLoadListener(o, o.onDataLoaded);
+}
+MO.FSceneApplication_loadByCode = function FSceneApplication_loadByCode(code){
+   var o = this;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(o._activeSpace){
+      sceneConsole.free(o._activeSpace);
+   }
+   var scene = o._activeSpace = sceneConsole.allocByCode(o._graphicContext, code);
+   scene.addLoadListener(o, o.onDataLoaded);
+}
+MO.FSceneApplication_dispose = function FSceneApplication_dispose(){
+   var o = this;
+   o.__base.FApplication.dispose.call(o);
+}
+MO.FSceneCanvas = function FSceneCanvas(o){
+   o = MO.Class.inherits(this, o, MO.FE3dCanvas);
+   o._activeSpace           = null;
+   o._captureStatus         = false;
+   o._capturePosition       = null;
+   o._captureCameraPosition = null;
+   o._captureCameraRotation = null;
+   o._actionFullScreen      = false;
+   o._actionPlay            = false;
+   o._actionMovie           = false;
+   o._actionUp              = false;
+   o._actionDown            = false;
+   o._actionForward         = false;
+   o._actionBack            = false;
+   o._cameraMoveRate        = 0.4;
+   o._cameraKeyRotation     = 0.03;
+   o._cameraMouseRotation   = 0.005;
+   o._touchTracker          = null;
+   o.onEnterFrame           = MO.FSceneCanvas_onEnterFrame;
+   o.onMouseCaptureStart    = MO.FSceneCanvas_onMouseCaptureStart;
+   o.onMouseCapture         = MO.FSceneCanvas_onMouseCapture;
+   o.onMouseCaptureStop     = MO.FSceneCanvas_onMouseCaptureStop;
+   o.onTouchStart           = MO.FSceneCanvas_onTouchStart;
+   o.onTouchMove            = MO.FSceneCanvas_onTouchMove;
+   o.onTouchStop            = MO.FSceneCanvas_onTouchStop;
+   o.onTouchZoom            = MO.FSceneCanvas_onTouchZoom;
+   o.onDataLoaded           = MO.FSceneCanvas_onDataLoaded;
+   o.onResize               = MO.FSceneCanvas_onResize;
+   o.construct              = MO.FSceneCanvas_construct;
+   o.testPlay               = MO.FSceneCanvas_testPlay;
+   o.switchPlay             = MO.FSceneCanvas_switchPlay;
+   o.testMovie              = MO.FSceneCanvas_testMovie;
+   o.switchMovie            = MO.FSceneCanvas_switchMovie;
+   o.doAction               = MO.FSceneCanvas_doAction;
+   o.loadByGuid             = MO.FSceneCanvas_loadByGuid;
+   o.loadByCode             = MO.FSceneCanvas_loadByCode;
+   o.dispose                = MO.FSceneCanvas_dispose;
+   return o;
+}
+MO.FSceneCanvas_onEnterFrame = function FSceneCanvas_onEnterFrame(){
+   var o = this;
+   var space = o._activeSpace;
+   if(!space){
+      return;
+   }
+   var timer = space.timer();
+   var span = timer.spanSecond();
+   var camera = space.camera();
+   var distance = o._cameraMoveRate * span;
+   var rotation = o._cameraKeyRotation * span;
+   var keyForward = RKeyboard.isPress(MO.EStageKey.Forward);
+   var keyBack = RKeyboard.isPress(MO.EStageKey.Back);
+   if((keyForward && !keyBack) || o._actionForward){
+      camera.doWalk(distance);
+   }
+   if((!keyForward && keyBack) || o._actionBack){
+      camera.doWalk(-distance);
+   }
+   var keyUp = RKeyboard.isPress(MO.EStageKey.Up);
+   var keyDown = RKeyboard.isPress(MO.EStageKey.Down);
+   if((keyUp && !keyDown) || o._actionUp){
+      camera.doFly(distance);
+   }
+   if((!keyUp && keyDown) || o._actionDown){
+      camera.doFly(-distance);
+   }
+   var keyLeft = RKeyboard.isPress(MO.EStageKey.RotationLeft);
+   var keyRight = RKeyboard.isPress(MO.EStageKey.RotationRight);
+   if(keyLeft && !keyRight){
+      camera.doYaw(rotation);
+   }
+   if(!keyLeft && keyRight){
+      camera.doYaw(-rotation);
+   }
+   var keyRotationUp = RKeyboard.isPress(MO.EStageKey.RotationUp);
+   var keyRotationDown = RKeyboard.isPress(MO.EStageKey.RotationDown);
+   if(keyRotationUp && !keyRotationDown){
+      camera.doPitch(rotation);
+   }
+   if(!keyRotationUp && keyRotationDown){
+      camera.doPitch(-rotation);
+   }
+   camera.update();
+   if(o._optionRotation){
+      var rotation = o._rotation;
+      var layers = space.layers();
+      var count = layers.count();
+      for(var i = 0; i < count; i++){
+         var layer = layers.at(i);
+         var matrix = layer.matrix();
+         matrix.setRotation(0, rotation.y, 0);
+         matrix.update();
+      }
+      rotation.y += 0.01;
+   }
+}
+MO.FSceneCanvas_onMouseCaptureStart = function FSceneCanvas_onMouseCaptureStart(p){
+   var o = this;
+   var s = o._activeSpace;
+   if(!s){
+      return;
+   }
+   var r = o._activeSpace.region();
+   var st = RConsole.find(FG3dTechniqueConsole).find(o._graphicContext, FG3dSelectTechnique);
+   var r = st.test(r, p.offsetX, p.offsetY);
+   o._capturePosition.set(p.clientX, p.clientY);
+   o._captureCameraRotation.assign(s.camera()._rotation);
+}
+MO.FSceneCanvas_onMouseCapture = function FSceneCanvas_onMouseCapture(p){
+   var o = this;
+   var s = o._activeSpace;
+   if(!s){
+      return;
+   }
+   var cx = p.clientX - o._capturePosition.x;
+   var cy = p.clientY - o._capturePosition.y;
+   var c = o._activeSpace.camera();
+   var r = c.rotation();
+   var cr = o._captureCameraRotation;
+   r.x = cr.x + cy * o._cameraMouseRotation;
+   r.y = cr.y + cx * o._cameraMouseRotation;
+}
+MO.FSceneCanvas_onMouseCaptureStop = function FSceneCanvas_onMouseCaptureStop(p){
+}
+MO.FSceneCanvas_onTouchStart = function FSceneCanvas_onTouchStart(event){
+   var o = this;
+   var s = o._activeSpace;
+   if(!s){
+      return;
+   }
+   var r = o._activeSpace.region();
+   var ts = event.touches;
+   var c = ts.length;
+   if(c == 1){
+      event.preventDefault();
+      var t = ts[0];
+      o._captureStatus = true;
+      o._capturePosition.set(t.clientX, t.clientY);
+      o._captureCameraPosition.assign(s.camera().position());
+      o._captureCameraRotation.assign(s.camera().rotation());
+   }else{
+      o._touchTracker.eventStart(event);
+   }
+}
+MO.FSceneCanvas_onTouchMove = function FSceneCanvas_onTouchMove(event){
+   var o = this;
+   if(!o._captureStatus){
+      return;
+   }
+   var touchs = event.touches;
+   var touchCount = touchs.length;
+   if(touchCount == 1){
+      event.preventDefault();
+      var t = touchs[0];
+      var cm = o._activeSpace.camera();
+      var cr = cm.rotation();
+      var cx = t.clientX - o._capturePosition.x;
+      var cy = t.clientY - o._capturePosition.y;
+      cr.x = o._captureCameraRotation.x + (-cy * o._cameraMouseRotation);
+      cr.y = o._captureCameraRotation.y + (-cx * o._cameraMouseRotation);
+   }else if(touchCount > 1){
+      o._touchTracker.eventMove(event);
+   }
+}
+MO.FSceneCanvas_onTouchStop = function FSceneCanvas_onTouchStop(event){
+   var o = this;
+   o._touchTracker.eventStop(event);
+   o._captureStatus = false;
+}
+MO.FSceneCanvas_onTouchZoom = function FSceneCanvas_onTouchZoom(event){
+   var o = this;
+   var delta = event.delta;
+   var space = o._activeSpace;
+   if(!space){
+      return;
+   }
+   var camera = space.camera();
+   camera.doForward(delta * 0.006);
+}
+MO.FSceneCanvas_onDataLoaded = function FSceneCanvas_onDataLoaded(event){
+   var o = this;
+   var c = o._graphicContext;
+   var s = o._activeSpace;
+   var cs = c.size();
+   var rp = s.camera().projection();
+   rp.size().set(cs.width, cs.height);
+   rp.update();
+   var gr = s._region._resource;
+   o._cameraMoveRate = gr.moveSpeed();
+   o._cameraKeyRotation = gr.rotationKeySpeed();
+   o._cameraMouseRotation = gr.rotationMouseSpeed();
+   var event = new MO.SEvent(o);
+   event.space = s;
+   o.processLoadListener(event);
+   event.dispose();
+}
+MO.FSceneCanvas_onResize = function FSceneCanvas_onResize(event){
+   var o = this;
+   o.__base.FE3dCanvas.onResize.call(o, event);
+   var c = o._graphicContext;
+   var cs = c.size();
+   var s = o._activeSpace;
+   if(s){
+      var rp = s.camera().projection();
+      rp.size().set(cs.width, cs.height);
+      rp.update();
+   }
+}
+MO.FSceneCanvas_construct = function FSceneCanvas_construct(){
+   var o = this;
+   o.__base.FE3dCanvas.construct.call(o);
+   o._rotation = new MO.SVector3();
+   o._capturePosition = new MO.SPoint2();
+   o._captureCameraPosition = new MO.SPoint3();
+   o._captureCameraRotation = new MO.SVector3();
+   o._touchTracker = MO.Class.create(MO.FTouchTracker);
+   o._touchTracker.addTouchZoomListener(o, o.onTouchZoom);
+}
+MO.FSceneCanvas_testPlay = function FSceneCanvas_testPlay(){
+   return this._actionPlay;
+}
+MO.FSceneCanvas_switchPlay = function FSceneCanvas_switchPlay(flag){
+   var o = this;
+   var space = o._activeSpace;
+   var displays = space.allDisplays();
+   var count = displays.count();
+   for(var i = 0; i < count; i++){
+      var display = displays.at(i);
+      if(MO.Class.isClass(display, FE3dSceneDisplay)){
+         var sprite = display._sprite;
+         if(sprite){
+            sprite._optionPlay = flag;
+         }
+         display._optionPlay = flag;
+      }
+   }
+   o._actionPlay = flag;
+}
+MO.FSceneCanvas_testMovie = function FSceneCanvas_testMovie(){
+   return this._actionMovie;
+}
+MO.FSceneCanvas_switchMovie = function FSceneCanvas_switchMovie(p){
+   var o = this;
+   var s = o._activeSpace;
+   var ds = s.allDisplays();
+   var c = ds.count();
+   for(var i = 0; i < c; i++){
+      var d = ds.get(i);
+      if(d._movies){
+         d._optionMovie = p;
+      }
+   }
+   o._actionMovie = p;
+}
+MO.FSceneCanvas_doAction = function FSceneCanvas_doAction(e, p, f){
+   var o = this;
+   var s = o._activeSpace;
+   if(!s){
+      return;
+   }
+   e.preventDefault();
+   o._actionUp = false;
+   o._actionDown = false;
+   o._actionForward = false;
+   o._actionBack = false;
+   switch(p){
+      case 'fullscreen':
+         var v = o._actionFullScreen = !o._actionFullScreen;
+         MO.RHtml.fullscreen(o._hPanel, v);
+         break;
+      case 'play':
+         o.switchMovie(!o._actionMovie);
+         o.switchPlay(o._actionMovie);
+         break;
+      case 'up':
+         o._actionUp = f;
+         break;
+      case 'down':
+         o._actionDown = f;
+         break;
+      case 'forward':
+         o._actionForward = f;
+         break;
+      case 'back':
+         o._actionBack = f;
+         break;
+   }
+}
+MO.FSceneCanvas_loadByGuid = function FSceneCanvas_loadByGuid(guid){
+   var o = this;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(o._activeSpace){
+      sceneConsole.free(o._activeSpace);
+   }
+   var scene = o._activeSpace = sceneConsole.allocByGuid(o._graphicContext, guid);
+   scene.addLoadListener(o, o.onDataLoaded);
+   RStage.register('canvas.space', scene);
+}
+MO.FSceneCanvas_loadByCode = function FSceneCanvas_loadByCode(code){
+   var o = this;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(o._activeSpace){
+      sceneConsole.free(o._activeSpace);
+   }
+   var scene = o._activeSpace = sceneConsole.allocByCode(o._graphicContext, code);
+   scene.addLoadListener(o, o.onDataLoaded);
+   RStage.register('canvas.space', scene);
+}
+MO.FSceneCanvas_dispose = function FSceneCanvas_dispose(){
+   var o = this;
+   var v = o._rotation;
+   if(v){
+      v.dispose();
+      o._rotation = null;
+   }
+   o.__base.FE3dCanvas.dispose.call(o);
+}
+MO.FSceneDesktop = function FSceneDesktop(o){
+   o = MO.Class.inherits(this, o, MO.FDesktop);
+   o._orientationCd         = null;
+   o._visible               = MO.Class.register(o, new MO.AGetter('_visible'), true);
+   o._canvas2d              = MO.Class.register(o, new MO.AGetter('_canvas2d'));
+   o._canvas3d              = MO.Class.register(o, new MO.AGetter('_canvas3d'));
+   o.onOperationResize      = MO.FSceneDesktop_onOperationResize;
+   o.onOperationOrientation = MO.FSceneDesktop_onOperationOrientation;
+   o.construct              = MO.FSceneDesktop_construct;
+   o.build                  = MO.FSceneDesktop_build;
+   o.resize                 = MO.FSceneDesktop_resize;
+   o.setVisible             = MO.FSceneDesktop_setVisible;
+   o.show                   = MO.FSceneDesktop_show;
+   o.hide                   = MO.FSceneDesktop_hide;
+   o.selectStage            = MO.FSceneDesktop_selectStage;
+   o.process                = MO.FSceneDesktop_process;
+   o.dispose                = MO.FSceneDesktop_dispose;
+   return o;
+}
+MO.FSceneDesktop_onOperationResize = function FSceneDesktop_onOperationResize(event){
+   var o = this;
+   o.__base.FDesktop.onOperationResize.call(o, event);
+   o.resize();
+}
+MO.FSceneDesktop_onOperationOrientation = function FSceneDesktop_onOperationOrientation(){
+   var o = this;
+   o.__base.FDesktop.onOperationOrientation.call(o, event);
+   o.resize();
+}
+MO.FSceneDesktop_construct = function FSceneDesktop_construct(){
+   var o = this;
+   o.__base.FDesktop.construct.call(o);
+   o._size.set(1920, 1080);
+   o._logicSize.set(1920, 1080);
+}
+MO.FSceneDesktop_build = function FSceneDesktop_build(hPanel){
+   var o = this;
+   o.__base.FDesktop.build.call(o, hPanel);
+   var canvas3d = o._canvas3d = MO.Class.create(MO.FCanvas3d);
+   canvas3d.setDesktop(o);
+   canvas3d.build(hPanel);
+   canvas3d.setPanel(hPanel);
+   o.canvasRegister(canvas3d);
+   var canvas2d = o._canvas2d = MO.Class.create(MO.FGuiCanvas);
+   canvas2d.setDesktop(o);
+   canvas2d.build(hPanel);
+   canvas2d.setPanel(hPanel);
+   canvas2d._hCanvas.style.position = 'absolute';
+   o.canvasRegister(canvas2d);
+   MO.RE3dEngine.setup();
+}
+MO.FSceneDesktop_resize = function FSceneDesktop_resize(targetWidth, targetHeight){
+   var o = this;
+   var browser = MO.Window.Browser;
+   var sourceWidth = (targetWidth != null) ? targetWidth : window.innerWidth;
+   var sourceHeight = (targetHeight != null) ? targetHeight : window.innerHeight;
+   var orientationCd = browser.orientationCd();
+   if(o._screenSize.equalsData(sourceWidth, sourceHeight) && (o._orientationCd == orientationCd)){
+      return;
+   }
+   o._screenSize.set(sourceWidth, sourceHeight);
+   o._orientationCd = orientationCd;
+   var pixelRatio = browser.capability().pixelRatio;
+   var width = parseInt(sourceWidth * pixelRatio);
+   var height = parseInt(sourceHeight * pixelRatio);
+   o._size.set(width, height);
+   var widthRate = 1;
+   var heightRate = 1;
+   var logicSize = o._logicSize;
+   var isVertical = browser.isOrientationVertical()
+   if(isVertical){
+      widthRate = width / logicSize.height;
+      heightRate = height / logicSize.width;
+      o._calculateSize.set(logicSize.height, logicSize.width);
+   }else{
+      widthRate = width / logicSize.width;
+      heightRate = height / logicSize.height;
+      o._calculateSize.set(logicSize.width, logicSize.height);
+   }
+   var sizeRate = o._sizeRate = Math.min(widthRate, heightRate);
+   o._logicRate.set(widthRate, heightRate);
+   var calculateRate = o._calculateRate;
+   if(widthRate > heightRate){
+      calculateRate.set(widthRate / sizeRate, 1);
+   }else if(widthRate < heightRate){
+      calculateRate.set(1, heightRate / sizeRate);
+   }else{
+      calculateRate.set(1, 1);
+   }
+   o._sizeScale = 1 / sizeRate;
+   MO.Logger.debug(o, 'Change screen size. (orientation={1}, ratio={2}, screen_size={3}, size={4}, rate={5}, calculate_rate={6})', browser.orientationCd(), pixelRatio, o._screenSize.toDisplay(), o._size.toDisplay(), sizeRate, o._calculateRate.toDisplay());
+   var canvas3d = o._canvas3d;
+   var context3d = canvas3d.graphicContext();
+   context3d.size().set(width, height);
+   if(browser.capability().canvasScale){
+      canvas3d.resize(width, height);
+   }else{
+      canvas3d.resize(sourceWidth, sourceHeight);
+   }
+   context3d.setViewport(0, 0, width, height)
+   if(isVertical){
+      o._virtualSize.set(logicSize.height * calculateRate.width, logicSize.width * calculateRate.height);
+   }else{
+      o._virtualSize.set(logicSize.width * calculateRate.width, logicSize.height * calculateRate.height);
+   }
+   var canvas2d = o._canvas2d;
+   canvas2d.resize(width, height);
+   canvas2d.graphicContext().setGlobalScale(sizeRate, sizeRate);
+   var stage = o._canvas3d.activeStage();
+   o.selectStage(stage);
+}
+MO.FSceneDesktop_setVisible = function FSceneDesktop_setVisible(visible){
+   var o = this;
+   o._visible = visible;
+   o._canvas2d.setVisible(visible);
+   o._canvas3d.setVisible(visible);
+}
+MO.FSceneDesktop_show = function FSceneDesktop_show(){
+   this.setVisible(true);
+}
+MO.FSceneDesktop_hide = function FSceneDesktop_hide(){
+   this.setVisible(false);
+}
+MO.FSceneDesktop_selectStage = function FSceneDesktop_selectStage(stage){
+   var o = this;
+   o._canvas3d.selectStage(stage);
+   if(stage){
+      var camera = stage.camera();
+      var projection = camera.projection();
+      projection.size().assign(o._size);
+      projection.update();
+   }
+   o._activeStage = stage;
+}
+MO.FSceneDesktop_process = function FSceneDesktop_process(){
+   var o = this;
+}
+MO.FSceneDesktop_dispose = function FSceneDesktop_dispose(){
+   var o = this;
+   o._canvas2d = MO.Lang.Object.dispose(o._canvas2d);
+   o._canvas3d = MO.Lang.Object.dispose(o._canvas3d);
    o.__base.FDesktop.dispose.call(o);
 }
 MO.FTestApplication = function FTestApplication(o){
@@ -55948,25 +56525,25 @@ MO.FDuiListItem_dispose = function FDuiListItem_dispose(){
 }
 MO.FDuiListView = function FDuiListView(o){
    o = MO.Class.inherits(this, o, MO.FDuiContainer, MO.MDuiHorizontal);
-   o._sizeCd           = MO.EUiSize.Horizontal
-   o._stylePanel       = MO.Class.register(o, new MO.AStyle('_stylePanel'));
-   o._focusItem        = null;
-   o._itemPool         = null;
+   o._sizeCd               = MO.EUiSize.Horizontal
+   o._stylePanel           = MO.Class.register(o, new MO.AStyle('_stylePanel'));
+   o._focusItem            = null;
+   o._itemPool             = null;
    o._listenersClick       = MO.Class.register(o, new MO.AListener('_listenersClick', MO.EEvent.Click));
    o._listenersDoubleClick = MO.Class.register(o, new MO.AListener('_listenersDoubleClick', MO.EEvent.DoubleClick));
-   o._hForm            = null;
-   o.onBuildPanel      = MO.FDuiListView_onBuildPanel;
-   o.onBuild           = MO.FDuiListView_onBuild;
-   o.onClick           = MO.Class.register(o, new MO.AEventClick('onClick'), MO.FDuiListView_onClick);
-   o.construct         = MO.FDuiListView_construct;
-   o.focusItem         = MO.FDuiListView_focusItem;
-   o.createItem        = MO.FDuiListView_createItem;
-   o.appendChild       = MO.FDuiListView_appendChild;
-   o.selectItem        = MO.FDuiListView_selectItem;
-   o.doClickItem       = MO.FDuiListView_doClickItem;
-   o.doDoubleClickItem = MO.FDuiListView_doDoubleClickItem;
-   o.clear             = MO.FDuiListView_clear;
-   o.dispose           = MO.FDuiListView_dispose;
+   o._hForm                = null;
+   o.onBuildPanel          = MO.FDuiListView_onBuildPanel;
+   o.onBuild               = MO.FDuiListView_onBuild;
+   o.onClick               = MO.Class.register(o, new MO.AEventClick('onClick'), MO.FDuiListView_onClick);
+   o.construct             = MO.FDuiListView_construct;
+   o.focusItem             = MO.FDuiListView_focusItem;
+   o.createItem            = MO.FDuiListView_createItem;
+   o.appendChild           = MO.FDuiListView_appendChild;
+   o.selectItem            = MO.FDuiListView_selectItem;
+   o.doClickItem           = MO.FDuiListView_doClickItem;
+   o.doDoubleClickItem     = MO.FDuiListView_doDoubleClickItem;
+   o.clear                 = MO.FDuiListView_clear;
+   o.dispose               = MO.FDuiListView_dispose;
    return o;
 }
 MO.FDuiListView_onBuildPanel = function FDuiListView_onBuildPanel(p){
@@ -56021,7 +56598,7 @@ MO.FDuiListView_selectItem = function FDuiListView_selectItem(item){
       var count = components.count();
       for(var i = 0; i < count; i++){
          var component = components.valueAt(i);
-         if(MO.Class.isClass(component, FDuiListViewItem)){
+         if(MO.Class.isClass(component, MO.FDuiListViewItem)){
             component.setChecked(component == item);
          }
       }
@@ -62893,7 +63470,7 @@ MO.FDuiToolButtonCheck_check = function FDuiToolButtonCheck_check(p){
          for(var i = cs.count() - 1; i >= 0; i--){
             var c = cs.value(i);
             if(c != o){
-               if(MO.Class.isClass(c, FDuiToolButtonCheck)){
+               if(MO.Class.isClass(c, MO.FDuiToolButtonCheck)){
                   c.innerCheck(false);
                }
             }
@@ -68434,7 +69011,7 @@ with(MO){
 }
 MO.FDuiDataTreeView = function FDuiDataTreeView(o){
    o = MO.Class.inherits(this, o, MO.FDuiTreeView);
-   o._serviceDefine       = null;
+   o._serviceDefine       = 'cloud.describe.tree';
    o._serviceCode         = MO.Class.register(o, new MO.APtyString('_serviceCode', 'service'));
    o._statusLoading       = false;
    o._listenersDefineLoad = MO.Class.register(o, new MO.AListener('_listenersDefineLoad'));
@@ -72648,7 +73225,7 @@ with(MO){
       var o = this;
       o.__base.FDuiDataTreeView.onBuild.call(o, p);
       o.addNodeClickListener(o, o.onNodeClick);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.solution');
+      o.loadDefine('resource.solution');
    }
    MO.FDsSolutionCatalogContent_onLoadDisplay = function FDsSolutionCatalogContent_onLoadDisplay(p){
       var o = this;
@@ -75730,7 +76307,7 @@ with(MO){
       var o = this;
       o.__base.FDuiDataTreeView.onBuild.call(o, p);
       o.addNodeClickListener(o, o.onNodeClick);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.catalog');
+      o.loadDefine('resource.catalog');
    }
    MO.FDsResourceCatalogContent_onLoadDisplay = function FDsResourceCatalogContent_onLoadDisplay(p){
       var o = this;
@@ -79783,7 +80360,7 @@ with(MO){
    MO.FDsModelCatalogContent_onBuild = function FDsModelCatalogContent_onBuild(p){
       var o = this;
       o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.model');
+      o.loadDefine('resource.model');
    }
    MO.FDsModelCatalogContent_onLoadDisplay = function FDsModelCatalogContent_onLoadDisplay(p){
       var o = this;
@@ -80615,7 +81192,7 @@ with(MO){
    MO.FDsTemplateCatalogContent_onBuild = function FDsTemplateCatalogContent_onBuild(p){
       var o = this;
       o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.template');
+      o.loadDefine('resource.template');
    }
    MO.FDsTemplateCatalogContent_onNodeClick = function FDsTemplateCatalogContent_onNodeClick(event){
       var o = this;
@@ -81458,7 +82035,7 @@ with(MO){
       column.setName('view');
       o.push(column);
       o.__base.FDsCatalog.onBuild.call(o, event);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=' + o._catalogCode);
+      o.loadDefine(o._catalogCode);
    }
    MO.FDsSceneCatalogContent_onLoadDisplay = function FDsSceneCatalogContent_onLoadDisplay(event){
       var o = this;

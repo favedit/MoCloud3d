@@ -31,7 +31,7 @@ with(MO){
       var o = this;
       o.__base.FDuiDataTreeView.onBuild.call(o, p);
       o.addNodeClickListener(o, o.onNodeClick);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.solution');
+      o.loadDefine('resource.solution');
    }
    MO.FDsSolutionCatalogContent_onLoadDisplay = function FDsSolutionCatalogContent_onLoadDisplay(p){
       var o = this;

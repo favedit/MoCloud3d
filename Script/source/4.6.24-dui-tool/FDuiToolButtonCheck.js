@@ -143,7 +143,7 @@ MO.FDuiToolButtonCheck_check = function FDuiToolButtonCheck_check(p){
          for(var i = cs.count() - 1; i >= 0; i--){
             var c = cs.value(i);
             if(c != o){
-               if(MO.Class.isClass(c, FDuiToolButtonCheck)){
+               if(MO.Class.isClass(c, MO.FDuiToolButtonCheck)){
                   c.innerCheck(false);
                }
             }

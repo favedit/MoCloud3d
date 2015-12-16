@@ -21,7 +21,7 @@ MO.FDuiDataTreeView = function FDuiDataTreeView(o){
    o = MO.Class.inherits(this, o, MO.FDuiTreeView);
    //..........................................................
    // @property
-   o._serviceDefine       = null;
+   o._serviceDefine       = 'cloud.describe.tree';
    o._serviceCode         = MO.Class.register(o, new MO.APtyString('_serviceCode', 'service'));
    //..........................................................
    // @attribute

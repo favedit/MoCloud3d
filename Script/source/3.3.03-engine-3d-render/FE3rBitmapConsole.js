@@ -10,7 +10,7 @@ MO.FE3rBitmapConsole = function FE3rBitmapConsole(o){
    //..........................................................
    // @attribute
    o._scopeCd  = MO.EScope.Local;
-   o._bitmaps  = MO.Class.register(o, new AGetter('_bitmaps'));
+   o._bitmaps  = MO.Class.register(o, new MO.AGetter('_bitmaps'));
    o._dataUrl  = '/cloud.resource.material.wv'
    //..........................................................
    // @method
@@ -54,10 +54,11 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?guid=' + guid + '&code=' + code);
    MO.Logger.info(o, 'Load bitmap. (url={1})', url);
    // 加载模型
+   var graphic = context.graphicContext();
    if(code == 'environment'){
-      bitmap = context.createObject(MO.FE3rBitmapCubePack);
+      bitmap = graphic.createObject(MO.FE3rBitmapCubePack);
    }else{
-      bitmap = context.createObject(MO.FE3rBitmapFlatPack);
+      bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
    o._bitmaps.set(flag, bitmap);
    return bitmap;

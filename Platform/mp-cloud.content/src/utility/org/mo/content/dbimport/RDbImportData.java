@@ -15,13 +15,13 @@ public class RDbImportData
    //============================================================
    public static void importProcess() throws Exception{
       // 设置数据
-      String path = RRs3Configuration.RootPath + "/MoResource/Assest";
+      String path = RRs3Configuration.RootPath + "/Resource/Assest";
       // 导入处理
       IDatabaseConsole dbConsole = RAop.find(IDatabaseConsole.class);
       try(ILogicContext logicContext = new FLogicContext(dbConsole)){
          IResStorageConsole storageConsole = RAop.find(IResStorageConsole.class);
          //storageConsole.clearData(logicContext);
-         storageConsole.importData(logicContext, path);
+         //storageConsole.importData(logicContext, path);
          storageConsole.importStorage(logicContext, path);
       }
    }
@@ -30,9 +30,9 @@ public class RDbImportData
    // <T>主函数。</T>
    //============================================================
    public static void main(String[] args) throws Exception{
-      String configPath = RRs3Configuration.RootPath + "/MoCloud";
+      String configPath = RRs3Configuration.RootPath + "/Platform";
       RAop.configConsole().defineCollection().attributes().set("application", configPath);
-      RAop.initialize(configPath + "/mp-cloud-content/src/config/" + RRs3Configuration.Config);
+      RAop.initialize(configPath + "/mp-cloud.content/src/config/" + RRs3Configuration.Config);
       try{
          importProcess();
       }catch(Exception e){

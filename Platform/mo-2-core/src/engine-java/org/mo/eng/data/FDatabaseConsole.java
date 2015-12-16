@@ -36,6 +36,15 @@ public class FDatabaseConsole
    protected FDictionary<IConnectionConsole> _connectionConsoles = new FDictionary<IConnectionConsole>(IConnectionConsole.class);
 
    //============================================================
+   // <T>获得默认的数据库名称。</T>
+   //
+   // @return 默认的数据库名称
+   //============================================================
+   public String defaultName(){
+      return _default;
+   }
+
+   //============================================================
    // <T>获得链接控制台集合。</T>
    //
    // @return 链接控制台集合
@@ -60,7 +69,7 @@ public class FDatabaseConsole
    //
    // @param name 数据库名称
    // @return 链接控制台
-   //============================================================ 
+   //============================================================
    @Override
    public IConnectionConsole connectionConsole(String name){
       return _connectionConsoles.get(name);
@@ -70,7 +79,7 @@ public class FDatabaseConsole
    // <T>增加一个链接控制台。</T>
    //
    // @param connectionConsole 链接控制台
-   //============================================================ 
+   //============================================================
    @Override
    public void add(IConnectionConsole connectionConsole){
       _connectionConsoles.set(connectionConsole.name(), connectionConsole);
@@ -80,7 +89,7 @@ public class FDatabaseConsole
    // <T>收集一个未使用的数据库链接。</T>
    //
    // @return 数据库链接
-   //============================================================ 
+   //============================================================
    @Override
    public ISqlConnection alloc(){
       return alloc(_default);
@@ -91,7 +100,7 @@ public class FDatabaseConsole
    //
    // @param name 数据库名称
    // @return 数据库链接
-   //============================================================ 
+   //============================================================
    @Override
    public ISqlConnection alloc(String name){
       // 获得数据库链接管理器
@@ -115,7 +124,7 @@ public class FDatabaseConsole
    // <T>回收一个未使用的数据库链接。</T>
    //
    // @param connection 数据库链接
-   //============================================================ 
+   //============================================================
    @Override
    public void free(ISqlConnection connection){
       // 释放链接
@@ -129,7 +138,7 @@ public class FDatabaseConsole
    // <T>释放一个未使用的数据库链接。</T>
    //
    // @param connection 数据库链接
-   //============================================================ 
+   //============================================================
    @Override
    public void releaseConnection(ISqlConnection connection){
       // 释放链接
@@ -143,7 +152,7 @@ public class FDatabaseConsole
    // <T>释放一个指定名称的链接控制台。</T>
    //
    // @param name 链接控制台名称
-   //============================================================ 
+   //============================================================
    @Override
    public void release(String name){
       IConnectionConsole console = _connectionConsoles.find(name);
@@ -154,7 +163,7 @@ public class FDatabaseConsole
 
    //============================================================
    // <T>释放一个全部的链接控制台名称。</T>
-   //============================================================ 
+   //============================================================
    @Override
    public void releaseAll(){
       for(IConnectionConsole console : _connectionConsoles.values()){
@@ -165,7 +174,7 @@ public class FDatabaseConsole
    //============================================================
    // <T>运行时获得当前实例的内部信息。</T>
    //
-   // @return 内部信息 
+   // @return 内部信息
    //============================================================
    public FString dump(){
       FString dump = new FString();

@@ -8,11 +8,12 @@ MO.FE3sProjection = function FE3sProjection(o){
    o = MO.Class.inherits(this, o, MO.FE3sObject);
    //..........................................................
    // @attribute 属性
-   o._angle      = MO.Class.register(o, MO.AGetter('_angle'), 90);
-   o._znear      = MO.Class.register(o, MO.AGetter('_znear'), 1);
-   o._zfar       = MO.Class.register(o, MO.AGetter('_zfar'), 200);
+   o._angle      = MO.Class.register(o, new MO.AGetter('_angle'), 90);
+   o._znear      = MO.Class.register(o, new MO.AGetter('_znear'), 1);
+   o._zfar       = MO.Class.register(o, new MO.AGetter('_zfar'), 200);
    //..........................................................
    // @method
+
    o.unserialize = MO.FE3sProjection_unserialize;
    o.saveConfig  = MO.FE3sProjection_saveConfig;
    return o;

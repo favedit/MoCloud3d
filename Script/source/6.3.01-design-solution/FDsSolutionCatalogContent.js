@@ -70,7 +70,7 @@ with(MO){
       // 注册事件
       o.addNodeClickListener(o, o.onNodeClick);
       // 加载定义
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.solution');
+      o.loadDefine('resource.solution');
    }
 
    //==========================================================

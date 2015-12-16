@@ -6412,22 +6412,24 @@ MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
    o = MO.Class.inherits(this, o, MO.FG3dLight);
-   o._camera    = MO.Class.register(o, new MO.AGetter('_camera'));
-   o._viewport  = MO.Class.register(o, new MO.AGetter('_viewport'));
-   o._direction = MO.Class.register(o, new MO.AGetter('_direction'));
-   o.construct  = MO.FG3dDirectionalLight_construct;
-   o.dispose    = MO.FG3dDirectionalLight_dispose;
+   o._camera      = MO.Class.register(o, new MO.AGetter('_camera'));
+   o._viewport    = MO.Class.register(o, new MO.AGetter('_viewport'));
+   o._direction   = MO.Class.register(o, new MO.AGetter('_direction'));
+   o._classCamera = MO.FG3dCamera;
+   o.construct    = MO.FG3dDirectionalLight_construct;
+   o.dispose      = MO.FG3dDirectionalLight_dispose;
    return o;
 }
 MO.FG3dDirectionalLight_construct = function FG3dDirectionalLight_construct(){
    var o = this;
    o.__base.FG3dLight.construct.call(o);
-   o._camera = MO.Class.create(MO.FG3dCamera);
+   o._camera = MO.Class.create(o._classCamera);
    o._direction = new MO.SVector3();
 }
 MO.FG3dDirectionalLight_dispose = function FG3dDirectionalLight_dispose(){
    var o = this;
    o._camera = MO.Lang.Object.dispose(o._camera);
+   o._direction = MO.Lang.Object.dispose(o._direction);
    o.__base.FG3dLight.dispose.call(o);
 }
 MO.FG3dEffect = function FG3dEffect(o){
@@ -12587,6 +12589,7 @@ MO.FResource = function FResource(o){
    o._guid         = MO.Class.register(o, new MO.AGetSet('_guid'));
    o._code         = MO.Class.register(o, new MO.AGetSet('_code'));
    o._label        = MO.Class.register(o, new MO.AGetSet('_label'));
+   o._sourceUrl    = MO.Class.register(o, new MO.AGetSet('_sourceUrl'));
    return o;
 }
 MO.FResourceBlockStorage = function FResourceBlockStorage(o){
@@ -12723,10 +12726,10 @@ MO.FResourceConsole_onComplete = function FResourceConsole_onComplete(resource, 
    o._loadingResources.remove(resource);
    resource.onComplete(data);
 }
-MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
+MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(event){
    var o = this;
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    var storage = MO.Class.create(MO.FResourceSingleStorage);
    storage.setResource(resource);
    storage.load(data);
@@ -12734,12 +12737,12 @@ MO.FResourceConsole_onLoad = function FResourceConsole_onLoad(connection){
    o._loadingResources.remove(resource);
    o._processStorages.push(storage);
 }
-MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(connection){
+MO.FResourceConsole_onBlockLoad = function FResourceConsole_onBlockLoad(event){
    var o = this;
-   var data = connection.outputData();
-   var resource = connection._resource;
+   var data = event.content;
+   var resource = event.connection._resource;
    resource._compressLength = data.byteLength;
-   resource._compressStartTick = RTimer.current();
+   resource._compressStartTick = MO.Timer.current();
    var storage = MO.Class.create(MO.FResourceBlockStorage);
    storage.setResource(resource);
    storage.load(data);
@@ -12818,6 +12821,9 @@ MO.FResourceConsole_factory = function FResourceConsole_factory(){
 MO.FResourceConsole_load = function FResourceConsole_load(resource){
    var o = this;
    var guid = resource.guid();
+   if(MO.Lang.String.isEmpty(guid)){
+      guid = resource.code();
+   }
    var resources = o._resources;
    if(resources.contains(guid)){
       throw new MO.TError(o, 'Resource is already loaded. (guid={1})', guid);
@@ -13577,12 +13583,8 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    parameters.antialias = o._optionAntialias;
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
    if(o._optionStageProcess){
-      RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-      RStage.start(o._interval);
    }
    if(o._optionResize){
-      MO.Window.lsnsResize.register(o, o.onResize);
-      MO.Window.lsnsOrientation.register(o, o.onResize);
    }
    if(o._optionMouseCapture){
       MO.Console.find(MO.FMouseConsole).register(o);
@@ -15657,9 +15659,9 @@ MO.FE3sObject_dispose = function FE3sObject_dispose(){
 }
 MO.FE3sProjection = function FE3sProjection(o){
    o = MO.Class.inherits(this, o, MO.FE3sObject);
-   o._angle      = MO.Class.register(o, MO.AGetter('_angle'), 90);
-   o._znear      = MO.Class.register(o, MO.AGetter('_znear'), 1);
-   o._zfar       = MO.Class.register(o, MO.AGetter('_zfar'), 200);
+   o._angle      = MO.Class.register(o, new MO.AGetter('_angle'), 90);
+   o._znear      = MO.Class.register(o, new MO.AGetter('_znear'), 1);
+   o._zfar       = MO.Class.register(o, new MO.AGetter('_zfar'), 200);
    o.unserialize = MO.FE3sProjection_unserialize;
    o.saveConfig  = MO.FE3sProjection_saveConfig;
    return o;
@@ -16098,18 +16100,18 @@ MO.FE3sSceneRenderable_unserialize = function FE3sSceneRenderable_unserialize(in
    o.__base.FE3sObject.unserialize.call(o, input);
 }
 MO.FE3sShape = function FE3sShape(o){
-   o = MO.Class.inherits(this, o, FE3sRenderable);
+   o = MO.Class.inherits(this, o, MO.FE3sRenderable);
    o._modelGuid    = MO.Class.register(o, new MO.AGetter('_modelGuid'));
    o._model        = null;
    o._meshGuid     = MO.Class.register(o, new MO.AGetter('_meshGuid'));
    o._mesh         = null;
    o._materialGuid = MO.Class.register(o, new MO.AGetter('_materialGuid'));
    o._material     = null;
-   o.construct     = FE3sShape_construct;
-   o.model         = FE3sShape_model;
-   o.mesh          = FE3sShape_mesh;
-   o.material      = FE3sShape_material;
-   o.unserialize   = FE3sShape_unserialize;
+   o.construct     = MO.FE3sShape_construct;
+   o.model         = MO.FE3sShape_model;
+   o.mesh          = MO.FE3sShape_mesh;
+   o.material      = MO.FE3sShape_material;
+   o.unserialize   = MO.FE3sShape_unserialize;
    return o;
 }
 MO.FE3sShape_construct = function FE3sShape_construct(){
@@ -17121,7 +17123,7 @@ MO.FE3rBitmap_dispose = function FE3rBitmap_dispose(){
 MO.FE3rBitmapConsole = function FE3rBitmapConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._scopeCd  = MO.EScope.Local;
-   o._bitmaps  = MO.Class.register(o, new AGetter('_bitmaps'));
+   o._bitmaps  = MO.Class.register(o, new MO.AGetter('_bitmaps'));
    o._dataUrl  = '/cloud.resource.material.wv'
    o.construct = MO.FE3rBitmapConsole_construct;
    o.load      = MO.FE3rBitmapConsole_load;
@@ -17142,10 +17144,11 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    }
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?guid=' + guid + '&code=' + code);
    MO.Logger.info(o, 'Load bitmap. (url={1})', url);
+   var graphic = context.graphicContext();
    if(code == 'environment'){
-      bitmap = context.createObject(MO.FE3rBitmapCubePack);
+      bitmap = graphic.createObject(MO.FE3rBitmapCubePack);
    }else{
-      bitmap = context.createObject(MO.FE3rBitmapFlatPack);
+      bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
    o._bitmaps.set(flag, bitmap);
    return bitmap;
@@ -17252,6 +17255,7 @@ MO.FE3rBitmapPack = function FE3rBitmapPack(o){
    o._ready     = false;
    o.onLoad     = MO.Method.virtual(o, 'onLoad');
    o.construct  = MO.FE3rBitmapPack_construct;
+   o.setup      = MO.Method.empty;
    o.testReady  = MO.FE3rBitmapPack_testReady;
    o.loadUrl    = MO.Method.virtual(o, 'loadUrl');
    o.dispose    = MO.FE3rBitmapPack_dispose;
@@ -17569,14 +17573,14 @@ MO.FE3rDynamicModel_update = function FE3rDynamicModel_update(p){
 MO.FE3rGeometry = function FE3rGeometry(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
    o._ready            = false;
-   o._resource         = MO.Class.register(o, new AGetSet('_resource'));
-   o._vertexCount      = MO.Class.register(o, new AGetter('_vertexCount'), 0);
-   o._vertexBuffers    = MO.Class.register(o, new AGetter('_vertexBuffers'));
-   o._indexBuffer      = MO.Class.register(o, new AGetter('_indexBuffer'));
-   o._indexBuffers     = MO.Class.register(o, new AGetter('_indexBuffers'));
-   o._resourceMaterial = MO.Class.register(o, new AGetter('_resourceMaterial'));
-   o._material         = MO.Class.register(o, new AGetter('_material'));
-   o._textures         = MO.Class.register(o, new AGetter('_textures'));
+   o._resource         = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._vertexCount      = MO.Class.register(o, new MO.AGetter('_vertexCount'), 0);
+   o._vertexBuffers    = MO.Class.register(o, new MO.AGetter('_vertexBuffers'));
+   o._indexBuffer      = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._indexBuffers     = MO.Class.register(o, new MO.AGetter('_indexBuffers'));
+   o._resourceMaterial = MO.Class.register(o, new MO.AGetter('_resourceMaterial'));
+   o._material         = MO.Class.register(o, new MO.AGetter('_material'));
+   o._textures         = MO.Class.register(o, new MO.AGetter('_textures'));
    o.construct         = MO.FE3rGeometry_construct;
    o.testReady         = MO.FE3rGeometry_testReady;
    o.findVertexBuffer  = MO.FE3rGeometry_findVertexBuffer;
@@ -17631,7 +17635,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
       var dataCount = streamResource.dataCount();
       var data = streamResource.data();
       if((code == 'index16') || (code == 'index32')){
-         var buffer = o._indexBuffer = context.createIndexBuffer(FE3rIndexBuffer);
+         var buffer = o._indexBuffer = context.createIndexBuffer(MO.FE3rIndexBuffer);
          buffer._resource = streamResource;
          var dataCd = streamResource.elementDataCd();
          if(dataCd == MO.EDataType.Uint16){
@@ -17644,7 +17648,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          buffer.upload(data, 3 * dataCount);
          o._indexBuffers.push(buffer);
       }else{
-         var buffer = context.createVertexBuffer(FE3rVertexBuffer);
+         var buffer = context.createVertexBuffer(MO.FE3rVertexBuffer);
          buffer.setCode(code);
          buffer._resource = streamResource;
          buffer._vertexCount = dataCount;
@@ -17652,22 +17656,22 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          switch(code){
             case "position":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float3);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
                o._vertexCount = dataCount;
                break;
             case "coord":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float2);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
                break;
             case "color":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             case "normal":
             case "binormal":
             case "tangent":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             default:
                throw new TError(o, "Unknown code");
@@ -18065,9 +18069,9 @@ MO.FE3rMeshConsole_loadByCode = function FE3rMeshConsole_loadByCode(pc, pg){
 }
 MO.FE3rModel = function FE3rModel(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
-   o._resource            = MO.Class.register(o, new AGetSet('_resource'));
-   o._meshes              = MO.Class.register(o, new AGetter('_meshes'));
-   o._skeletons           = MO.Class.register(o, new AGetter('_skeletons'));
+   o._resource            = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
+   o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
    o._dataReady           = false;
    o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.testReady            = MO.FE3rModel_testReady;
@@ -18300,8 +18304,8 @@ MO.FE3rModelMesh = function FE3rModelMesh(o){
    o = MO.Class.inherits(this, o, MO.FE3rGeometry);
    o._ready            = false;
    o._resourceMaterial = null;
-   o._skins            = MO.Class.register(o, new AGetter('_skins'));
-   o._boneIds          = MO.Class.register(o, new AGetter('_boneIds'));
+   o._skins            = MO.Class.register(o, new MO.AGetter('_skins'));
+   o._boneIds          = MO.Class.register(o, new MO.AGetter('_boneIds'));
    o.construct         = MO.FE3rModelMesh_construct;
    o.testReady         = MO.FE3rModelMesh_testReady;
    o.guid              = MO.FE3rModelMesh_guid;
@@ -19836,6 +19840,7 @@ MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
 MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
    o = MO.Class.inherits(this, o, MO.FG3dDirectionalLight, MO.MLinkerResource);
    o._material    = MO.Class.register(o, new MO.AGetter('_material'));
+   o._classCamera = MO.FE3dPerspectiveCamera;
    o.construct    = MO.FE3dDirectionalLight_construct;
    o.loadResource = MO.FE3dDirectionalLight_loadResource;
    o.dispose      = MO.FE3dDirectionalLight_dispose;
@@ -20587,7 +20592,6 @@ MO.FE3dScene = function FE3dScene(o){
    o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MLinkerResource, MO.MListenerLoad);
    o._ready                = false;
    o._dataReady            = false;
-   o._resource             = MO.Class.register(o, new MO.AGetter('_resource'));
    o._dirty                = false;
    o.onProcess             = MO.FE3dScene_onProcess;
    o.construct             = MO.FE3dScene_construct;
@@ -20646,19 +20650,19 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    var rl = p.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
-   var l = o.directionalLight();
-   l._resource = rl;
-   var lc = l._camera;
-   var lp = lc._projection;
-   lc.position().set(1, 1, -1);
-   lc.lookAt(0, 0, 0);
-   lc.position().assign(rlc.position());
-   lc.update();
-   lp.size().set(1024, 1024);
-   lp._angle = 60;
-   lp._znear = rlv.znear();
-   lp._zfar = rlv.zfar();
-   lp.update();
+   var light = o.directionalLight();
+   light._resource = rl;
+   var lightCamera = light.camera();
+   var lightProjection = lightCamera.projection();
+   lightCamera.position().set(1, 1, -1);
+   lightCamera.lookAt(0, 0, 0);
+   lightCamera.position().assign(rlc.position());
+   lightCamera.update();
+   lightProjection.size().set(1024, 1024);
+   lightProjection._angle = 60;
+   lightProjection._znear = rlv.znear();
+   lightProjection._zfar = rlv.zfar();
+   lightProjection.update();
 }
 MO.FE3dScene_loadDisplayResource = function FE3dScene_loadDisplayResource(layer, resource){
    var o = this;
@@ -21976,7 +21980,7 @@ MO.FE3dSprite = function FE3dSprite(o){
 MO.FE3dSprite_construct = function FE3dSprite_construct(){
    var o = this;
    o.__base.FE3dDisplayContainer.construct.call(o);
-   o._shapes = new TObjects();
+   o._shapes = new MO.TObjects();
 }
 MO.FE3dSprite_testReady = function FE3dSprite_testReady(){
    var o = this;
@@ -22332,7 +22336,7 @@ MO.FE3dTemplate_loadAnimations = function FE3dTemplate_loadAnimations(p){
 }
 MO.FE3dTemplate_loadResource = function FE3dTemplate_loadResource(resource){
    var o = this;
-   var technique = o.selectTechnique(o, FE3dGeneralTechnique);
+   var technique = o.selectTechnique(o, MO.FE3dGeneralTechnique);
    technique.setResource(resource.technique());
    o.__base.FE3dSpace.loadResource.call(o, resource);
    var displayResources = resource.displays();

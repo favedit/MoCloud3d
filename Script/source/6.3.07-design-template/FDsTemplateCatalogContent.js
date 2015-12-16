@@ -39,7 +39,7 @@ with(MO){
       // 注册事件
       //o.lsnsClick.register(o, o.onNodeClick);
       // 加载定义
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.template');
+      o.loadDefine('resource.template');
    }
 
    //==========================================================

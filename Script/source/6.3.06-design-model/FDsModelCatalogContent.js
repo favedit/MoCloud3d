@@ -47,7 +47,7 @@ with(MO){
       // 父处理
       o.__base.FDsCatalog.onBuild.call(o, p);
       // 加载定义
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.model');
+      o.loadDefine('resource.model');
    }
 
    //==========================================================

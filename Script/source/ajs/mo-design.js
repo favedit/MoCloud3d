@@ -4001,7 +4001,7 @@ with(MO){
       var o = this;
       o.__base.FDuiDataTreeView.onBuild.call(o, p);
       o.addNodeClickListener(o, o.onNodeClick);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.solution');
+      o.loadDefine('resource.solution');
    }
    MO.FDsSolutionCatalogContent_onLoadDisplay = function FDsSolutionCatalogContent_onLoadDisplay(p){
       var o = this;
@@ -7083,7 +7083,7 @@ with(MO){
       var o = this;
       o.__base.FDuiDataTreeView.onBuild.call(o, p);
       o.addNodeClickListener(o, o.onNodeClick);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.catalog');
+      o.loadDefine('resource.catalog');
    }
    MO.FDsResourceCatalogContent_onLoadDisplay = function FDsResourceCatalogContent_onLoadDisplay(p){
       var o = this;
@@ -11136,7 +11136,7 @@ with(MO){
    MO.FDsModelCatalogContent_onBuild = function FDsModelCatalogContent_onBuild(p){
       var o = this;
       o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.model');
+      o.loadDefine('resource.model');
    }
    MO.FDsModelCatalogContent_onLoadDisplay = function FDsModelCatalogContent_onLoadDisplay(p){
       var o = this;
@@ -11968,7 +11968,7 @@ with(MO){
    MO.FDsTemplateCatalogContent_onBuild = function FDsTemplateCatalogContent_onBuild(p){
       var o = this;
       o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.template');
+      o.loadDefine('resource.template');
    }
    MO.FDsTemplateCatalogContent_onNodeClick = function FDsTemplateCatalogContent_onNodeClick(event){
       var o = this;
@@ -12811,7 +12811,7 @@ with(MO){
       column.setName('view');
       o.push(column);
       o.__base.FDsCatalog.onBuild.call(o, event);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=' + o._catalogCode);
+      o.loadDefine(o._catalogCode);
    }
    MO.FDsSceneCatalogContent_onLoadDisplay = function FDsSceneCatalogContent_onLoadDisplay(event){
       var o = this;

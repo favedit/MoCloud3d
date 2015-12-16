@@ -10,6 +10,8 @@ MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
    //..........................................................
    // @attribute
    o._material    = MO.Class.register(o, new MO.AGetter('_material'));
+   // @attribute
+   o._classCamera = MO.FE3dPerspectiveCamera;
    //..........................................................
    // @method
    o.construct    = MO.FE3dDirectionalLight_construct;
@@ -41,6 +43,7 @@ MO.FE3dDirectionalLight_construct = function FE3dDirectionalLight_construct(){
 MO.FE3dDirectionalLight_loadResource = function FE3dDirectionalLight_loadResource(resource){
    var o = this;
    o.__base.MLinkerResource.loadResource.call(o, resource);
+   // 加载资源
    o._material.loadResource(resource.material());
 }
 

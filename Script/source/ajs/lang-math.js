@@ -3318,17 +3318,15 @@ MO.SValue3_unserialize3 = function SValue3_unserialize3(input, dataCd) {
          o.y = input.readInt32();
          o.z = input.readInt32();
          break;
-      case MO.EDataType.Float:
-         o.x = input.readFloat();
-         o.y = input.readFloat();
-         o.z = input.readFloat();
-         break;
       case MO.EDataType.Double:
          o.x = input.readDouble();
          o.y = input.readDouble();
          o.z = input.readDouble();
          break;
       default:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         o.z = input.readFloat();
          break;
    }
 }

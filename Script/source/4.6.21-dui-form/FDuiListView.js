@@ -21,39 +21,39 @@ MO.FDuiListView = function FDuiListView(o){
    o = MO.Class.inherits(this, o, MO.FDuiContainer, MO.MDuiHorizontal);
    //..........................................................
    // @property
-   o._sizeCd           = MO.EUiSize.Horizontal
+   o._sizeCd               = MO.EUiSize.Horizontal
    //..........................................................
    // @style
-   o._stylePanel       = MO.Class.register(o, new MO.AStyle('_stylePanel'));
+   o._stylePanel           = MO.Class.register(o, new MO.AStyle('_stylePanel'));
    //..........................................................
    // @attribute
-   o._focusItem        = null;
-   o._itemPool         = null;
+   o._focusItem            = null;
+   o._itemPool             = null;
    // @attribute
    o._listenersClick       = MO.Class.register(o, new MO.AListener('_listenersClick', MO.EEvent.Click));
    o._listenersDoubleClick = MO.Class.register(o, new MO.AListener('_listenersDoubleClick', MO.EEvent.DoubleClick));
    //..........................................................
    // @html
-   o._hForm            = null;
+   o._hForm                = null;
    //..........................................................
    // @event
-   o.onBuildPanel      = MO.FDuiListView_onBuildPanel;
-   o.onBuild           = MO.FDuiListView_onBuild;
+   o.onBuildPanel          = MO.FDuiListView_onBuildPanel;
+   o.onBuild               = MO.FDuiListView_onBuild;
    // @event
-   o.onClick           = MO.Class.register(o, new MO.AEventClick('onClick'), MO.FDuiListView_onClick);
+   o.onClick               = MO.Class.register(o, new MO.AEventClick('onClick'), MO.FDuiListView_onClick);
    //..........................................................
    // @method
-   o.construct         = MO.FDuiListView_construct;
+   o.construct             = MO.FDuiListView_construct;
    // @method
-   o.focusItem         = MO.FDuiListView_focusItem;
+   o.focusItem             = MO.FDuiListView_focusItem;
    // @method
-   o.createItem        = MO.FDuiListView_createItem;
-   o.appendChild       = MO.FDuiListView_appendChild;
-   o.selectItem        = MO.FDuiListView_selectItem;
-   o.doClickItem       = MO.FDuiListView_doClickItem;
-   o.doDoubleClickItem = MO.FDuiListView_doDoubleClickItem;
-   o.clear             = MO.FDuiListView_clear;
-   o.dispose           = MO.FDuiListView_dispose;
+   o.createItem            = MO.FDuiListView_createItem;
+   o.appendChild           = MO.FDuiListView_appendChild;
+   o.selectItem            = MO.FDuiListView_selectItem;
+   o.doClickItem           = MO.FDuiListView_doClickItem;
+   o.doDoubleClickItem     = MO.FDuiListView_doDoubleClickItem;
+   o.clear                 = MO.FDuiListView_clear;
+   o.dispose               = MO.FDuiListView_dispose;
    return o;
 }
 
@@ -174,7 +174,7 @@ MO.FDuiListView_selectItem = function FDuiListView_selectItem(item){
       var count = components.count();
       for(var i = 0; i < count; i++){
          var component = components.valueAt(i);
-         if(MO.Class.isClass(component, FDuiListViewItem)){
+         if(MO.Class.isClass(component, MO.FDuiListViewItem)){
             component.setChecked(component == item);
          }
       }

@@ -607,7 +607,7 @@ with(MO){
    MO.FDsModelCatalogContent_onBuild = function FDsModelCatalogContent_onBuild(p){
       var o = this;
       o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadUrl('/cloud.describe.tree.ws?action=query&code=resource.model');
+      o.loadDefine('resource.model');
    }
    MO.FDsModelCatalogContent_onLoadDisplay = function FDsModelCatalogContent_onLoadDisplay(p){
       var o = this;

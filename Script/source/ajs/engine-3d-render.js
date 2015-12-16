@@ -147,7 +147,7 @@ MO.FE3rBitmap_dispose = function FE3rBitmap_dispose(){
 MO.FE3rBitmapConsole = function FE3rBitmapConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._scopeCd  = MO.EScope.Local;
-   o._bitmaps  = MO.Class.register(o, new AGetter('_bitmaps'));
+   o._bitmaps  = MO.Class.register(o, new MO.AGetter('_bitmaps'));
    o._dataUrl  = '/cloud.resource.material.wv'
    o.construct = MO.FE3rBitmapConsole_construct;
    o.load      = MO.FE3rBitmapConsole_load;
@@ -168,10 +168,11 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    }
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?guid=' + guid + '&code=' + code);
    MO.Logger.info(o, 'Load bitmap. (url={1})', url);
+   var graphic = context.graphicContext();
    if(code == 'environment'){
-      bitmap = context.createObject(MO.FE3rBitmapCubePack);
+      bitmap = graphic.createObject(MO.FE3rBitmapCubePack);
    }else{
-      bitmap = context.createObject(MO.FE3rBitmapFlatPack);
+      bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
    o._bitmaps.set(flag, bitmap);
    return bitmap;
@@ -278,6 +279,7 @@ MO.FE3rBitmapPack = function FE3rBitmapPack(o){
    o._ready     = false;
    o.onLoad     = MO.Method.virtual(o, 'onLoad');
    o.construct  = MO.FE3rBitmapPack_construct;
+   o.setup      = MO.Method.empty;
    o.testReady  = MO.FE3rBitmapPack_testReady;
    o.loadUrl    = MO.Method.virtual(o, 'loadUrl');
    o.dispose    = MO.FE3rBitmapPack_dispose;
@@ -595,14 +597,14 @@ MO.FE3rDynamicModel_update = function FE3rDynamicModel_update(p){
 MO.FE3rGeometry = function FE3rGeometry(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
    o._ready            = false;
-   o._resource         = MO.Class.register(o, new AGetSet('_resource'));
-   o._vertexCount      = MO.Class.register(o, new AGetter('_vertexCount'), 0);
-   o._vertexBuffers    = MO.Class.register(o, new AGetter('_vertexBuffers'));
-   o._indexBuffer      = MO.Class.register(o, new AGetter('_indexBuffer'));
-   o._indexBuffers     = MO.Class.register(o, new AGetter('_indexBuffers'));
-   o._resourceMaterial = MO.Class.register(o, new AGetter('_resourceMaterial'));
-   o._material         = MO.Class.register(o, new AGetter('_material'));
-   o._textures         = MO.Class.register(o, new AGetter('_textures'));
+   o._resource         = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._vertexCount      = MO.Class.register(o, new MO.AGetter('_vertexCount'), 0);
+   o._vertexBuffers    = MO.Class.register(o, new MO.AGetter('_vertexBuffers'));
+   o._indexBuffer      = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._indexBuffers     = MO.Class.register(o, new MO.AGetter('_indexBuffers'));
+   o._resourceMaterial = MO.Class.register(o, new MO.AGetter('_resourceMaterial'));
+   o._material         = MO.Class.register(o, new MO.AGetter('_material'));
+   o._textures         = MO.Class.register(o, new MO.AGetter('_textures'));
    o.construct         = MO.FE3rGeometry_construct;
    o.testReady         = MO.FE3rGeometry_testReady;
    o.findVertexBuffer  = MO.FE3rGeometry_findVertexBuffer;
@@ -657,7 +659,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
       var dataCount = streamResource.dataCount();
       var data = streamResource.data();
       if((code == 'index16') || (code == 'index32')){
-         var buffer = o._indexBuffer = context.createIndexBuffer(FE3rIndexBuffer);
+         var buffer = o._indexBuffer = context.createIndexBuffer(MO.FE3rIndexBuffer);
          buffer._resource = streamResource;
          var dataCd = streamResource.elementDataCd();
          if(dataCd == MO.EDataType.Uint16){
@@ -670,7 +672,7 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          buffer.upload(data, 3 * dataCount);
          o._indexBuffers.push(buffer);
       }else{
-         var buffer = context.createVertexBuffer(FE3rVertexBuffer);
+         var buffer = context.createVertexBuffer(MO.FE3rVertexBuffer);
          buffer.setCode(code);
          buffer._resource = streamResource;
          buffer._vertexCount = dataCount;
@@ -678,22 +680,22 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
          switch(code){
             case "position":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float3);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
                o._vertexCount = dataCount;
                break;
             case "coord":
                pixels = new Float32Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Float2);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
                break;
             case "color":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             case "normal":
             case "binormal":
             case "tangent":
                pixels = new Uint8Array(data);
-               buffer.setFormatCd(EG3dAttributeFormat.Byte4Normal);
+               buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
                break;
             default:
                throw new TError(o, "Unknown code");
@@ -1091,9 +1093,9 @@ MO.FE3rMeshConsole_loadByCode = function FE3rMeshConsole_loadByCode(pc, pg){
 }
 MO.FE3rModel = function FE3rModel(o){
    o = MO.Class.inherits(this, o, MO.FE3rObject);
-   o._resource            = MO.Class.register(o, new AGetSet('_resource'));
-   o._meshes              = MO.Class.register(o, new AGetter('_meshes'));
-   o._skeletons           = MO.Class.register(o, new AGetter('_skeletons'));
+   o._resource            = MO.Class.register(o, new MO.AGetSet('_resource'));
+   o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
+   o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
    o._dataReady           = false;
    o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.testReady            = MO.FE3rModel_testReady;
@@ -1326,8 +1328,8 @@ MO.FE3rModelMesh = function FE3rModelMesh(o){
    o = MO.Class.inherits(this, o, MO.FE3rGeometry);
    o._ready            = false;
    o._resourceMaterial = null;
-   o._skins            = MO.Class.register(o, new AGetter('_skins'));
-   o._boneIds          = MO.Class.register(o, new AGetter('_boneIds'));
+   o._skins            = MO.Class.register(o, new MO.AGetter('_skins'));
+   o._boneIds          = MO.Class.register(o, new MO.AGetter('_boneIds'));
    o.construct         = MO.FE3rModelMesh_construct;
    o.testReady         = MO.FE3rModelMesh_testReady;
    o.guid              = MO.FE3rModelMesh_guid;

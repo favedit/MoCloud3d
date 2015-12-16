@@ -1,6 +1,5 @@
 package org.mo.cloud.core.web;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.web.core.session.IWebSession;
 
 //============================================================
