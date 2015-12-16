@@ -3,7 +3,7 @@
 @SET HOME=%cd%
 @SET HOME_SOURCE=%HOME%\library
 
-@SET HOME_TARGET=%HOME%\mp-cloud-develop\webroot\WEB-INF\lib\
+@SET HOME_TARGET=%HOME%\mp-c3d-develop\webroot\WEB-INF\lib\
 MKDIR %HOME_TARGET%
 @REM COPY /Y %HOME_SOURCE%\mo-common.jar  %HOME_TARGET%
 @REM COPY /Y %HOME_SOURCE%\mo-core.jar    %HOME_TARGET%
@@ -12,7 +12,7 @@ MKDIR %HOME_TARGET%
 @REM COPY /Y %HOME_SOURCE%\mo-cloud.jar   %HOME_TARGET%
 @REM COPY /Y %HOME_SOURCE%\mo-content.jar %HOME_TARGET%
 
-@SET HOME_TARGET=%HOME%\mp-cloud-content\webroot\WEB-INF\lib\
+@SET HOME_TARGET=%HOME%\mp-c3d-content\webroot\WEB-INF\lib\
 MKDIR %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-common.jar  %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-core.jar    %HOME_TARGET%
@@ -22,7 +22,7 @@ COPY /Y %HOME_SOURCE%\mo-cloud.jar   %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-content.jar %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar %HOME_TARGET%
 
-@SET HOME_TARGET=%HOME%\mp-cloud-editor\webroot\WEB-INF\lib\
+@SET HOME_TARGET=%HOME%\mp-c3d-editor\webroot\WEB-INF\lib\
 MKDIR %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-common.jar  %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-core.jar    %HOME_TARGET%
@@ -32,7 +32,7 @@ COPY /Y %HOME_SOURCE%\mo-cloud.jar   %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-content.jar %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar %HOME_TARGET%
 
-@SET HOME_TARGET=%HOME%\mp-cloud-manage\webroot\WEB-INF\lib\
+@SET HOME_TARGET=%HOME%\mp-c3d-manage\webroot\WEB-INF\lib\
 MKDIR %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-common.jar  %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-core.jar    %HOME_TARGET%
@@ -40,125 +40,3 @@ COPY /Y %HOME_SOURCE%\mo-logic.jar   %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-web.jar     %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-cloud.jar   %HOME_TARGET%
 COPY /Y %HOME_SOURCE%\mo-content.jar %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-batch\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar      %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar       %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar       %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar     %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar    %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-login\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar      %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar       %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar       %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar     %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar    %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-content\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-cockpit\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-storage\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-manage\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-service\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-tracker\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-logger\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-eai-demo\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
-
-@SET HOME_TARGET=%HOME%\mp-zmf-content\webroot\WEB-INF\lib\
-MKDIR %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-common.jar         %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-core.jar           %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-logic.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-web.jar            %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-cloud.jar          %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-content.jar        %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-eai-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-zmf-content.jar    %HOME_TARGET%
-COPY /Y %HOME_SOURCE%\mo-lib-lzma.jar       %HOME_TARGET%
