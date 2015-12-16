@@ -1,0 +1,43 @@
+﻿<HTML>
+<HEAD>
+<TITLE>Stage3d Example</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<LINK rel="stylesheet" href='../../acs/lang_cn.css' type="text/css" media="all"/>
+<SCRIPT language='javascript' src='../../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/context_cn.js'></SCRIPT>
+</HEAD>
+
+<SCRIPT>
+var sprite = null;
+
+function onEnterFrame(event){
+    sprite.dirty();
+}
+//----------------------------------------------------------
+function _load(){
+   // 环境设置
+   MO.initialize();
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.Window.Browser.setContentPath('../..');
+   // 创建应用
+   var application = MO.Desktop.initialize(MO.FGuiApplication);
+   application.setup(document.body);
+   application.addEnterFrameListener(null, onEnterFrame);
+
+   var guiManager = application.manager();
+
+   sprite = MO.RClass.create(MO.FGuiSpriteMultimage);
+   sprite.setup('', 10, '.png');
+   sprite.setLocation(100, 100);
+   sprite.setSize(50, 50);
+   sprite.setFrameTime(100);
+   sprite.build();
+   guiManager.register(sprite);
+
+}
+</SCRIPT>
+
+<BODY scroll='auto' onload='_load()'>
+</BODY>
+
+</HTML>

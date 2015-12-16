@@ -1,0 +1,36 @@
+/* ------------------------------------------------------ */
+/* A                                                      */
+/* ------------------------------------------------------ */
+A{
+   text-decoration: none;
+   color: #CCEEFF;
+}
+
+/* ------------------------------------------------------ */
+/* Title                                                  */
+/* ------------------------------------------------------ */
+.Title_Label{
+   color: #FFFFFF;
+   font-size: 12pt;
+   font-weight: bold;
+}
+
+/* ------------------------------------------------------ */
+/* Catalog                                                */
+/* ------------------------------------------------------ */
+.Catalog_Title{
+   padding-left: 4px;
+   color: #FFFF00;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.Catalog_Code{
+   padding-left: 4px;
+   width: 120px;
+   color: #FFFFFF;
+}
+
+.Catalog_Label{
+   color: #CCEEFF;
+}

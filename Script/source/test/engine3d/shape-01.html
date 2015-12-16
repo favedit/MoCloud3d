@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>Stage3d Example</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<LINK rel="stylesheet" href='../../acs/lang_cn.css' type="text/css" media="all"/>
+<SCRIPT language='javascript' src='../../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/context_cn.js'></SCRIPT>
+</HEAD>
+
+<SCRIPT>
+var canvas = null;
+var stage = null;
+var layer = null;
+var shapes = null;
+var tick = 0;
+//----------------------------------------------------------
+function onEnterFrame(){
+   var count = shapes.count();
+   for(var i = 0; i < count; i++){
+      var shape = shapes.at(i);
+      var matrix = shape.matrix();
+      var x = i % 20;
+      var y = parseInt(i / 20);
+      matrix.tx = 2 * x - 18;
+      matrix.ty = y - 5;
+      matrix.ry += 0.01 * y;
+      matrix.updateForce();
+   }
+}
+//----------------------------------------------------------
+function _load(){
+   var singleMode = false;
+   // 环境设置
+   MO.initialize();
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.Window.Browser.setContentPath('../..');
+   MO.Console.find(MO.FE3sVendorConsole).setup('net');
+   // 创建应用
+   var application = MO.Desktop.initialize(MO.FCanvasApplication);
+   application.setup(document.body);
+   var chapter = application.selectChapterByCode(MO.ECanvasChapter.Simple);
+   var scene = chapter.selectSceneByCode(MO.ECanvasScene.Simple);
+   var context = application.desktop().canvas3d().graphicContext();
+   // 设置舞台
+   var stage = scene.activeStage();
+   stage.region().backgroundColor().set(0.5, 0.5, 0.5, 1);
+   stage.addEnterFrameListener(null, onEnterFrame);
+   var layer = stage.spriteLayer();
+   // 创建图片
+   shapes = new MO.TObjects();
+   if(singleMode){
+      var shapeData = context.createObject(MO.FE3dShapeData);
+      shapeData.size().set(400, 200);
+      var graphic = shapeData.beginDraw();
+      graphic.fillRectangle(0, 0, 400, 200, '#00FF00', 1);
+      graphic.drawText('Hello', 10, 10, '#FF0000');
+      shapeData.endDraw();
+      var shape = context.createObject(MO.FE3dShape);
+      shape.setShapeData(shapeData);
+      var matrix = shape.matrix();
+      matrix.sx = 2;
+      matrix.sz = 1;
+      matrix.updateForce();
+      layer.pushRenderable(shape);
+   }else{
+      var shapeData = context.createObject(MO.FE3dShapeData);
+      shapeData.size().set(400, 200);
+      var graphic = shapeData.beginDraw();
+      graphic.setFont("30px 微软雅黑");
+      graphic.fillRectangle(0, 0, 400, 200, '#00FF00', 1);
+      graphic.drawText('警告，这是一个测试。', 20, 40, '#FF0000');
+      shapeData.endDraw();
+      for(var i = 0; i < 400; i++){
+         var shape = context.createObject(MO.FE3dShape);
+         shape.setData(shapeData);
+         var matrix = shape.matrix();
+         matrix.sx = 2;
+         matrix.sz = 1;
+         matrix.updateForce();
+         shapes.push(shape);
+         layer.pushRenderable(shape);
+      }
+   }
+}
+</SCRIPT>
+
+<BODY scroll='auto' onload='_load()'>
+</BODY>
+
+</HTML>

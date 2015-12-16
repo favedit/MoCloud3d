@@ -1,0 +1,80 @@
+<HTML>
+<HEAD>
+<TITLE>Stage3d Example</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<LINK rel="stylesheet" href='../../acs/lang_cn.css' type="text/css" media="all"/>
+<SCRIPT language='javascript' src='../../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/context_cn.js'></SCRIPT>
+</HEAD>
+
+<SCRIPT>
+var canvas = null;
+var stage = null;
+var particle = null;
+var ticker = null;
+//----------------------------------------------------------
+function onEnterFrame(){
+   if(ticker.process()){
+      var loop = 11;
+      for(var x = 0; x < loop; x++){
+         var rate = x / loop * 2;
+         var count = 32;
+         for(var i = 0; i < count; i++){
+            var itemCount = parseInt(Math.random() * 64);
+            particle.setItemCount(itemCount);
+            particle.setItemDelay(200 * i);
+            particle.itemColor().set(Math.random(), Math.random(), Math.random(), 1);
+            particle.itemPosition().set(0 + x * 2 - 10, 5, 0);
+            particle.itemScale().setAll(0.05 + Math.random() * 0.05);
+            particle.setItemSpeed(0.2 + 0.2 * i * Math.random());
+            particle.itemAcceleration().set(0, -0.3, 0);
+            particle.setItemAttenuation(0.02);
+            particle.start();
+         }
+      }
+   }
+   particle.process();
+   id_info.innerHTML = 'Particle count: ' + particle.items().count();
+}
+//----------------------------------------------------------
+function _load(){
+   // 环境设置
+   MO.initialize();
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.RApplication.initialize();
+   MO.RBrowser.setContentPath('../..');
+   // 设置环境
+   MO.RConsole.find(MO.FE3sVendorConsole).setup('net');
+   // 获得数据
+   var ctx = id_canvas.getContext('2d');
+   ctx.fillStyle = '#000000';
+   ctx.fillRect(0, 0, 360, 60);
+   ctx.font = 'bold 42px Microsoft YaHei';
+   ctx.fillStyle = '#FFFFFF';
+   ctx.fillText("124亿3002万", 40, 60);
+   // 创建画布
+   canvas = MO.RClass.create(MO.FE3dSimpleCanvas);
+   canvas.build(document);
+   canvas.setPanel(document.body);
+   var context = canvas.graphicContext();
+   stage = canvas._stage;
+   stage.region().backgroundColor().set(0, 0, 0, 1);
+   stage.addEnterFrameListener(null, onEnterFrame);
+   layer = stage.spriteLayer();
+   // 创建图片
+   particle = context.createObject(MO.FE3dFireworksParticle);
+   particle._data = ctx.getImageData(0, 0, 360, 60);
+   var particleData = context.createObject(MO.FE3dParticleData);
+   particleData.loadUrl('../../ars/eai/particle/6.png');
+   particle.setData(particleData);
+   ticker = new MO.TTicker(60000);
+   stage.spriteLayer().pushRenderable(particle);
+}
+</SCRIPT>
+
+<BODY scroll='auto' onload='_load()'>
+<DIV id='id_info'>
+<CANVAS id='id_canvas' width='360' height='60' style='width:360px; height:80px'>
+</BODY>
+
+</HTML>

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<HTML>
+<HEAD>
+<TITLE>CoolLight Designer</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<META content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+<LINK type="text/css" media="all" rel="stylesheet" href='acs/control.css'/>
+<LINK type="text/css" media="all" rel="stylesheet" href='acs/design.css'/>
+<LINK type="text/css" media="all" rel="stylesheet" href='acs/lang.css'/>
+<LINK type="text/css" media="all" rel="stylesheet" href='acs/test.css'/>
+<SCRIPT language='javascript' src='../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../ajs/context_cn.js'></SCRIPT>
+</HEAD>
+<SCRIPT>
+function onBodyLoad(){
+   // 环境设置
+   MO.initialize();
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.RApplication.initialize();
+   MO.RBrowser.setContentPath('../..');
+   // 设置环境
+   MO.RConsole.find(MO.FE3sVendorConsole).setup('net');
+   // 创建画布
+   id_catalog.src = 'catalog.html';
+   id_space.src = 'capacity.html';
+}
+</SCRIPT>
+<BODY style='background-color:#FFFFFF;overflow:hidden;' onload='onBodyLoad()'>
+<TABLE width='100%' height='100%' border='0' cellpadding='0' cellspacing='0'>
+   <TR style='background-color:#333333'>
+      <TD height='28px' align='center' class='Title_Label'>
+         Microbject 3D Engine Test
+      </TD>
+   </TR>
+   <TR style='background-color:#FFFFFF'>
+      <TD align='center'>
+         <TABLE width='100%' height='100%' border='0' cellpadding='0' cellspacing='0'>
+            <TR>
+               <TD width='280px'><IFRAME name='catalog' id='id_catalog' style='width:100%;height:100%;border:0px;'></IFRAME></TD>
+               <TD><IFRAME name='space' id='id_space' style='width:100%;height:100%;border:0px;'></IFRAME><TD>
+            </TR>
+         </TABLE>
+      </TD>
+   </TR>
+</TABLE>
+</BODY>
+</HTML>

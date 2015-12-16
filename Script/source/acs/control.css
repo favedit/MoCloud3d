@@ -1,0 +1,1549 @@
+/* ------------------------------------------------------ */
+/* Tag_Icon                                               */
+/* ------------------------------------------------------ */
+.Tag_Icon{
+   display: block;
+   border: 0px;
+}
+
+/* ------------------------------------------------------ */
+/* MDuiEditChange                                         */
+/* ------------------------------------------------------ */
+.MDuiEditChange_ChangePanel{
+   cursor: pointer;
+   width: 6px;
+   vertical_align: top;
+}
+
+.MDuiEditChange_ChangeIcon{
+   display: none;
+}
+
+/* ------------------------------------------------------ */
+/* MDuiEditDrop                                           */
+/* ------------------------------------------------------ */
+.MDuiEditDrop_DropPanel{
+   width: 14px;
+   cursor: pointer;
+   border-left: 1px solid #CCCCCC;
+}
+
+.MDuiEditDrop_DropIcon{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiDropEditor                                         */
+/* ------------------------------------------------------ */
+.FDuiDropEditor_Panel{
+   position: absolute;
+   padding:0px 2px 0px 2px;
+   border:1px solid #CCCCCC;
+   border-radius:2px;
+   background-color: #FFFFFF;
+}
+
+.FDuiDropEditor_DropForm{
+   width: 100%;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiEditControl                                        */
+/* ------------------------------------------------------ */
+.FDuiEditControl_LabelPanel{
+   color: #333333;
+}
+
+.FDuiEditControl_LabelPicker{
+   color: #333333;
+}
+
+.FDuiEditControl_EditorPanel{
+}
+
+.FDuiEditControl_ValuePanel{
+}
+
+.FDuiEditControl_ValueNormal{
+   padding:0px 3px 0px 3px;
+   border:1px solid #CCCCCC;
+   border-radius:3px;
+   background-color: #EBFFFF;
+}
+
+.FDuiEditControl_ValueHover{
+   padding:0px 3px 0px 3px;
+   border-left:1px solid #666666;
+   border-top:1px solid #666666;
+   border-right:1px solid #AAAAAA;
+   border-bottom:1px solid #AAAAAA;
+   border-radius:3px;
+   background-color: #EBFFFF;
+}
+
+.FDuiEditControl_ValueReadonly{
+   padding:0px 3px 0px 3px;
+   border:1px solid #CCCCCC;
+   border-radius:3px;
+   background-color: #FEFECB;
+}
+
+.FDuiEditControl_InputPanel{
+   padding: 1px 3px;
+}
+
+.FDuiEditControl_InputNormal{
+   width: 100%;
+   height: 14px;
+   border: 0px;
+   padding: 1px;
+   margin: 1px;
+   background-color: #EBFFFF;
+}
+
+.FDuiEditControl_InputHover{
+   width: 100%;
+   height: 14px;
+   border: 0px;
+   padding: 1px;
+   margin: 1px;
+   background-color: #EBFFFF;
+}
+
+.FDuiEditControl_InputReadonly{
+   width: 100%;
+   height: 14px;
+   border: 0px;
+   padding: 1px;
+   margin: 1px;
+   background-color: #FEFECB;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiCheck                                              */
+/* ------------------------------------------------------ */
+.FDuiCheck_InputEdit{
+}
+
+.FDuiCheck_Input{
+   width: 12px;
+   height: 12px;
+   cursor: pointer;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiRadio                                              */
+/* ------------------------------------------------------ */
+.FDuiRadio_Input{
+   width: 12px;
+   height: 12px;
+   cursor: pointer;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiNumber                                             */
+/* ------------------------------------------------------ */
+.FDuiNumber_AdjustPanel{
+   width: 12px;
+   border-left: 1px solid #666666;
+}
+
+.FDuiNumber_AdjustForm{
+   width: 11px;
+   height: 14px;
+   cursor: pointer;
+}
+
+.FDuiNumber_UpPanel{
+}
+
+.FDuiNumber_DownPanel{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiNumber2                                            */
+/* ------------------------------------------------------ */
+.FDuiNumber2_InputPanel{
+   padding:0px 2px 0px 2px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiNumber2_Input{
+   width: 100%;
+   border: 0;
+   color: #FFFFFF;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiNumber3                                            */
+/* ------------------------------------------------------ */
+.FDuiNumber3_ValuePanel{
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiNumber3_InputPanel{
+   padding:0px 2px 0px 2px;
+}
+
+.FDuiNumber3_Input{
+   width: 100%;
+   border: 0;
+   text-align: right;
+   color: #FFFFFF;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiNumber4                                            */
+/* ------------------------------------------------------ */
+.FDuiNumber4_InputPanel{
+   padding:0px 2px 0px 2px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiNumber4_Input{
+   width: 100%;
+   border: 0;
+   color: #FFFFFF;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiSlideNumber                                        */
+/* ------------------------------------------------------ */
+.FDuiSlideNumber_SlidePanel{
+   border: 0;
+   padding: 0px 4px 0px 0px;
+}
+
+.FDuiSlideNumber_ValuePanel{
+   padding:0px 3px 0px 0px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiSlideNumber_InputPanel{
+   border: 0;
+   padding: 0px 4px 0px 4px;
+   border-radius:2px;
+   background-color: #666666;
+}
+
+.FDuiSlideNumber_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   text-align: right;
+   color: #E0E0E0;
+   background-color: #666666;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiColor                                              */
+/* ------------------------------------------------------ */
+.FDuiColor_InputPanel{
+   padding:0px 2px 0px 2px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiColor_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   color: #FFFFFF;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiColor3                                             */
+/* ------------------------------------------------------ */
+.FDuiColor3_ValuePanel{
+   padding:0px 3px 0px 3px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiColor3_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   text-align: center;
+   color: #E0E0E0;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiColor4                                             */
+/* ------------------------------------------------------ */
+.FDuiColor4_InputPanel{
+   padding:0px 3px 0px 3px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiColor4_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   color: #FFFFFF;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiColorPower                                         */
+/* ------------------------------------------------------ */
+.FDuiColorPower_ValuePanel{
+   padding:0px 3px 0px 0px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiColorPower_InputPanel{
+   border: 0;
+   padding: 0px 4px 0px 4px;
+   border-radius:2px;
+   background-color: #666666;
+}
+
+.FDuiColorPower_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   text-align: right;
+   color: #E0E0E0;
+   background-color: #666666;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiEdit                                               */
+/* ------------------------------------------------------ */
+
+/* ------------------------------------------------------ */
+/* FDuiMemo                                               */
+/* ------------------------------------------------------ */
+
+/* ------------------------------------------------------ */
+/* FDuiIconPicker                                         */
+/* ------------------------------------------------------ */
+
+/* ------------------------------------------------------ */
+/* FDuiFile                                               */
+/* ------------------------------------------------------ */
+.FDuiFile_ValuePanel{
+   padding:0px 3px 0px 0px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiFile_InputPanel{
+   position: relative;
+}
+
+.FDuiFile_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   color: #E0E0E0;
+   background-color: #777777;
+}
+
+.FDuiFile_File{
+   position:absolute;
+   left:0px;
+   top:0px;
+   width: 100%;
+   filter:alpha(opacity:0);
+   opacity: 0;
+}
+
+.FDuiFile_Browser{
+   width: 70px;
+   height: 16px;
+   border: 0;
+   color: #E0E0E0;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiSelectItem                                         */
+/* ------------------------------------------------------ */
+.FDuiSelectItem_Normal{
+   cursor: pointer;
+   background-color: #FFFFFF;
+}
+
+.FDuiSelectItem_Hover{
+   cursor: pointer;
+   background-color: #EEEEEE;
+}
+
+.FDuiSelectItem_Select{
+   cursor: pointer;
+   background-color: #CCCCCC;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiSelect                                             */
+/* ------------------------------------------------------ */
+.FDuiSelect_ValuePanel{
+   padding:0px 3px 0px 0px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiSelect_InputPanel{
+   padding:0px 2px 0px 2px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+   border-radius:3px;
+   background-color: #777777;
+}
+
+.FDuiSelect_Input{
+   width: 100%;
+   height: 14px;
+   border: 0;
+   color: #E0E0E0;
+   background-color: #777777;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiListItem                                           */
+/* ------------------------------------------------------ */
+.FDuiListItem_Normal{
+   cursor: pointer;
+   padding: 4px 2px;
+   background-color: #666666;
+}
+
+.FDuiListItem_Hover{
+   cursor: pointer;
+   padding: 4px 2px;
+   background-color: #999999;
+}
+
+.FDuiListItem_Select{
+   cursor: pointer;
+   padding: 4px 2px;
+   background-color: #333333;
+}
+
+.FDuiListItem_IconPanel{
+   width: 16px;
+}
+
+.FDuiListItem_Icon{
+   width: 16px;
+}
+
+.FDuiListItem_Label{
+   color: #EEEEEE;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiListBox                                            */
+/* ------------------------------------------------------ */
+.FDuiListBox_Panel{
+   width: 100%;
+   padding: 1px;
+   margin: 4px 0px;
+   border-left:1px solid #333333;
+   border-top:1px solid #333333;
+   border-right:1px solid #666666;
+   border-bottom:1px solid #666666;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiListViewItem                                       */
+/* ------------------------------------------------------ */
+.FDuiListViewItem_Panel{
+   float: left;
+   padding: 6px;
+}
+
+.FDuiListViewItem_Normal{
+   width: 100%;
+   height: 100%;
+   cursor: pointer;
+   border:1px solid #CCCCCC;
+   padding: 2px;
+}
+
+.FDuiListViewItem_Hover{
+   width: 100%;
+   height: 100%;
+   cursor: pointer;
+   border:1px solid #CCCCCC;
+   box-shadow: 0px 0px 4px #000000;
+}
+
+.FDuiListViewItem_Select{
+   width: 100%;
+   height: 100%;
+   cursor: pointer;
+   border:1px solid #0066FF;
+   box-shadow: 0px 0px 4px #000000;
+}
+
+.FDuiListViewItem_Form{
+   width: 100%;
+   height: 100%;
+}
+
+.FDuiListViewItem_Content{
+   width: 100%;
+   height: 100%;
+   background:rgba(255, 255, 255, 0.7);
+}
+
+.FDuiListViewItem_IconPanel{
+   padding-left:8px;
+   width: 24px;
+}
+
+.FDuiListViewItem_Icon{
+   width: 16px;
+}
+
+.FDuiListViewItem_Label{
+   padding: 2px 4px;
+   color: #333333;
+   text-align: right;
+   white-space:nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiListView                                           */
+/* ------------------------------------------------------ */
+.FDuiListView_Panel{
+   width: 100%;
+   height: 100%;
+   overflow-y: auto;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiButton                                             */
+/* ------------------------------------------------------ */
+.FDuiButton_Panel{
+   border-radius:3px;
+   color: #333333;
+   background-color: #999999;
+   cursor: pointer;
+}
+
+.FDuiButton_Form{
+   width: 100%;
+   height: 100%;
+}
+
+.FDuiButton_Icon{
+}
+
+.FDuiButton_Label{
+   font-family: "Microsoft YaHei"; 
+   font-size: 9pt;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiCanvas                                             */
+/* ------------------------------------------------------ */
+.FDuiCanvas_Canvas{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiLayout                                             */
+/* ------------------------------------------------------ */
+.FDuiLayout_Form{
+   width: 100%;
+}
+
+.FDuiLayout_ControlPanel{
+   padding:1px 0px;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiPanel                                              */
+/* ------------------------------------------------------ */
+.FDuiPanel_Panel{
+   padding: 3px 5px;
+}
+
+.FDuiPanel_Label{
+   font-family: "Microsoft YaHei"; 
+   cursor: pointer;
+   height: 24px;
+   color: #000000;
+   padding: 1px 6px;
+   font-weight: bold;
+   border: 1px solid #999999;
+   border-radius:2px;
+   background-color: #F7F7F7;
+}
+
+.FDuiPanel_Body{
+   border-radius:0px 0px 4px 4px;
+   padding: 4px 10px 4px 10px;
+   background-color: #FFFFFF;
+}
+
+.FDuiPanel_Form{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiPageSheet                                          */
+/* ------------------------------------------------------ */
+.FDuiPageSheet_Panel{
+   width: 100%;
+   height: 100%;
+}
+
+.FDuiPageSheet_Sheet{
+   padding:10px;
+}
+
+.FDuiPageSheet_Button{
+   padding-left:10px; padding-top:3px; padding-right:10px; padding-bottom:2px;
+   background: -ms-linear-gradient(top, #EEEEEE, #999999);
+   background: -moz-linear-gradient(top, #EEEEEE, #999999); 
+   background: -webkit-gradient(linear, left top, left bottom, from(#EEEEEE), to(#999999)); 
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#EEEEEE, endcolorstr=#999999);
+}
+
+.FDuiPageSheet_ButtonHover{
+   cursor:pointer;
+   border-top:1 solid #EEEEEE;
+   padding-left:10px; padding-top:3px; padding-right:10px; padding-bottom:2px;
+   background: -ms-linear-gradient(top, #FFFFFF, #DDDDDD);
+   background: -moz-linear-gradient(top, #FFFFFF, #DDDDDD); 
+   background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#DDDDDD)); 
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#FFFFFF, endcolorstr=#DDDDDD);
+}
+
+.FDuiPageSheet_ButtonSelect{
+   cursor:pointer;
+   padding-left:10px; padding-top:3px; padding-right:10px; padding-bottom:2px;
+   background: -ms-linear-gradient(top, #BBBBBB, #EEEEEE);
+   background: -moz-linear-gradient(top, #BBBBBB, #EEEEEE); 
+   background: -webkit-gradient(linear, left top, left bottom, from(#BBBBBB), to(#EEEEEE)); 
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#BBBBBB, endcolorstr=#EEEEEE);
+}
+
+.FDuiPageSheet_ButtonText{
+   white-space:nowrap;
+}
+
+.FDuiPageSheet_Top{
+   height:1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiPageSheet_TopSelect{
+   height:1px;
+   background-color:#FFFFFF;
+}
+
+.FDuiPageSheet_Left{
+   border-top:1 solid #666666;
+   width: 1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiPageSheet_LeftSelect{
+   width: 1px;
+   background-color:#FFFFFF;
+}
+
+.FDuiPageSheet_Right{
+   width:1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiPageSheet_RightSelect{
+   width:1px;
+   background-color:#FFFFFF;
+}
+
+.FDuiPageSheet_Bottom{
+   height:1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiPageSheet_BottomSelect{
+   height:1px;
+   background-color:#FFFFFF;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiPageControl                                        */
+/* ------------------------------------------------------ */
+.FDuiPageControl_Panel{
+   width: 100%;
+}
+
+.FDuiPageControl_TitlePanel{
+   height: 1px;
+}
+
+.FDuiPageControl_TitleForm{
+   width: 100%;
+}
+
+.FDuiPageControl_SheetPanel{
+   vertical-align: top;
+   border-left: 1px solid #29BAD5;
+   border-right: 1px solid #29BAD5;
+   border-bottom: 1px solid #29BAD5;
+   padding: 6px;
+}
+
+.FDuiPageControl_Sheets{
+   border:1 solid blue;
+   width:100%; height:100;
+}
+
+.FDuiPageControl_RightP{
+   width:1px; border-top:1 solid #29BAD5;
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#FFFFFF, endcolorstr=#29bad7);
+}
+}
+
+.FDuiPageControl_SheetLeft{
+   width:1px; background-color:#29BAD5;
+}
+
+.FDuiPageControl_SheetRight{
+   width:1px; background-color:#29BAD5;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiTabButton                                          */
+/* ------------------------------------------------------ */
+.FDuiTabButton_Panel{
+}
+
+.FDuiTabButton_Sheet{
+   padding:10px;
+}
+
+.FDuiTabButton_Button{
+   padding-left:10px; padding-top:3px; padding-right:10px; padding-bottom:2px;
+   background: -ms-linear-gradient(top, #EEEEEE, #999999);
+   background: -moz-linear-gradient(top, #EEEEEE, #999999); 
+   background: -webkit-gradient(linear, left top, left bottom, from(#BBBBBB), to(#CCCCCC)); 
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#EEEEEE, endcolorstr=#999999);
+}
+
+.FDuiTabButton_ButtonHover{
+   cursor:pointer;
+   border-top:1 solid #EEEEEE;
+   padding-left:10px; padding-top:3px; padding-right:10px; padding-bottom:2px;
+   background: -ms-linear-gradient(top, #FFFFFF, #DDDDDD);
+   background: -moz-linear-gradient(top, #FFFFFF, #DDDDDD); 
+   background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#DDDDDD)); 
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#FFFFFF, endcolorstr=#DDDDDD);
+}
+
+.FDuiTabButton_ButtonSelect{
+   cursor:pointer;
+   padding-left:10px; padding-top:3px; padding-right:10px; padding-bottom:2px;
+   background: -ms-linear-gradient(top, #BBBBBB, #EEEEEE);
+   background: -moz-linear-gradient(top, #BBBBBB, #EEEEEE); 
+   background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#EEEEEE)); 
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#BBBBBB, endcolorstr=#EEEEEE);
+}
+
+.FDuiTabButton_ButtonText{
+   white-space:nowrap;
+}
+
+.FDuiTabButton_Top{
+   height: 2px;
+   background-color:#666666;
+}
+
+.FDuiTabButton_TopSelect{
+   height:1px;
+   background-color:#999999;
+}
+
+.FDuiTabButton_Left{
+   width: 1px;
+   background-color:#999999;
+}
+
+.FDuiTabButton_LeftSelect{
+   width: 1px;
+   background-color:#999999;
+}
+
+.FDuiTabButton_Right{
+   width:1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiTabButton_RightSelect{
+   width:1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiTabButton_Bottom{
+   height:1px;
+   background-color:#CCCCCC;
+}
+
+.FDuiTabButton_BottomSelect{
+   height:1px;
+   background-color:#EEEEEE;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiTabBar                                             */
+/* ------------------------------------------------------ */
+.FDuiTabBar_Panel{
+   width: 100%;
+}
+
+.FDuiTabBar_TitlePanel{
+}
+
+.FDuiTabBar_TitleForm{
+   width: 100%;
+}
+
+.FDuiTabBar_SheetPanel{
+   vertical-align: top;
+   border-left:1 solid #29bad5; border-right:1 solid #29bad5; border-bottom:1 solid #29bad5;
+   padding:6;
+}
+
+.FDuiTabBar_Sheets{
+   border:1 solid blue;
+   width:100%; height:100;
+}
+
+.FDuiTabBar_RightP{
+   width:1px; border-top:1 solid #29bad5;
+   filter:progid:DXImageTransform.Microsoft.Gradient(gradienttype=0, startcolorstr=#FFFFFF, endcolorstr=#29bad7);
+}
+}
+
+.FDuiTabBar_SheetLeft{
+   width:1px; background-color:#29bad5;
+}
+
+.FDuiTabBar_SheetRight{
+   width:1px; background-color:#29bad5;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiCell                                               */
+/* ------------------------------------------------------ */
+.FDuiCell_PanelNormal{
+   padding-top: 1px;
+   padding-bottom: 1px;
+   border-bottom: 1px dotted #CCCCCC;
+   background-color: #F0F0F0;
+}
+
+.FDuiCell_PanelHover{
+   padding-top: 1px;
+   padding-bottom: 1px;
+   border-bottom: 1px dotted #CCCCCC;
+   background-color: #E8E8FF;
+}
+
+.FDuiCell_PanelSelect{
+   padding-top: 1px;
+   padding-bottom: 1px;
+   border-bottom: 1px dotted #CCCCCC;
+   background-color: #CDE5FF;
+}
+
+.FDuiCell_InputNormal{
+   width: 100%;
+   border: 0px;
+   background-color: #F0F0F0;
+}
+
+.FDuiCell_InputHover{
+   width: 100%;
+   border: 0px;
+   background-color: #E8E8FF;
+}
+
+.FDuiCell_InputSelect{
+   width: 100%;
+   border: 0px;
+   background-color: #CDE5FF;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiCellEdit                                           */
+/* ------------------------------------------------------ */
+
+/* ------------------------------------------------------ */
+/* FDuiColumn                                             */
+/* ------------------------------------------------------ */
+.FDuiColumn_Label{
+   border-bottom: 1px solid #999999;
+   background-color: #FFFFFF;
+}
+
+.FDuiColumn_SearchPanel{
+   padding: 0px 1px;
+   background-color: #EEEEEE;
+}
+
+.FDuiColumn_SearchEdit{
+   width: 100%;
+   border: 1px solid #DDDDDD;
+   background-color: #FFFFFF;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiGridRowControl                                     */
+/* ------------------------------------------------------ */
+.FDuiGridRowControl_PanelNormal{
+}
+
+.FDuiGridRowControl_PanelHover{
+}
+
+.FDuiGridRowControl_PanelSelect{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiGridControl                                        */
+/* ------------------------------------------------------ */
+.FDuiGridControl_Panel{
+   width:100%;
+   height:300px;
+   border-radius: 2px;
+   border: 1px solid #999999;
+}
+
+.FDuiGridControl_TitlePanel{
+   height: 24px;
+   border-bottom: 1px solid #999999;
+   background-color: #F7F7F7;
+}
+
+.FDuiGridControl_Caption{
+   color: #333333;
+   font-size: 12pt;
+   text-align: center;
+}
+
+.FDuiGridControl_TitleForm{
+   width: 100%;
+}
+
+.FDuiGridControl_ContentPanel{
+   position: relative;
+}
+
+.FDuiGridControl_HintPanel{
+   color: #333333;
+   height: 20px;
+   padding; 0px 8px 0px 8px;
+}
+
+.FDuiGridControl_HintForm{
+   width: 100%;
+}
+
+.FDuiGridControl_Hint{
+}
+
+.FDuiGridControl_Page{
+   border: 1px solid #CCCCCC;
+}
+
+.FDuiGridControl_ButtonForm{
+   cursor: pointer;
+}
+
+.FDuiGridControl_Button{
+   color: #EEEEEE;
+   white-space: nowrap;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiTable                                              */
+/* ------------------------------------------------------ */
+.FDuiTable_Panel{
+   width:100%;
+}
+
+.FDuiTable_FixPanel{
+   position: absolute;
+   z-index: 2;
+   background-color:#FFFFFF;
+}
+
+.FDuiTable_FixForm{
+   table-layout:fixed;
+}
+
+.FDuiTable_HeadPanel{
+   position: absolute;
+   z-index: 1;
+   overflow-x: hidden;
+   background-color:CCCCCC;
+}
+
+.FDuiTable_HeadForm{
+   table-layout:fixed;
+}
+
+.FDuiTable_ColumnPanel{
+   position: absolute;
+   z-index: 1;
+   overflow-y: hidden;
+   background-color:CCCCCC;
+}
+
+.FDuiTable_ColumnForm{
+   table-layout:fixed;
+   border-bottom: 1 solid #BFD3EE;
+}
+
+.FDuiTable_DataPanel{
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   overflow: scroll;
+   background-color:#666666;
+}
+
+.FDuiTable_DataForm{
+   table-layout:fixed;
+   background-color:#BFD3EE;
+   border-bottom: 1 solid #BFD3EE;
+}
+
+.FDuiRow_Panel{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiMenuBar                                            */
+/* ------------------------------------------------------ */
+.FDuiMenuBar_Panel{
+   padding:2px 4px 2px 4px;
+}
+
+.FDuiMenuBar_ButtonPanel{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiMenuButton                                         */
+/* ------------------------------------------------------ */
+.FDuiMenuButton_Normal{
+   margin:0px 2px 0px 2px;
+   padding:1px 4px 1px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiMenuButton_Hover{
+   background-color: #FFFFFF;
+   margin:0px 2px 0px 2px;
+   padding:1px 4px 1px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiMenuButton_Press{
+   margin:0px 2px 0px 2px;
+   padding:1px 4px 1px 4px;
+   border-radius:2px;
+   cursor: pointer;
+}
+
+.FDuiMenuButton_Disable{
+   margin:0px 2px 0px 2px;
+   padding:1px 4px 1px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiMenuButton_IconPanel{
+   padding-right: 4px;
+}
+
+.FDuiMenuButton_LabelPanel{
+   color: #333333;
+   white-space: nowrap;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiMenuButtonSplit                                    */
+/* ------------------------------------------------------ */
+.FDuiMenuButtonSplit_PanelHorizontal{
+   width: 100%;
+   border-top:1px solid #666666;
+   border-bottom:1px solid #CCCCCC;
+}
+
+.FDuiMenuButtonSplit_PanelVertical{
+   height: 20px;
+   border-left: 1px solid #999999;
+   border-right: 1px solid #EEEEEE;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiSliderMenu                                         */
+/* ------------------------------------------------------ */
+.FDuiSliderMenu_Panel{
+   width:100%;
+}
+
+.FDuiSliderMenu_MenuPanel{
+   background-color: #394555;
+   height: 26px;
+}
+
+.FDuiSliderMenu_GroupPanel{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiSliderGroup                                        */
+/* ------------------------------------------------------ */
+.FDuiSliderGroup_Panel{
+   width:100%;
+   color: #FFFFFF;
+   padding:8px 12px 8px 12px;
+   border-bottom: 1px solid #394555;
+   cursor: pointer;
+}
+
+.FDuiSliderGroup_ButtonPanel{
+}
+
+.FDuiSliderGroup_IconPanel{
+   padding-right: 4px;
+}
+
+.FDuiSliderGroup_SpacePanel{
+   width: 8px;
+}
+
+.FDuiSliderGroup_LabelPanel{
+   font-size: 16px;
+   white-space: nowrap;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiSliderButton                                        */
+/* ------------------------------------------------------ */
+.FDuiSliderButton_Normal{
+   width:100%;
+   padding:3px 12px 3px 12px;
+   cursor: pointer;
+}
+
+.FDuiSliderButton_Hover{
+   width:100%;
+   background-color: #0099CC;
+   padding:3px 12px 3px 12px;
+   cursor: pointer;
+}
+
+.FDuiSliderButton_Press{
+   width:100%;
+   padding:3px 12px 3px 12px;
+   cursor: pointer;
+}
+
+.FDuiSliderButton_Disable{
+   width:100%;
+   margin:0px 2px 0px 2px;
+   padding:1px 4px 1px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiSliderButton_IconPanel{
+   padding-right: 4px;
+}
+
+.FDuiSliderButton_SpacePanel{
+   width: 8px;
+}
+
+.FDuiSliderButton_LabelPanel{
+   color: #FFFFFF;
+   font-size: 14px;
+   white-space: nowrap;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiPopupMenu                                          */
+/* ------------------------------------------------------ */
+.FDuiPopupMenu_Panel{
+   position: absolute;
+}
+
+.FDuiPopupMenu_Form{
+   width: 100%;
+   border-radius:3px;
+   background:#CCCCCC;
+   box-shadow:2px 2px 5px #333333;
+   -webkit-box-shadow:2px 2px 5px #333333;
+   -moz-box-shadow:2px 2px 5px #333333;
+}
+
+.FDuiPopupMenu_Container{
+   width: 100%;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiToolBar                                            */
+/* ------------------------------------------------------ */
+.FDuiToolBar_Panel{
+   padding:2px 0px 2px 0px;
+}
+
+.FDuiToolBar_ButtonPanel{
+   position: relative;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiToolButton                                         */
+/* ------------------------------------------------------ */
+.FDuiToolButton_Normal{
+   margin:0px 1px 0px 1px;
+   padding:2px 6px 2px 6px;
+   cursor: pointer;
+   border:1px solid #999999;
+   background-color: #EAEDF2;
+}
+
+.FDuiToolButton_Hover{
+   margin:0px 1px 0px 1px;
+   padding:2px 6px 2px 6px;
+   border:1px solid #999999;
+   background-color: #FFFFF0;
+   cursor: pointer;
+}
+
+.FDuiToolButton_Press{
+   margin:0px 1px 0px 1px;
+   padding:2px 6px 2px 6px;
+   cursor: pointer;
+   color: #FFFFFF;
+   border:1px solid #999999;
+   background-color: #76899F;
+}
+
+.FDuiToolButton_Disable{
+   margin:0px 1px 0px 1px;
+   padding:2px 6px 2px 6px;
+   border-radius:2px;
+   border:1px solid #CCCCCC;
+   background-color: #666666;
+   cursor: pointer;
+}
+
+.FDuiToolButton_IconPanel{
+}
+
+.FDuiToolButton_SpacePanel{
+   width: 4px;
+}
+
+.FDuiToolButton_LabelPanel{
+   white-space: nowrap;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiToolButtonSplit                                    */
+/* ------------------------------------------------------ */
+.FDuiToolButtonSplit_Panel{
+   width: 4px;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiToolButtonMenu                                     */
+/* ------------------------------------------------------ */
+.FDuiToolButtonMenu_Panel{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiHistoryBar                                         */
+/* ------------------------------------------------------ */
+.FDuiHistoryBar_Panel{
+}
+
+.FDuiHistoryBar_ButtonPanel{
+   height: 36px;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiHistoryButton                                      */
+/* ------------------------------------------------------ */
+.FDuiHistoryButton_Normal{
+   margin:0px 2px;
+   padding:0px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiHistoryButton_Hover{
+   background-color: #FFFFFF;
+   margin:0px 2px;
+   padding:0px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiHistoryButton_Press{
+   margin:0px 2px;
+   padding:0px 4px;
+   border-radius:2px;
+   cursor: pointer;
+}
+
+.FDuiHistoryButton_Disable{
+   margin:0px 2px;
+   padding:0px 4px;
+   border-radius:3px;
+   cursor: pointer;
+}
+
+.FDuiHistoryButton_IconPanel{
+   padding-right: 4px;
+}
+
+.FDuiHistoryButton_LabelPanel{
+   color: #333333;
+   font-size: 22px;
+   white-space: nowrap;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiTreeView                                           */
+/* ------------------------------------------------------ */
+.FDuiTreeView_Panel{
+   width: 100%;
+   height: 100%;
+}
+
+.FDuiTreeView_NodePanel{
+   width: 100%;
+   height: 100%;
+   overflow:auto;
+}
+
+.FDuiTreeView_NodeForm{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiTreeNode                                           */
+/* ------------------------------------------------------ */
+.FDuiTreeNode_Panel{
+   width: 0;
+}
+
+.FDuiTreeNode_Normal{
+   cursor: pointer;
+}
+
+.FDuiTreeNode_Hover{
+   background-color: #DDDDDD;
+   cursor: pointer;
+}
+
+.FDuiTreeNode_Select{
+   background-color: #CCCCCC;
+   cursor: pointer;
+}
+
+.FDuiTreeNode_Image{
+}
+
+.FDuiTreeNode_Icon{
+}
+
+.FDuiTreeNode_IconDisable{
+}
+
+.FDuiTreeNode_Label{
+   font: icon;
+   font-size: 9pt;
+}
+
+.FDuiTreeNode_Cell{
+}
+
+/* ------------------------------------------------------ */
+/* FDuiFramePage                                          */
+/* ------------------------------------------------------ */
+.FDuiFramePage_Panel{
+}
+
+.FDuiFramePage_Container{
+   width: 100%;
+   height: 100%;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiFrameSpliter                                       */
+/* ------------------------------------------------------ */
+.FDuiFrameSpliter_Normal{
+   background-color: #C6CBD0;
+}
+
+.FDuiFrameSpliter_Hover{
+   background-color: #999999;
+}
+
+.FDuiFrameSpliter_Draging{
+   position: absolute;
+   background-color: #BBBBBB;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiFrameSet                                           */
+/* ------------------------------------------------------ */
+.FDuiFrameSet_Panel{
+   width: 100%;
+   height: 100%;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiWindow                                             */
+/* ------------------------------------------------------ */
+.FDuiWindow_Panel{
+   position: absolute;
+   padding: 3px;
+   border-radius:4px;
+   background:rgba(90, 90, 90, 0.4);
+   box-shadow: 0px 0px 8px #000000;
+}
+
+.FDuiWindow_BodyForm{
+   width:100%;
+   height:100%;
+}
+
+.FDuiWindow_TitleForm{
+   width:100%;
+}
+
+.FDuiWindow_TitlePanel{
+   height: 24px;
+   border-radius: 4px 4px 0px 0px;
+   background-color: #DDDDDD;
+}
+
+.FDuiWindow_BodyPanel{
+   background-color: #EEEEEE;
+   border: 1px solid #333333;
+}
+
+.FDuiWindow_StatusPanel{
+   height: 24px;
+   border-radius: 0px 0px 4px 4px;
+   background-color: #DDDDDD;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiInfoDialog                                         */
+/* ------------------------------------------------------ */
+.FDuiInfoDialog_Text{
+   padding: 6px 12px;
+   color: #000000;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiConfirmDialog                                      */
+/* ------------------------------------------------------ */
+.FDuiConfirmDialog_Text{
+   padding: 6px 12px;
+   color: #000000;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiWorkspace                                          */
+/* ------------------------------------------------------ */
+.FDuiWorkspace_Panel{
+   width: 100%;
+   height: 100%;
+}
+
+/* ------------------------------------------------------ */
+/* FDuiDesktopConsole                                     */
+/* ------------------------------------------------------ */
+.FDuiDesktopConsole_MaskPanel{
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   background-color: rgba(210, 210, 210, 0.6);
+   filter: progid:DXImageTransform.Microsoft.Alpha(opacity=20, style=0);
+}
+
+/* ------------------------------------------------------ */
+/* RWindow                                                */
+/* ------------------------------------------------------ */
+.RWindow_Disable{
+   width: 100%;
+   height: 100%;
+   position: absolute;
+   background-color: rgba(210, 210, 210, 0.5);
+   filter: progid:DXImageTransform.Microsoft.Alpha(opacity=20, style=0);
+}
+
+.RWindow_Shadow{
+   position: absolute;
+   background-color: #666666;
+   filter: progid:DXImageTransform.Microsoft.Alpha(opacity=60, style=0);
+}

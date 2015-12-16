@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+<TITLE>Stage3d Example</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<LINK rel="stylesheet" href='../../acs/lang_cn.css' type="text/css" media="all"/>
+<SCRIPT language='javascript' src='../../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/context_cn.js'></SCRIPT>
+</HEAD>
+
+<SCRIPT>
+var canvas = null;
+var stage = null;
+var layer = null;
+var bitmaps = null;
+var tick = 0;
+//----------------------------------------------------------
+function onEnterFrame(){
+   var count = bitmaps.count();
+   for(var i = 0; i < count; i++){
+      var bitmap = bitmaps.at(i);
+      var matrix = bitmap.matrix();
+      var x = i % 20;
+      var y = parseInt(i / 20);
+      matrix.tx = x - 8;
+      matrix.ty = y - 5;
+      matrix.ry += 0.01 * y;
+      matrix.updateForce();
+      //matrix.setScaleAll(4);
+   }
+}
+//----------------------------------------------------------
+function _load(){
+   var singleMode = false;
+   // 环境设置
+   MO.initialize();
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.Window.Browser.setContentPath('../..');
+   MO.Console.find(MO.FE3sVendorConsole).setup('net');
+   // 创建应用
+   var application = MO.Desktop.initialize(MO.FCanvasApplication);
+   application.setup(document.body);
+   var chapter = application.selectChapterByCode(MO.ECanvasChapter.Simple);
+   var scene = chapter.selectSceneByCode(MO.ECanvasScene.Simple);
+   var context = application.desktop().canvas3d().graphicContext();
+   // 设置舞台
+   var stage = scene.activeStage();
+   stage.region().backgroundColor().set(0.5, 0.5, 0.5, 1);
+   stage.addEnterFrameListener(null, onEnterFrame);
+   var layer = stage.spriteLayer();
+   // 创建图片
+   bitmaps = new MO.TObjects();
+   if(singleMode){
+      var bitmap = context.createObject(MO.FE3dBitmap);
+      bitmap.loadUrl('../../ars/picture/star3.png');
+      bitmaps.push(bitmap);
+      layer.pushRenderable(bitmap);
+   }else{
+      var bitmapData = context.createObject(MO.FE3dBitmapData);
+      bitmapData.loadUrl('../../ars/picture/star3.png');
+      for(var i = 0; i < 400; i++){
+         var bitmap = context.createObject(MO.FE3dBitmap);
+         bitmap.setData(bitmapData);
+         bitmaps.push(bitmap);
+         layer.pushRenderable(bitmap);
+      }
+   }
+}
+</SCRIPT>
+
+<BODY scroll='auto' onload='_load()'>
+</BODY>
+
+</HTML>

@@ -1,0 +1,31 @@
+<HTML>
+<HEAD>
+<TITLE>Stage3d Example</TITLE>
+<META http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<LINK rel="stylesheet" href='../../acs/lang_cn.css' type="text/css" media="all"/>
+<SCRIPT language='javascript' src='../../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/context_cn.js'></SCRIPT>
+</HEAD>
+
+<SCRIPT>
+function _load(){
+   // 环境设置
+   MO.initialize();
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.Window.Browser.setContentPath('../..');
+   // 创建应用
+   var application = MO.Desktop.initialize(MO.FGuiApplication);
+   application.setup(document.body);
+   // 创建一个控件
+   var label = MO.Class.create(MO.FGuiLabel);
+   label.setLocation(100, 100);
+   label.setSize(100, 50);
+   label.setForeColor('#000000');
+   label.setLabel('Hello');
+   application.manager().register(label);
+}
+</SCRIPT>
+<BODY scroll='auto' onload='_load()'>
+</BODY>
+
+</HTML>
