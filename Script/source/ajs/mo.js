@@ -512,6 +512,7 @@ MO.TMap_get = function TMap_get(name, defaultValue){
 }
 MO.TMap_set = function TMap_set(name, value){
    var o = this;
+   MO.Assert.debugNotNull(name);
    var nameString = name.toString();
    var code = nameString.toLowerCase();
    var index = o._table[code];
@@ -1198,11 +1199,13 @@ MO.RMemory.prototype.entryAlloc = function RMemory_entryAlloc(){
 }
 MO.RMemory.prototype.entryFree = function RMemory_entryFree(entry){
    var o = this;
+   MO.Assert.debugNotNull(entry);
    entry.next = o._entryUnused;
    o._entryUnused = entry;
 }
 MO.RMemory.prototype.alloc = function RMemory_alloc(clazz){
    var o = this;
+   MO.Assert.debugNotNull(clazz);
    var className = MO.Runtime.className(clazz);
    var pools = o._pools;
    var pool = pools[className];
@@ -1215,7 +1218,9 @@ MO.RMemory.prototype.alloc = function RMemory_alloc(clazz){
    return value;
 }
 MO.RMemory.prototype.free = function RMemory_free(value){
+   MO.Assert.debugNotNull(value);
    var pool = value.__pool;
+   MO.Assert.debugNotNull(pool);
    pool.free(value);
    if(value.free){
       value.free();
@@ -1273,6 +1278,7 @@ MO.TMemoryPool_alloc = function TMemoryPool_alloc(){
 }
 MO.TMemoryPool_free = function TMemoryPool_free(value){
    var o = this;
+   MO.Assert.debugNotNull(value);
    var entry = MO.Memory.entryAlloc();
    entry.value = value;
    entry.next = o._unused;
@@ -1656,11 +1662,12 @@ MO.EDataType = new function EDataType(){
    o.Float32 = o.Float = 10;
    o.Float64 = o.Double = 11;
    o.String = 12;
-   o.Struct = 13;
-   o.Object = 14;
-   o.Array = 15;
-   o.Objects = 16;
-   o.Dictionary = 17;
+   o.Array = 13;
+   o.Struct = 14;
+   o.Structs = 15;
+   o.Object = 16;
+   o.Objects = 17;
+   o.Dictionary = 18;
    return o;
 }
 MO.EEndian = new function EEndian(){
@@ -1729,7 +1736,22 @@ MO.TClass_register = function TClass_register(annotation){
       o._annotations[annotationCd] = annotations;
    }
    if(!annotation._duplicate){
-      if(annotations[code]){
+      var duplicate = false;
+      if(ordered){
+         var acount = annotations.count();
+         for(var i = 0; i < acount; i++){
+            var afind = annotations.at(i);
+            if(afind.code() == code){
+               duplicate = true;
+               break;
+            }
+         }
+      }else{
+         if(annotations[code]){
+            duplicate = true;
+         }
+      }
+      if(duplicate){
          throw new MO.TError(o, "Duplicate annotation. (class={1}, annotation={2}, name={3}, code={4}, value={5})", MO.Class.dump(o), annotation, name, code, annotation.toString());
       }
    }
@@ -2246,10 +2268,8 @@ MO.TListeners_find = function TListeners_find(owner, callback){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
          var listener = listeners.at(i);
-         if(listener._owner == owner){
-            if(listener._callback == callback){
-               return listener;
-            }
+         if((listener._owner === owner) && (listener._callback === callback)){
+            return listener;
          }
       }
    }
@@ -2452,6 +2472,7 @@ MO.RClass.prototype.isName = function RClass_isName(value, name){
 }
 MO.RClass.prototype.isClass = function RClass_isClass(value, clazz){
    var o = this;
+   MO.Assert.debugNotNull(clazz);
    if(value){
       var name = o.name(clazz);
       if(value.__base){
@@ -2743,6 +2764,7 @@ MO.RClass.prototype.build = function RClass_build(clazz){
 }
 MO.RClass.prototype.free = function RClass_free(instance){
    var clazz = instance.__class;
+   MO.Assert.debugNotNull(clazz);
    clazz.free(instance);
 }
 MO.RClass.prototype.dump = function RClass_dump(v){
@@ -2830,7 +2852,9 @@ MO.RDate.prototype.monthDays = function RDate_monthDays(year, month){
    }
    year = parseInt(year);
    month = parseInt(month);
-   this.MonthDays[2] = (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   if(month == 2){
+      return (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   }
    return this.MonthDays[month];
 }
 MO.RDate.prototype.splitFormat = function RDate_splitFormat(value, format){
@@ -4941,6 +4965,7 @@ MO.TSpeed_end = function TSpeed_end(){
 MO.TSpeed_record = function TSpeed_record(){
    var o = this;
    var sp = new Date().getTime() - o.start;
+   MO.Logger.debug(o, 'Speed test. (caller={1}, speed={2}, arguments={3})', o.callerName, sp, o.arguments);
    o.arguments = null;
    o.start = null;
    o.callerName = null;
@@ -5241,6 +5266,11 @@ MO.RArray.prototype.reverse = function RArray_reverse(a, s, e){
    }
 }
 MO.RArray.prototype.copy = function RArray_copy(source, sourceOffset, sourceCount, target, targetOffset){
+   MO.Assert.debugNotNull(source);
+   MO.Assert.debugTrue((sourceOffset >= 0) && (sourceOffset + sourceCount <= source.length));
+   MO.Assert.debugTrue(sourceCount <= source.length);
+   MO.Assert.debugNotNull(target);
+   MO.Assert.debugTrue((targetOffset >= 0) && (targetOffset + sourceCount <= target.length));
    for(var i = 0; i < sourceCount; i++){
       target[i + targetOffset] = source[i + sourceOffset];
    }
@@ -5462,6 +5492,7 @@ MO.RConsole.prototype.get = function RConsole_get(v){
 }
 MO.RConsole.prototype.find = function RConsole_find(value){
    var o = this;
+   MO.Assert.debugNotNull(value);
    var name = null;
    if(value.constructor == String){
       name = value;
@@ -5494,6 +5525,7 @@ MO.RConsole.prototype.find = function RConsole_find(value){
       default:
          return MO.Logger.fatal(o, 'Unknown scope code. (name={1})', name);
    }
+   MO.Logger.debug(o, 'Create console. (name={1}, scope={2})', name, MO.EScope.toDisplay(scopeCd));
    return console;
 }
 MO.RConsole.prototype.release = function RConsole_release(){
@@ -6023,6 +6055,7 @@ MO.SColor4 = function SColor4(red, green, blue, alpha){
    o.saveConfig   = MO.SColor4_saveConfig;
    o.savePower    = MO.SColor4_savePower;
    o.copyArray    = MO.SColor4_copyArray;
+   o.toRGBAString = MO.SColor4_toRGBAString;
    o.toString     = MO.SColor4_toString;
    o.dispose      = MO.SColor4_dispose;
    return o;
@@ -6120,6 +6153,10 @@ MO.SColor4_copyArray = function SColor4_copyArray(d, i){
    d[i++] = o.blue;
    d[i++] = o.alpha;
    return 4;
+}
+MO.SColor4_toRGBAString = function SColor4_toRGBAString() {
+   var o = this;
+   return 'rgba(' + parseInt(o.red * 255) + ',' + parseInt(o.green * 255) + ',' + parseInt(o.blue * 255) + ',' + MO.Lang.Float.format(o.alpha) + ')';
 }
 MO.SColor4_toString = function SColor4_toString(){
    var o = this;
@@ -7297,6 +7334,7 @@ MO.SMatrix4x4 = function SMatrix4x4(){
    o.normalize       = MO.SMatrix4x4_normalize;
    o.invert          = MO.SMatrix4x4_invert;
    o.transform       = MO.SMatrix4x4_transform;
+   o.transformValue3 = MO.SMatrix4x4_transformValue3;
    o.transformPoint3 = MO.SMatrix4x4_transformPoint3;
    o.buildQuaternion = MO.SMatrix4x4_buildQuaternion;
    o.build           = MO.SMatrix4x4_build;
@@ -7615,6 +7653,20 @@ MO.SMatrix4x4_transformPoint3 = function SMatrix4x4_transformPoint3(input, outpu
    var x = (input.x * data[ 0]) + (input.y * data[ 4]) +(input.z * data[ 8]) + data[12];
    var y = (input.x * data[ 1]) + (input.y * data[ 5]) +(input.z * data[ 9]) + data[13];
    var z = (input.x * data[ 2]) + (input.y * data[ 6]) +(input.z * data[10]) + data[14];
+   var result = null;
+   if(output){
+      result = output;
+   }else{
+      result = new MO.SPoint3();
+   }
+   result.set(x, y, z);
+   return result;
+}
+MO.SMatrix4x4_transformValue3 = function SMatrix4x4_transformValue3(x, y, z, output){
+   var data = this._data;
+   var x = (x * data[ 0]) + (y * data[ 4]) +(z * data[ 8]) + data[12];
+   var y = (x * data[ 1]) + (y * data[ 5]) +(z * data[ 9]) + data[13];
+   var z = (x * data[ 2]) + (y * data[ 6]) +(z * data[10]) + data[14];
    var result = null;
    if(output){
       result = output;
@@ -8819,11 +8871,11 @@ MO.SSize2_dump = function SSize2_dump(){
    var o = this;
    return MO.Class.dump(o) + ' [' + o.width + ',' + o.height + ']';
 }
-MO.SSize3 = function SSize3(w, h, d){
+MO.SSize3 = function SSize3(width, height, deep){
    var o = this;
-   o.width    = MO.Lang.Integer.nvl(w);
-   o.height   = MO.Lang.Integer.nvl(h);
-   o.deep     = MO.Lang.Integer.nvl(d);
+   o.width    = MO.Lang.Integer.nvl(width);
+   o.height   = MO.Lang.Integer.nvl(height);
+   o.deep     = MO.Lang.Integer.nvl(deep);
    o.assign   = MO.SSize3_assign;
    o.set      = MO.SSize3_set;
    o.parse    = MO.SSize3_parse;
@@ -8978,9 +9030,11 @@ MO.SValue2 = function SValue2(x, y){
    o.absolute     = MO.SValue2_absolute;
    o.normalize    = MO.SValue2_normalize;
    o.negative     = MO.SValue2_negative;
+   o.unserialize  = MO.SValue2_unserialize;
    o.parse        = MO.SValue2_parse;
    o.toDisplay    = MO.SValue2_toDisplay;
    o.toString     = MO.SValue2_toString;
+   o.dispose      = MO.SValue2_dispose;
    return o;
 }
 MO.SValue2_isEmpty = function SValue2_isEmpty(){
@@ -9091,100 +9145,142 @@ MO.SValue2_toDisplay = function SValue2_toDisplay(){
 MO.SValue2_toString = function SValue2_toString(){
    return this.x + ',' + this.y;
 }
+MO.SValue2_dispose = function SValue2_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+}
+MO.SValue2_unserialize = function SValue2_unserialize(input, dataCd) {
+   switch (dataCd) {
+      case MO.EDataType.Int32:
+         this.x = input.readInt32();
+         this.y = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         this.x = input.readFloat();
+         this.y = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         this.x = input.readDouble();
+         this.y = input.readDouble();
+         break;
+      default:
+         break;
+   }
+}
 MO.SValue3 = function SValue3(x, y, z){
    var o = this;
-   o.x            = MO.Runtime.nvl(x, 0);
-   o.y            = MO.Runtime.nvl(y, 0);
-   o.z            = MO.Runtime.nvl(z, 0);
-   o.isEmpty      = MO.SValue3_isEmpty;
-   o.equals       = MO.SValue3_equals;
-   o.equalsData   = MO.SValue3_equalsData;
-   o.assign       = MO.SValue3_assign;
-   o.setMin       = MO.SValue3_setMin;
-   o.setMax       = MO.SValue3_setMax;
-   o.set          = MO.SValue3_set;
-   o.setAll       = MO.SValue3_setAll;
-   o.add          = MO.SValue3_add;
-   o.addValue3    = MO.SValue3_addValue3;
-   o.mul          = MO.SValue3_mul;
-   o.mulAll       = MO.SValue3_mulAll;
-   o.length       = MO.SValue3_absolute;
-   o.lengthTo     = MO.SValue3_lengthTo;
-   o.absolute     = MO.SValue3_absolute;
-   o.normalize    = MO.SValue3_normalize;
-   o.negative     = MO.SValue3_negative;
-   o.serialize    = MO.SValue3_serialize;
-   o.unserialize  = MO.SValue3_unserialize3;
-   o.unserialize2 = MO.SValue3_unserialize2;
-   o.unserialize3 = MO.SValue3_unserialize3;
-   o.parse        = MO.SValue3_parse;
-   o.toDisplay    = MO.SValue3_toDisplay;
-   o.toString     = MO.SValue3_toString;
+   o.x              = MO.Runtime.nvl(x, 0);
+   o.y              = MO.Runtime.nvl(y, 0);
+   o.z              = MO.Runtime.nvl(z, 0);
+   o.isEmpty        = MO.SValue3_isEmpty;
+   o.equals         = MO.SValue3_equals;
+   o.equalsData     = MO.SValue3_equalsData;
+   o.assign         = MO.SValue3_assign;
+   o.setMin         = MO.SValue3_setMin;
+   o.setMax         = MO.SValue3_setMax;
+   o.set            = MO.SValue3_set;
+   o.setAll         = MO.SValue3_setAll;
+   o.add            = MO.SValue3_add;
+   o.addValue3      = MO.SValue3_addValue3;
+   o.mul            = MO.SValue3_mul;
+   o.mulAll         = MO.SValue3_mulAll;
+   o.length         = MO.SValue3_absolute;
+   o.lengthTo       = MO.SValue3_lengthTo;
+   o.lengthToValue3 = MO.SValue3_lengthToValue3;
+   o.absolute       = MO.SValue3_absolute;
+   o.normalize      = MO.SValue3_normalize;
+   o.negative       = MO.SValue3_negative;
+   o.serialize      = MO.SValue3_serialize;
+   o.unserialize    = MO.SValue3_unserialize3;
+   o.unserialize2   = MO.SValue3_unserialize2;
+   o.unserialize3   = MO.SValue3_unserialize3;
+   o.parse          = MO.SValue3_parse;
+   o.toDisplay      = MO.SValue3_toDisplay;
+   o.toString       = MO.SValue3_toString;
+   o.dispose        = MO.SValue3_dispose;
    return o;
 }
 MO.SValue3_isEmpty = function SValue3_isEmpty(p){
-   return (this.x == 0) && (this.y == 0) && (this.z == 0);
+   var o = this;
+   return (o.x == 0) && (o.y == 0) && (o.z == 0);
 }
 MO.SValue3_equals = function SValue3_equals(value){
-   return (this.x == value.x) && (this.y == value.y) && (this.z == value.z);
+   var o = this;
+   return (o.x == value.x) && (o.y == value.y) && (o.z == value.z);
 }
 MO.SValue3_equalsData = function SValue3_equalsData(x, y, z){
-   return (this.x == x) && (this.y == y) && (this.z == z);
+   var o = this;
+   return (o.x == x) && (o.y == y) && (o.z == z);
 }
 MO.SValue3_assign = function SValue3_assign(value){
-   this.x = value.x;
-   this.y = value.y;
-   this.z = value.z;
+   var o = this;
+   o.x = value.x;
+   o.y = value.y;
+   o.z = value.z;
 }
 MO.SValue3_setMin = function SValue3_setMin(){
-   this.x = Number.MIN_VALUE;
-   this.y = Number.MIN_VALUE;
-   this.z = Number.MIN_VALUE;
+   var o = this;
+   o.x = o.y = o.z = Number.MIN_VALUE;
 }
 MO.SValue3_setMax = function SValue3_setMax(){
-   this.x = Number.MAX_VALUE;
-   this.y = Number.MAX_VALUE;
-   this.z = Number.MAX_VALUE;
+   var o = this;
+   o.x = o.y = o.z = Number.MAX_VALUE;
 }
 MO.SValue3_set = function SValue3_set(x, y, z){
-   this.x = x;
-   this.y = y;
-   this.z = z;
+   var o = this;
+   if(x != null){
+      o.x = x;
+   }
+   if(y != null){
+      o.y = y;
+   }
+   if(z != null){
+      o.z = z;
+   }
 }
 MO.SValue3_setAll = function SValue3_set(value){
-   this.x = value;
-   this.y = value;
-   this.z = value;
+   var o = this;
+   if(value != null){
+      o.x = value;
+      o.y = value;
+      o.z = value;
+   }
 }
 MO.SValue3_add = function SValue3_add(x, y, z){
-   this.x += x;
-   this.y += y;
-   this.z += z;
+   var o = this;
+   o.x += x;
+   o.y += y;
+   o.z += z;
 }
 MO.SValue3_addValue3 = function SValue3_addValue3(value){
-   this.x += value.x;
-   this.y += value.y;
-   this.z += value.z;
+   var o = this;
+   o.x += value.x;
+   o.y += value.y;
+   o.z += value.z;
 }
 MO.SValue3_mul = function SValue3_mul(x, y, z){
-   this.x *= x;
-   this.y *= y;
-   this.z *= z;
+   var o = this;
+   o.x *= x;
+   o.y *= y;
+   o.z *= z;
 }
 MO.SValue3_mulAll = function SValue3_mulAll(value){
-   this.x *= value;
-   this.y *= value;
-   this.z *= value;
+   var o = this;
+   o.x *= value;
+   o.y *= value;
+   o.z *= value;
 }
 MO.SValue3_normalize = function SValue3_normalize(){
-   var value = this.absolute();
+   var o = this;
+   var value = o.absolute();
    if(value != 0){
       var rate = 1 / value;
-      this.x *= rate;
-      this.y *= rate;
-      this.z *= rate;
+      o.x *= rate;
+      o.y *= rate;
+      o.z *= rate;
    }
-   return this;
+   return o;
 }
 MO.SValue3_lengthTo = function SValue3_lengthTo(x, y, z){
    var o = this;
@@ -9193,41 +9289,84 @@ MO.SValue3_lengthTo = function SValue3_lengthTo(x, y, z){
    var cz = o.z - z;
    return Math.sqrt((cx * cx) + (cy * cy) + (cz * cz));
 }
+MO.SValue3_lengthToValue3 = function SValue3_lengthTo(value){
+   var o = this;
+   var cx = o.x - value.x;
+   var cy = o.y - value.y;
+   var cz = o.z - value.z;
+   return Math.sqrt((cx * cx) + (cy * cy) + (cz * cz));
+}
 MO.SValue3_absolute = function SValue3_absolute(){
-   return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
+   var o = this;
+   return Math.sqrt((o.x * o.x) + (o.y * o.y) + (o.z * o.z));
 }
 MO.SValue3_negative = function SValue3_negative(value){
+   var o = this;
    var result = null;
    if(p){
       result = value;
    }else{
-      result = new this.constructor();
+      result = new o.constructor();
    }
-   result.x = -this.x;
-   result.y = -this.y;
-   result.z = -this.z;
+   result.x = -o.x;
+   result.y = -o.y;
+   result.z = -o.z;
    return result;
 }
 MO.SValue3_serialize = function SValue3_serialize(output){
-   output.writeFloat(this.x);
-   output.writeFloat(this.y);
-   output.writeFloat(this.z);
+   var o = this;
+   output.writeFloat(o.x);
+   output.writeFloat(o.y);
+   output.writeFloat(o.z);
 }
-MO.SValue3_unserialize2 = function SValue3_unserialize2(input){
-   this.x = input.readFloat();
-   this.y = input.readFloat();
+MO.SValue3_unserialize2 = function SValue3_unserialize2(input, dataCd){
+   var o = this;
+   switch(dataCd){
+      case MO.EDataType.Int32:
+         o.x = input.readInt32();
+         o.y = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         o.x = input.readDouble();
+         o.y = input.readDouble();
+         break;
+      default:
+         break;
+   }
 }
-MO.SValue3_unserialize3 = function SValue3_unserialize3(input){
-   this.x = input.readFloat();
-   this.y = input.readFloat();
-   this.z = input.readFloat();
+MO.SValue3_unserialize3 = function SValue3_unserialize3(input, dataCd) {
+   var o = this;
+   switch(dataCd){
+      case MO.EDataType.Int32:
+         o.x = input.readInt32();
+         o.y = input.readInt32();
+         o.z = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         o.z = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         o.x = input.readDouble();
+         o.y = input.readDouble();
+         o.z = input.readDouble();
+         break;
+      default:
+         break;
+   }
 }
 MO.SValue3_parse = function SValue3_parse(value){
+   var o = this;
    var items = value.split(',')
    if(items.length == 3){
-      this.x = parseFloat(items[0]);
-      this.y = parseFloat(items[1]);
-      this.z = parseFloat(items[2]);
+      o.x = parseFloat(items[0]);
+      o.y = parseFloat(items[1]);
+      o.z = parseFloat(items[2]);
    }else{
       throw new MO.TError(o, "Parse value failure. (value={1})", value);
    }
@@ -9240,7 +9379,14 @@ MO.SValue3_toDisplay = function SValue3_toDisplay(){
    return x + ',' + y + ',' + z;
 }
 MO.SValue3_toString = function SValue3_toString(){
-   return this.x + ',' + this.y + ',' + this.z;
+   var o = this;
+   return o.x + ',' + o.y + ',' + o.z;
+}
+MO.SValue3_dispose = function SValue3_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+   o.z = null;
 }
 MO.SValue4 = function SValue4(x, y, z, w){
    var o = this;
@@ -9260,6 +9406,7 @@ MO.SValue4 = function SValue4(x, y, z, w){
    o.parse       = MO.SValue4_parse;
    o.toDisplay   = MO.SValue4_toDisplay;
    o.toString    = MO.SValue4_toString;
+   o.dispose     = MO.SValue4_dispose;
    return o;
 }
 MO.SValue4_assign = function SValue4_assign(value){
@@ -9345,6 +9492,13 @@ MO.SValue4_toDisplay = function SValue4_toDisplay(){
 }
 MO.SValue4_toString = function SValue4_toString(){
    return this.x + ',' + this.y + ',' + this.z + ',' + this.w;
+}
+MO.SValue4_dispose = function SValue4_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+   o.z = null;
+   o.w = null;
 }
 MO.SVector2 = function SVector2(x, y, z){
    var o = this;
@@ -9711,6 +9865,7 @@ MO.RRandom = new MO.RRandom();
 MO.Lang.Random = MO.RRandom;
 MO.AListener = function AListener(name, linker){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    MO.ASource.call(o, name, MO.ESource.Listener, linker);
    o.build = MO.AListener_build;
    if(linker == null){
@@ -9729,15 +9884,15 @@ MO.AListener = function AListener(name, linker){
 MO.AListener_build = function AListener_build(clazz, instance){
    var o = this;
    var addListener = 'add' + o._linker + 'Listener';
-   instance[addListener] = MO.RListener.makeAddListener(addListener, o._linker);
+   instance[addListener] = MO.Core.Listener.makeAddListener(addListener, o._linker);
    var setListener = 'set' + o._linker + 'Listener';
-   instance[setListener] = MO.RListener.makeSetListener(setListener, o._linker);
+   instance[setListener] = MO.Core.Listener.makeSetListener(setListener, o._linker);
    var removeListener = 'remove' + o._linker + 'Listener';
-   instance[removeListener] = MO.RListener.makeRemoveListener(removeListener, o._linker);
+   instance[removeListener] = MO.Core.Listener.makeRemoveListener(removeListener, o._linker);
    var clearListeners = 'clear' + o._linker + 'Listeners';
-   instance[clearListeners] = MO.RListener.makeClearListener(clearListeners, o._linker);
+   instance[clearListeners] = MO.Core.Listener.makeClearListener(clearListeners, o._linker);
    var processListener = 'process' + o._linker + 'Listener';
-   instance[processListener] = MO.RListener.makeProcessListener(processListener, o._linker);
+   instance[processListener] = MO.Core.Listener.makeProcessListener(processListener, o._linker);
 }
 MO.EEvent = new function EEvent(){
    var o = this;
@@ -9774,6 +9929,9 @@ MO.EEvent = new function EEvent(){
    o.OperationDown    = 'OperationDown';
    o.OperationMove    = 'OperationMove';
    o.OperationUp      = 'OperationUp';
+   o.ActionStart      = 'ActionStart';
+   o.ActionStop       = 'ActionStop';
+   o.SectionStop      = 'SectionStop';
    return o;
 }
 MO.EHttpContent = new function EHttpContent(){
@@ -9827,7 +9985,11 @@ MO.MListener_addListener = function MListener_addListener(name, owner, method){
       listeners = new MO.TListeners();
       listenerss.set(name, listeners);
    }
-   return listeners.register(owner, method);
+   var listener = listeners.find(owner, method);
+   if(!listener){
+      listener = listeners.register(owner, method);
+   }
+   return listener;
 }
 MO.MListener_setListener = function MListener_setListener(name, owner, method){
    var o = this;
@@ -10273,20 +10435,22 @@ MO.RListener.prototype.makeProcessListener = function RListener_makeProcessListe
    }
    return method;
 }
-MO.RListener = new MO.RListener();
-MO.APersistence = function APersistence(name, dataCd, dataClass){
+MO.Core.Listener = new MO.RListener();
+MO.APersistence = function APersistence(name, dataCd, dataClass, innerDataCd){
    var o = this;
    MO.AAnnotation.call(o, name);
-   o._annotationCd = MO.EAnnotation.Persistence;
-   o._inherit      = true;
-   o._ordered      = true;
-   o._dataCd       = dataCd;
-   o._dataClass    = dataClass;
-   o.dataCd        = MO.APersistence_dataCd;
-   o.dataClass     = MO.APersistence_dataClass;
-   o.newStruct     = MO.APersistence_newStruct;
-   o.newInstance   = MO.APersistence_newInstance;
-   o.toString      = MO.APersistence_toString;
+   o._annotationCd  = MO.EAnnotation.Persistence;
+   o._inherit       = true;
+   o._ordered       = true;
+   o._dataCd        = dataCd;
+   o._dataClass     = dataClass;
+   o._innerDataCd   = innerDataCd;
+   o.dataCd         = MO.APersistence_dataCd;
+   o.dataClass      = MO.APersistence_dataClass;
+   o.innerDataCd    = MO.APersistence_innerDataCd;
+   o.newStruct      = MO.APersistence_newStruct;
+   o.newInstance    = MO.APersistence_newInstance;
+   o.toString       = MO.APersistence_toString;
    return o;
 }
 MO.APersistence_dataCd = function APersistence_dataCd(){
@@ -10294,6 +10458,9 @@ MO.APersistence_dataCd = function APersistence_dataCd(){
 }
 MO.APersistence_dataClass = function APersistence_dataClass(){
    return this._dataClass;
+}
+MO.APersistence_innerDataCd = function APersistence_innerDataCd() {
+   return this._innerDataCd;
 }
 MO.APersistence_newStruct = function APersistence_newStruct(){
    return new this._dataClass();
@@ -10621,8 +10788,17 @@ MO.MDataStream_readUint32 = function MDataStream_readUint32(){
 }
 MO.MDataStream_readUint64 = function MDataStream_readUint64(){
    var o = this;
-   var value = o._viewer.getUint64(o._position, o._endianCd);
-   o._position += 8;
+   var endianCd = o._endianCd;
+   var value1 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value2 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value = 0;
+   if(endianCd){
+      value = (value2 << 32) + value1;
+   }else{
+      value = (value1 << 32) + value2;
+   }
    return value;
 }
 MO.MDataStream_readFloat = function MDataStream_readFloat(){
@@ -11519,12 +11695,25 @@ MO.MPersistence_unserialize = function MPersistence_unserialize(input){
       var annotation = annotations.at(n);
       var dateCd = annotation.dataCd();
       var name = annotation.name();
+      var innerDateCd = annotation.innerDataCd();
       if(dateCd == MO.EDataType.Struct){
          var item = o[name];
          if(!item){
             item = o[name] = annotation.newStruct();
          }
-         item.unserialize(input);
+         item.unserialize(input, innerDateCd);
+      }else if(dateCd == MO.EDataType.Structs){
+         var items = o[name];
+         if(!items){
+            items = o[name] = new MO.TObjects();
+         }
+         items.clear();
+         var itemCount = input.readInt32();
+         for(var i = 0; i < itemCount; i++){
+            var item = annotation.newStruct();
+            item.unserialize(input, innerDateCd);
+            items.push(item);
+         }
       }else if(dateCd == MO.EDataType.Object){
          var item = o[name];
          if(!item){
@@ -11606,14 +11795,30 @@ MO.MPersistenceAble = function MPersistenceAble(o){
 }
 MO.MPersistenceAble_unserializeBuffer = function MPersistenceAble_unserializeBuffer(buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FDataView);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializeSignBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var bytes = new Uint8Array(buffer);
    MO.Lang.Byte.encodeBytes(bytes, 0, bytes.length, sign);
    var view = MO.Class.create(MO.FDataView);
@@ -11621,15 +11826,25 @@ MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializ
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeEncryptedBuffer = function MPersistenceAble_unserializeEncryptedBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FEncryptedView);
    view.setSign(sign);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_serializeBuffer = function MPersistenceAble_serializeBuffer(buffer, endianCd){
    var o = this;
@@ -13622,10 +13837,12 @@ MO.FEnvironmentConsole_construct = function FEnvironmentConsole_construct(){
 MO.FEnvironmentConsole_register = function FEnvironmentConsole_register(environment){
    var o = this;
    var name = environment.name();
+   MO.Assert.debugNotEmpty(name);
    o._environments.set(name, environment);
 }
 MO.FEnvironmentConsole_registerValue = function FEnvironmentConsole_registerValue(name, value){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    var environment = MO.Class.create(MO.FEnvironment);
    environment.set(name, value);
    o._environments.set(name, environment);
@@ -13645,6 +13862,7 @@ MO.FEnvironmentConsole_findValue = function FEnvironmentConsole_findValue(name){
 }
 MO.FEnvironmentConsole_parse = function FEnvironmentConsole_parse(value){
    var o = this;
+   MO.Assert.debugNotEmpty(value);
    var result = value;
    var environments = o._environments;
    var count = environments.count();
@@ -13730,6 +13948,7 @@ MO.FEventConsole_construct = function FEventConsole_construct(){
    thread.setInterval(o._interval);
    thread.lsnsProcess.register(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+   MO.Logger.debug(o, 'Add event thread. (thread={1})', MO.Class.dump(thread));
 }
 MO.FEventConsole_register = function FEventConsole_register(po, pc){
    var o = this;
@@ -14432,14 +14651,10 @@ MO.FThreadConsole_processAll = function FThreadConsole_processAll(){
    if(o._active){
       var threads = o._threads;
       var count = threads.count();
-      try{
          for(var i = 0; i < count; i++){
             var thread = threads.at(i);
             o.process(thread);
          }
-      }catch(error){
-         MO.Logger.fatal(o, error, 'Thread process failure. (thread_count={1})', count);
-      }
    }
    if(o._requestFlag){
       MO.Window.requestAnimationFrame(o.ohInterval);
@@ -14490,6 +14705,11 @@ MO.EBrowser = new function EBrowser(){
    o.FireFox = 'firefox';
    o.Chrome = 'chrome';
    o.Safari = 'safari';
+   return o;
+}
+MO.EConstant = new function EConstant(){
+   var o = this;
+   o.DeviceType = 'device.type';
    return o;
 }
 MO.EDevice = new function EDevice(){
@@ -14634,6 +14854,7 @@ MO.RWindow.prototype.ohVisibility = function RWindow_ohVisibility(hEvent){
    var event = o._eventVisibility;
    event.visibility = visibility;
    o.lsnsVisibility.process(event);
+   MO.Logger.debug(o, 'Window visibility changed. (visibility={1})', visibility);
 }
 MO.RWindow.prototype.ohOrientation = function RWindow_ohOrientation(hEvent){
    var o = MO.Window;
@@ -14641,6 +14862,7 @@ MO.RWindow.prototype.ohOrientation = function RWindow_ohOrientation(hEvent){
    var event = o._eventOrientation;
    event.orientationCd = orientationCd;
    o.lsnsOrientation.process(event);
+   MO.Logger.debug(o, 'Window orientation changed. (orientation_cd={1})', orientationCd);
 }
 MO.RWindow.prototype.ohUnload = function RWindow_ohUnload(event){
    var o = MO.Window;
@@ -14804,6 +15026,7 @@ MO.RWindow.prototype.setEnable = function RWindow_setEnable(v, f){
    o._statusEnable = v;
 }
 MO.RWindow.prototype.appendElement = function RWindow_appendElement(hPanel){
+   MO.Assert.debugNotNull(control);
    this._hContainer.appendChild(hPanel);
 }
 MO.RWindow.prototype.requestAnimationFrame = function RWindow_requestAnimationFrame(callback){
@@ -14987,6 +15210,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
    if(o._typeCd == MO.EBrowser.Chrome){
       MO.Logger.lsnsOutput.register(o, o.onLog);
    }
+   MO.Logger.debug(o, 'Parse browser agent. (platform_cd={1}, type_cd={2})', MO.Lang.Enum.decode(MO.EPlatform, platformCd), MO.Lang.Enum.decode(MO.EBrowser, o._typeCd));
    if(window.applicationCache){
       o._supportHtml5 = true;
    }
@@ -15007,6 +15231,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
    if(pixelRatio){
       if(MO.Runtime.isPlatformMobile()){
          capability.pixelRatio = Math.min(pixelRatio, 3);
+         MO.Logger.debug(o, 'Parse browser agent. (pixel_ratio={1}, capability_ratio={2})', pixelRatio, capability.pixelRatio);
       }
    }
    if(window.Worker){
@@ -15037,6 +15262,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
       events['visibilitychange'] = 'webkitvisibilitychange';
    }
    o.refreshOrientation();
+   MO.Logger.debug(o, 'Browser connect. (agent={1})', o._agent);
 }
 MO.RBrowser.prototype.agent = function RBrowser_agent(){
    return this._agent;
@@ -15422,11 +15648,6 @@ MO.RXmlUtil.prototype.unpack = function RXmlUtil_unpack(s, n){
 }
 MO.RXml = new MO.RXmlUtil();
 MO.Window.Xml = MO.RXml;
-MO.EConstant = new function EConstant(){
-   var o = this;
-   o.DeviceType = 'device.type';
-   return o;
-}
 MO.STouchEvent = function STouchEvent(){
    var o = this;
    o.dispose = MO.STouchEvent_dispose;
@@ -16153,6 +16374,7 @@ MO.RDump.prototype.stack = function RDump_stack(){
          s.appendLine();
       }
    }
+   MO.Logger.debug(this, s);
 }
 MO.RDump = new MO.RDump();
 MO.RHtml = function RHtml(){
@@ -16644,6 +16866,7 @@ MO.MGraphicObject_linkGraphicContext = function MGraphicObject_linkGraphicContex
    }else{
       throw new MO.TError(o, 'Link graphic context failure. (context={1})', context);
    }
+   MO.Assert.debugNotNull(o._graphicContext);
 }
 MO.MGraphicObject_dispose = function MGraphicObject_dispose(){
    var o = this;
@@ -16842,26 +17065,37 @@ MO.FG2dCanvasContext = function FG2dCanvasContext(o) {
    o.setScale             = MO.FG2dCanvasContext_setScale;
    o.setAlpha             = MO.FG2dCanvasContext_setAlpha;
    o.setFont              = MO.FG2dCanvasContext_setFont;
+   o.setShadow            = MO.FG2dCanvasContext_setShadow;
+   o.setLineJoin          = MO.FG2dCanvasContext_setLineJoin;
    o.store                = MO.FG2dCanvasContext_store;
    o.restore              = MO.FG2dCanvasContext_restore;
    o.prepare              = MO.FG2dCanvasContext_prepare;
    o.clear                = MO.FG2dCanvasContext_clear;
    o.clearRectangle       = MO.FG2dCanvasContext_clearRectangle;
+   o.clearShadow          = MO.FG2dCanvasContext_clearShadow;
    o.clip                 = MO.FG2dCanvasContext_clip;
    o.textWidth            = MO.FG2dCanvasContext_textWidth;
    o.createLinearGradient = MO.FG2dCanvasContext_createLinearGradient;
+   o.beginPath            = MO.FG2dCanvasContext_beginPath;
+   o.endPath              = MO.FG2dCanvasContext_endPath;
+   o.moveTo               = MO.FG2dCanvasContext_moveTo;
+   o.lineTo               = MO.FG2dCanvasContext_lineTo;
    o.drawLine             = MO.FG2dCanvasContext_drawLine;
    o.drawRectangle        = MO.FG2dCanvasContext_drawRectangle;
    o.drawTriangle         = MO.FG2dCanvasContext_drawTriangle;
    o.drawCircle           = MO.FG2dCanvasContext_drawCircle;
    o.drawText             = MO.FG2dCanvasContext_drawText;
    o.drawTextVertical     = MO.FG2dCanvasContext_drawTextVertical;
+   o.drawTextRectangle    = MO.FG2dCanvasContext_drawTextRectangle
    o.drawImage            = MO.FG2dCanvasContext_drawImage;
+   o.drawRectangleImage   = MO.FG2dCanvasContext_drawRectangleImage;
    o.drawGridImage        = MO.FG2dCanvasContext_drawGridImage;
    o.drawQuadrilateral    = MO.FG2dCanvasContext_drawQuadrilateral;
+   o.drawShape            = MO.FG2dCanvasContext_drawShape;
    o.drawBorderLine       = MO.FG2dCanvasContext_drawBorderLine;
    o.drawBorder           = MO.FG2dCanvasContext_drawBorder;
    o.fillRectangle        = MO.FG2dCanvasContext_fillRectangle;
+   o.fillShape            = MO.FG2dCanvasContext_fillShape;
    o.toBytes              = MO.FG2dCanvasContext_toBytes;
    o.saveFile             = MO.FG2dCanvasContext_saveFile;
    o.dispose              = MO.FG2dCanvasContext_dispose;
@@ -16896,10 +17130,11 @@ MO.FG2dCanvasContext_setGlobalScale = function FG2dCanvasContext_setGlobalScale(
 }
 MO.FG2dCanvasContext_setScale = function FG2dCanvasContext_setScale(width, height){
    var o = this;
-   if(!o._scale.equalsData(width, height)){
+   if((width == 1) && (height == 1)){
+      return;
+   }
       o._handle.scale(width, height);
       o._scale.set(width, height);
-   }
 }
 MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
    var o = this;
@@ -16907,6 +17142,18 @@ MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
 }
 MO.FG2dCanvasContext_setFont = function FG2dCanvasContext_setFont(font) {
    this._handle.font = font;
+}
+MO.FG2dCanvasContext_setShadow = function FG2dCanvasContext_setShadow(offsetX, offsetY, blur, color) {
+   this._handle.shadowOffsetX = offsetX;
+   this._handle.shadowOffsetY = offsetY;
+   this._handle.shadowBlur = blur;
+   this._handle.shadowColor = color;
+}
+MO.FG2dCanvasContext_clearShadow = function FG2dCanvasContext_clearShadow() {
+   this._handle.shadowOffsetX = "0";
+   this._handle.shadowOffsetY = "0";
+   this._handle.shadowBlur = "0";
+   this._handle.shadowColor = "0";
 }
 MO.FG2dCanvasContext_store = function FG2dCanvasContext_store(){
    this._handle.save();
@@ -16954,6 +17201,18 @@ MO.FG2dCanvasContext_createLinearGradient = function FG2dCanvasContext_createLin
    var handle = o._handle;
    return handle.createLinearGradient(x1, y1, x2, y2);
 }
+MO.FG2dCanvasContext_beginPath = function FG2dCanvasContext_beginPath(){
+   this._handle.beginPath();
+}
+MO.FG2dCanvasContext_endPath = function FG2dCanvasContext_endPath(){
+   this._handle.closePath();
+}
+MO.FG2dCanvasContext_moveTo = function FG2dCanvasContext_moveTo(x, y){
+   this._handle.moveTo(x, y);
+}
+MO.FG2dCanvasContext_lineTo = function FG2dCanvasContext_lineTo(x, y){
+   this._handle.lineTo(x, y);
+}
 MO.FG2dCanvasContext_drawLine = function FG2dCanvasContext_drawLine(x1, y1, x2, y2, color, lineWidth) {
    var o = this;
    var handle = o._handle;
@@ -16978,6 +17237,98 @@ MO.FG2dCanvasContext_drawText = function FG2dCanvasContext_drawText(text, x, y, 
    handle.fillStyle = color;
    handle.fillText(text, x, y);
 }
+MO.FG2dCanvasContext_drawTextRectangle = function FG2dCanvasContext_drawTextRectangle(text, x, y, width, height, lineWidth, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   var drawX = x;
+   var drawY = y;
+   var nCharWidth = handle.measureText("A").width;  //窄字符的宽度
+   var wCharWidth = handle.measureText("王").width; //宽字符的宽度
+   var beginDrawTextNumber = 0;
+   var drawTextNumber = 0;
+   var lineLengh = 0; //预测的字符长度
+   if (width == 0 || height == 0 || lineWidth == 0) {
+      return;
+   }
+   for (var i = 0; i < text.length; i++) {
+      var tmp = text.charAt(i);
+      drawTextNumber = i + 1 - beginDrawTextNumber;
+      if(text.charCodeAt(i) > 255 ) {
+         lineLengh += wCharWidth;
+      }else{
+         lineLengh += nCharWidth;
+      }
+      var currentChar = text.charAt(i);
+      var nextChar = text.charAt(i + 1);
+      if (currentChar == '\n' ) {            //linux换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 1;
+            lineLengh = 0;
+         }
+      }
+      if ( (currentChar == '\r') && (nextChar == '\n') ){ //windows换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 2;
+            i++
+            lineLengh = 0;
+         }
+      }
+      if(lineLengh > width ){
+         while(true){
+            var flag = false;
+            var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+            if(currentWidth == width){
+               flag = true;
+            }
+            if(currentWidth > width){  //预判的宽度大于实际宽度的情况 需要减少字符数量
+               if (drawTextNumber == 1) {//一个字符宽度大于给定矩形宽度的情况
+                  flag = true;
+               }else{
+                  drawTextNumber -= 1;
+                  currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+                  if (currentWidth <= width) {
+                     flag = true;
+                  }
+               }
+            }
+            if ( (flag == false) && (currentWidth < width) ) {//预判的宽度大于实际宽度的情况 需要增加字符数量
+               drawTextNumber += 1;
+               currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+               if (currentWidth >= width) {
+                  flag = true;
+               }
+            }
+            if (flag == true) {//绘制字符
+               handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+               drawY += lineWidth;
+               i = beginDrawTextNumber + drawTextNumber - 1;
+               lineLengh = 0;
+               var nextChar = text.charAt(i + 1);
+               var nextNextChar = text.charAt(i + 2);
+               if (nextChar == '\n') {
+                  i += 1;
+               }
+               if ((nextChar == '\r') && (nextNextChar == '\n')) {
+                  i += 2;
+               }
+               beginDrawTextNumber = i + 1;
+               break;
+            }
+         }
+      }
+      if ((drawY - y + lineWidth) > height) {
+         return;
+      }
+   }
+   handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+}
 MO.FG2dCanvasContext_drawTextVertical = function FG2dCanvasContext_drawTextVertical(text, x, y, font) {
    var o = this;
    var handle = o._handle;
@@ -17001,15 +17352,18 @@ MO.FG2dCanvasContext_drawImage = function FG2dCanvasContext_drawImage(content, x
       }
       data = content.image();
       if(width == null){
-         width = data.size().width;
+         width = data.width;
       }
       if(height == null){
-         height = data.size().height;
+         height = data.height;
       }
    }else{
       throw new MO.TError(o, 'Unknown content type');
    }
    handle.drawImage(data, x, y, width, height);
+}
+MO.FG2dCanvasContext_drawRectangleImage = function FG2dCanvasContext_drawRectangleImage(content, rectangle){
+   this.drawImage(content, rectangle.left, rectangle.top, rectangle.width, rectangle.height);
 }
 MO.FG2dCanvasContext_drawGridImage = function FG2dCanvasContext_drawGridImage(content, x, y, width, height, padding) {
    var o = this;
@@ -17089,14 +17443,6 @@ MO.FG2dCanvasContext_drawBorder = function FG2dCanvasContext_drawBorder(rectangl
    o.drawBorderLine(right, top, right, bottom, border.right);
    o.drawBorderLine(left - 0.5, bottom, right + 0.5, bottom, border.bottom);
 }
-MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
-   var o = this;
-   var handle = o._handle;
-   handle.fillStyle = color;
-   handle.beginPath();
-   handle.fillRect(x, y, width, height);
-   handle.closePath();
-}
 MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrilateral(x1, y1, x2, y2, x3, y3, x4, y4, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -17117,6 +17463,13 @@ MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrila
       handle.fill();
    }
 }
+MO.FG2dCanvasContext_drawShape = function FG2dCanvasContext_drawShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
 MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, y1, x2, y2, x3, y3, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -17130,6 +17483,26 @@ MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, 
    handle.closePath();
    handle.fill();
    handle.stroke();
+}
+MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   handle.beginPath();
+   handle.fillRect(x, y, width, height);
+   handle.closePath();
+}
+MO.FG2dCanvasContext_setLineJoin = function FG2dCanvasContext_setLineJoin(style) {
+   var o = this;
+   var handle = o._handle;
+   handle.lineJoin = style;
+}
+MO.FG2dCanvasContext_fillShape = function FG2dCanvasContext_fillShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.fillStyle = color;
+   handle.fill();
 }
 MO.FG2dCanvasContext_drawCircle = function FG2dCanvasContext_drawCircle(x, y, radius, lineWidth, strokeColor, fillColor) {
    var o = this;
@@ -17551,10 +17924,13 @@ MO.SG3dMaterialInfo = function SG3dMaterialInfo(){
    var o = this;
    o.effectCode           = 'automatic';
    o.optionDepth          = null;
+   o.optionDepthWrite     = null;
    o.optionDouble         = null;
    o.optionNormalInvert   = null;
    o.optionShadow         = null;
    o.optionShadowSelf     = null;
+   o.optionSort           = null;
+   o.sortLevel            = null;
    o.optionAlpha          = null;
    o.alphaBase            = 1.0;
    o.alphaRate            = 1.0;
@@ -17616,10 +17992,13 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -17668,7 +18047,7 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.opacityColor.assign(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assign(info.emissiveColor);
@@ -17678,10 +18057,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -17730,7 +18112,7 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.opacityColor.assignPower(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assignPower(info.emissiveColor);
@@ -17738,10 +18120,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
 MO.SG3dMaterialInfo_reset = function SG3dMaterialInfo_reset(){
    var o = this;
    o.optionDepth = true;
+   o.optionDepthWrite = true;
    o.optionDouble = false;
    o.optionNormalInvert = false;
    o.optionShadow = true;
    o.optionShadowSelf = true;
+   o.optionSort = true;
+   o.sortLevel = 0;
    o.optionAlpha = false;
    o.alphaBase = 0.2;
    o.alphaRate = 1;
@@ -18018,7 +18403,7 @@ MO.FG3dCamera_updateFrustum = function FG3dCamera_updateFrustum(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
@@ -18283,9 +18668,12 @@ MO.FG3dEffectConsole_construct = function FG3dEffectConsole_construct(){
    o._tagContext = MO.Class.create(MO.FTagContext);
 }
 MO.FG3dEffectConsole_register = function FG3dEffectConsole_register(name, effect){
+   MO.Assert.debugNotEmpty(name);
+   MO.Assert.debugNotNull(effect);
    this._registerEffects.set(name, effect);
 }
 MO.FG3dEffectConsole_unregister = function FG3dEffectConsole_unregister(name){
+   MO.Assert.debugNotEmpty(name);
    this._registerEffects.set(name, null);
 }
 MO.FG3dEffectConsole_create = function FG3dEffectConsole_create(context, name){
@@ -18744,6 +19132,7 @@ MO.FG3dTechnique_selectMode = function FG3dTechnique_selectMode(p){
 }
 MO.FG3dTechnique_pushPass = function FG3dTechnique_pushPass(pass){
    var o = this;
+   MO.Assert.debugNotNull(pass);
    pass.setTechnique(o);
    o._passes.push(pass);
 }
@@ -18848,6 +19237,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    var sourceMaterial = source.material().info();
    var targetMaterial = target.material().info();
    if(sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -18863,6 +19255,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    }else if(!sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
       return -1;
    }else{
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -19042,7 +19437,7 @@ MO.FG3dTrackBall_updateFrustum = function FG3dTrackBall_updateFrustum(){
 }
 MO.FG3dTrackBall_dispose = function FG3dTrackBall_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dViewport = function FG3dViewport(o){
@@ -20409,6 +20804,7 @@ MO.FG3dAutomaticEffect_bindMaterial = function FG3dAutomaticEffect_bindMaterial(
    }else{
       context.setDepthMode(false);
    }
+   context.setDepthMask(info.optionDepthWrite);
    if(info.optionAlpha){
       context.setBlendFactors(o._stateBlend, o._stateBlendSourceCd, o._stateBlendTargetCd);
    }else{
@@ -20666,6 +21062,7 @@ MO.FWglContext = function FWglContext(o){
    o._statusRecord       = false;
    o._recordBuffers      = MO.Class.register(o, new MO.AGetter('_recordBuffers'));
    o._recordSamplers     = MO.Class.register(o, new MO.AGetter('_recordSamplers'));
+   o._statusDepthMask    = MO.Class.register(o, new MO.AGetter('_statusDepthMask'), false);
    o._statusFloatTexture = MO.Class.register(o, new MO.AGetter('_statusFloatTexture'), false);
    o._statusDrawBuffers  = MO.Class.register(o, new MO.AGetter('_statusDrawBuffers'), false);
    o._statusScissor      = MO.Class.register(o, new MO.AGetter('_statusScissor'), false);
@@ -20692,6 +21089,7 @@ MO.FWglContext = function FWglContext(o){
    o.setViewport         = MO.FWglContext_setViewport;
    o.setFillMode         = MO.FWglContext_setFillMode;
    o.setDepthMode        = MO.FWglContext_setDepthMode;
+   o.setDepthMask        = MO.FWglContext_setDepthMask;
    o.setCullingMode      = MO.FWglContext_setCullingMode;
    o.setBlendFactors     = MO.FWglContext_setBlendFactors;
    o.setScissorRectangle = MO.FWglContext_setScissorRectangle;
@@ -20741,6 +21139,7 @@ MO.FWglContext_linkCanvas = function FWglContext_linkCanvas(hCanvas){
          var code = codes[i];
          handle = hCanvas.getContext(code, parameters);
          if(handle){
+            MO.Logger.debug(o, 'Create context3d. (code={1}, handle={2})', code, handle);
             break;
          }
       }
@@ -21052,6 +21451,7 @@ MO.FWglContext_setViewport = function FWglContext_setViewport(left, top, width, 
    var o = this;
    o._viewportRectangle.set(left, top, width, height);
    o._handle.viewport(left, top, width, height);
+   MO.Logger.debug(o, 'Context3d viewport. (location={1},{2}, size={3}x{4})', left, top, width, height);
 }
 MO.FWglContext_setFillMode = function FWglContext_setFillMode(fillModeCd){
    var o = this;
@@ -21097,6 +21497,16 @@ MO.FWglContext_setDepthMode = function FWglContext_setDepthMode(depthFlag, depth
       o._depthModeCd = depthCd;
    }
    return true;
+}
+MO.FWglContext_setDepthMask = function FWglContext_setDepthMask(depthMask){
+   var o = this;
+   if(o._statusDepthMask != depthMask){
+      o._statistics._frameDepthMaskCount++;
+      o._handle.depthMask(depthMask);
+      o._statusDepthMask = depthMask;
+      return true;
+   }
+   return false;
 }
 MO.FWglContext_setCullingMode = function FWglContext_setCullingMode(cullFlag, cullCd){
    var o = this;
@@ -21596,17 +22006,17 @@ MO.FWglCubeTexture_dispose = function FWglCubeTexture_dispose(){
 }
 MO.FWglFlatTexture = function FWglFlatTexture(o){
    o = MO.Class.inherits(this, o, MO.FG3dFlatTexture);
-   o._handle       = null;
-   o._statusUpdate = false;
-   o.setup         = MO.FWglFlatTexture_setup;
-   o.isValid       = MO.FWglFlatTexture_isValid;
-   o.texture       = MO.FWglFlatTexture_texture;
-   o.makeMipmap    = MO.FWglFlatTexture_makeMipmap;
-   o.uploadData    = MO.FWglFlatTexture_uploadData;
-   o.upload        = MO.FWglFlatTexture_upload;
-   o.uploadElement = MO.FWglFlatTexture_uploadElement;
-   o.update        = MO.FWglFlatTexture_update;
-   o.dispose       = MO.FWglFlatTexture_dispose;
+   o._handle         = null;
+   o._statusUpdate   = false;
+   o.setup           = MO.FWglFlatTexture_setup;
+   o.isValid         = MO.FWglFlatTexture_isValid;
+   o.texture         = MO.FWglFlatTexture_texture;
+   o.makeMipmap      = MO.FWglFlatTexture_makeMipmap;
+   o.uploadData      = MO.FWglFlatTexture_uploadData;
+   o.upload          = MO.FWglFlatTexture_upload;
+   o.uploadElement   = MO.FWglFlatTexture_uploadElement;
+   o.update          = MO.FWglFlatTexture_update;
+   o.dispose         = MO.FWglFlatTexture_dispose;
    return o;
 }
 MO.FWglFlatTexture_setup = function FWglFlatTexture_setup(){
@@ -21662,7 +22072,7 @@ MO.FWglFlatTexture_uploadData = function FWglFlatTexture_uploadData(content, wid
    o._statusLoad = context.checkError("texImage2D", "Upload content failure.");
    o.update();
 }
-MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
+MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content, left, top, width, height){
    var o = this;
    var context = o._graphicContext;
    var capability = context.capability();
@@ -21671,6 +22081,10 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    var tagName = content.tagName;
    if((tagName == 'IMG') || (tagName == 'VIDEO') || (tagName == 'CANVAS')){
       data = content;
+   }else if(content.constructor == Uint8Array){
+      data = content;
+   }else if(content.constructor == Uint8ClampedArray){
+      data = new Uint8Array(content);
    }else if(MO.Class.isClass(content, MO.FImage)){
       data = content.image();
    }else if(MO.Class.isClass(content, MO.MCanvasObject)){
@@ -21682,7 +22096,11 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    if(o._optionFlipY){
       handle.pixelStorei(handle.UNPACK_FLIP_Y_WEBGL, true);
    }
-   handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   if((left != null) && (top != null) && (width != null) && (height != null)){
+      handle.texSubImage2D(handle.TEXTURE_2D, 0, left, top, width, height, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }else{
+      handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }
    o.update();
    o._statusLoad = context.checkError("texImage2D", "Upload image failure.");
 }
@@ -22287,7 +22705,7 @@ MO.RWglUtility.prototype.convertFillMode = function RWglUtility_convertFillMode(
 }
 MO.RWglUtility.prototype.convertDrawMode = function RWglUtility_convertDrawMode(graphic, drawCd){
    switch(drawCd){
-      case MO.EG3dDrawMode.Point:
+      case MO.EG3dDrawMode.Points:
          return graphic.POINTS;
       case MO.EG3dDrawMode.Lines:
          return graphic.LINES;
@@ -22425,6 +22843,13 @@ MO.EStageKey = new function EStageKey(){
    o.FocusRight    = MO.EKeyCode.L;
    return o;
 }
+MO.ETimelineLoop = new function ETimelineLoop(){
+   var o = this;
+   o.Play       = 'play';
+   o.Loop       = 'loop';
+   o.LoopRevert = 'loop.revert';
+   return o;
+}
 MO.MEventDispatcher = function MEventDispatcher(o){
    o = MO.Class.inherits(this, o);
    o.onOperationDown        = MO.Method.empty;
@@ -22544,67 +22969,109 @@ MO.MTimelineAction = function MTimelineAction(o){
 }
 MO.MTimelineActions = function MTimelineActions(o){
    o = MO.Class.inherits(this, o);
-   o._actions   = MO.Class.register(o, new MO.AGetter('_actions'));
-   o.construct  = MO.MTimelineActions_construct;
-   o.setup      = MO.MTimelineActions_setup;
-   o.pushAction = MO.MTimelineActions_pushAction;
-   o.process    = MO.MTimelineActions_process;
-   o.dispose    = MO.MTimelineActions_dispose;
+   o._processors = MO.Class.register(o, new MO.AGetter('_processors'));
+   o.construct   = MO.MTimelineActions_construct;
+   o.testStop    = MO.MTimelineActions_testStop;
+   o.pushAction  = MO.MTimelineActions_pushAction;
+   o.process     = MO.MTimelineActions_process;
+   o.stop        = MO.MTimelineActions_stop;
+   o.clear       = MO.MTimelineActions_clear;
+   o.dispose     = MO.MTimelineActions_dispose;
    return o;
 }
 MO.MTimelineActions_construct = function MTimelineActions_construct(){
    var o = this;
-   o.__base.FObject.construct.call(o);
-   o._actions = new MO.TObjects();
+   o._processors = new MO.TObjects();
 }
-MO.MTimelineActions_setup = function MTimelineActions_setup(){
+MO.MTimelineActions_testStop = function MTimelineActions_testStop(){
    var o = this;
+   if(o._processors.isEmpty()){
+      return true;
+   }
+   return false;
 }
-MO.MTimelineActions_pushAction = function MTimelineActions_pushAction(action){
-   this._actions.push(action);
+MO.MTimelineActions_pushAction = function MTimelineActions_pushAction(action, loopCd, loopCount){
+   var o = this;
+   MO.Assert.debugNotNull(action);
+   var processor = new MO.STimelineActionProcessor();
+   processor.loopCd = MO.Runtime.nvl(loopCd, MO.ETimelineLoop.Play);
+   processor.loopCount = MO.Runtime.nvl(loopCount, 1);
+   processor.action = action;
+   o._processors.push(processor);
 }
 MO.MTimelineActions_process = function MTimelineActions_process(context){
    var o = this;
    var tick = context.tick;
-   var actions = o._actions;
-   var count = actions.count();
+   var processors = o._processors;
+   var count = processors.count();
    for(var i = count - 1; i >= 0; i--){
-      var action = actions.at(i);
-      var actionTick = tick - action.tick;
-      if(actionTick < 0){
+      var processor = processors.at(i);
+      var action = processor.action;
+      var recordTick = action.recordTick();
+      if(recordTick == 0){
+         action.setRecordTick(tick);
          continue;
       }
+      var recordSpan = tick - recordTick;
+      var delay = action.delay();
+      if(delay != 0){
+         if(recordSpan < delay){
+            continue;
+         }
+      }
       if(!action.statusStart()){
-         action.start();
+         action.start(context);
       }else if(action.statusStop()){
-         actions.erase(i);
+         processors.erase(i);
+         action.stop(context);
          action.dispose();
       }else{
+         action.process(context);
          var duration = action.duration();
          if(duration != 0){
-            if(actionTick > duration){
-               action.stop();
+            var actionSpan = tick - action.startTick();
+            if(actionSpan > duration){
+               processors.erase(i);
+               context.currentTick = duration;
+               action.stop(context);
+               action.dispose();
                continue;
             }
          }
-         context.tick = actionTick;
-         action.process(context);
       }
    }
-   context.tick = tick;
+}
+MO.MTimelineActions_stop = function MTimelineActions_stop(){
+   var o = this;
+   var processors = o._processors;
+   var count = processors.count();
+   for(var i = 0; i < count; i++){
+      var processor = processors.at(i);
+      processor.stop();
+   }
+}
+MO.MTimelineActions_clear = function MTimelineActions_clear(){
+   var o = this;
+   var processors = o._processors;
+   var count = processors.count();
+   for(var i = 0; i < count; i++){
+      var processor = processors.at(i);
+      processor.clear();
+   }
+   processors.clear();
 }
 MO.MTimelineActions_dispose = function MTimelineActions_dispose(){
    var o = this;
-   o._actions = MO.Lang.Obejct.dispose(o._actions);
-   o.__base.FObject.dispose.call(o);
+   o._processors = MO.Lang.Object.dispose(o._processors);
 }
 MO.MTimelines = function MTimelines(o){
    o = MO.Class.inherits(this, o);
    o._timelines   = MO.Class.register(o, new MO.AGetter('_timelines'));
    o.construct    = MO.MTimelines_construct;
-   o.setup        = MO.MTimelines_setup;
    o.pushTimeline = MO.MTimelines_pushTimeline;
    o.process      = MO.MTimelines_process;
+   o.stop         = MO.MTimelines_stop;
+   o.clear        = MO.MTimelines_clear;
    o.dispose      = MO.MTimelines_dispose;
    return o;
 }
@@ -22613,11 +23080,11 @@ MO.MTimelines_construct = function MTimelines_construct(){
    o.__base.FObject.construct.call(o);
    o._timelines = new MO.TObjects();
 }
-MO.MTimelines_setup = function MTimelines_setup(){
-   var o = this;
-}
 MO.MTimelines_pushTimeline = function MTimelines_pushTimeline(timeline){
-   this._timelines.push(timeline);
+   var o = this;
+   MO.Assert.debugNotNull(timeline);
+   timeline.setRecordTick(0);
+   o._timelines.push(timeline);
 }
 MO.MTimelines_process = function MTimelines_process(context){
    var o = this;
@@ -22626,42 +23093,152 @@ MO.MTimelines_process = function MTimelines_process(context){
    var count = timelines.count();
    for(var i = count - 1; i >= 0; i--){
       var timeline = timelines.at(i);
-      var timelineTick = tick - timeline.tick;
-      if(timelineTick < 0){
+      var recordTick = timeline.recordTick();
+      if(recordTick == 0){
+         timeline.setRecordTick(tick);
          continue;
       }
+      var recordSpan = tick - recordTick;
+      var delay = timeline.delay();
+      if(delay != 0){
+         if(recordSpan < delay){
+            continue;
+         }
+      }
       if(!timeline.statusStart()){
-         timeline.start();
+         timeline.start(context);
       }else if(timeline.statusStop()){
          timelines.erase(i);
+         timeline.stop(context);
          timeline.dispose();
       }else{
          var duration = timeline.duration();
          if(duration != 0){
-            if(timelineTick > duration){
-               timeline.stop();
+            var timelineSpan = tick - timeline.startTick();
+            if(timelineSpan > duration){
+               timelines.erase(i);
+               timeline.stop(context);
+               timeline.dispose();
                continue;
             }
          }
-         context.tick = timelineTick;
          timeline.process(context);
       }
    }
-   context.tick = tick;
+}
+MO.MTimelines_stop = function MTimelines_stop(){
+   var o = this;
+   var timelines = o._timelines;
+   var count = timelines.count();
+   for(var i = 0; i < count; i++){
+      var timeline = timelines.at(i);
+      timeline.stop();
+   }
+}
+MO.MTimelines_clear = function MTimelines_clear(){
+   var o = this;
+   var timelines = o._timelines;
+   var count = timelines.count();
+   for(var i = 0; i < count; i++){
+      var timeline = timelines.at(i);
+      timeline.clear();
+   }
+   timelines.clear();
 }
 MO.MTimelines_dispose = function MTimelines_dispose(){
    var o = this;
-   o._timelines = MO.Lang.Obejct.dispose(o._timelines);
+   o._timelines = MO.Lang.Object.dispose(o._timelines);
    o.__base.FObject.dispose.call(o);
 }
-MO.MTimelineWorker = function MTimelineWorker(o){
+MO.MTimelineSections = function MTimelineSections(o){
    o = MO.Class.inherits(this, o);
+   o._currentSection   = MO.Class.register(o, new MO.AGetter('_currentSection'));
+   o._sections         = MO.Class.register(o, new MO.AGetter('_sections'));
+   o.construct         = MO.MTimelineSections_construct;
+   o.pushSection       = MO.MTimelineSections_pushSection;
+   o.pushSectionAction = MO.MTimelineSections_pushSectionAction;
+   o.process           = MO.MTimelineSections_process;
+   o.stop              = MO.MTimelineSections_stop;
+   o.clear             = MO.MTimelineSections_clear;
+   o.dispose           = MO.MTimelineSections_dispose;
+   return o;
+}
+MO.MTimelineSections_construct = function MTimelineSections_construct(){
+   var o = this;
+   o._sections = new MO.TObjects();
+}
+MO.MTimelineSections_pushSection = function MTimelineSections_pushSection(section){
+   var o = this;
+   MO.Assert.debugNotNull(section);
+   o._sections.push(section);
+}
+MO.MTimelineSections_pushSectionAction = function MTimelineSections_pushSectionAction(action, loopCd, loopCount){
+   var o = this;
+   MO.Assert.debugNotNull(action);
+   var section = MO.Class.create(MO.FTimelineSection);
+   section.pushAction(action, loopCd, loopCount);
+   o._sections.push(section);
+}
+MO.MTimelineSections_process = function MTimelineSections_process(context){
+   var o = this;
+   var sections = o._sections;
+   var section = o._currentSection;
+   if(!section){
+      if(!sections.isEmpty()){
+         section = o._currentSection = sections.shift();
+      }
+   }
+   if(section){
+      section.process(context);
+      if(section.testStop()){
+         section.stop(context);
+         section.dispose();
+         o._currentSection = null;
+      }
+   }
+}
+MO.MTimelineSections_stop = function MTimelineSections_stop(){
+   var o = this;
+   var sections = o._sections;
+   var count = sections.count();
+   for(var i = 0; i < count; i++){
+      var section = sections.at(i);
+      section.stop();
+   }
+}
+MO.MTimelineSections_clear = function MTimelineSections_clear(){
+   var o = this;
+   var sections = o._sections;
+   var count = sections.count();
+   for(var i = 0; i < count; i++){
+      var section = sections.at(i);
+      section.clear();
+   }
+   sections.clear();
+   o._currentSection = null;
+}
+MO.MTimelineSections_dispose = function MTimelineSections_dispose(){
+   var o = this;
+   o._sections = MO.Lang.Object.dispose(o._sections);
+   o._currentSection;
+}
+MO.MTimelineWorker = function MTimelineWorker(o){
+   o = MO.Class.inherits(this, o, MO.MListener);
    o._code        = MO.Class.register(o, new MO.AGetSet('_code'));
-   o._tick        = MO.Class.register(o, new MO.AGetSet('_tick'), 0);
+   o._delay       = MO.Class.register(o, new MO.AGetSet('_delay'), 0);
    o._duration    = MO.Class.register(o, new MO.AGetSet('_duration'), 0);
+   o._tick        = MO.Class.register(o, new MO.AGetter('_tick'), 0);
+   o._recordTick  = MO.Class.register(o, new MO.AGetSet('_recordTick'), 0);
+   o._startTick   = MO.Class.register(o, new MO.AGetter('_startTick'), 0);
+   o._lastTick    = MO.Class.register(o, new MO.AGetter('_lastTick'), 0);
    o._statusStart = MO.Class.register(o, new MO.AGetter('_statusStart'), false);
    o._statusStop  = MO.Class.register(o, new MO.AGetter('_statusStop'), false);
+   o._eventActionStart     = null;
+   o._listenersActionStart = MO.Class.register(o, new MO.AListener('_listenersActionStart', MO.EEvent.ActionStart));
+   o._eventActionStop      = null;
+   o._listenersActionStop  = MO.Class.register(o, new MO.AListener('_listenersActionStop', MO.EEvent.ActionStop));
    o.onStart      = MO.MTimelineWorker_onStart;
+   o.onProcess    = MO.MTimelineWorker_onProcess;
    o.onStop       = MO.MTimelineWorker_onStop;
    o.construct    = MO.MTimelineWorker_construct;
    o.setup        = MO.MTimelineWorker_setup;
@@ -22671,45 +23248,87 @@ MO.MTimelineWorker = function MTimelineWorker(o){
    o.dispose      = MO.MTimelineWorker_dispose;
    return o;
 }
-MO.MTimelineWorker_onStart = function MTimelineWorker_onStart(){
+MO.MTimelineWorker_onStart = function MTimelineWorker_onStart(context) {
+   var o = this;
+   o._startTick = context.tick;
+   o._lastTick = context.tick;
+   o.processActionStartListener(context);
+}
+MO.MTimelineWorker_onProcess = function MTimelineWorker_onProcess(context){
    var o = this;
 }
-MO.MTimelineWorker_onStop = function MTimelineWorker_onStop(){
+MO.MTimelineWorker_onStop = function MTimelineWorker_onStop(context) {
    var o = this;
+   o.processActionStopListener(context);
 }
 MO.MTimelineWorker_construct = function MTimelineWorker_construct(){
    var o = this;
+   o._eventActionStart = new MO.SEvent(o);
+   o._eventActionStop = new MO.SEvent(o);
 }
 MO.MTimelineWorker_setup = function MTimelineWorker_setup(){
    var o = this;
    o._statusStart = false;
 }
-MO.MTimelineWorker_start = function MTimelineWorker_start(){
+MO.MTimelineWorker_start = function MTimelineWorker_start(context){
    var o = this;
    if(!o._statusStart){
-      o.onStart();
+      o.onStart(context);
       o._statusStart = true;
    }
    o._statusStop = false;
 }
-MO.MTimelineWorker_process = function MTimelineWorker_process(){
+MO.MTimelineWorker_process = function MTimelineWorker_process(context){
    var o = this;
+   var tick = context.tick;
+   var span = tick - o._lastTick;
+   context.currentTick = o._tick = tick - o._startTick;
+   context.span = span;
+   context.spanSecond = span * 0.001;
+   o.onProcess(context);
+   o._lastTick = tick;
 }
-MO.MTimelineWorker_stop = function MTimelineWorker_stop(){
+MO.MTimelineWorker_stop = function MTimelineWorker_stop(context){
    var o = this;
    if(!o._statusStop){
-      o.onStop();
+      o.onStop(context);
       o._statusStop = true;
    }
+   o._statusStart = false;
 }
 MO.MTimelineWorker_dispose = function MTimelineWorker_dispose(){
    var o = this;
+   o._eventActionStart = MO.Lang.Object.dispose(o._eventActionStart);
+   o._eventActionStop = MO.Lang.Object.dispose(o._eventActionStop);
+   o.__base.MListener.dispose.call(o);
+}
+MO.STimelineActionProcessor = function STimelineActionProcessor(){
+   var o = this;
+   o.loopCd    = null;
+   o.loopCount = null;
+   o.action    = null;
+   o.stop      = MO.STimelineActionProcessor_stop;
+   o.clear     = MO.STimelineActionProcessor_clear;
+   return o;
+}
+MO.STimelineActionProcessor_stop = function STimelineActionProcessor_stop(){
+   var o = this;
+   o.action.stop();
+}
+MO.STimelineActionProcessor_clear = function STimelineActionProcessor_clear(){
+   var o = this;
+   o.loopCd = null;
+   o.loopCount = null;
+   o.action = null;
 }
 MO.STimelineContext = function STimelineContext(){
    var o = this;
-   o._mainTimeline = null;
-   o._timeline     = null;
-   o._action       = null;
+   o.mainTimeline = null;
+   o.timeline     = null;
+   o.action       = null;
+   o.tick         = null;
+   o.currentTick  = null;
+   o.frameSpan    = null;
    return o;
 }
 MO.FCanvas = function FCanvas(o){
@@ -22733,12 +23352,14 @@ MO.FDesktop = function FDesktop(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
    o._size            = MO.Class.register(o, new MO.AGetter('_size'));
    o._sizeRate        = MO.Class.register(o, new MO.AGetter('_sizeRate'), 1);
+   o._sizeScale       = MO.Class.register(o, new MO.AGetter('_sizeScale'), 1);
    o._calculateSize   = MO.Class.register(o, new MO.AGetter('_calculateSize'));
    o._calculateRate   = MO.Class.register(o, new MO.AGetter('_calculateRate'));
    o._logicSize       = MO.Class.register(o, new MO.AGetter('_logicSize'));
    o._logicRate       = MO.Class.register(o, new MO.AGetter('_logicRate'));
    o._screenSize      = MO.Class.register(o, new MO.AGetter('_screenSize'));
    o._virtualSize     = MO.Class.register(o, new MO.AGetter('_virtualSize'));
+   o._guiBufferScale  = MO.Class.register(o, new MO.AGetSet('_guiBufferScale'), 1);
    o._canvases        = MO.Class.register(o, new MO.AGetter('_canvases'));
    o.construct        = MO.FDesktop_construct;
    o.canvasRegister   = MO.FDesktop_canvasRegister;
@@ -22765,10 +23386,12 @@ MO.FDesktop_construct = function FDesktop_construct(){
 }
 MO.FDesktop_canvasRegister = function FDesktop_canvasRegister(canvas){
    var canvases = this._canvases;
+   MO.Assert.debugFalse(canvases.contains(canvas));
    canvases.push(canvas);
 }
 MO.FDesktop_canvasUnregister = function FDesktop_canvasUnregister(canvas){
    var canvases = this._canvases;
+   MO.Assert.debugTrue(canvases.contains(canvas));
    canvases.remove(canvas);
 }
 MO.FDesktop_processEvent = function FDesktop_processEvent(event){
@@ -22878,16 +23501,17 @@ MO.FDisplay_filterDisplays = function FDisplay_filterDisplays(p){
       p.push(o);
    }
 }
-MO.FDisplay_filterRenderables = function FDisplay_filterRenderables(p){
+MO.FDisplay_filterRenderables = function FDisplay_filterRenderables(region){
    var o = this;
    if(!o._visible){
       return false;
    }
-   var s = o._renderables;
-   if(s){
-      var c = s.count();
-      for(var i = 0; i < c; i++){
-         s.getAt(i).filterDrawables(p);
+   var renderables = o._renderables;
+   if(renderables){
+      var count = renderables.count();
+      for(var i = 0; i < count; i++){
+         var renderable = renderables.at(i);
+         renderable.filterDrawables(region);
       }
    }
    return true;
@@ -23111,7 +23735,7 @@ MO.FDrawable_testVisible = function FDrawable_testVisible(){
    return this._visible;
 }
 MO.FMainTimeline = function FMainTimeline(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimeline, MO.MTimelines);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimelineSections, MO.MTimelines);
    o._context   = null;
    o._startTick = 0;
    o._lastTick  = 0;
@@ -23120,6 +23744,8 @@ MO.FMainTimeline = function FMainTimeline(o){
    o.setup      = MO.FMainTimeline_setup;
    o.start      = MO.FMainTimeline_start;
    o.process    = MO.FMainTimeline_process;
+   o.stop       = MO.FMainTimeline_stop;
+   o.clear      = MO.FMainTimeline_clear;
    o.dispose    = MO.FMainTimeline_dispose;
    return o;
 }
@@ -23127,7 +23753,10 @@ MO.FMainTimeline_construct = function FMainTimeline_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MTimelineActions.construct.call(o);
-   o._context = new MO.STimelineContext();
+   o.__base.MTimelineSections.construct.call(o);
+   o.__base.MTimelines.construct.call(o);
+   var context = o._context = new MO.STimelineContext();
+   context.mainTimeline = o;
    o._timelines = new MO.TObjects();
 }
 MO.FMainTimeline_setup = function FMainTimeline_setup(){
@@ -23138,23 +23767,39 @@ MO.FMainTimeline_start = function FMainTimeline_start(){
 }
 MO.FMainTimeline_process = function FMainTimeline_process(){
    var o = this;
-   var tick = MO.Timer.current();
-   if(tick - o._lastTick < o._interval){
+   var currentTick = MO.Timer.current();
+   if(currentTick - o._lastTick < o._interval){
       return false;
    }
-   o._lastTick = tick;
    if(o._startTick == 0){
-      o._startTick = tick;
+      o._startTick = currentTick;
+      return true;
    }
    var context = o._context;
-   context.tick = o._startTick - tick;
+   context.tick = currentTick - o._startTick;
    o.__base.MTimelineActions.process.call(o, context);
+   o.__base.MTimelineSections.process.call(o, context);
    o.__base.MTimelines.process.call(o, context);
+   o._lastTick = currentTick;
+}
+MO.FMainTimeline_stop = function FMainTimeline_stop(){
+   var o = this;
+   o.__base.MTimelineActions.stop.call(o);
+   o.__base.MTimelineSections.stop.call(o);
+   o.__base.MTimelines.stop.call(o);
+}
+MO.FMainTimeline_clear = function FMainTimeline_clear(){
+   var o = this;
+   o.__base.MTimelineActions.clear.call(o);
+   o.__base.MTimelineSections.clear.call(o);
+   o.__base.MTimelines.clear.call(o);
 }
 MO.FMainTimeline_dispose = function FMainTimeline_dispose(){
    var o = this;
    o._timelines = MO.Lang.Object.dispose(o._timelines);
    o._context = MO.Lang.Object.dispose(o._context);
+   o.__base.MTimelines.dispose.call(o);
+   o.__base.MTimelineSections.dispose.call(o);
    o.__base.MTimelineActions.dispose.call(o);
    o.__base.FObject.dispose.call(o);
 }
@@ -23361,11 +24006,12 @@ MO.FStage_dispose = function FStage_dispose(){
    o.__base.FComponent.dispose.call(o);
 }
 MO.FTimeline = function FTimeline(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimeline, MO.MTimelines);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimelineSections, MO.MTimelines);
    o._mainTimeline = MO.Class.register(o, new MO.AGetter('_mainTimeline'));
    o.construct     = MO.FTimeline_construct;
-   o.setup         = MO.FTimeline_setup;
    o.process       = MO.FTimeline_process;
+   o.stop          = MO.FTimeline_stop;
+   o.clear         = MO.FTimeline_clear;
    o.dispose       = MO.FTimeline_dispose;
    return o;
 }
@@ -23373,19 +24019,80 @@ MO.FTimeline_construct = function FTimeline_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MTimelineActions.construct.call(o);
-   o._actions = new MO.TObejcts();
-}
-MO.FTimeline_setup = function FTimeline_setup(){
-   var o = this;
+   o.__base.MTimelineSections.construct.call(o);
+   o.__base.MTimelines.construct.call(o);
 }
 MO.FTimeline_process = function FTimeline_process(context){
    var o = this;
    o.__base.MTimelineActions.process.call(o, context);
+   o.__base.MTimelineSections.process.call(o, context);
    o.__base.MTimelines.process.call(o, context);
+}
+MO.FTimelineSection_stop = function FTimelineSection_stop(){
+   var o = this;
+   o.__base.MTimelineActions.stop.call(o);
+   o.__base.MTimelineSections.stop.call(o);
+   o.__base.MTimelines.stop.call(o);
+}
+MO.FTimelineSection_clear = function FTimelineSection_clear(){
+   var o = this;
+   o.__base.MTimelineActions.clear.call(o);
+   o.__base.MTimelineSections.clear.call(o);
+   o.__base.MTimelines.clear.call(o);
 }
 MO.FTimeline_dispose = function FTimeline_dispose(){
    var o = this;
-   o._actions = MO.Lang.Obejct.dispose(o._actions);
+   o.__base.MTimelines.dispose.call(o);
+   o.__base.MTimelineSections.dispose.call(o);
+   o.__base.MTimelineActions.dispose.call(o);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FTimelineAction = function FTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineAction);
+   o.construct     = MO.FTimelineAction_construct;
+   o.dispose       = MO.FTimelineAction_dispose;
+   return o;
+}
+MO.FTimelineAction_construct = function FTimelineAction_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o.__base.MTimelineAction.construct.call(o);
+}
+MO.FTimelineAction_dispose = function FTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FTimelineSection = function FTimelineSection(o){
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions);
+   o._eventSectionStop = null;
+   o._listenersSectionStop = MO.Class.register(o, new MO.AListener('_listenersSectionStop', MO.EEvent.SectionStop));
+   o.construct = MO.FTimelineSection_construct;
+   o.stop      = MO.FTimelineSection_stop;
+   o.clear     = MO.FTimelineSection_clear;
+   o.dispose   = MO.FTimelineSection_dispose;
+   return o;
+}
+MO.FTimelineSection_construct = function FTimelineSection_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o.__base.MTimelineActions.construct.call(o);
+   o._eventSectionStop = new MO.SEvent(o);
+}
+MO.FTimelineSection_stop = function FTimelineSection_stop(){
+   var o = this;
+   o.__base.MTimelineActions.stop.call(o);
+   o.processSectionStopListener(o._eventSectionStop);
+}
+MO.FTimelineSection_clear = function FTimelineSection_clear(){
+   var o = this;
+   o.stop();
+   o.__base.MTimelineActions.clear.call(o);
+}
+MO.FTimelineSection_dispose = function FTimelineSection_dispose(){
+   var o = this;
+   o._eventSectionStop = MO.Lang.Object.dispose(o._eventSectionStop);
+   o.__base.MListener.dispose.call(o);
    o.__base.MTimelineActions.dispose.call(o);
    o.__base.FObject.dispose.call(o);
 }
@@ -23604,10 +24311,12 @@ MO.FAudio_play = function FAudio_play(position){
       }
    }
    hAudio.play();
+   MO.Logger.debug(o, 'Audio play. (url={1}, position={2})', o._url, position);
 }
 MO.FAudio_pause = function FAudio_pause(){
    var o = this;
    o._hAudio.pause();
+   MO.Logger.debug(o, 'Audio pause. (url={1})', o._url);
 }
 MO.FAudio_loadUrl = function FAudio_loadUrl(uri){
    var o = this;
@@ -24250,12 +24959,14 @@ MO.FResourcePackage_onLoad = function FResourcePackage_onLoad(event){
    var o = this;
    o.unserializeBuffer(event.content, true);
    o._statusReady = true;
+   MO.Logger.debug(o, 'Load resource package success. (url={1})', o._url);
 }
 MO.FResourcePackage_testReady = function FResourcePackage_testReady(){
    return this._statusReady;
 }
 MO.FResourcePackage_load = function FResourcePackage_load(){
    var o = this;
+   MO.Assert.debugFalse(o._statusReady);
    var url = o._url = MO.Console.find(MO.FEnvironmentConsole).parseUrl(o._uri);
    var connection = MO.Console.find(MO.FHttpConsole).sendAsync(url);
    connection.addLoadListener(o, o.onLoad);
@@ -24585,6 +25296,7 @@ MO.FE2dCanvas_resize = function FE2dCanvas_resize(width, height){
    hCanvas.height = height;
    o._size.set(width, height);
    o._graphicContext.size().set(width, height);
+   MO.Logger.debug(o, 'Canvas2d resize. (size={1}x{2}, html={3})', width, height, hCanvas.outerHTML);
 }
 MO.FE2dCanvas_show = function FE2dCanvas_show(){
    this.setVisible(true);
@@ -24648,6 +25360,136 @@ MO.ME3dObject = function ME3dObject(o){
    o = MO.Class.inherits(this, o, MO.MGraphicObject, MO.MAttributeCode);
    o._guid = MO.Class.register(o, new MO.AGetSet('_guid'));
    return o;
+}
+MO.FE3dBoomerangTimelineAction = function FE3dBoomerangTimelineAction(o) {
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code                 = 'boomerang';
+   o._optionSin            = MO.Class.register(o, new MO.AGetSet('_optionSin'), false);
+   o._matrix                = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originTranslate    = MO.Class.register(o, new MO.AGetter('_originTranslate'));
+   o._currentTranslate   = MO.Class.register(o, new MO.AGetter('_currentTranslate'));
+   o._targetTranslate    = MO.Class.register(o, new MO.AGetter('_targetTranslate'));
+   o.onStart               = MO.FE3dBoomerangTimelineAction_onStart;
+   o.onProcess             = MO.FE3dBoomerangTimelineAction_onProcess;
+   o.onStop                = MO.FE3dBoomerangTimelineAction_onStop;
+   o.construct             = MO.FE3dBoomerangTimelineAction_construct;
+   o.link                  = MO.FE3dBoomerangTimelineAction_link;
+   o.dispose               = MO.FE3dBoomerangTimelineAction_dispose;
+   return o;
+}
+MO.FE3dBoomerangTimelineAction_onStart = function FE3dBoomerangTimelineAction_onStart(context) {
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dBoomerangTimelineAction_onProcess = function FE3dBoomerangTimelineAction_onProcess(context) {
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   rate = rate > 1 ? 1 : rate;
+   if(o._optionSin) rate = Math.sin(rate * Math.PI);
+   var matrix = o._matrix;
+   var current = o._currentTranslate;
+   var origin = o._originTranslate;
+   var target = o._targetTranslate;
+   current.x = origin.x + target.x * rate;
+   current.y = origin.y + target.y * rate;
+   current.z = origin.z + target.z * rate;
+   matrix.setTranslate(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dBoomerangTimelineAction_onStop = function FE3dBoomerangTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dBoomerangTimelineAction_construct = function FE3dBoomerangTimelineAction_construct() {
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentTranslate = new MO.SValue3();
+   o._originTranslate = new MO.SValue3();
+   o._targetTranslate = new MO.SValue3();
+}
+MO.FE3dBoomerangTimelineAction_link = function FE3dBoomerangTimelineAction_link(matrix) {
+   var o = this;
+   o._matrix = matrix;
+   o._originTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+   o._currentTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+}
+MO.FE3dBoomerangTimelineAction_dispose = function FE3dBoomerangTimelineAction_dispose() {
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dCameraTimelineAction = function FE3dCameraTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.FTimelineAction);
+   o._code            = 'move';
+   o._camera          = MO.Class.register(o, new MO.AGetter('_camera'));
+   o._speed           = MO.Class.register(o, new MO.AGetSet('_speed'), 100);
+   o._currentPosition = MO.Class.register(o, new MO.AGetter('_currentPosition'));
+   o._sourcePosition  = MO.Class.register(o, new MO.AGetter('_sourcePosition'));
+   o._targetPosition  = MO.Class.register(o, new MO.AGetter('_targetPosition'));
+   o.onStart          = MO.FE3dCameraTimelineAction_onStart;
+   o.onProcess        = MO.FE3dCameraTimelineAction_onProcess;
+   o.onStop           = MO.FE3dCameraTimelineAction_onStop;
+   o.construct        = MO.FE3dCameraTimelineAction_construct;
+   o.link             = MO.FE3dCameraTimelineAction_link;
+   o.dispose          = MO.FE3dCameraTimelineAction_dispose;
+   return o;
+}
+MO.FE3dCameraTimelineAction_onStart = function FE3dCameraTimelineAction_onStart(context){
+   var o = this;
+   o.__base.FTimelineAction.onStart.call(o, context);
+}
+MO.FE3dCameraTimelineAction_onProcess = function FE3dCameraTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.FTimelineAction.onProcess.call(o, context);
+   var direction = o._currentDirection;
+   direction.direction(o._sourcePosition, o._targetPosition);
+   direction.normalize();
+   var moveLength = o._speed * context.spanSecond;
+   var length = o._currentPosition.lengthToValue3(o._targetPosition);
+   if(moveLength > length){
+      o._currentPosition.assign(o._targetPosition);
+      o._statusStop = true;
+   }else{
+      o._currentPosition.add(direction.x * moveLength, direction.y * moveLength, direction.z * moveLength);
+   }
+   o._camera.position().assign(o._currentPosition);
+   o._camera.update();
+}
+MO.FE3dCameraTimelineAction_onStop = function FE3dCameraTimelineAction_onStop(){
+   var o = this;
+   o.__base.FTimelineAction.onStop.call(o, context);
+}
+MO.FE3dCameraTimelineAction_construct = function FE3dCameraTimelineAction_construct(){
+   var o = this;
+   o.__base.FTimelineAction.construct.call(o);
+   o._currentPosition = new MO.SPoint3();
+   o._currentDirection = new MO.SVector3();
+   o._sourcePosition = new MO.SPoint3();
+   o._targetPosition = new MO.SPoint3();
+}
+MO.FE3dCameraTimelineAction_link = function FE3dCameraTimelineAction_link(camera){
+   var o = this;
+   o._camera = camera;
+   o._currentPosition.assign(camera.position());
+   o._sourcePosition.assign(camera.position());
+}
+MO.FE3dCameraTimelineAction_setTargetControl = function FE3dCameraTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dCameraTimelineAction_dispose = function FE3dCameraTimelineAction_dispose(){
+   var o = this;
+   o._currentPosition = MO.Lang.Object.dispose(o._currentPosition);
+   o._currentDirection = MO.Lang.Object.dispose(o._currentDirection);
+   o._sourcePosition = MO.Lang.Object.dispose(o._sourcePosition);
+   o._targetPosition = MO.Lang.Object.dispose(o._targetPosition);
+   o._camera = null;
+   o.__base.FTimelineAction.dispose.call(o);
 }
 MO.FE3dCanvas = function FE3dCanvas(o){
    o = MO.Class.inherits(this, o, MO.FCanvas, MO.MGraphicObject, MO.MMouseCapture);
@@ -24756,6 +25598,7 @@ MO.FE3dCanvas_resize = function FE3dCanvas_resize(sourceWidth, sourceHeight){
    o._size.set(width, height);
    var context = o._graphicContext;
    context.setViewport(0, 0, width, height);
+   MO.Logger.debug(o, 'Canvas3d resize. (size={1}x{2}, buffer={3}x{4}, html={5})', width, height, context._handle.drawingBufferWidth, context._handle.drawingBufferHeight, hCanvas.outerHTML);
 }
 MO.FE3dCanvas_show = function FE3dCanvas_show(){
    this.setVisible(true);
@@ -24978,23 +25821,139 @@ MO.FE3dRenderable_remove = function FE3dRenderable_remove(){
       o._display = null;
    }
 }
+MO.FE3dRotateAxisTimelineAction = function FE3dRotateAxisTimelineAction(o) {
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code                 = 'rotateAxis';
+   o._matrix               = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._targetAxis           = MO.Class.register(o, new MO.AGetter('_targetAxis'));
+   o._targetAngle          = MO.Class.register(o, new MO.AGetSet('_targetAngle'));
+   o._currentAngle         = 0;
+   o._step                 = 0;
+   o.onStart               = MO.FE3dRotateAxisTimelineAction_onStart;
+   o.onProcess             = MO.FE3dRotateAxisTimelineAction_onProcess;
+   o.onStop                = MO.FE3dRotateAxisTimelineAction_onStop;
+   o.construct             = MO.FE3dRotateAxisTimelineAction_construct;
+   o.link                 = MO.FE3dRotateAxisTimelineAction_link;
+   o.dispose              = MO.FE3dRotateAxisTimelineAction_dispose;
+}
+MO.FE3dRotateAxisTimelineAction_onStart = function FE3dRotateAxisTimelineAction_onStart(context) {
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dRotateAxisTimelineAction_onProcess = function FE3dRotateAxisTimelineAction_onProcess(context) {
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   rate = rate > 1 ? 1 : rate;
+   var changeAngle = o._targetAngle * rate - o._currentAngle;
+   o._currentAngle += changeAngle;
+   o._matrix.addRotationAxis(o._targetAxis, changeAngle);
+}
+MO.FE3dRotateAxisTimelineAction_onStop = function FE3dRotateAxisTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dRotateAxisTimelineAction_construct = function FE3dRotateAxisTimelineAction_construct() {
+   var o = this;
+   o._targetAxis = new MO.SVector3(0, 0, 0);
+   o._targetAngle = 0;
+   o.__base.MTimelineAction.construct.call(o);
+}
+MO.FE3dRotateAxisTimelineAction_link = function FE3dRotateAxisTimelineAction_link(matrix) {
+   var o = this;
+   o._matrix = matrix;
+}
+MO.FE3dRotateAxisTimelineAction_dispose = function FE3dRotateAxisTimelineAction_dispose() {
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dRotateTimelineAction = function FE3dRotateTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code               = 'rotate';
+   o._matrix             = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originRotate       = MO.Class.register(o, new MO.AGetter('_originRotate'));
+   o._currentRotate      = MO.Class.register(o, new MO.AGetter('_currentRotate'));
+   o._targetRotate       = MO.Class.register(o, new MO.AGetter('_targetRotate'));
+   o.onStart          = MO.FE3dRotateTimelineAction_onStart;
+   o.onProcess        = MO.FE3dRotateTimelineAction_onProcess;
+   o.onStop           = MO.FE3dRotateTimelineAction_onStop;
+   o.construct        = MO.FE3dRotateTimelineAction_construct;
+   o.link             = MO.FE3dRotateTimelineAction_link;
+   o.dispose          = MO.FE3dRotateTimelineAction_dispose;
+   return o;
+}
+MO.FE3dRotateTimelineAction_onStart = function FE3dRotateTimelineAction_onStart(context){
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dRotateTimelineAction_onProcess = function FE3dRotateTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   var matrix = o._matrix;
+   var current = o._currentRotate;
+   var origin = o._originRotate;
+   var target = o._targetRotate;
+   current.x = origin.x + (target.x - origin.x) * rate;
+   current.y = origin.y + (target.y - origin.y) * rate;
+   current.z = origin.z + (target.z - origin.z) * rate;
+   matrix.setRotation(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dRotateTimelineAction_onStop = function FE3dRotateTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dRotateTimelineAction_construct = function FE3dRotateTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._originRotate = new MO.SValue3();
+   o._currentRotate = new MO.SValue3();
+   o._targetRotate = new MO.SValue3();
+}
+MO.FE3dRotateTimelineAction_link = function FE3dRotateTimelineAction_link(matrix){
+   var o = this;
+   o._matrix = matrix;
+   o._originRotate.set(matrix.rx, matrix.ry, matrix.rz);
+   o._currentRotate.set(matrix.rx, matrix.ry, matrix.rz);
+}
+MO.FE3dRotateTimelineAction_setTargetControl = function FE3dRotateTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dRotateTimelineAction_dispose = function FE3dRotateTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
 MO.FE3dStage = function FE3dStage(o){
    o = MO.Class.inherits(this, o, MO.FStage, MO.MGraphicObject);
-   o._statistics        = MO.Class.register(o, new MO.AGetter('_statistics'));
-   o._technique         = MO.Class.register(o, new MO.AGetter('_technique'));
-   o._region            = MO.Class.register(o, new MO.AGetter('_region'));
-   o._allDisplays       = null;
-   o.onProcess          = MO.FE3dStage_onProcess;
-   o.construct          = MO.FE3dStage_construct;
-   o.createRegion       = MO.FE3dStage_createRegion;
-   o.linkGraphicContext = MO.FE3dStage_linkGraphicContext;
-   o.setup              = MO.FE3dStage_setup;
-   o.camera             = MO.FE3dStage_camera;
-   o.projection         = MO.FE3dStage_projection;
-   o.directionalLight   = MO.FE3dStage_directionalLight;
-   o.selectTechnique    = MO.FE3dStage_selectTechnique;
-   o.filterDisplays     = MO.FE3dStage_filterDisplays;
-   o.allDisplays        = MO.FE3dStage_allDisplays;
+   o._statistics             = MO.Class.register(o, new MO.AGetter('_statistics'));
+   o._technique              = MO.Class.register(o, new MO.AGetter('_technique'));
+   o._region                 = MO.Class.register(o, new MO.AGetter('_region'));
+   o._allDisplays            = null;
+   o.onProcess               = MO.FE3dStage_onProcess;
+   o.construct               = MO.FE3dStage_construct;
+   o.createRegion            = MO.FE3dStage_createRegion;
+   o.linkGraphicContext      = MO.FE3dStage_linkGraphicContext;
+   o.setup                   = MO.FE3dStage_setup;
+   o.camera                  = MO.FE3dStage_camera;
+   o.projection              = MO.FE3dStage_projection;
+   o.directionalLight        = MO.FE3dStage_directionalLight;
+   o.calculateScreenPosition = MO.FE3dStage_calculateScreenPosition;
+   o.selectTechnique         = MO.FE3dStage_selectTechnique;
+   o.filterDisplays          = MO.FE3dStage_filterDisplays;
+   o.allDisplays             = MO.FE3dStage_allDisplays;
    return o;
 }
 MO.FE3dStage_onProcess = function FE3dStage_onProcess(){
@@ -25068,6 +26027,22 @@ MO.FE3dStage_projection = function FE3dStage_projection(){
 }
 MO.FE3dStage_directionalLight = function FE3dStage_directionalLight(){
    return this._region.directionalLight();
+}
+MO.FE3dStage_calculateScreenPosition = function FE3dStage_calculateScreenPosition(outputPosition, inputPosition, modelMatrix){
+   var o = this;
+   var graphicContext = o._graphicContext;
+   var size = graphicContext.size();
+   var camera = o.camera();
+   var matrix = MO.Lang.Math.matrix;
+   matrix.identity();
+   matrix.append(modelMatrix);
+   matrix.append(camera.matrix());
+   matrix.append(camera.projection().matrix());
+   var point3 = matrix.transformPoint3(inputPosition);
+   var cz = 1 / point3.z;
+   outputPosition.x = size.width * (point3.x * cz + 1) * 0.5;
+   outputPosition.y = size.height * (1 - point3.y * cz) * 0.5;
+   return outputPosition;
 }
 MO.FE3dStage_selectTechnique = function FE3dStage_selectTechnique(context, clazz){
    var o = this;
@@ -25201,6 +26176,130 @@ MO.FE3dTechnique_drawStage = function FE3dTechnique_drawStage(stage, region){
       pass.drawEnd(region);
    }
    o.present(region);
+}
+MO.FE3dTransformTimelineAction = function FE3dTransformTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code            = 'transform';
+   o._sources         = null;
+   o._currentMatrix   = MO.Class.register(o, new MO.AGetter('_currentMatrix'));
+   o._sourceMatrix    = MO.Class.register(o, new MO.AGetter('_sourceMatrix'));
+   o._targetMatrix    = MO.Class.register(o, new MO.AGetter('_targetMatrix'));
+   o.onStart          = MO.FE3dTransformTimelineAction_onStart;
+   o.onProcess        = MO.FE3dTransformTimelineAction_onProcess;
+   o.onStop           = MO.FE3dTransformTimelineAction_onStop;
+   o.construct        = MO.FE3dTransformTimelineAction_construct;
+   o.linkSource       = MO.FE3dTransformTimelineAction_linkSource;
+   o.dispose          = MO.FE3dTransformTimelineAction_dispose;
+   return o;
+}
+MO.FE3dTransformTimelineAction_onStart = function FE3dTransformTimelineAction_onStart(){
+   var o = this;
+   o.__base.MTimelineAction.onStart.call(o);
+}
+MO.FE3dTransformTimelineAction_onProcess = function FE3dTransformTimelineAction_onProcess(){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var direction = o._currentDirection;
+   direction.direction(o._sourcePosition, o._targetPosition);
+   direction.normalize();
+   var moveLength = o._speed * context.spanSecond;
+   var length = o._currentPosition.lengthToValue3(o._targetPosition);
+   if(moveLength > length){
+      o._currentPosition.assign(o._targetPosition);
+      o._statusStop = true;
+   }else{
+      o._currentPosition.add(direction.x * moveLength, direction.y * moveLength, direction.z * moveLength);
+   }
+   o._camera.position().assign(o._currentPosition);
+   o._camera.update();
+}
+MO.FE3dTransformTimelineAction_onStop = function FE3dTransformTimelineAction_onStop(){
+   var o = this;
+   o.__base.MTimelineAction.onStop.call(o);
+}
+MO.FE3dTransformTimelineAction_construct = function FE3dTransformTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentMatrix = new MO.SMatrix3d();
+   o._sourceMatrix = new MO.SMatrix3d();
+   o._targetMatrix = new MO.SMatrix3d();
+}
+MO.FE3dTransformTimelineAction_linkSource = function FE3dTransformTimelineAction_linkSource(source){
+   var o = this;
+   var matrix = source.matrix();
+   o._currentMatrix.assign(matrix);
+   o._sourceMatrix.assign(matrix);
+   o._targetMatrix.assign(matrix);
+}
+MO.FE3dTransformTimelineAction_setTargetControl = function FE3dTransformTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dTransformTimelineAction_dispose = function FE3dTransformTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dTranslateTimelineAction = function FE3dTranslateTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code               = 'translate';
+   o._matrix             = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originTranslate    = MO.Class.register(o, new MO.AGetter('_originTranslate'));
+   o._currentTranslate   = MO.Class.register(o, new MO.AGetter('_currentTranslate'));
+   o._targetTranslate    = MO.Class.register(o, new MO.AGetter('_targetTranslate'));
+   o.onStart          = MO.FE3dTranslateTimelineAction_onStart;
+   o.onProcess        = MO.FE3dTranslateTimelineAction_onProcess;
+   o.onStop           = MO.FE3dTranslateTimelineAction_onStop;
+   o.construct        = MO.FE3dTranslateTimelineAction_construct;
+   o.link             = MO.FE3dTranslateTimelineAction_link;
+   o.dispose          = MO.FE3dTranslateTimelineAction_dispose;
+   return o;
+}
+MO.FE3dTranslateTimelineAction_onStart = function FE3dTranslateTimelineAction_onStart(context){
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dTranslateTimelineAction_onProcess = function FE3dTranslateTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   var matrix = o._matrix;
+   var current = o._currentTranslate;
+   var origin = o._originTranslate;
+   var target = o._targetTranslate;
+   current.x = origin.x + (target.x - origin.x) * rate;
+   current.y = origin.y + (target.y - origin.y) * rate;
+   current.z = origin.z + (target.z - origin.z) * rate;
+   matrix.setTranslate(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dTranslateTimelineAction_onStop = function FE3dTranslateTimelineAction_onStop(context){
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dTranslateTimelineAction_construct = function FE3dTranslateTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentTranslate = new MO.SValue3();
+   o._originTranslate = new MO.SValue3();
+   o._targetTranslate = new MO.SValue3();
+}
+MO.FE3dTranslateTimelineAction_link = function FE3dTranslateTimelineAction_link(matrix){
+   var o = this;
+   o._matrix = matrix;
+   o._originTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+   o._currentTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+}
+MO.FE3dTranslateTimelineAction_setTargetControl = function FE3dTranslateTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dTranslateTimelineAction_dispose = function FE3dTranslateTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
 }
 MO.RE3dEngine = function RE3dEngine(){
    var o = this;
@@ -30727,7 +31826,7 @@ MO.FE3dCamera_update = function FE3dCamera_update(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._projection = MO.Lang.Obejct.dispose(o._projection);
+   o._projection = MO.Lang.Object.dispose(o._projection);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
@@ -32649,7 +33748,7 @@ MO.FE3dSimpleDesktop_dispose = function FE3dSimpleDesktop_dispose(){
    o.__base.FDesktop.dispose.call(o);
 }
 MO.FE3dSimpleStage = function FE3dSimpleStage(o){
-   o = MO.RClass.inherits(this, o, MO.FE3dStage);
+   o = MO.Class.inherits(this, o, MO.FE3dStage);
    o._optionKeyboard = true;
    o._skyLayer       = MO.RClass.register(o, new MO.AGetter('_skyLayer'));
    o._mapLayer       = MO.RClass.register(o, new MO.AGetter('_mapLayer'));
@@ -34079,11 +35178,15 @@ MO.FE3dBitmapConsole_loadByUrl = function FE3dBitmapConsole_loadByUrl(context, u
 }
 MO.FE3dBitmapConsole_loadByGuid = function FE3dBitmapConsole_loadByGuid(context, guid){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(guid);
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?do=view&guid=' + guid);
    return o.loadByUrl(context, url);
 }
 MO.FE3dBitmapConsole_loadDataByUrl = function FE3dBitmapConsole_loadDataByUrl(context, url){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(url);
    var dataUrl = MO.Window.Browser.contentPath(url);
    MO.Logger.info(o, 'Load bitmap data from url. (url={1})', dataUrl);
    var data = o._bitmapDatas.get(url);
@@ -34098,6 +35201,8 @@ MO.FE3dBitmapConsole_loadDataByUrl = function FE3dBitmapConsole_loadDataByUrl(co
 }
 MO.FE3dBitmapConsole_loadDataByGuid = function FE3dBitmapConsole_loadDataByGuid(context, guid){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(guid);
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?do=view&guid=' + guid);
    return o.loadDataByUrl(context, url);
 }
@@ -34407,7 +35512,7 @@ MO.EE3dBoundaryShape_buildSphere = function EE3dBoundaryShape_buildSphere(contex
 }
 MO.EE3dBoundaryShape_dispose = function EE3dBoundaryShape_dispose(){
    var o = this;
-   o._polygons = MO.Lang.Obejct.dispose(o._polygons);
+   o._polygons = MO.Lang.Object.dispose(o._polygons);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dBoundaryShape3d = function FE3dBoundaryShape3d(o){
@@ -34685,7 +35790,7 @@ MO.FE3dBoundaryShape3d_build = function FE3dBoundaryShape3d_build(context){
 }
 MO.FE3dBoundaryShape3d_dispose = function FE3dBoundaryShape3d_dispose(){
    var o = this;
-   o._polygons = MO.Lang.Obejct.dispose(o._polygons);
+   o._polygons = MO.Lang.Object.dispose(o._polygons);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dBoundBox = function FE3dBoundBox(o){
@@ -34838,6 +35943,124 @@ MO.FE3dCube_setup = function FE3dCube_setup(p){
    var mi = o.material().info();
    mi.effectCode = 'control';
    mi.ambientColor.set(1, 1, 1, 1);
+}
+MO.FE3dCubes = function FE3dCubes(o){
+   o = MO.Class.inherits(this, o, MO.FE3dRenderable);
+   o._optionCenterX        = MO.Class.register(o, new MO.AGetSet('_optionCenterX'), true);
+   o._optionCenterY        = MO.Class.register(o, new MO.AGetSet('_optionCenterY'), true);
+   o._optionCenterZ        = MO.Class.register(o, new MO.AGetSet('_optionCenterZ'), true);
+   o._outline              = null;
+   o._drawModeCd           = MO.Class.register(o, new MO.AGetSet('_drawModeCd'), MO.EG3dDrawMode.Triangles);
+   o._size                 = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits               = MO.Class.register(o, new MO.AGetter('_splits'));
+   o._vertexPositionBuffer = null;
+   o._vertexNormalBuffer   = null;
+   o._vertexCoordBuffer    = null;
+   o._indexBuffer          = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o.construct             = MO.FE3dCubes_construct;
+   o.setup                 = MO.FE3dCubes_setup;
+   return o;
+}
+MO.FE3dCubes_construct = function FE3dCubes_construct(){
+   var o = this;
+   o.__base.FE3dRenderable.construct.call(o);
+   o._size = new MO.SSize3(1, 1, 1);
+   o._splits = new MO.SSize3(4, 4, 4);
+   o._material = MO.Class.create(MO.FE3dMaterial);
+   o._outline = new MO.SOutline3();
+}
+MO.FE3dCubes_setup = function FE3dCubes_setup(){
+   var o = this;
+   var context = o._graphicContext;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var cz = splits.deep;
+   var size = o._size;
+   var sx = size.width / cx;
+   var sy = size.height / cy;
+   var sz = size.deep / cz;
+   var centerX = size.width * 0.5;
+   if(!o._optionCenterX){
+      centerX = 0;
+   }
+   var centerY = size.height * 0.5;
+   if(!o._optionCenterY){
+      centerY = 0;
+   }
+   var centerZ = size.deep * 0.5;
+   if(!o._optionCenterZ){
+      centerZ = 0;
+   }
+   var vertexCount = o._vertexCount = (cx + 1) * (cy + 1) * (cz + 1);
+   var positionIndex = 0;
+   var positionData = new Float32Array(3 * vertexCount);
+   var colorIndex = 0;
+   var colorData = new Uint8Array(4 * vertexCount);
+   for(var z = 0; z <= cz; z++){
+      for(var y = 0; y <= cy; y++){
+         for(var x = 0; x <= cx; x++){
+            positionData[positionIndex++] = sx * x - centerX;
+            positionData[positionIndex++] = sy * y - centerY;
+            positionData[positionIndex++] = sz * z - centerZ;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0xFF;
+         }
+      }
+   }
+   var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
+   buffer.setCode('position');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
+   buffer.upload(positionData, 4 * 3, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var buffer = o._vertexColorBuffer = context.createVertexBuffer();
+   buffer.setCode('color');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
+   buffer.upload(colorData, 4, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var drawModeCd = o._drawModeCd;
+   var indexes = new MO.TArray();
+   if(drawModeCd == MO.EG3dDrawMode.Lines){
+      var strideY = (cx + 1);
+      var strideZ = strideY * (cy + 1);
+      for(var z = 0; z <= cz; z++){
+         var zindex = (cx + 1) * (cy + 1) * z;
+         for(var y = 0; y <= cy; y++){
+            var yindex = strideY * y;
+            for(var x = 0; x <= cx; x++){
+               var index = zindex + yindex + x;
+               if(x < cx){
+                  indexes.push(index, index + 1);
+               }
+               if(y < cy){
+                  indexes.push(index, index + strideY);
+               }
+               if(z < cz){
+                  indexes.push(index, index + strideZ);
+               }
+            }
+         }
+      }
+   }else{
+      throw new TError();
+   }
+   var buffer = o._indexBuffer = context.createIndexBuffer();
+   buffer.setDrawModeCd(drawModeCd);
+   var indexLength = indexes.length();
+   var indexMemory = indexes.memory();
+   if(indexLength > 65535){
+      buffer.setStrideCd(MO.EG3dIndexStride.Uint32);
+      buffer.upload(new Uint32Array(indexMemory), indexLength);
+   }else{
+      buffer.upload(new Uint16Array(indexMemory), indexLength);
+   }
+   o.pushIndexBuffer(buffer);
+   o.update();
+   var info = o.material().info();
+   info.optionAlpha = true;
+   info.specularLevel = 64;
 }
 MO.FE3dDataBox = function FE3dDataBox(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable, MO.ME3dDynamicRenderable);
@@ -35035,6 +36258,122 @@ MO.FE3dDimensional_setup = function FE3dDimensional_setup(){
    var materialInfo = o.material().info();
    materialInfo.effectCode = 'control';
    materialInfo.ambientColor.set(1, 1, 1, 1);
+}
+MO.FE3dDoubleSidedPlanes = function FE3dDoubleSidedPlanes(o) {
+   o = MO.Class.inherits(this, o, MO.FE3dDisplay);
+   o._front                   = null;
+   o._back                    = null;
+   o._axis                    = MO.Class.register(o, new MO.AGetSet('_axis'));
+   o._frontUrl                = MO.Class.register(o, new MO.AGetSet('_frontUrl'));
+   o._backUrl                 = MO.Class.register(o, new MO.AGetSet('_backUrl'));
+   o._size                    = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits                  = MO.Class.register(o, new MO.AGetter('_splits'));
+   o.construct                = MO.FE3dDoubleSidedPlanes_construct;
+   o.setup                    = MO.FE3dDoubleSidedPlanes_setup;
+   o.addPlaneRotation         = MO.FE3dDoubleSidedPlanes_addPlaneRotation;
+   o.addPlaneRotationAxis     = MO.FE3dDoubleSidedPlanes_addPlaneRotationAxis;
+   o.update                   = MO.FE3dDoubleSidedPlanes_update;
+   o.turningAnimation         = MO.FE3dDoubleSidedPlanes_turningAnimation;
+   return o;
+}
+MO.FE3dDoubleSidedPlanes_construct = function FE3dDoubleSidedPlanes_construct() {
+   var o = this;
+   o.__base.FE3dDisplay.construct.call(o);
+   o._size = new MO.SSize2();
+   o._splits = new MO.SSize2();
+}
+MO.FE3dDoubleSidedPlanes_setup = function FE3dDoubleSidedPlanes_setup() {
+   var o = this;
+   if(!o._axis) {
+      o._axis = new MO.SVector3(1, 1, 0);
+   }
+   o._axis.normalize();
+   var front = o._front = MO.Class.create(MO.FE3dPlanes);
+   front.linkGraphicContext(o);
+   front.setOptionSelect(false);
+   front.size().assign(o._size);
+   front.splits().assign(o._splits);
+   front.setUrl(o._frontUrl);
+   front.material().info().sortLevel = 1;
+   front.material().info().alphaRate = 1;
+   front.setup();
+   front.setVisible(true);
+   o.push(front);
+   var back = o._back = MO.Class.create(MO.FE3dPlanes);
+   back.linkGraphicContext(o);
+   back.setOptionSelect(false);
+   back.size().assign(o._size);
+   back.splits().assign(o._splits);
+   back.setInitRotationAxis(o._axis, Math.PI);
+   back.setUrl(o._backUrl);
+   back.material().info().sortLevel = 1;
+   back.material().info().alphaRate = 1;
+   back.setup();
+   back.setVisible(true);
+   o.push(back);
+}
+MO.FE3dDoubleSidedPlanes_addPlaneRotation = function FE3dDoubleSidedPlanes_addPlaneRotation(planeX, planeY, x, y, z) {
+   var o = this;
+   var front = o._front;
+   front.rotatePlane(planeX, planeY, x, y, z);
+   var back = o._back;
+   back.rotatePlane(planeX, planeY, x, y, z);
+}
+MO.FE3dDoubleSidedPlanes_addPlaneRotationAxis = function FE3dDoubleSidedPlanes_addPlaneRotationAxis(planeX, planeY, axis, angle) {
+   var o = this;
+   var front = o._front;
+   front.rotatePlaneAxis(planeX, planeY, axis, angle);
+   var back = o._back;
+   back.rotatePlaneAxis(planeX, planeY, axis, angle);
+}
+MO.FE3dDoubleSidedPlanes_update = function FE3dDoubleSidedPlanes_update() {
+   var o = this;
+   o._front.updateAll();
+   o._back.updateAll();
+}
+MO.FE3dDoubleSidedPlanes_turningAnimation = function FE3dDoubleSidedPlanes_turningAnimation() {
+   var o = this;
+   var section = MO.Class.create(MO.FTimelineSection);
+   var splits = o._splits;
+   var duration = 400;
+   var start = new MO.SValue2(0, splits.height-1);
+   for (var i = 0; i < splits.width; i++) {
+      for (var j = 0; j < splits.height; j++) {
+         var length = start.length2(i ,j);
+         var delay = 1000 + length * 100;
+         var front = o._front.getPlane(i, j);
+         var action = MO.Class.create(MO.FE3dBoomerangTimelineAction);
+         action.targetTranslate().set(0, 0, -2);
+         action.setOptionSin(true);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(front.matrix());
+         section.pushAction(action);
+         var action = MO.Class.create(MO.FE3dRotateAxisTimelineAction);
+         action.targetAxis().set(o._axis.x, o._axis.y, o._axis.z);
+         action.setTargetAngle(Math.PI);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(front.matrix());
+         section.pushAction(action);
+         var back = o._back.getPlane(i, j);
+         var action = MO.Class.create(MO.FE3dBoomerangTimelineAction);
+         action.targetTranslate().set(0, 0, -2);
+         action.setOptionSin(true);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(back.matrix());
+         section.pushAction(action);
+         var action = MO.Class.create(MO.FE3dRotateAxisTimelineAction);
+         action.targetAxis().set(o._axis.x, o._axis.y, o._axis.z);
+         action.setTargetAngle(Math.PI);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(back.matrix());
+         section.pushAction(action);
+      }
+   }
+   return section;
 }
 MO.FE3dDynamicMesh = function FE3dDynamicMesh(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
@@ -35250,6 +36589,7 @@ MO.FE3dDynamicMesh_build = function FE3dDynamicMesh_build(){
    var indexData = indexBuffer.data();
    indexBuffer.upload(indexData, indexTotal);
    indexBuffer.setData(null);
+   MO.Logger.debug(o, 'Merge mesh. (renderable_count={1}, vertex={2}, index={3})', renderableCount, vertexTotal, indexTotal);
 }
 MO.FE3dDynamicMesh_calculateOutline = function FE3dDynamicMesh_calculateOutline(){
    var o = this;
@@ -35409,10 +36749,10 @@ MO.FE3dFaceData = function FE3dFaceData(o){
    o._optionCenter         = MO.Class.register(o, new MO.AGetSet('_optionCenter'), false);
    o._size                 = MO.Class.register(o, new MO.AGetter('_size'));
    o._adjustSize           = MO.Class.register(o, new MO.AGetter('_adjustSize'));
-   o._vertexPositionBuffer = null;
-   o._vertexCoordBuffer    = null;
-   o._indexBuffer          = null;
-   o._texture              = null;
+   o._vertexPositionBuffer = MO.Class.register(o, new MO.AGetter('_vertexPositionBuffer'));
+   o._vertexCoordBuffer    = MO.Class.register(o, new MO.AGetter('_vertexCoordBuffer'));
+   o._indexBuffer          = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._texture              = MO.Class.register(o, new MO.AGetter('_texture'));
    o.construct             = MO.FE3dFaceData_construct;
    o.testReady             = MO.FE3dFaceData_testReady;
    o.setup                 = MO.FE3dFaceData_setup;
@@ -35546,6 +36886,301 @@ MO.FE3dLines_dispose = function FE3dLines_dispose(){
    o._colorsData = null;
    o._material = MO.Lang.Object.dispose(o._material);
    o.__base.FE3dRenderable.dispose.call(o);
+}
+MO.FE3dPlaneData = function FE3dPlaneData(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._vertexs           = MO.Class.register(o, new MO.AGetter('_vertexs'));;
+   o._initVertexs       = null;
+   o._matrix            = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._centerX           = MO.Class.register(o, new MO.AGetter('_centerX'), 0);
+   o._centerY           = MO.Class.register(o, new MO.AGetter('_centerY'), 0);
+   o._z                 = MO.Class.register(o, new MO.AGetSet('_z'));
+   o._dataLength        = 4 * 3;
+   o.construct          = MO.FE3dPlaneData_construct;
+   o.setup              = MO.FE3dPlaneData_setup;
+   o.setVertexs         = MO.FE3dPlaneData_setVertexs;
+   o.move               = MO.FE3dPlaneData_move;
+   o.rotate             = MO.FE3dPlaneData_rotate;
+   o.rotateAxis         = MO.FE3dPlaneData_rotateAxis;
+   o.update             = MO.FE3dPlaneData_update;
+   o.format             = MO.FE3dPlaneData_format;
+   return o;
+}
+MO.FE3dPlaneData_construct = function FE3dPlaneData_construct() {
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._vertexs = new Float32Array(o._dataLength);
+   o._initVertexs = new Float32Array(o._dataLength);
+   o._matrix = new MO.SMatrix3d();
+   o._z = 0;
+}
+MO.FE3dPlaneData_setup = function FE3dPlaneData_setup() {
+   var o = this;
+}
+MO.FE3dPlaneData_setVertexs = function FE3dPlaneData_setVertexs(centerX, centerY, halfWidth, halfHeight) {
+   var o = this;
+   o._centerX = centerX;
+   o._centerY = centerY;
+   var initIndex = 0;
+   var index = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o.format();
+}
+MO.FE3dPlaneData_move = function FE3dPlaneData_move(x, y, z) {
+   var o = this;
+   o._centerX = x;
+   o._centerY = y;
+   o._z = z;
+}
+MO.FE3dPlaneData_rotate = function FE3dPlaneData_rotate(x, y, z) {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.addRotation(x, y, z);
+}
+MO.FE3dPlaneData_rotateAxis = function FE3dPlaneData_rotateAxis(axis, angle) {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.addRotationAxis(axis, angle);
+}
+MO.FE3dPlaneData_format = function FE3dPlaneData_format() {
+   var o = this;
+   var vertexs = o._vertexs;
+   for(var i = 0; i < o._dataLength; i += 3) {
+      vertexs[i] += o._centerX;
+      vertexs[i + 1] += o._centerY;
+      vertexs[i + 2] += o._z;
+   }
+}
+MO.FE3dPlaneData_update = function FE3dPlaneData_update() {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.transform(o._vertexs, 0, o._initVertexs, 0, o._dataLength);
+   o.format();
+}
+MO.FE3dPlanes = function FE3dPlanes(o) {
+   o = MO.Class.inherits(this, o, MO.FE3dRenderable);
+   o._optionCenterX           = MO.Class.register(o, new MO.AGetSet('_optionCenterX'), true);
+   o._optionCenterY           = MO.Class.register(o, new MO.AGetSet('_optionCenterY'), true);
+   o._optionCenterZ           = MO.Class.register(o, new MO.AGetSet('_optionCenterZ'), true);
+   o._url                     = MO.Class.register(o, new MO.AGetSet('_url'));
+   o._initRotation            = null;
+   o._initAxis                = null;
+   o._initAngle               = null;
+   o._size                    = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits                  = MO.Class.register(o, new MO.AGetter('_splits'));
+   o._texture                 = MO.Class.register(o, new MO.AGetter('_texture'));
+   o._planes                  = null;
+   o._vertexPositionBuffer    = null;
+   o._indexBuffer             = null;
+   o._image                   = null;
+   o.onLoad                   = MO.FE3dPlanes_onLoad;
+   o.construct                = MO.FE3dPlanes_construct;
+   o.setup                    = MO.FE3dPlanes_setup;
+   o.updateVertex             = MO.FE3dPlanes_updateVertex;
+   o.getInitCenterX           = MO.FE3dPlanes_getInitCenterX;
+   o.getInitCenterY           = MO.FE3dPlanes_getInitCenterY;
+   o.movePlane                = MO.FE3dPlanes_movePlane;
+   o.rotatePlane              = MO.FE3dPlanes_rotatePlane;
+   o.rotatePlaneAxis          = MO.FE3dPlanes_rotatePlaneAxis;
+   o.getPlaneMatrix           = MO.FE3dPlanes_getPlaneMatrix;
+   o.getPlane                 = MO.FE3dPlanes_getPlane;
+   o.updateAll                = MO.FE3dPlanes_updateAll;
+   o.setInitRotation          = MO.FE3dPlanes_setInitRotation;
+   o.setInitRotationAxis      = MO.FE3dPlanes_setInitRotationAxis;
+   return o;
+}
+MO.FE3dPlanes_construct = function FE3dPlanes_construct() {
+   var o = this;
+   o.__base.FE3dRenderable.construct.call(o);
+   o._size = new MO.SSize2(1, 1);
+   o._splits = new MO.SSize2(4, 4);
+   o._planes = new MO.TArray();
+   o._material = MO.Class.create(MO.FE3dMaterial);
+}
+MO.FE3dPlanes_setup = function FE3dPlanes_setup() {
+   var o = this;
+   var context = o._graphicContext;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var size = o._size;
+   var halfWidth = size.width / cx / 2;
+   var halfHeight = size.height / cy / 2;
+   var vertexCount = o._vertexCount = cx * cy * 4;
+   var coordIndex = 0;
+   var coordData = new Float32Array(2 * vertexCount);
+   for(var y = 0; y < cy; y++) {
+      for(var x = 0; x < cx; x++) {
+         var plane = MO.Class.create(MO.FE3dPlaneData);
+         var nextLinePlus = (y + 1) * (cx + 1);
+         plane.setVertexs(o.getInitCenterX(x), o.getInitCenterY(y), halfWidth, halfHeight);
+         if(o._initRotation) plane.rotate(o._initRotation.width, o._initRotation.height, o._initRotation.deep);
+         if(o._initAxis) {
+            plane.rotateAxis(o._initAxis, o._initAngle);
+         }
+         plane.update();
+         coordData[coordIndex++] = x / cx;
+         coordData[coordIndex++] = y / cy;
+         coordData[coordIndex++] = (x + 1) / cx;
+         coordData[coordIndex++] = y / cy;
+         coordData[coordIndex++] = (x + 1) / cx;
+         coordData[coordIndex++] = (y + 1) / cy;
+         coordData[coordIndex++] = x / cx;
+         coordData[coordIndex++] = (y + 1) / cy;
+         o._planes.push(plane);
+      }
+   }
+   var planes = o._planes;
+   var length = planes.length();
+   var vertexCount = length * 4;
+   var positionIndex = 0;
+   var positionData = o._positionData = new Float32Array(3 * vertexCount);
+   for(var i = 0; i < length; i++) {
+      var plane = planes.get(i);
+      positionData.set(plane.vertexs(), i * 12);
+   }
+   var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
+   buffer.setCode('position');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
+   buffer.upload(positionData, 4 * 3, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var buffer = o._vertexColorBuffer = context.createVertexBuffer();
+   buffer.setCode('coord');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
+   buffer.upload(coordData, 4 * 2, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var indexes = new MO.TArray();
+   for (var y = 0; y < cy; y++) {
+      for(var x = 0; x < cx; x++) {
+         var offset = (cx * y + x) * 4;
+         indexes.push(offset, offset + 2, offset + 1);
+         indexes.push(offset, offset + 3, offset + 2);
+      }
+   }
+   var buffer = o._indexBuffer = context.createIndexBuffer();
+   var indexLength = indexes.length();
+   var indexMemory = indexes.memory();
+   if(indexLength > 65535) {
+      buffer.setStrideCd(MO.EG3dIndexStride.Uint32);
+      buffer.upload(new Uint32Array(indexMemory), indexLength);
+   }else {
+      buffer.upload(new Uint16Array(indexMemory), indexLength);
+   }
+   o.pushIndexBuffer(buffer);
+   var texture = o._texture = context.createFlatTexture();
+   texture.setOptionFlipY(true);
+   texture.setWrapCd(MO.EG3dSamplerFilter.ClampToEdge, MO.EG3dSamplerFilter.ClampToEdge);
+   o.pushTexture(texture, 'diffuse');
+   o.update();
+   var info = o.material().info();
+   info.optionAlpha = true;
+   info.specularLevel = 64;
+   o.material()._textures = o._textures;
+   if(o._url) {
+      var image = o._image = MO.Class.create(MO.FImage);
+      image.addLoadListener(o, o.onLoad);
+      image.loadUrl(o._url);
+   }
+}
+MO.FE3dPlanes_getInitCenterX = function FE3dPlanes_getInitCenterX(x) {
+   var o = this;
+   var splits = o._splits;
+   var cx = splits.width;
+   var size = o._size;
+   var sx = size.width / cx;
+   var centerX = o._optionCenterX ? size.width * 0.5 : 0;
+   return sx * x - centerX + sx / 2;
+}
+MO.FE3dPlanes_getInitCenterY = function FE3dPlanes_getInitCenterY(y) {
+   var o = this;
+   var splits = o._splits;
+   var cy = splits.height;
+   var size = o._size;
+   var sy = size.height / cy;
+   var centerY = o._optionCenterY ? size.height * 0.5 : 0;
+   return sy * y - centerY + sy / 2;
+}
+MO.FE3dPlanes_onLoad = function FE3dPlanes_onLoad(event) {
+   var o = this;
+   var texture = o._texture;
+   texture.upload(o._image);
+   texture.makeMipmap();
+   o._image = MO.Lang.Object.dispose(o._image);
+   o.updateAll();
+}
+MO.FE3dPlanes_updateAll = function FE3dPlanes_updateAll() {
+   var o = this;
+   var planes = o._planes;
+   var length = planes.length();
+   for( var i = 0; i < length; ++i) {
+      var plane = planes.get(i);
+      plane.update();
+   }
+   o.updateVertex();
+   o.update();
+}
+MO.FE3dPlanes_updateVertex = function FE3dPlanes_updateVertex() {
+   var o = this;
+   var context = o._graphicContext;
+   var planes = o._planes;
+   var length = planes.length();
+   var vertexCount = length * 4;
+   var positionIndex = 0;
+   var positionData = o._positionData;
+   for(var i = 0; i < length; i++) {
+      var plane = planes.get(i);
+      positionData.set(plane.vertexs(), i * 12);
+   }
+   var buffer = o._vertexPositionBuffer;
+   buffer.upload(positionData, 4 * 3, vertexCount);
+}
+MO.FE3dPlanes_movePlane = function FE3dPlanes_movePlane(planeX, planeY, toX, toY, toZ) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.move(toX, toY, toZ);
+}
+MO.FE3dPlanes_rotatePlane = function FE3dPlanes_rotatePlane(planeX, planeY, rx, ry, rz) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.rotate(rx, ry, rz);
+}
+MO.FE3dPlanes_rotatePlaneAxis = function FE3dPlanes_rotatePlaneAxis(planeX, planeY, axis, angle) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.rotateAxis(axis, angle);
+}
+MO.FE3dPlanes_getPlaneMatrix = function FE3dPlanes_getPlaneMatrix(planeX, planeY) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+}
+MO.FE3dPlanes_getPlane = function FE3dPlanes_getPlane(planeX, planeY) {
+   var o = this;
+   var planes = o._planes;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var plane = planes.get(cx * planeY + planeX);
+   return plane;
+}
+MO.FE3dPlanes_setInitRotation = function FE3dPlanes_setInitRotation(x, y, z) {
+   var o = this;
+   var rotation = o._initRotation = new MO.SSize3(x, y, z);
+}
+MO.FE3dPlanes_setInitRotationAxis = function FE3dPlanes_setInitRotationAxis(axis, angle) {
+   var o = this;
+   o._initAxis = axis;
+   o._initAngle = angle;
 }
 MO.FE3dPolygon = function FE3dPolygon(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
@@ -35903,6 +37538,7 @@ MO.FE3dShapeData_beginDraw = function FE3dShapeData_beginDraw(){
 MO.FE3dShapeData_endDraw = function FE3dShapeData_endDraw(){
    var o = this;
    var graphic = o._graphic;
+   MO.Assert.debugNotNull(graphic);
    o._texture.upload(o._canvas);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    canvasConsole.free(o._canvas);
@@ -36869,7 +38505,7 @@ MO.MFrameProcessor_dispose = function MFrameProcessor_dispose(){
 }
 MO.FApplication = function FApplication(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
-   o._sessionId           = MO.Class.register(o, new MO.AGetSet('_sessionId'));
+   o._sessionCode         = MO.Class.register(o, new MO.AGetSet('_sessionCode'));
    o._activeChapter       = MO.Class.register(o, new MO.AGetter('_activeChapter'));
    o._chapters            = MO.Class.register(o, new MO.AGetter('_chapters'));
    o.onProcessReady       = MO.FApplication_onProcessReady;
@@ -36889,6 +38525,7 @@ MO.FApplication = function FApplication(o){
    return o;
 }
 MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
+   MO.Logger.debug(this, 'Application process ready.');
 }
 MO.FApplication_onProcess = function FApplication_onProcess(event){
    var o = this;
@@ -36901,12 +38538,8 @@ MO.FApplication_construct = function FApplication_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MFrameProcessor.construct.call(o);
-   o._sessionId = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
+   o._sessionCode = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
    o._chapters = new MO.TDictionary();
-}
-MO.FApplication_findSessionId = function FApplication_findSessionId(){
-   var o = this;
-   return o._sessionId;
 }
 MO.FApplication_registerChapter = function FApplication_registerChapter(chapter){
    var o = this;
@@ -36938,6 +38571,7 @@ MO.FApplication_selectChapterByCode = function FApplication_selectChapterByCode(
    var chapter = o._chapters.get(code);
    if(!chapter){
       chapter = o.createChapter(code);
+      MO.Assert.debugNotNull(chapter);
       o.registerChapter(chapter);
    }
    o.selectChapter(chapter);
@@ -36996,6 +38630,7 @@ MO.FChapter = function FChapter(o){
    return o;
 }
 MO.FChapter_onProcessReady = function FChapter_onProcessReady(event){
+   MO.Logger.debug(this, 'Chapter process ready. (code={1})', this._code);
 }
 MO.FChapter_construct = function FChapter_construct(){
    var o = this;
@@ -37006,6 +38641,7 @@ MO.FChapter_construct = function FChapter_construct(){
 MO.FChapter_registerScene = function FChapter_registerScene(scene){
    var o = this;
    var code = scene.code();
+   MO.Assert.debugNotEmpty(code);
    scene.setApplication(o._application);
    scene.setChapter(o);
    o._scenes.set(code, scene);
@@ -37033,6 +38669,7 @@ MO.FChapter_selectSceneByCode = function FChapter_selectSceneByCode(code){
    var scene = o._scenes.get(code);
    if(!scene){
       scene = o.createScene(code);
+      MO.Assert.debugNotNull(scene);
       o.registerScene(scene);
    }
    o.selectScene(scene);
@@ -37045,10 +38682,12 @@ MO.FChapter_active = function FChapter_active(){
       o._statusSetup = true;
    }
    o._statusActive = true;
+   MO.Logger.debug(o, 'Chapter active. (code={1})', o._code);
 }
 MO.FChapter_deactive = function FChapter_deactive(){
    var o = this;
    o._statusActive = false;
+   MO.Logger.debug(o, 'Chapter deactive. (code={1})', o._code);
 }
 MO.FChapter_processEvent = function FChapter_processEvent(event){
    var o = this;
@@ -37111,6 +38750,7 @@ MO.FScene_onOperationVisibility = function FScene_onOperationVisibility(event){
    o._visible = event.visibility;
 }
 MO.FScene_onProcessReady = function FScene_onProcessReady(event){
+   MO.Logger.debug(this, 'Scene process ready. (code={1})', this._code);
 }
 MO.FScene_construct = function FScene_construct(){
    var o = this;
@@ -37124,11 +38764,13 @@ MO.FScene_active = function FScene_active(){
       o._statusSetup = true;
    }
    o._statusActive = true;
+   MO.Logger.debug(o, 'Scene active. (code={1})', o._code);
    o.processResize();
 }
 MO.FScene_deactive = function FScene_deactive(){
    var o = this;
    o._statusActive = false;
+   MO.Logger.debug(o, 'Scene deactive. (code={1})', o._code);
 }
 MO.FScene_process = function FScene_process(){
    var o = this;
@@ -37244,6 +38886,9 @@ MO.EDataStatus = new function EDataStatus(){
    o.Delete = 'D';
    return o;
 }
+MO.Ui = new function MoUiSpace(){return this;}
+MO.Gui = new function MoGuiSpace(){return this;}
+MO.Dui = new function MoDuiSpace(){return this;}
 MO.FDataRow = function FDataRow(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    o._dataset    = MO.Class.register(o, new MO.AGetSet('_dataset'));
@@ -37638,6 +39283,7 @@ MO.FDataSource_loadConfig = function FDataSource_loadConfig(xconfig){
          var xnode = xnodes.at(i);
          if(xnode.isName('Dataset')){
             var datasetName = xnode.get('name');
+            MO.Assert.debugNotEmpty(datasetName);
             var dataset = o.selectDataset(datasetName);
             dataset.loadConfig(xnode);
          }
@@ -38468,6 +40114,7 @@ MO.APtyString_toString = function APtyString_toString(){
 MO.EUiAlign = new function EUiAlign(){
    var o = this;
    o.Left        = 'left';
+   o.LeftPadding = 'LeftPadding';
    o.Center      = 'center';
    o.Right       = 'right';
    o.Top         = 'up';
@@ -40046,7 +41693,7 @@ MO.MUiEditValue_setInfo = function MUiEditValue_setInfo(f){
    this.set(f.value);
 }
 MO.MUiMargin = function MUiMargin(o){
-   o = MO.RClass.inherits(this, o);
+   o = MO.Class.inherits(this, o);
    o._margin   = MO.RClass.register(o, [new MO.APtyPadding('_margin'), new MO.AGetter('_margin')]);
    o.construct = MO.MUiMargin_construct;
    o.setMargin = MO.MUiMargin_setMargin;
@@ -40065,7 +41712,7 @@ MO.MUiMargin_dispose = function MUiMargin_dispose(){
    o._margin = MO.Lang.Object.dispose(o._margin);
 }
 MO.MUiPadding = function MUiPadding(o){
-   o = MO.RClass.inherits(this, o);
+   o = MO.Class.inherits(this, o);
    o._padding   = MO.RClass.register(o, [new MO.APtyPadding('_padding'), new MO.AGetter('_padding')]);
    o.construct  = MO.MUiPadding_construct;
    o.setPadding = MO.MUiPadding_setPadding;
@@ -40233,9 +41880,6 @@ MO.MUiValue = function MUiValue(o){
    o.set = MO.Method.empty;
    return o;
 }
-MO.Ui = new function MoUiSpace(){return this;}
-MO.Gui = new function MoGuiSpace(){return this;}
-MO.Dui = new function MoDuiSpace(){return this;}
 MO.SUiDispatchEvent = function SUiDispatchEvent(owner, invokeName, clazz){
    var o = this;
    MO.SEvent.call(o);
@@ -40556,6 +42200,31 @@ MO.MUiGridColumnCurrency_formatText = function MUiGridColumnCurrency_formatText(
 MO.MUiGridColumnCurrency_dispose = function MUiGridColumnCurrency_dispose(){
    var o = this;
 }
+MO.MUiGridColumnCurrencyInt = function MUiGridColumnCurrencyInt(o){
+   o = MO.Class.inherits(this, o);
+   o._currencyPercent = MO.Class.register(o, new MO.AGetSet('_currencyPercent'), 0);
+   o._normalColor     = MO.Class.register(o, new MO.AGetSet('_normalColor'), '#000000');
+   o._lowerestColor   = MO.Class.register(o, new MO.AGetSet('_lowerestColor'), '#000000');
+   o._lowerColor      = MO.Class.register(o, new MO.AGetSet('_lowerColor'), '#000000');
+   o._highColor       = MO.Class.register(o, new MO.AGetSet('_highColor'), '#000000');
+   o._highestColor    = MO.Class.register(o, new MO.AGetSet('_highestColor'), '#000000');
+   o._negativeColor   = MO.Class.register(o, new MO.AGetSet('_negativeColor'), '#000000');
+   o.construct        = MO.MUiGridColumnCurrencyInt_construct;
+   o.formatText       = MO.MUiGridColumnCurrencyInt_formatText;
+   o.dispose          = MO.MUiGridColumnCurrencyInt_dispose;
+   return o;
+}
+MO.MUiGridColumnCurrencyInt_construct = function MUiGridColumnCurrencyInt_construct(){
+   var o = this;
+}
+MO.MUiGridColumnCurrencyInt_formatText = function MUiGridColumnCurrencyInt_formatText(value){
+   var o = this;
+   var text = MO.Lang.Integer.format(MO.Runtime.nvl(value, 0), null, null, o._currencyPercent, '0');
+   return text;
+}
+MO.MUiGridColumnCurrencyInt_dispose = function MUiGridColumnCurrencyInt_dispose(){
+   var o = this;
+}
 MO.MUiGridColumnDate = function MUiGridColumnDate(o){
    o = MO.Class.inherits(this, o);
    o._dateFormat = MO.Class.register(o, new MO.AGetSet('_dateFormat'), 'YYYY/MM/DD HH24:MI:SS');
@@ -40604,7 +42273,7 @@ MO.MUiGridControl = function MUiGridControl(o){
    o._rowClass      = MO.FUiGridRow;
    o._rowFont       = MO.Class.register(o, new MO.AGetter('_rowFont'));
    o._rowHeight     = MO.Class.register(o, new MO.AGetSet('_rowHeight'), 28);
-   o._rowLimitCount = MO.Class.register(o, new MO.AGetter('_rowLimitCount'), 0);
+   o._rowLimitCount = MO.Class.register(o, new MO.AGetSet('_rowLimitCount'), 200);
    o._rows          = MO.Class.register(o, new MO.AGetter('_rows'));
    o._rowPool       = null;
    o._focusRow      = null;
@@ -40744,6 +42413,265 @@ MO.SUiGridCellStyle_dispose = function SUiGridCellStyle_dispose(){
    var o = this;
    o.alignCd = null;
    o.font = null;
+}
+MO.MUiChart = function MUiChart(o){
+   o = MO.Class.inherits(this, o);
+   o._dataset  = MO.Class.register(o, new MO.AGetSet('_dataset'));
+   o.construct = MO.MUiChart_construct;
+   o.dispose   = MO.MUiChart_dispose;
+   return o;
+}
+MO.MUiChart_construct = function MUiChart_construct(){
+   var o = this;
+}
+MO.MUiChart_dispose = function MUiChart_dispose(){
+   var o = this;
+}
+MO.FUiChartAxis = function FUiChartAxis(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._degrees                 = MO.Class.register(o, new MO.AGetter('_degrees'));
+   o._optionShowAxis          = MO.Class.register(o, new MO.AGetSet('_optionShowAxis'), true);
+   o._optionShowLabel         = MO.Class.register(o, new MO.AGetSet('_optionShowLabel'), true);
+   o._optionShowFirstLine     = MO.Class.register(o, new MO.AGetSet('_optionShowFirstLine'), false);
+   o._font                    = MO.Class.register(o, new MO.AGetter('_font'));
+   o._lineWidth               = MO.Class.register(o, new MO.AGetSet('_lineWidth'), 1);;
+   o._lineColor               = MO.Class.register(o, new MO.AGetSet('_lineColor'), '#FFFFFF');
+   o._divisor                 = MO.Class.register(o, new MO.AGetSet('_divisor'), 1);
+   o._degreeLabelGap          = MO.Class.register(o, new MO.AGetSet('_degreeLabelGap'), 2);
+   o._label                   = MO.Class.register(o, new MO.AGetSet('_label'), "");
+   o._labelFont               = MO.Class.register(o, new MO.AGetSet('_labelFont'));
+   o._optionLabelVertical     = MO.Class.register(o, new MO.AGetSet('_optionLabelVertical'), false);
+   o.construct                = MO.FUiChartAxis_construct;
+   o.pushDegree               = MO.FUiChartAxis_pushDegree;
+   o.createDegrees            = MO.FUiChartAxis_createDegrees;
+   o.createDegreesStandard    = MO.FUiChartAxis_createDegreesStandard;
+   o.findDegreeByValue        = MO.FUiChartAxis_findDegreeByValue;
+   o.formatLabels             = MO.FUiChartAxis_formatLabels;
+   o.dispose                  = MO.FUiChartAxis_dispose;
+   return o;
+}
+MO.FUiChartAxis_construct = function FUiChartAxis_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._degrees = new MO.TObjects();
+   o._font = new MO.SUiFont();
+   o._labelFont = new MO.SUiFont();
+}
+MO.FUiChartAxis_pushDegree = function FUiChartAxis_pushDegree(degree) {
+   var o = this;
+   degree.setAxis
+   o._degrees.push(degree);
+}
+MO.FUiChartAxis_createDegrees = function FUiChartAxis_createDegrees(start, end) {
+   var o = this;
+   for(var i = start; i <= end; ++i) {
+      var degree = MO.Class.create(MO.FUiChartAxisDegree);
+      degree.setValue(i);
+      o._degrees.push(degree);
+   }
+}
+MO.FUiChartAxis_createDegreesStandard = function FUiChartAxis_createDegreesStandard(data) {
+   var o = this;
+   var max = data[0];
+   var min = data[1];
+   var cor = data[2];
+   o._degrees.clear();
+   var step = (max - min) / cor;
+   for( var i = 0; i <= cor; ++i) {
+      var degree = MO.Class.create(MO.FUiChartAxisDegree);
+      var value = min + step * i;
+      degree.setValue(value);
+      o._degrees.push(degree);
+   }
+}
+MO.FUiChartAxis_findDegreeByValue = function FUiChartAxis_findDegreeByValue(value) {
+   var o = this;
+   var result;
+   var degrees = o._degrees;
+   var count = degrees.count();
+   while(--count > -1) {
+      var degree = degrees.get(count);
+      if(degree.value() == value) {
+         result = degree;
+         break;
+      }
+   }
+   return result;
+}
+MO.FUiChartAxis_formatLabels = function FUiChartAxis_formatLabels() {
+   var o = this;
+   var degrees = o._degrees;
+   var count = degrees.count();
+   for(var i = 0; i < count; ++i) {
+      var degree = degrees.get(i);
+      var value = degree.value();
+      degree.setLabel((value / o._divisor).toFixed().toString());
+   }
+}
+MO.FUiChartAxis_dispose = function FUiChartAxis_dispose(){
+   var o = this;
+   o._degrees = MO.Lang.Object.dispose(o._degrees);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FUiChartAxisDegree = function FUiChartAxisDegree(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._axis     = MO.Class.register(o, new MO.AGetSet('_axis'));
+   o._value    = MO.Class.register(o, new MO.AGetSet('_value'));
+   o._label    = MO.Class.register(o, new MO.AGetSet('_label'), "");
+   o._optionShowAxis          = MO.Class.register(o, new MO.AGetSet('_optionShowAxis'), true);
+   o._optionShowLabel         = MO.Class.register(o, new MO.AGetSet('_optionShowLabel'), true);
+   o._font                    = MO.Class.register(o, new MO.AGetter('_font'));
+   o._lineWidth               = MO.Class.register(o, new MO.AGetSet('_lineWidth'));
+   o._lineColor               = MO.Class.register(o, new MO.AGetSet('_lineColor'));
+   o.construct = MO.FUiChartAxisDegree_construct;
+   o.dispose   = MO.FUiChartAxisDegree_dispose;
+   return o;
+}
+MO.FUiChartAxisDegree_construct = function FUiChartAxisDegree_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+}
+MO.FUiChartAxisDegree_dispose = function FUiChartAxisDegree_dispose(){
+   var o = this;
+   o._axis = null;
+   o._value = null;
+   o.__base.FObject.dispose.call(o);
+}
+MO.FUiChartDataSeries = function FUiChartDataSeries(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._dataset           = MO.Class.register(o, new MO.AGetSet('_dataset'));
+   o._values            = MO.Class.register(o, new MO.AGetSet('_values'));
+   o._lineColor         = MO.Class.register(o, new MO.AGetSet('_lineColor'), '#FFFFFF');
+   o._lineWidth         = MO.Class.register(o, new MO.AGetSet('_lineWidth'), 1);
+   o._rectWidth         = MO.Class.register(o, new MO.AGetSet('_rectWidth'), 10);
+   o._rectMargin        = MO.Class.register(o, new MO.AGetSet('_rectMargin'), 4);
+   o._fillColor         = MO.Class.register(o, new MO.AGetSet('_fillColor'), '#FFFFFF');
+   o._fillGradient      = MO.Class.register(o, new MO.AGetSet('_fillGradient'));
+   o._optionShowBorder  = MO.Class.register(o, new MO.AGetSet('_optionShowBorder'), true);
+   o._dotSize           = MO.Class.register(o, new MO.AGetSet('_dotSize'), 1);
+   o._dotColor          = MO.Class.register(o, new MO.AGetSet('_dotColor'), '#FFFFFF');
+   o._optionShowDot     = MO.Class.register(o, new MO.AGetSet('_optionShowDot'), false);
+   o.construct          = MO.FUiChartDataSeries_construct;
+   o.dispose            = MO.FUiChartDataSeries_dispose;
+   return o;
+}
+MO.FUiChartDataSeries_construct = function FUiChartDataSeries_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._values = new MO.TObjects();
+}
+MO.FUiChartAxis_dispose = function FUiChartAxis_dispose(){
+   var o = this;
+   o._values = MO.Lang.Object.dispose(o._values);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FUiChartDataset = function FUiChartDataset(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._serieses                = MO.Class.register(o, new MO.AGetter('_serieses'));
+   o.construct                = MO.FUiChartDataset_construct;
+   o.push                     = MO.FUiChartDataset_push;
+   o.maxValue                 = MO.FUiChartDataset_maxValue;
+   o.minValue                 = MO.FUiChartDataset_minValue;
+   o.standardCor              = MO.FUiChartDataset_standardCor;
+   o.dispose                  = MO.FUiChartDataset_dispose;
+   return o;
+}
+MO.FUiChartDataset_construct = function FUiChartDataset_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._serieses = new MO.TObjects();
+}
+MO.FUiChartDataset_push = function FUiChartDataset_push(data) {
+   var o = this;
+   data.setDataset(o);
+   o._serieses.push(data);
+}
+MO.FUiChartDataset_maxValue = function FUiChartDataset_maxValue() {
+   var o = this;
+   var serieses = o._serieses;
+   var count = serieses.count();
+   var result = Number.NEGATIVE_INFINITY;
+   for(var i = 0; i < count; ++i) {
+      var series = serieses.get(i);
+      var values = series.values();
+      var valueCount = values.count();
+      for (var v = 0; v < valueCount; ++v) {
+         var value = values.get(v);
+         result = result < value ? value : result;
+      }
+   }
+   return result;
+}
+MO.FUiChartDataset_minValue = function FUiChartDataset_minValue() {
+   var o = this;
+   var serieses = o._serieses;
+   var count = serieses.count();
+   var result = Number.POSITIVE_INFINITY;
+   for(var i = 0; i < count; ++i) {
+      var series = serieses.get(i);
+      var values = series.values();
+      var valueCount = values.count();
+      for (var v = 0; v < valueCount; ++v) {
+         var value = values.get(v);
+         result = result > value ? value : result;
+      }
+   }
+   return result;
+}
+MO.FUiChartDataset_standardCor = function FUiChartDataset_standardCor(corCount) {
+   var o = this;
+   var result = new MO.TArray();
+   var corMax = o.maxValue();
+   var corMin = o.minValue();
+   var corNumber = corCount;
+   var corStep = (corMax - corMin) / corNumber;
+   var temp, tmpStep, tmpNumber, extraNumber;
+   if(Math.pow(10, parseInt(Math.log(corStep) / Math.log(10))) == corStep) {
+      temp = Math.pow(10, parseInt(Math.log(corStep) / Math.log(10)));
+   }else {
+      temp = Math.pow(10, (parseInt(Math.log(corStep) / Math.log(10)) + 1));
+   }
+   tmpStep = (corStep / temp).toFixed(6);
+   if(tmpStep >= 0 && tmpStep <= 0.1) {
+      tmpStep = 0.1;
+   }else if ( tmpStep >= 0.100001 && tmpStep <= 0.2) {
+      tmpStep = 0.2;
+   }else if ( tmpStep >= 0.200001 && tmpStep <= 0.25) {
+      tmpStep = 0.25;
+   }else if ( tmpStep >= 0.250001 && tmpStep <= 0.5) {
+      tmpStep = 0.5;
+   }else {
+      tmpStep = 1;
+   }
+   tmpStep = tmpStep * temp;
+   if(parseInt(corMin / tmpStep) != (corMin / tmpStep)) {
+      if(corMin < 0) {
+         corMin = (-1) * Math.ceil(Math.abs(corMin / tmpStep)) * tmpStep;
+      }else {
+         corMin = parseInt(Math.abs(corMin / tmpStep)) * tmpStep;
+      }
+   }
+   if(parseInt(corMax / tmpStep) != (corMax / tmpStep)) {
+      corMax = parseInt(corMax / tmpStep + 1) * tmpStep;
+   }
+   tmpNumber = (corMax - corMin) / tmpStep;
+   if(tmpNumber < corNumber) {
+      extraNumber = corNumber - tmpNumber;
+      tmpNumber = corNumber;
+      if(extraNumber % 2 == 0) {
+         corMax = corMax + tmpStep * parseInt(extraNumber / 2);
+      }else {
+         corMax = corMax + tmpStep * parseInt(extraNumber / 2 + 1);
+      }
+      corMin = corMin - tmpStep * parseInt(extraNumber / 2);
+   }
+   corNumber = tmpNumber;
+   return [corMax, corMin, corNumber];
+}
+MO.FUiChartDataset_dispose = function FUiChartDataset_dispose(){
+   var o = this;
+   o._serieses = MO.Lang.Object.dispose(o._serieses);
+   o.__base.FObject.dispose.call(o);
 }
 MO.EApplicationConstant = new function EApplicationConstant(){
    var o = this;
@@ -40987,6 +42915,8 @@ MO.FCanvasDesktop_resize = function FCanvasDesktop_resize(targetWidth, targetHei
    }else{
       calculateRate.set(1, 1);
    }
+   o._sizeScale = 1 / sizeRate;
+   MO.Logger.debug(o, 'Change screen size. (orientation={1}, ratio={2}, screen_size={3}, size={4}, rate={5}, calculate_rate={6})', browser.orientationCd(), pixelRatio, o._screenSize.toDisplay(), o._size.toDisplay(), sizeRate, o._calculateRate.toDisplay());
    var canvas3d = o._canvas3d;
    var context3d = canvas3d.graphicContext();
    context3d.size().set(width, height);
@@ -41603,6 +43533,7 @@ MO.SGuiPaintEvent = function SGuiPaintEvent(){
    o.graphic         = null;
    o.parentRectangle = new MO.SRectangle();
    o.rectangle       = new MO.SRectangle();
+   o.calculateRate   = new MO.SSize2(1, 1);
    o.free            = MO.SGuiPaintEvent_free;
    o.dispose         = MO.SGuiPaintEvent_dispose;
    return o;
@@ -41616,6 +43547,7 @@ MO.SGuiPaintEvent_dispose = function SGuiPaintEvent_dispose(){
    var o = this;
    o.parentRectangle = MO.Lang.Object.dispose(o.parentRectangle);
    o.rectangle = MO.Lang.Object.dispose(o.rectangle);
+   o.calculateRate = MO.Lang.Object.dispose(o.calculateRate);
    return o;
 }
 MO.SGuiUpdateEvent = function SGuiUpdateEvent(){
@@ -41666,7 +43598,7 @@ MO.FGuiAction_startControl = function FGuiAction_startControl(context, control){
 }
 MO.FGuiAction_start = function FGuiAction_start(context){
    var o = this;
-   o.__base.MTimelineAction.start.call(o);
+   o.__base.MTimelineAction.start.call(o, context);
    var controls = o._controls;
    var count = controls.count();
    for(var i = 0; i < count; i++){
@@ -41679,7 +43611,7 @@ MO.FGuiAction_processControl = function FGuiAction_processControl(context, contr
 }
 MO.FGuiAction_process = function FGuiAction_process(context){
    var o = this;
-   o.__base.MTimelineAction.process.call(o);
+   o.__base.MTimelineAction.process.call(o, context);
    var controls = o._controls;
    var count = controls.count();
    for(var i = 0; i < count; i++){
@@ -41772,7 +43704,7 @@ MO.FGuiContainer = function FGuiContainer(o){
 }
 MO.FGuiContainer_createChild = function FGuiContainer_createChild(xconfig){
    var o = this;
-   var child = MO.RGuiControl.newInstance(xconfig);
+   var child = MO.Gui.Control.newInstance(xconfig);
    child._parent = o;
    return child;
 }
@@ -41796,6 +43728,7 @@ MO.FGuiControl = function FGuiControl(o){
    o._statusHover            = false;
    o._backImage              = null;
    o._backHoverResource      = null;
+   o._renderableScale        = MO.Class.register(o, new MO.AGetSet('_renderableScale'), 1);
    o._clientRectangle        = MO.Class.register(o, new MO.AGetter('_clientRectangle'));
    o._parentRectangle        = MO.Class.register(o, new MO.AGetter('_parentRectangle'));
    o._eventRectangle         = null;
@@ -41803,6 +43736,7 @@ MO.FGuiControl = function FGuiControl(o){
    o._operationMoveListeners = MO.Class.register(o, new MO.AListener('_operationMoveListeners', MO.EEvent.OperationMove));
    o._operationUpListeners   = MO.Class.register(o, new MO.AListener('_operationUpListeners', MO.EEvent.OperationUp));
    o._paintEvent             = null;
+   o.onResourceLoad          = MO.FGuiControl_onResourceLoad;
    o.onUpdate                = MO.FGuiControl_onUpdate;
    o.onPaintBegin            = MO.FGuiControl_onPaintBegin;
    o.onPaintEnd              = MO.FGuiControl_onPaintEnd;
@@ -41818,10 +43752,13 @@ MO.FGuiControl = function FGuiControl(o){
    o.isDirty                 = MO.FGuiControl_isDirty;
    o.setVisible              = MO.FGuiControl_setVisible;
    o.setSize                 = MO.FGuiControl_setSize;
+   o.findManager             = MO.FGuiControl_findManager;
    o.testReady               = MO.FGuiControl_testReady;
    o.testDirty               = MO.FGuiControl_testDirty;
    o.testInRange             = MO.FGuiControl_testInRange;
+   o.loadResourceImage       = MO.FGuiControl_loadResourceImage;
    o.paint                   = MO.FGuiControl_paint;
+   o.paintGraphic            = MO.FGuiControl_paintGraphic;
    o.update                  = MO.FGuiControl_update;
    o.build                   = MO.Method.empty;
    o.makeRenderable          = MO.FGuiControl_makeRenderable;
@@ -41833,6 +43770,9 @@ MO.FGuiControl = function FGuiControl(o){
    o.psUpdate                = MO.FGuiControl_psUpdate;
    o.dispose                 = MO.FGuiControl_dispose;
    return o;
+}
+MO.FGuiControl_onResourceLoad = function FGuiControl_onResourceLoad(event){
+   this.dirty();
 }
 MO.FGuiControl_onUpdate = function FGuiControl_onUpdate(event){
    var o = this;
@@ -41854,8 +43794,11 @@ MO.FGuiControl_onPaintBegin = function FGuiControl_onPaintBegin(event){
    var o = this;
    var graphic = event.graphic;
    var rectangle = event.rectangle;
+   if(MO.Gui.Control.optionDebugBorder){
+      graphic.drawRectangle(rectangle.left, rectangle.top, rectangle.width, rectangle.height, '#FF0000', 1);
+   }
    if(o._backColor){
-      graphic.fillRectangle(rectangle.left, rectangle.top, rectangle.width, rectangle.height, o._styleBackcolor, 1);
+      graphic.fillRectangle(rectangle.left, rectangle.top, rectangle.width, rectangle.height, o._backColor);
    }
    var image = null;
    var imageGrid = null;
@@ -41974,9 +43917,14 @@ MO.FGuiControl_setVisible = function FGuiControl_setVisible(flag){
 MO.FGuiControl_setSize = function FGuiControl_setSize(width, height){
    var o = this;
    o.__base.MGuiSize.setSize.call(o, width, height);
-   var renderable = o._renderable;
-   if(renderable){
-      renderable.setSize(width, height);
+}
+MO.FGuiControl_findManager = function FGuiControl_findManager(){
+   var o = this;
+   var manager = o._manager;
+   if(!manager){
+      var findControl = o._parent;
+      while(findControl){
+      }
    }
 }
 MO.FGuiControl_testReady = function FGuiControl_testReady(){
@@ -42016,6 +43964,13 @@ MO.FGuiControl_testDirty = function FGuiControl_testDirty(){
 MO.FGuiControl_testInRange = function FGuiControl_testInRange(x, y){
    var o = this;
 }
+MO.FGuiControl_loadResourceImage = function FGuiControl_loadResourceImage(uri){
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole);
+   var image = imageConsole.load(uri);
+   image.addLoadListener(o, o.onResourceLoad);
+   return image;
+}
 MO.FGuiControl_paint = function FGuiControl_paint(event){
    var o = this;
    var location = o._location;
@@ -42025,7 +43980,6 @@ MO.FGuiControl_paint = function FGuiControl_paint(event){
    var graphic = event.graphic;
    var parentRectangle = event.parentRectangle;
    var rectangle = event.rectangle;
-   var sizeRate = event.sizeRate;
    var calculateRate = event.calculateRate;
    var calculateWidth = calculateRate.width;
    var calculateHeight = calculateRate.height;
@@ -42115,6 +44069,20 @@ MO.FGuiControl_paint = function FGuiControl_paint(event){
    parentRectangle.assign(o._parentRectangle);
    o._statusDirty = false;
 }
+MO.FGuiControl_paintGraphic = function FGuiControl_paintGraphic(graphic, left, top, width, height, parameters){
+   var o = this;
+   var statusDirty = o._statusDirty;
+   var event = o._paintEvent;
+   event.optionScale = false;
+   event.graphic = graphic;
+   event.parentRectangle.set(left, top, width, height);
+   event.rectangle.set(left, top, width, height);
+   event.calculateRate.set(1, 1);
+   event.parameters = parameters;
+   o.paint(event);
+   event.parameters = null;
+   o._statusDirty = statusDirty;
+}
 MO.FGuiControl_update = function FGuiControl_update(){
    var o = this;
    var size = o._size;
@@ -42128,6 +44096,7 @@ MO.FGuiControl_dirty = function FGuiControl_dirty(){
 }
 MO.FGuiControl_makeRenderable = function FGuiControl_makeRenderable(){
    var o = this;
+   o._renderableScale = MO.Desktop.application().desktop().guiBufferScale();
    var renderable = o._renderable;
    if(!renderable){
       renderable = o._renderable = o._graphicContext.createObject(MO.FGuiControlRenderable);
@@ -42140,13 +44109,15 @@ MO.FGuiControl_updateRenderable = function FGuiControl_updateRenderable(){
    var renderable = o._renderable;
    var graphic = renderable.beginDraw();
    var size = o._size;
+   var scale = o._renderableScale;
+   graphic.setGlobalScale(o._renderableScale, o._renderableScale);
+   graphic.prepare();
    var event = o._paintEvent;
    event.optionScale = false;
    event.graphic = graphic;
-   event.virtualSize = size;
    event.parentRectangle.set(0, 0, size.width, size.height);
    event.rectangle.set(0, 0, size.width, size.height);
-   event.calculateRate = 1;
+   event.calculateRate = new MO.SSize2(1, 1);
    o.paint(event);
    renderable.endDraw();
 }
@@ -42207,16 +44178,17 @@ MO.FGuiControl_dispose = function FGuiControl_dispose(){
 }
 MO.FGuiControlRenderable = function FGuiControlRenderable(o){
    o = MO.Class.inherits(this, o, MO.FE3dFaceData);
-   o._optionFull = MO.Class.register(o, new MO.AGetSet('_optionFull'));
-   o._control    = MO.Class.register(o, new MO.AGetSet('_control'));
-   o._graphic    = null;
-   o.construct   = MO.FGuiControlRenderable_construct;
-   o.setup       = MO.FGuiControlRenderable_setup;
-   o.setLocation = MO.FGuiControlRenderable_setLocation;
-   o.setSize     = MO.FGuiControlRenderable_setSize;
-   o.beginDraw   = MO.FGuiControlRenderable_beginDraw;
-   o.endDraw     = MO.FGuiControlRenderable_endDraw;
-   o.dispose     = MO.FGuiControlRenderable_dispose;
+   o._optionCenter = true;
+   o._optionFull   = MO.Class.register(o, new MO.AGetSet('_optionFull'));
+   o._control      = MO.Class.register(o, new MO.AGetSet('_control'));
+   o._graphic      = null;
+   o.construct     = MO.FGuiControlRenderable_construct;
+   o.setup         = MO.FGuiControlRenderable_setup;
+   o.testVisible   = MO.FGuiControlRenderable_testVisible;
+   o.beginDraw     = MO.FGuiControlRenderable_beginDraw;
+   o.endDraw       = MO.FGuiControlRenderable_endDraw;
+   o.process       = MO.FGuiControlRenderable_process;
+   o.dispose       = MO.FGuiControlRenderable_dispose;
    return o;
 }
 MO.FGuiControlRenderable_construct = function FGuiControlRenderable_construct(){
@@ -42228,23 +44200,23 @@ MO.FGuiControlRenderable_setup = function FGuiControlRenderable_setup(){
    o.__base.FE3dFaceData.setup.call(o);
    var materialInfo = o._material.info();
    materialInfo.effectCode = 'gui';
-   materialInfo.optionDouble = true;
+   materialInfo.optionAlpha = true;
+   var texture = o._texture;
+   texture.setFilterCd(MO.EG3dSamplerFilter.Linear, MO.EG3dSamplerFilter.Nearest);
 }
-MO.FGuiControlRenderable_setLocation = function FGuiControlRenderable_setLocation(x, y){
-   var o = this;
-   o._matrix.setTranslate(x, y, 0);
-}
-MO.FGuiControlRenderable_setSize = function FGuiControlRenderable_setSize(width, height){
-   var o = this;
-   o._size.set(width, height);
+MO.FGuiControlRenderable_testVisible = function FGuiControlRenderable_testVisible(){
+   return this._control.visible();
 }
 MO.FGuiControlRenderable_beginDraw = function FGuiControlRenderable_beginDraw(){
    var o = this;
-   var size = o._control.size();
-   var adjustWidth = MO.Lang.Integer.pow2(size.width);
-   var adjustHeight = MO.Lang.Integer.pow2(size.height);
+   var control = o._control;
+   var size = control.size();
+   var scale = control.renderableScale();
+   var width = size.width * scale;
+   var height = size.height * scale;
+   var adjustWidth = MO.Lang.Integer.pow2(width);
+   var adjustHeight = MO.Lang.Integer.pow2(height);
    o._adjustSize.set(adjustWidth, adjustHeight);
-   o._matrix.setScale(adjustWidth, adjustHeight, 1);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    var canvas = o._canvas = canvasConsole.allocBySize(adjustWidth, adjustHeight, MO.FGuiCanvas);
    var graphic = o._graphic = canvas.graphicContext();
@@ -42253,12 +44225,21 @@ MO.FGuiControlRenderable_beginDraw = function FGuiControlRenderable_beginDraw(){
 MO.FGuiControlRenderable_endDraw = function FGuiControlRenderable_endDraw(){
    var o = this;
    var graphic = o._graphic;
+   MO.Assert.debugNotNull(graphic);
    o._texture.upload(o._canvas);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    canvasConsole.free(o._canvas);
    o._canvas = null;
    o._graphic = null;
    o._ready = true;
+}
+MO.FGuiControlRenderable_process = function FGuiControlRenderable_process(){
+   var o = this;
+   o.__base.FE3dFaceData.process.call(o);
+   var control = o._control;
+   if(control.testDirty()){
+      control.updateRenderable();
+   }
 }
 MO.FGuiControlRenderable_dispose = function FGuiControlRenderable_dispose(){
    var o = this;
@@ -42332,7 +44313,8 @@ MO.RGuiColor.prototype.makeRgbString = function RGuiColor_makeRgbString(color, a
 MO.GuiColor = new MO.RGuiColor();
 MO.RGuiControl = function RGuiControl(){
    var o = this;
-   o.PREFIX    = 'FGui';
+   o.PREFIX            = 'FGui';
+   o.optionDebugBorder = false;
    return o;
 }
 MO.RGuiControl.prototype.newInstance = function RGuiControl_newInstance(type){
@@ -42447,7 +44429,7 @@ MO.RGuiControl.prototype.saveConfig = function RGuiControl_saveConfig(control, x
    }
    return xconfig;
 }
-MO.RGuiControl = new MO.RGuiControl();
+MO.Gui.Control = new MO.RGuiControl();
 MO.FGuiCanvas = function FGuiCanvas(o){
    o = MO.Class.inherits(this, o, MO.FE2dCanvas);
    o.createContext = MO.FGuiCanvas_createContext;
@@ -42484,6 +44466,8 @@ MO.FGuiCanvasContext_drawFontText = function FGuiCanvasContext_drawFontText(text
       handle.fillText(text, x + (width - textWidth), cy);
    }else if(alignCd == MO.EUiAlign.Center){
       handle.fillText(text, cx, cy);
+   }else if(alignCd == MO.EUiAlign.LeftPadding){
+      handle.fillText(text, x+30, cy);
    }else{
       throw new MO.TError('Invalid align type.');
    }
@@ -42607,7 +44591,7 @@ MO.FGuiCanvasManager_process = function FGuiCanvasManager_process(){
          var control = readyControls.at(i);
          if(control.testDirty()){
             var controlRectangle = control.clientRectangle();
-            dirtyControls.push(control);
+            dirtyControls.pushUnique(control);
             control._flagDirty = true;
             o.filterByRectangle(dirtyControls, controlRectangle)
          }
@@ -42721,7 +44705,7 @@ MO.FGuiFrameConsole_createFrame = function FGuiFrameConsole_createFrame(context,
    var o = this;
    var describeConsole = MO.Console.find(MO.FGuiFrameDescribeConsole);
    var xframe = describeConsole.load(name);
-   var frame = MO.RGuiControl.build(null, xframe, null, null);
+   var frame = MO.Gui.Control.build(null, xframe, null, null);
    frame.linkGraphicContext(context);
    frame.psInitialize();
    frame.build();
@@ -42812,12 +44796,19 @@ MO.FGuiGeneralColorEffect = function FGuiGeneralColorEffect(o){
 MO.FGuiGeneralColorEffect_drawRenderable = function FGuiGeneralColorEffect_drawRenderable(region, renderable){
    var o = this;
    var program = o._program;
+   var control = renderable.control();
+   var controlSize = control.size();
+   var scale = control.renderableScale();
+   var adjustSize = renderable.adjustSize();
+   var rateX = controlSize.width * scale / adjustSize.width;
+   var rateY = controlSize.height * scale/ adjustSize.height;
    var modelMatrix = renderable.currentMatrix();
    var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix)
    var material = renderable.material();
    o.bindMaterial(material);
    program.setParameter('vc_model_matrix', modelMatrix);
    program.setParameter('vc_vp_matrix', vpMatrix);
+   program.setParameter4('fc_coord', rateX, rateY, 0, 1 - rateY);
    o.__base.FE3dAutomaticEffect.drawRenderable.call(o, region, renderable);
 }
 MO.FGuiGeneralControlEffect = function FGuiGeneralControlEffect(o){
@@ -42993,6 +44984,41 @@ MO.FGuiManager_dispose = function FGuiManager_dispose(){
    o._visibleControls = MO.Lang.Object.dispose(o._visibleControls);
    o.__base.FObject.dispose.call(o);
 }
+MO.FGuiSelectAutomaticEffect = function FGuiSelectAutomaticEffect(o){
+   o = MO.Class.inherits(this, o, MO.FG3dAutomaticEffect);
+   o._code          = 'select.gui';
+   o.drawRenderable = MO.FGuiSelectAutomaticEffect_drawRenderable;
+   return o;
+}
+MO.FGuiSelectAutomaticEffect_drawRenderable = function FGuiSelectAutomaticEffect_drawRenderable(region, renderable, index){
+   var o = this;
+   var context = o._graphicContext;
+   var size = context.size();
+   var program = o._program;
+   var selectX = region._selectX;
+   var selectY = region._selectY;
+   var material = renderable.material();
+   var materialInfo = material.info();
+   o.bindMaterial(material);
+   var matrix = renderable.currentMatrix();
+   var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix);
+   program.setParameter('vc_model_matrix', matrix);
+   program.setParameter('vc_vp_matrix', vpMatrix);
+   program.setParameter4('vc_offset', size.width, size.height, 1 - (selectX / size.width) * 2, (selectY / size.height) * 2 - 1);
+   var i = index + 1;
+   var i1 = i  & 0xFF;
+   var i2 = (i >> 8) & 0xFF;
+   var i3 = (i >> 16) & 0xFF;
+   program.setParameter4('fc_index', i1 / 255, i2 / 255, i3 / 255, materialInfo.alphaBase);
+   o.bindAttributes(renderable);
+   o.bindSamplers(renderable);
+   var indexBuffers = renderable.indexBuffers();
+   var count = indexBuffers.count();
+   for(var i = 0; i < count; i++){
+      var indexBuffer = indexBuffers.at(i);
+      context.drawTriangles(indexBuffer);
+   }
+}
 MO.FGuiTransform = function FGuiTransform(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    o._finish   = false;
@@ -43075,6 +45101,105 @@ MO.FGuiLabel_setLabel = function FGuiLabel_setLabel(label){
       o.dirty();
    }
    o.__base.FGuiControl.setLabel.call(o, label);
+}
+MO.FGuiListBox = function FGuiListBox(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._gap                   = MO.Class.register(o, new MO.AGetSet('_gap'), 0);
+   o._items                 = MO.Class.register(o, new MO.AGetSet('_items'));
+   o._displayCount          = MO.Class.register(o, new MO.AGetSet('_displayCount'), 5);
+   o._startTick             = MO.Class.register(o, new MO.AGetSet('_startTick'), 0);
+   o._dataAnimationDuration = 5000;
+   o._animationPlaying      = MO.Class.register(o, new MO.AGetSet('_animationPlaying'), false);
+   o._itemRectangle         = null;
+   o.onPaintBegin           = MO.FGuiListBox_onPaintBegin;
+   o.construct              = MO.FGuiListBox_construct;
+   o.createItem             = MO.FGuiListBox_createItem;
+   o.push                   = MO.FGuiListBox_push;
+   o.clear                  = MO.FGuiListBox_clear;
+   o.dispose                = MO.FGuiListBox_dispose;
+   return o;
+}
+MO.FGuiListBox_onPaintBegin = function FGuiListBox_onPaintBegin(event) {
+   var o = this;
+   var rectangle = event.rectangle;
+   var graphic = event.graphic;
+   var padding = o._padding;
+   var left = rectangle.left + padding.left;
+   var top = rectangle.top + padding.top;
+   var bottom = rectangle.bottom() - padding.bottom;
+   var width = rectangle.width - padding.left - padding.right;
+   var height = rectangle.height - padding.top - padding.bottom;
+   var itemRect = o._itemRectangle;
+   var itemDrawX = left;
+   var itemDrawY = top;
+   var itemWidth = 0;
+   var itemHeight = 0;
+   var items = o._items;
+   var itemCount = items.count();
+   var displayCount = o._displayCount;
+   var gap = o._gap;
+   var rate = o._animationPlaying ? (MO.Timer.current() - o._startTick) / o._dataAnimationDuration : 1;
+   if (rate > 1) {
+      rate = 1;
+      o._animationPlaying = false;
+   }
+   for (var i = 0; i < itemCount && i < displayCount; i++) {
+      var item = items.at(i);
+      itemWidth = item.width() > rectangle.width ? rectangle.width : item.width();
+      itemHeight = item.height();
+      itemRect.set(itemDrawX, itemDrawY, itemWidth, itemHeight);
+      item.draw(graphic, itemRect, rate);
+      itemDrawY += itemHeight + gap;
+   }
+}
+MO.FGuiListBox_construct = function FGuiListBox_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+   o._items = new MO.TObjects();
+   o._itemRectangle = new MO.SRectangle();
+}
+MO.FGuiListBox_createItem = function FGuiListBox_createItem(clazz){
+   var o = this;
+   var item = MO.Class.create(clazz);
+   item.setListBox(o);
+   o.push(item);
+   return item;
+}
+MO.FGuiListBox_push = function FGuiListBox_push(control){
+   var o = this;
+   o.__base.FGuiControl.push.call(o, control);
+   if(MO.Class.isClass(control, MO.FGuiListBoxItem)){
+      o._items.push(control);
+   }
+}
+MO.FGuiListBox_clear = function FGuiListBox_clear(){
+   var o = this;
+   o.__base.FGuiControl.clear.call(o);
+   o._items.clear();
+}
+MO.FGuiListBox_dispose = function FGuiListBox_dispose() {
+   var o = this;
+   o._items = MO.Lang.Object.dispose(o._items);
+   o._itemRectangle = MO.Lang.Object.dispose(o._itemRectangle);
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiListBoxItem = function FGuiListBoxItem(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._listBox  = MO.Class.register(o, new MO.AGetSet('_listBox'));
+   o.construct = MO.FGuiListBoxItem_construct;
+   o.draw      = MO.FGuiListBoxItem_draw;
+   o.dispose   = MO.FGuiListBoxItem_dispose;
+   return o;
+}
+MO.FGuiListBoxItem_construct = function FGuiListBoxItem_construct(){
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiListBoxItem_draw = function FGuiListBoxItem_draw(graphic, rectangle){
+}
+MO.FGuiListBoxItem_dispose = function FGuiListBoxItem_dispose(){
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
 }
 MO.FGuiPanel = function FGuiPanel(o){
    o = MO.Class.inherits(this, o, MO.FGuiControl);
@@ -43414,6 +45539,7 @@ MO.FGuiGridCellCurrency_draw = function FGuiGridCellCurrency_draw(context){
    var width = rectangle.width;
    var height = rectangle.height;
    var column = o._column;
+   var optionDecimal = column.optionDecimal();
    var cellPadding = column.cellPadding();
    var value = o.value();
    var text = o.text();
@@ -43421,43 +45547,86 @@ MO.FGuiGridCellCurrency_draw = function FGuiGridCellCurrency_draw(context){
    var numberFont = o._numberFont;
    numberFont.assign(font);
    var contentWidth = width - cellPadding.right;
-   if(value >= 0){
-      if(textLength > 11){
-         var fontColor = null;
-         var highest = text.substring(0, text.length - 11);
-         var high = text.substring(textLength - 11, textLength - 7);
-         var low = text.substring(textLength - 7, textLength);
-         var highestWidth = graphic.textWidth(highest);
-         var highWidth = graphic.textWidth(high);
-         var lowWidth = graphic.textWidth(low);
-         numberFont.color = column.highestColor();
-         graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.highColor();
-         graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.normalColor();
-         graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
-      }else if(textLength > 7){
-         var fontColor = null;
-         if(textLength > 9){
-            fontColor = column.highColor();
+   if(optionDecimal){
+      if(value >= 0){
+         if(textLength > 11){
+            var fontColor = null;
+            var highest = text.substring(0, text.length - 11);
+            var high = text.substring(textLength - 11, textLength - 7);
+            var low = text.substring(textLength - 7, textLength);
+            var highestWidth = graphic.textWidth(highest);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = column.highestColor();
+            graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.highColor();
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else if(textLength > 7){
+            var fontColor = null;
+            if(textLength > 9){
+               fontColor = column.highColor();
+            }else{
+               fontColor = column.lowerColor();
+            }
+            var high = text.substring(0, textLength - 7);
+            var low = text.substring(textLength - 7, textLength);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = fontColor;
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
          }else{
-            fontColor = column.lowerColor();
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
          }
-         var high = text.substring(0, textLength - 7);
-         var low = text.substring(textLength - 7, textLength);
-         var highWidth = graphic.textWidth(high);
-         var lowWidth = graphic.textWidth(low);
-         numberFont.color = fontColor;
-         graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.normalColor();
-         graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
-      }else{
-         numberFont.color = column.normalColor();
+      }else if(value < 0){
+         numberFont.color = column.negativeColor();
          graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
       }
-   }else if(value < 0){
-      numberFont.color = column.negativeColor();
-      graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+   }else{
+      var text = value + '';
+      var textLength = text.length;
+      if(value >= 0){
+         if(textLength > 8){
+            var fontColor = null;
+            var highest = text.substring(0, text.length - 8);
+            var high = text.substring(textLength - 8, textLength - 4);
+            var low = text.substring(textLength - 4, textLength);
+            var highestWidth = graphic.textWidth(highest);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = column.highestColor();
+            graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.highColor();
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else if(textLength > 4){
+            var fontColor = null;
+            if(textLength > 6){
+               fontColor = column.highColor();
+            }else{
+               fontColor = column.lowerColor();
+            }
+            var high = text.substring(0, textLength - 4);
+            var low = text.substring(textLength - 4, textLength);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = fontColor;
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else{
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }
+      }else if(value < 0){
+         numberFont.color = column.negativeColor();
+         graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+      }
    }
 }
 MO.FGuiGridCellCurrency_dispose = function FGuiGridCellCurrency_dispose(){
@@ -43496,8 +45665,8 @@ MO.FGuiGridCellPicture = function FGuiGridCellPicture(o) {
    o._image = null;
    o.construct = MO.FGuiGridCellPicture_construct;
    o.testReady = MO.FGuiGridCellPicture_testReady;
-   o.setValue = MO.FGuiGridCellPicture_setValue;
-   o.draw = MO.FGuiGridCellPicture_draw;
+   o.setValue  = MO.FGuiGridCellPicture_setValue;
+   o.draw      = MO.FGuiGridCellPicture_draw;
    o.dispose = MO.FGuiGridCellPicture_dispose;
    return o;
 }
@@ -43549,13 +45718,76 @@ MO.FGuiGridCellPicture_setValue = function FGuiGridCellPicture_setValue(value) {
    var o = this;
    o.__base.FGuiGridCell.setValue.call(o, value);
    var url = o.text();
-   if (MO.Lang.String.isEmpty(url)) {
+   if(MO.Lang.String.isEmpty(url)){
       o._image = null;
-   } else {
-      o._image = MO.Console.find(MO.FImageConsole).load(url);
+   }else{
+      o._image = o._grid.loadResourceImage(url);
    }
 }
 MO.FGuiGridCellPicture_dispose = function FGuiGridCellPicture_dispose() {
+   var o = this;
+   o.__base.MUiGridCellPicture.dispose.call(o);
+   o.__base.FGuiGridCell.dispose.call(o);
+}
+MO.FGuiGridCellProgressBar = function FGuiGridCellProgressBar(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiGridCell, MO.MUiGridCellPicture);
+   o.construct = MO.FGuiGridCellProgressBar_construct;
+   o.testReady = MO.FGuiGridCellProgressBar_testReady;
+   o.draw      = MO.FGuiGridCellProgressBar_draw;
+   o.dispose   = MO.FGuiGridCellProgressBar_dispose;
+   return o;
+}
+MO.FGuiGridCellProgressBar_construct = function FGuiGridCellProgressBar_construct() {
+   var o = this;
+   o.__base.FGuiGridCell.construct.call(o);
+   o.__base.MUiGridCellPicture.construct.call(o);
+}
+MO.FGuiGridCellProgressBar_testReady = function FGuiGridCellProgressBar_testReady() {
+   var o = this;
+   var bgImage = o._column._bgImage;
+   var fillImage = o._column._fillImage;
+   if (bgImage && fillImage) {
+      return (bgImage.testReady() && fillImage.testReady());
+   }
+   return false;
+}
+MO.FGuiGridCellProgressBar_draw = function FGuiGridCellProgressBar_draw(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var bgImage = o._column._bgImage;
+   var fillImage = o._column._fillImage;
+   var imageSize = bgImage.size();
+   var imageWidth = imageSize.width;
+   var imageHeight = imageSize.height;
+   var rectangleHeight = rectangle.height;
+   var align = o._column._align;
+   var imageX = 0;
+   var imageY = rectangle.top;
+   if (rectangleHeight >= imageHeight) {
+      imageY = (rectangleHeight / 2) - (imageHeight / 2) + imageY + 3;
+   } else {
+      imageY = imageY - (imageHeight - rectangleHeight);
+   }
+   if (align == MO.EUiAlign.Left) {
+      imageX = rectangle.left;
+   } else if (align == MO.EUiAlign.Center) {
+      imageX = (rectangle.width / 2) - (imageWidth / 2) + rectangle.left;
+   } else if (align == MO.EUiAlign.Right) {
+      imageX = (rectangle.width / 2) + (imageWidth / 2) + rectangle.left;
+   }
+   var drawScale = o._column._drawScale;
+   graphic.drawImage(bgImage, imageX, imageY, imageWidth * drawScale, imageHeight * drawScale);
+   var percent = o.value() / o._column.maxValue();
+   var clipWidth = imageWidth * drawScale * percent;
+   var clipHeight = imageHeight * drawScale;
+   graphic._handle.save();
+   graphic._handle.rect(imageX, imageY, clipWidth, clipHeight);
+   graphic._handle.clip();
+   graphic.drawImage(fillImage, imageX, imageY, imageWidth * drawScale, imageHeight * drawScale);
+   graphic._handle.restore();
+}
+MO.FGuiGridCellProgressBar_dispose = function FGuiGridCellProgressBar_dispose() {
    var o = this;
    o.__base.MUiGridCellPicture.dispose.call(o);
    o.__base.FGuiGridCell.dispose.call(o);
@@ -43647,9 +45879,10 @@ MO.FGuiGridColumnBigNumber_dispose = function FGuiGridColumnBigNumber_dispose(){
 }
 MO.FGuiGridColumnCurrency = function FGuiGridColumnCurrency(o){
    o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnCurrency);
-   o.construct    = MO.FGuiGridColumnCurrency_construct;
-   o.formatText   = MO.FGuiGridColumnCurrency_formatText;
-   o.dispose      = MO.FGuiGridColumnCurrency_dispose;
+   o._optionDecimal = MO.Class.register(o, new MO.AGetSet('_optionDecimal'), true);
+   o.construct      = MO.FGuiGridColumnCurrency_construct;
+   o.formatText     = MO.FGuiGridColumnCurrency_formatText;
+   o.dispose        = MO.FGuiGridColumnCurrency_dispose;
    return o;
 }
 MO.FGuiGridColumnCurrency_construct = function FGuiGridColumnCurrency_construct(){
@@ -43706,6 +45939,35 @@ MO.FGuiGridColumnPicture_dispose = function FGuiGridColumnPicture_dispose() {
    o.__base.MUiGridColumnText.dispose.call(o);
    o.__base.FGuiGridColumn.dispose.call(o);
 }
+MO.FGuiGridColumnProgressBar = function FGuiGridColumnProgressBar(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnText);
+   o._align     = MO.Class.register(o, new MO.AGetSet('_align'));
+   o._drawScale = MO.Class.register(o, new MO.AGetSet('_drawScale'), 1.0);
+   o._bgImage   = MO.Class.register(o, new MO.AGetSet('_bgImage'));
+   o._fillImage = MO.Class.register(o, new MO.AGetSet('_fillImage'));
+   o._maxValue  = MO.Class.register(o, new MO.AGetSet('_maxValue'), 100);
+   o.construct  = MO.FGuiGridColumnProgressBar_construct;
+   o.setup      = MO.FGuiGridColumnProgressBar_setup;
+   o.dispose    = MO.FGuiGridColumnProgressBar_dispose;
+   return o;
+}
+MO.FGuiGridColumnProgressBar_construct = function FGuiGridColumnProgressBar_construct() {
+   var o = this;
+   o.__base.FGuiGridColumn.construct.call(o);
+   o.__base.MUiGridColumnText.construct.call(o);
+   o._cellClass = MO.FGuiGridCellProgressBar;
+}
+MO.FGuiGridColumnProgressBar_setup = function FGuiGridColumnProgressBar_setup(bgImageUrl, fillImageUrl) {
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole)
+   o._bgImage = imageConsole.load(bgImageUrl);
+   o._fillImage = imageConsole.load(fillImageUrl);
+}
+MO.FGuiGridColumnProgressBar_dispose = function FGuiGridColumnProgressBar_dispose() {
+   var o = this;
+   o.__base.MUiGridColumnText.dispose.call(o);
+   o.__base.FGuiGridColumn.dispose.call(o);
+}
 MO.FGuiGridColumnText = function FGuiGridColumnText(o){
    o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnText);
    o.construct = MO.FGuiGridColumnText_construct;
@@ -43725,18 +45987,26 @@ MO.FGuiGridColumnText_dispose = function FGuiGridColumnText_dispose(){
 }
 MO.FGuiGridControl = function FGuiGridControl(o) {
    o = MO.Class.inherits(this, o, MO.FGuiControl, MO.MUiGridControl);
-   o._optionClip     = MO.Class.register(o, new MO.AGetSet('_optionClip'), true);
-   o._headPadding    = MO.Class.register(o, new MO.AGetter('_headPadding'));
-   o._rowScroll      = 0;
-   o._rowScrollSpeed = 1;
-   o._paintContext   = null;
-   o.onPaintBegin    = MO.FGuiGridControl_onPaintBegin;
-   o.construct       = MO.FGuiGridControl_construct;
-   o.dispose         = MO.FGuiGridControl_dispose;
+   o._optionClip          = MO.Class.register(o, new MO.AGetSet('_optionClip'), true);
+   o._headPadding         = MO.Class.register(o, new MO.AGetter('_headPadding'));
+   o._headBackgroundUri   = MO.Class.register(o, new MO.AGetSet('_headBackgroundUri'));
+   o._headBackgroundImage = null;
+   o._outerLineColor      = MO.Class.register(o, new MO.AGetSet('_outerLineColor'), '#FFFFFF');
+   o._outerLineThickness  = MO.Class.register(o, new MO.AGetSet('_outerLineThickness'), 0);
+   o._innerLineColor      = MO.Class.register(o, new MO.AGetSet('_innerLineColor'), '#FFFFFF');
+   o._innerLineThickness  = MO.Class.register(o, new MO.AGetSet('_innerLineThickness'), 0);
+   o._rowScroll           = 0;
+   o._rowScrollSpeed      = 1;
+   o._paintContext        = null;
+   o.onPaintBegin         = MO.FGuiGridControl_onPaintBegin;
+   o.construct            = MO.FGuiGridControl_construct;
+   o.setup                = MO.FGuiGridControl_setup;
+   o.dispose              = MO.FGuiGridControl_dispose;
    return o;
 }
 MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
    var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
    var dirty = false;
    var padding = o._padding;
    var context = o._paintContext;
@@ -43752,7 +46022,10 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
    var height = rectangle.height - padding.top - padding.bottom;
    var headPadding = o._headPadding;
    var drawX = left;
-   var drawY = top + headPadding.top;;
+   var drawY = top + headPadding.top;
+   if (o._outerLineThickness > 0) {
+      graphic.drawRectangle(left, top, width, height, o._outerLineColor, o._outerLineThickness);
+   }
    var gridWidth = width;
    var columnWidthTotal = 0;
    var columns = o._columns;
@@ -43761,11 +46034,14 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
       var column = columns.at(i);
       columnWidthTotal += column.width();
    }
+   var headTextTop = columnY + 0;
+   var headHeight = o._headHeight;
+   if (o._headBackgroundImage) {
+      graphic.drawImage(o._headBackgroundImage, drawX + headPadding.left, drawY, width - headPadding.left - headPadding.right, headHeight - headPadding.top, height - headPadding.bottom);
+   }
    if (o._displayHead) {
       var columnX = drawX;
       var columnY = drawY;
-      var headTextTop = columnY + 0;
-      var headHeight = o._headHeight;
       for (var i = 0; i < columnCount; i++) {
          var column = columns.at(i);
          if(!column.testReady()){
@@ -43811,6 +46087,22 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
          break;
       }
    }
+   if (o._innerLineThickness > 0) {
+      var drawY = top + headPadding.top;
+      drawY += headHeight + headPadding.bottom;
+      graphic.drawLine(drawX, drawY, columnX, drawY, o._innerLineColor, o._innerLineThickness);
+      for (var i = 0; i < rowCount - 1; i++) {
+         drawY += rowHeight;
+         graphic.drawLine(drawX, drawY, columnX, drawY, o._innerLineColor, o._innerLineThickness);
+      }
+      var columnX = drawX;
+      for (var i = 0; i < columnCount - 1; i++) {
+         var column = columns.at(i);
+         var columnWidth = gridWidth * column.width() / columnWidthTotal;
+         columnX += columnWidth;
+         graphic.drawLine(columnX, top + headHeight + headPadding.top, columnX, bottom, o._innerLineColor, o._innerLineThickness);
+      }
+   }
    if(dirty){
       o.dirty();
    }
@@ -43822,6 +46114,13 @@ MO.FGuiGridControl_construct = function FGuiGridControl_construct() {
    o._rowClass = MO.FGuiGridRow;
    o._paintContext = new MO.SGuiGridPaintContext();
    o._headPadding = new MO.SPadding();
+}
+MO.FGuiGridControl_setup = function FGuiGridControl_setup() {
+   var o = this;
+   var headBackgroundUri = o._headBackgroundUri;
+   if (headBackgroundUri) {
+      o._headBackgroundImage = o.loadResourceImage(headBackgroundUri);
+   }
 }
 MO.FGuiGridControl_dispose = function FGuiGridControl_dispose() {
    var o = this;
@@ -43859,22 +46158,22 @@ MO.FGuiTable = function FGuiTable(o){
 MO.FGuiTable_oeUpdate = function FGuiTable_oeUpdate(event){
    var o = this;
    o.__base.FGuiGridControl.oeUpdate.call(o, event);
+   var rows = o._rows;
    if(event.isBefore()){
       if(o._rowScroll < 0){
-         var rows = o._rows;
          var scrollSpeed = Math.max(parseInt(-o._rowScroll / o._rowHeight), o._rowScrollSpeed);
          o._rowScroll += scrollSpeed;
          if(o._rowScroll >= 0){
-            var limitCount = o._rowLimitCount;
-            if(limitCount != 0){
-               if(rows.count() > limitCount){
-                  var row = rows.pop();
-                  o.freeRow(row);
-               }
-            }
             o._rowScroll = 0;
          }
          o.dirty();
+      }
+      var limitCount = o._rowLimitCount;
+      if (limitCount != 0) {
+         if (rows.count() > limitCount) {
+            var row = rows.pop();
+            o.freeRow(row);
+         }
       }
    }
 }
@@ -43886,6 +46185,7 @@ MO.FGuiTable_construct = function FGuiTable_construct(){
 }
 MO.FGuiTable_insertRow = function FGuiTable_insertRow(row){
    var o = this;
+   MO.Assert.debugNotNull(row);
    o._rows.unshift(row);
    o._rowScroll -= o._rowHeight;
    o.dirty();
@@ -43896,6 +46196,494 @@ MO.FGuiTable_dispose = function FGuiTable_dispose(){
    var o = this;
    o.__base.MUiGridControl.dispose.call(o);
    o.__base.FGuiGridControl.dispose.call(o);
+}
+MO.FGuiChart = function FGuiChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl, MO.MUiChart);
+   o._painter        = MO.Class.register(o, new MO.AGetter('_painter'));
+   o._paintRectangle = MO.Class.register(o, new MO.AGetter('_paintRectangle'));
+   o._axisX          = MO.Class.register(o, new MO.AGetter('_axisX'));
+   o._axisY          = MO.Class.register(o, new MO.AGetter('_axisY'));
+   o._title          = MO.Class.register(o, new MO.AGetSet('_title'));
+   o._titleFont      = MO.Class.register(o, new MO.AGetter('_titleFont'));
+   o._titleGap       = MO.Class.register(o, new MO.AGetSet('_titleGap'), 2);
+   o._paintContext   = null;
+   o.onPaintBegin    = MO.FGuiChart_onPaintBegin;
+   o.construct       = MO.FGuiChart_construct;
+   o.selectPainter   = MO.FGuiChart_selectPainter;
+   o.dispose         = MO.FGuiChart_dispose;
+   return o;
+}
+MO.FGuiChart_onPaintBegin = function FGuiChart_onPaintBegin(event) {
+   var o = this;
+   event.dataset = o._dataset;
+   event.axisX = o._axisX;
+   event.axisY = o._axisY;
+   event.paintRectangle = o._paintRectangle;
+   event.title = o._title;
+   event.titleFont = o._titleFont;
+   event.titleGap = o._titleGap;
+   o._painter.draw(event);
+}
+MO.FGuiChart_construct = function FGuiChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+   o.__base.MUiChart.construct.call(o);
+   o._paintContext = new MO.SGuiGridPaintContext();
+   o._paintRectangle = new MO.SRectangle();
+   o._axisX = MO.Class.create(MO.FUiChartAxis);
+   o._axisY = MO.Class.create(MO.FUiChartAxis);
+   o._titleFont = new MO.SUiFont();
+}
+MO.FGuiChart_selectPainter = function FGuiChart_selectPainter(clazz){
+   var o = this;
+   var painter = o._painter = MO.Class.create(clazz);
+   painter.setChart(o);
+}
+MO.FGuiChart_dispose = function FGuiChart_dispose() {
+   var o = this;
+   o._paintContext = MO.Lang.Object.dispose(o._paintContext);
+   o.__base.MUiChart.dispose.call(o);
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiChartBarPainter = function FGuiChartBarPainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiChartPainter);
+   o.onPaintBegin  = MO.FGuiChartBarPainter_onPaintBegin;
+   o.construct     = MO.FGuiChartBarPainter_construct;
+   o.draw          = MO.FGuiChartBarPainter_draw;
+   o.drawAxis      = MO.FGuiChartBarPainter_drawAxis;
+   o.drawLine      = MO.FGuiChartBarPainter_drawLine;
+   o.drawTitle     = MO.FGuiChartBarPainter_drawTitle;
+   o.dispose       = MO.FGuiChartBarPainter_dispose;
+   return o;
+}
+MO.FGuiChartBarPainter_construct = function FGuiChartBarPainter_construct() {
+   var o = this;
+   o.__base.FGuiChartPainter.construct.call(o);
+}
+MO.FGuiChartBarPainter_draw = function FGuiChartBarPainter_draw(context){
+   var o = this;
+   o.__base.FGuiChartPainter.draw.call(o);
+   var dataset = context.dataset;
+   o.drawTitle(context);
+   o.drawAxis(context);
+   if(dataset) {
+      var serieses = dataset.serieses();
+      var seriesCount = serieses.count();
+      for(var i = 0; i < seriesCount; ++i) {
+         var series = serieses.at(i);
+         o.drawLine(context, series);
+      }
+   }
+}
+MO.FGuiChartBarPainter_drawTitle = function FGuiChartBarPainter_drawTitle(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var title = context.title;
+   if(title == null || title == "") return;
+   var titleFont = context.titleFont;
+   var titleGap = context.titleGap;
+   var titleWidth = graphic.textWidth(title);
+   graphic.setFont(titleFont);
+   graphic.drawText(title, pLeft + pWidth / 2 - titleWidth / 2, pTop - titleFont.size - titleGap, titleFont.color);
+}
+MO.FGuiChartBarPainter_drawAxis = function FGuiChartBarPainter_drawAxis(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var xDegrees = axisX.degrees();
+   var yDegrees = axisY.degrees();
+   var xCount = xDegrees.count();
+   var yCount = yDegrees.count();
+   if(xCount == 0 || yCount == 0) return;
+   var stepHeight = pHeight / (yCount - 1);
+   var stepWidth = pWidth / (xCount + 1);
+   var yGap = axisY.degreeLabelGap();
+   var xGap = axisX.degreeLabelGap();
+   var xFont = axisX.font();
+   var yFont = axisY.font();
+   var xShowFirstLine = axisX.optionShowFirstLine();
+   var yShowFirstLine = axisY.optionShowFirstLine();
+   var xLabelVertical = axisX.optionLabelVertical();
+   for( var i = 0; i < yCount; ++i) {
+      var y = pTop + pHeight - stepHeight * i;
+      var degree = yDegrees.get(i);
+      var label = degree.label();
+      var lineWidth = degree.lineWidth() == null ? axisY.lineWidth() : degree.lineWidth();
+      var lineColor = degree.lineColor() == null ? axisY.lineColor() : degree.lineColor();
+      if(axisY.optionShowAxis() || (yShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(pLeft, y);
+         graphic.lineTo(pLeft + pWidth, y);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(axisY.optionShowLabel()) {
+         graphic.setFont(yFont.toString());
+         var textWidth = graphic.textWidth(label);
+         graphic.drawText(label, pLeft - yGap - textWidth, y, yFont.color);
+      }
+   }
+   var yLabel = axisY.label();
+   var yLabelFont = axisY.labelFont();
+   if(yLabel && yLabel != "") {
+      graphic.drawText(yLabel, pLeft, pTop - yLabelFont.size / 2, yLabelFont.color);
+   }
+   for( var i = 0; i <= xCount + 1; ++i) {
+      var x = pLeft + stepWidth * i;
+      if(i == 0 || i > xCount) {
+         var lineWidth = axisX.lineWidth();
+         var lineColor = axisX.lineColor();
+      }else {
+         var degree = xDegrees.get(i-1);
+         var lineWidth = degree.lineWidth() == null ? axisX.lineWidth() : degree.lineWidth();
+         var lineColor = degree.lineColor() == null ? axisX.lineColor() : degree.lineColor();
+      }
+      if(axisX.optionShowAxis() || (xShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(x, pTop);
+         graphic.lineTo(x, pTop + pHeight);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(i > 0 && i <= xCount && axisX.optionShowLabel()) {
+         var label = degree.label();
+         var x = pLeft + stepWidth * i;
+         var textWidth = graphic.textWidth(label);
+         if(xLabelVertical) {
+            graphic.drawTextVertical(label, x - xFont.size / 2, pTop + pHeight + xGap + xFont.size, xFont);
+         }else {
+            graphic.drawText(label, x - textWidth / 2, pTop + pHeight + xGap + xFont.size, xFont.color);
+         }
+      }
+   }
+   var xLabel = axisX.label();
+   var xLabelFont = axisX.labelFont();
+   if(xLabel && xLabel != "") {
+      graphic.setFont(xLabelFont);
+      graphic.drawText(xLabel, pLeft + pWidth, pTop + pHeight, xLabelFont.color);
+   }
+}
+MO.FGuiChartBarPainter_drawLine = function FGuiChartBarPainter_drawLine(context, series) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var xDegrees = axisX.degrees();
+   var yDegrees = axisY.degrees();
+   var xCount = xDegrees.count();
+   var yCount = yDegrees.count();
+   if(xCount == 0 || yCount == 0) return;
+   var maxValue = yDegrees.get(yCount - 1).value();
+   var minValue = yDegrees.get(0).value();
+   var stepHeight = pHeight / (maxValue - minValue);
+   var stepWidth = pWidth / (xCount + 1);
+   var lineWidth = series.lineWidth();
+   var lineColor = series.lineColor();
+   var rectWidth = series.rectWidth();
+   var fillColor = series.fillColor();
+   var fillType = fillColor;
+   var fillGradient = series.fillGradient();
+   var optionShowBorder = series.optionShowBorder();
+   var values = series.values();
+   var valueCount = values.count();
+   if(fillGradient != null) {
+      var len = fillGradient.length;
+      var gradient = graphic.createLinearGradient(0, pTop, 0, pHeight);
+      for( var i = 0; i < len; ++i) {
+         var array = fillGradient[i];
+         gradient.addColorStop(array[0], array[1]);
+      }
+      fillType = gradient;
+   }
+   for(var i = 0; i < valueCount; ++i) {
+      var value = values.at(i);
+      var x = pLeft + stepWidth * (i+1) - rectWidth / 2;
+      var y = pTop + (maxValue - value) * stepHeight;
+      var h = (value - minValue) * stepHeight - 1;
+      graphic.fillRectangle(x, y, rectWidth, h, fillType);
+      if(optionShowBorder) {
+         graphic.beginPath();
+         graphic.moveTo(x, pTop + pHeight);
+         graphic.lineTo(x, y);
+         graphic.lineTo(x + rectWidth, y);
+         graphic.lineTo(x + rectWidth, pTop + pHeight);
+         graphic.drawShape(lineWidth, lineColor);
+         graphic.endPath();
+      }
+   }
+}
+MO.FGuiChartBarPainter_dispose = function FGuiChartBarPainter_dispose() {
+   var o = this;
+   o.__base.FGuiChartPainter.dispose.call(o);
+}
+MO.FGuiChartLinePainter = function FGuiChartLinePainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiChartPainter);
+   o.onPaintBegin = MO.FGuiChartLinePainter_onPaintBegin;
+   o.construct    = MO.FGuiChartLinePainter_construct;
+   o.drawAxis     = MO.FGuiChartLinePainter_drawAxis;
+   o.drawLine     = MO.FGuiChartLinePainter_drawLine;
+   o.drawTitle    = MO.FGuiChartLinePainter_drawTitle;
+   o.draw         = MO.FGuiChartLinePainter_draw;
+   o.dispose      = MO.FGuiChartLinePainter_dispose;
+   return o;
+}
+MO.FGuiChartLinePainter_construct = function FGuiChartLinePainter_construct() {
+   var o = this;
+   o.__base.FGuiChartPainter.construct.call(o);
+}
+MO.FGuiChartLinePainter_drawTitle = function FGuiChartLinePainter_drawTitle(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var title = context.title;
+   if(title == null || title == "") return;
+   var titleFont = context.titleFont;
+   var titleGap = context.titleGap;
+   var titleWidth = graphic.textWidth(title);
+   graphic.setFont(titleFont);
+   graphic.drawText(title, pLeft + pWidth / 2 - titleWidth / 2, pTop - titleFont.size - titleGap, titleFont.color);
+}
+MO.FGuiChartLinePainter_drawAxis = function FGuiChartLinePainter_drawAxis(context){
+   var o = this;
+   var graphic = context.graphic;
+   var dataset = context.dataset;
+   var rectangle = context.rectangle;
+   var paintRectangle = context.paintRectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var xAxis = context.axisX;
+   var yAxis = context.axisY;
+   var xDegrees = xAxis.degrees();
+   var yDegrees = yAxis.degrees();
+   var yCorCount = yAxis.degrees().count();
+   var xCorCount = xAxis.degrees().count();
+   if(yCorCount == 0 || xCorCount == 0) return;
+   var stepHeight = pHeight / (yCorCount - 1);
+   var stepWidth = pWidth / (xCorCount - 1);
+   var yGap = yAxis.degreeLabelGap();
+   var xGap = xAxis.degreeLabelGap();
+   var yFont = yAxis.font();
+   var xFont = xAxis.font();
+   var xShowFirstLine = xAxis.optionShowFirstLine();
+   var yShowFirstLine = yAxis.optionShowFirstLine();
+   var xLabelVertical = xAxis.optionLabelVertical();
+   for( var i = 0; i < yCorCount; ++i) {
+      var y = pTop + pHeight - stepHeight * i;
+      var degree = yDegrees.get(i);
+      var label = degree.label();
+      var lineWidth = degree.lineWidth() == null ? yAxis.lineWidth() : degree.lineWidth();
+      var lineColor = degree.lineColor() == null ? yAxis.lineColor() : degree.lineColor();
+      if(yAxis.optionShowAxis() || (yShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(pLeft, y);
+         graphic.lineTo(pLeft + pWidth, y);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(yAxis.optionShowLabel()) {
+         graphic.setFont(yFont.toString());
+         var textWidth = graphic.textWidth(label);
+         graphic.drawText(label, pLeft - yGap - textWidth, y, yFont.color);
+      }
+   }
+   var yLabel = yAxis.label();
+   var yLabelFont = yAxis.labelFont();
+   if(yLabel && yLabel != "") {
+      graphic.drawText(yLabel, pLeft, pTop - yLabelFont.size / 2, yLabelFont.color);
+   }
+   for( var i = 0; i < xCorCount; ++i) {
+      var x = pLeft + stepWidth * i;
+      var degree = xDegrees.get(i);
+      var label = degree.label();
+      var lineWidth = degree.lineWidth() == null ? xAxis.lineWidth() : degree.lineWidth();
+      var lineColor = degree.lineColor() == null ? xAxis.lineColor() : degree.lineColor();
+      if(xAxis.optionShowAxis() || (xShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(x, pTop);
+         graphic.lineTo(x, pTop + pHeight);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(xAxis.optionShowLabel()) {
+         var x = pLeft + stepWidth * i;
+         var textWidth = graphic.textWidth(label);
+         if(xLabelVertical) {
+            graphic.drawTextVertical(label, x - xFont.size / 2, pTop + pHeight + xGap + xFont.size, xFont);
+         }else {
+            graphic.drawText(label, x - textWidth / 2, pTop + pHeight + xGap + xFont.size, xFont.color);
+         }
+      }
+   }
+   var xLabel = xAxis.label();
+   var xLabelFont = xAxis.labelFont();
+   if(xLabel && xLabel != "") {
+      graphic.drawText(xLabel, pLeft + pWidth, pTop + pHeight, xLabelFont.color);
+   }
+}
+MO.FGuiChartLinePainter_drawLine = function FGuiChartLinePainter_drawLine(context, series){
+   var o = this;
+   var graphic = context.graphic;
+   var dataset = context.dataset;
+   var rectangle = context.rectangle;
+   var paintRectangle = context.paintRectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var yAxis = context.axisY;
+   var xAxis = context.axisX;
+   var yDegrees = yAxis.degrees();
+   var xDegrees = xAxis.degrees();
+   var yCount = yDegrees.count();
+   var xCount = xDegrees.count();
+   if(xCount == 0 || yCount == 0) return;
+   var maxValue = yDegrees.get(yCount - 1).value();
+   var minValue = yDegrees.get(0).value();
+   var lineColor = series.lineColor();
+   var lineWidth = series.lineWidth();
+   graphic.beginPath();
+   graphic.setLineJoin("round");
+   var values = series.values();
+   var optionShowDot = series.optionShowDot();
+   var dotSize = series.dotSize();
+   var dotColor = series.dotColor();
+   var count = values.count();
+   var stepWidth = pWidth / (xCount - 1);
+   var stepHeight = pHeight / (maxValue - minValue);
+   for(var n = 0; n < count; ++n){
+      var value = values.at(n);
+      var x = pLeft + stepWidth * n;
+      var y = pTop + (maxValue - value) * stepHeight;
+      if(n == 0){
+         graphic.moveTo(x, y);
+      }else{
+         graphic.lineTo(x, y);
+      }
+   }
+   graphic.drawShape(lineWidth, lineColor);
+   if(optionShowDot) {
+      for( var n = 0; n < count; ++n) {
+         var value = values.at(n);
+         var x = pLeft + stepWidth * n;
+         var y = pTop + (maxValue - value) * stepHeight;
+         graphic.drawCircle(x, y, dotSize, 1, dotColor, dotColor);
+      }
+   }
+}
+MO.FGuiChartLinePainter_draw = function FGuiChartLinePainter_draw(context){
+   var o = this;
+   o.__base.FGuiChartPainter.draw.call(o);
+   var dataset = context.dataset;
+   o.drawTitle(context);
+   o.drawAxis(context);
+   if(dataset){
+      var serieses = dataset.serieses();
+      var seriesCount = serieses.count();
+      for(var i = 0; i < seriesCount; i++){
+         var series = serieses.at(i);
+         o.drawLine(context, series);
+      }
+   }
+}
+MO.FGuiChartLinePainter_dispose = function FGuiChartLinePainter_dispose() {
+   var o = this;
+   o.__base.FGuiChartPainter.dispose.call(o);
+}
+MO.FGuiChartPainter = function FGuiChartPainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._chart    = MO.Class.register(o, new MO.AGetSet('_chart'));
+   o.construct = MO.FGuiChartPainter_construct;
+   o.draw      = MO.FGuiChartPainter_draw;
+   o.dispose   = MO.FGuiChartPainter_dispose;
+   return o;
+}
+MO.FGuiChartPainter_construct = function FGuiChartPainter_construct(){
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiChartPainter_draw = function FGuiChartPainter_draw(context){
+   var o = this;
+}
+MO.FGuiChartPainter_dispose = function FGuiChartPainter_dispose(){
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiChartPiePainter = function FGuiChartPiePainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiChartPainter);
+   o._paintContext = null;
+   o.onPaintBegin  = MO.FGuiChartPiePainter_onPaintBegin;
+   o.construct     = MO.FGuiChartPiePainter_construct;
+   o.draw          = MO.FGuiChartPiePainter_draw;
+   o.dispose       = MO.FGuiChartPiePainter_dispose;
+   return o;
+}
+MO.FGuiChartPiePainter_construct = function FGuiChartPiePainter_construct() {
+   var o = this;
+   o.__base.FGuiChartPainter.construct.call(o);
+   o._paintContext = new MO.SGuiGridPaintContext();
+}
+MO.FGuiChartPiePainter_draw = function FGuiChartPiePainter_draw(context){
+   var o = this;
+   o.__base.FGuiChartPainter.draw.call(o);
+}
+MO.FGuiChartPiePainter_dispose = function FGuiChartPiePainter_dispose() {
+   var o = this;
+   o._paintContext = MO.Lang.Object.dispose(o._paintContext);
+   o.__base.FGuiChartPainter.dispose.call(o);
 }
 MO.FGuiBar = function FGuiBar(o){
    o = MO.Class.inherits(this, o, MO.FGuiFrame);
@@ -44049,6 +46837,356 @@ MO.FGuiChartTotal_onPaintBegin = function FGuiChartTotal_onPaintBegin(event) {
    }
 }
 MO.FGuiChartTotal_dispose = function FGuiChartTotal_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiFiveForceModul = function FGuiFiveForceModul(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o._pointCount              = MO.Class.register(o, new MO.AGetSet('_pointCount'),5);
+   o._ratationDegree          = MO.Class.register(o, new MO.AGetSet('_ratationDegree'));
+   o._angleLineColor          = MO.Class.register(o, new MO.AGetSet('_angleLineColor'),'#ffffff');
+   o._angleLineWidth          = MO.Class.register(o, new MO.AGetSet('_angleLineWidth'),3);
+   o._radius                  = MO.Class.register(o, new MO.AGetSet('_radius'),30);
+   o._pointZero               = MO.Class.register(o, new MO.AGetSet('_pointZero'));
+   o.construct                = MO.FGuiFiveForceModul_construct;
+   o.setup                    = MO.FGuiFiveForceModul_setup;
+   o.onImageLoad              = MO.FGuiFiveForceModul_onImageLoad;
+   o.onPaintBegin             = MO.FGuiFiveForceModul_onPaintBegin;
+   o.dispose                  = MO.FGuiFiveForceModul_dispose;
+   o.setData                  = MO.FGuiFiveForceModul_setData;
+   o._fiveforce               = null;
+   return o;
+}
+MO.FGuiFiveForceModul_construct = function FGuiFiveForceModul_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+   o._ratationDegree = (2*Math.PI)/o._pointCount;
+   o._pointZero = new MO.SPoint2(0,0);
+}
+MO.FGuiFiveForceModul_setup = function FGuiFiveForceModul_setup() {
+   var o = this;
+   o._fiveforce = o.loadResourceImage('{eai.resource}/cockpit/achievement/optionCilck1.png');
+   o._fiveforce.addLoadListener(o,o.onImageLoad);
+}
+MO.FGuiFiveForceModul_onImageLoad = function FGuiFiveForceModul_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiFiveForceModul_onPaintBegin = function FGuiFiveForceModul_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   graphic.drawRectangle(left, top, width, height, '#ffffff', 3);
+   var ctx = graphic._handle;
+   var pointCount = o._pointCount;
+   var graphHeight = height/pointCount;
+   var ratationDegree = o._ratationDegree;
+   var graphicLeft = left;
+   var graphicTop = top;
+   var radius = o._radius;
+   var ss= o._fiveforce;
+   graphic.drawImage(o._fiveforce, 0, 0, width, height);
+   var sinr = radius*Math.sin(ratationDegree);
+   var cosr = radius*Math.cos(ratationDegree);
+   var point1x = 0;
+   var point1y = radius;
+}
+MO.FGuiFiveForceModul_setData = function FGuiFiveForceModul_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiFiveForceModul_dispose = function FGuiFiveForceModul_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiLineChart = function FGuiLineChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o.construct                = MO.FGuiLineChart_construct;
+   o.setup                    = MO.FGuiLineChart_setup;
+   o.onImageLoad              = MO.FGuiLineChart_onImageLoad;
+   o.onPaintBegin             = MO.FGuiLineChart_onPaintBegin;
+   o.dispose                  = MO.FGuiLineChart_dispose;
+   o.setData                  = MO.FGuiLineChart_setData;
+   o.drawLine                 = MO.FGuiLineChart_drawLine;
+   return o;
+}
+MO.FGuiLineChart_drawLine = function FGuiLineChart_drawLine(graphic, rectangle, dataheigt, maxValue, code, color, lineWidth){
+   var o = this;
+   var handle = graphic._handle;
+   handle.beginPath();
+   var units = o._data.units();
+   var count = units.count();
+   var left = rectangle.left + 140;
+   var top = rectangle.top;
+   var width = rectangle.width - 180;
+   var height = dataheigt ;
+   var stepWidth = width / count;
+   var stepHeight = dataheigt / maxValue;
+   for(var n = 0; n < count; n++){
+      var unit = units.at(n);
+      var x = left + stepWidth * n;
+      var y = top + height - stepHeight * unit[code]+35;
+      if(n == 0){
+         handle.moveTo(x, y);
+      }else{
+         handle.lineTo(x, y);
+      }
+   }
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
+MO.FGuiLineChart_construct = function FGuiLineChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiLineChart_setup = function FGuiLineChart_setup() {
+   var o = this;
+}
+MO.FGuiLineChart_onImageLoad = function FGuiLineChart_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiLineChart_onPaintBegin = function FGuiLineChart_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   if(!data){
+      return;
+   }
+   var units = data.units();
+   var count = units._count;
+   var maxValue =0;
+   var minValue =0;
+   for(var i=0;i<count;i++){
+      var unit = units.at(i);
+      maxValue = Math.max(unit.value(), maxValue);
+   }
+   o.drawLine(graphic, rectangle, dataheigt, maxValue, '_value', '#ffffff', 2);
+}
+MO.FGuiLineChart_setData = function FGuiLineChart_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiLineChart_dispose = function FGuiLineChart_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiLineChartData = function FGuiLineChartData(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._labels = MO.Class.register(o, new MO.AGetSet('_labels'));
+   o._datas = MO.Class.register(o, new MO.AGetSet('_datas'));
+   return o;
+}
+MO.FGuiLineChartDataSet = function FGuiLineChartDataSet(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._strokeColor = MO.Class.register(o, new MO.AGetSet('_strokeColor'));
+   o._pointColor = MO.Class.register(o, new MO.AGetSet('_pointColor'));
+   o._pointStrokeColor = MO.Class.register(o, new MO.AGetSet('_pointStrokeColor'));
+   o._data = MO.Class.register(o, new MO.AGetSet('_data'));
+   return o;
+}
+MO.FGuiSixLineChart = function FGuiSixLineChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o.construct                = MO.FGuiSixLineChart_construct;
+   o.setup                    = MO.FGuiSixLineChart_setup;
+   o.onImageLoad              = MO.FGuiSixLineChart_onImageLoad;
+   o.onPaintBegin             = MO.FGuiSixLineChart_onPaintBegin;
+   o.dispose                  = MO.FGuiSixLineChart_dispose;
+   o.setData                  = MO.FGuiSixLineChart_setData;
+   o.drawLine                 = MO.FGuiSixLineChart_drawLine;
+   return o;
+}
+MO.FGuiSixLineChart_drawLine = function FGuiSixLineChart_drawLine(graphic, rectangle, dataheigt, minValue,maxValue, code, color, lineWidth){
+   var o = this;
+   var handle = graphic._handle;
+   handle.beginPath();
+   var units = o._data.days();
+   var count = units.count();
+   var left = rectangle.left + 140;
+   var top = rectangle.top;
+   var width = rectangle.width - 180;
+   var height = dataheigt ;
+   var stepWidth = width / count;
+   var stepHeight = dataheigt / maxValue;
+   for(var n = 0; n < count; n++){
+      var unit = units.at(n);
+      var x = left + stepWidth * n;
+      var y = top + height - stepHeight * unit[code]+35;
+      if(n == 0){
+         handle.moveTo(x, y);
+      }else{
+         handle.lineTo(x, y);
+      }
+   }
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
+MO.FGuiSixLineChart_construct = function FGuiSixLineChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiSixLineChart_setup = function FGuiSixLineChart_setup() {
+   var o = this;
+}
+MO.FGuiSixLineChart_onImageLoad = function FGuiSixLineChart_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiSixLineChart_onPaintBegin = function FGuiSixLineChart_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   graphic.drawRectangle(left, top, width, height, '#ffffff', 3);
+   if(!data){
+      return;
+   }
+   var units = data.days();
+   var count = units._count;
+   var maxValue =0;
+   var minValue =0;
+   var maxValueInvest =0;
+   var minValueInvest =0;
+   for(var i=0;i<count;i++){
+      var day = units.at(i);
+      maxValueInvest = Math.max(day.priorInvestmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.priorRedemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.priorNetinvestmentAmount(), minValueInvest);
+      maxValueInvest = Math.max(day.investmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.redemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.netinvestmentAmount(), minValueInvest);
+   }
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorInvestmentAmount', '#4b5e6f', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorRedemptionAmount', '#80a861', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorNetinvestmentAmount', '#947b91', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_investmentAmount', '#51c0db', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_redemptionAmount', '#68f34e', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_netinvestmentAmount', '#9b1933', 3);
+}
+MO.FGuiSixLineChart_setData = function FGuiSixLineChart_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiSixLineChart_dispose = function FGuiSixLineChart_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiTableRankChart = function FGuiTableRankChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o.construct                = MO.FGuiTableRankChart_construct;
+   o.setup                    = MO.FGuiTableRankChart_setup;
+   o.onImageLoad              = MO.FGuiTableRankChart_onImageLoad;
+   o.onPaintBegin             = MO.FGuiTableRankChart_onPaintBegin;
+   o.dispose                  = MO.FGuiTableRankChart_dispose;
+   o._background              = null;
+   o.setData                  = MO.FGuiTableRankChart_setData;
+   o.drawLine                 = MO.FGuiTableRankChart_drawLine;
+   return o;
+}
+MO.FGuiTableRankChart_drawLine = function FGuiTableRankChart_drawLine(graphic, rectangle, dataheigt, minValue,maxValue, code, color, lineWidth){
+   var o = this;
+   var handle = graphic._handle;
+   handle.beginPath();
+   var units = o._data.days();
+   var count = units.count();
+   var left = rectangle.left + 140;
+   var top = rectangle.top;
+   var width = rectangle.width - 180;
+   var height = dataheigt ;
+   var stepWidth = width / count;
+   var stepHeight = dataheigt / maxValue;
+   for(var n = 0; n < count; n++){
+      var unit = units.at(n);
+      var x = left + stepWidth * n;
+      var y = top + height - stepHeight * unit[code]+35;
+      if(n == 0){
+         handle.moveTo(x, y);
+      }else{
+         handle.lineTo(x, y);
+      }
+   }
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
+MO.FGuiTableRankChart_construct = function FGuiTableRankChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiTableRankChart_setup = function FGuiTableRankChart_setup() {
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole);
+   var image = o._background = imageConsole.load('{eai.resource}/cockpit/achievement/NextLogo.png');
+   image.addLoadListener(o, o.onImageLoad);
+}
+MO.FGuiTableRankChart_onImageLoad = function FGuiTableRankChart_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiTableRankChart_onPaintBegin = function FGuiTableRankChart_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   graphic.drawRectangle(left, top, width, height, '#ffffff', 3);
+   if(!data){
+      return;
+   }
+   var units = data.days();
+   var count = units._count;
+   var maxValue =0;
+   var minValue =0;
+   var maxValueInvest =0;
+   var minValueInvest =0;
+   for(var i=0;i<count;i++){
+      var day = units.at(i);
+      maxValueInvest = Math.max(day.priorInvestmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.priorRedemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.priorNetinvestmentAmount(), minValueInvest);
+      maxValueInvest = Math.max(day.investmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.redemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.netinvestmentAmount(), minValueInvest);
+   }
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorInvestmentAmount', '#4b5e6f', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorRedemptionAmount', '#80a861', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorNetinvestmentAmount', '#947b91', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_investmentAmount', '#51c0db', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_redemptionAmount', '#68f34e', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_netinvestmentAmount', '#9b1933', 3);
+}
+MO.FGuiTableRankChart_setData = function FGuiTableRankChart_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiTableRankChart_dispose = function FGuiTableRankChart_dispose() {
    var o = this;
    o.__base.FGuiControl.dispose.call(o);
 }
@@ -44439,6 +47577,7 @@ MO.MDuiEditDescriptor_onDataEditEnd = function MDuiEditDescriptor_onDataEditEnd(
    var o = this;
    var vt = s._invalidText = o.validText(s.text());
    if(vt){
+      MO.Logger.debug(this, 'Edit valid failed ({0})', vt);
    }else{
       s.commitValue();
    }
@@ -46707,6 +49846,7 @@ MO.FDuiEditorConsole_focus = function FDuiEditorConsole_focus(c, n, l){
       e.build(c._hPanel);
       o._editors.set(l, e);
    }
+   MO.Logger.debug(o, 'Focus editor {1} (editable={2}, name={3})', MO.Class.dump(e), MO.Class.dump(c), l);
    e.reset();
    if(MO.Class.isClass(e, MO.FDuiDropEditor)){
       e.linkControl(c);
@@ -46717,6 +49857,7 @@ MO.FDuiEditorConsole_focus = function FDuiEditorConsole_focus(c, n, l){
 MO.FDuiEditorConsole_blur = function FDuiEditorConsole_blur(editor){
    var o = this;
    if(o._focusEditor){
+      MO.Logger.debug(o, 'Blur editor {1}', MO.Class.dump(editor));
       editor = MO.Lang.Object.nvl(editor, o._focusEditor);
       if(editor){
          editor.onEditEnd();
@@ -46900,12 +50041,14 @@ MO.FDuiFocusConsole_focus = function FDuiFocusConsole_focus(c, e){
    var bc = o._blurControl;
    if(bc != f){
       if(o._blurAble && f && f.testBlur(c)){
+         MO.Logger.debug(o, 'Blur focus control. (name={1}, instance={2})', f.name, MO.Class.dump(f));
          o._blurControl = f;
          f.doBlur(e);
          o.lsnsBlur.process(f);
       }
    }
    if(o._focusAble){
+      MO.Logger.debug(o, 'Focus control. (name={1}, instance={2})', c.name, MO.Class.dump(c));
       c.doFocus(e);
       o._focusControl = o._activeControl = c;
       o.lsnsFocus.process(c);
@@ -46919,10 +50062,12 @@ MO.FDuiFocusConsole_blur = function FDuiFocusConsole_blur(c, e){
       return;
    }
    if(bc != c && MO.Class.isClass(c, MO.MDuiFocus)){
+      MO.Logger.debug(o, 'Blur control. (name={1}, instance={2})', c.name, MO.Class.dump(c));
       o._blurControl = c;
       c.doBlur(e);
    }
    if(fc){
+      MO.Logger.debug(o, 'Blur focus control. (name={1}, instance={2})', fc.name, MO.Class.dump(fc));
       fc.doBlur(e);
       o._focusControl = null;
    }
@@ -46946,12 +50091,14 @@ MO.FDuiFocusConsole_focusClass = function FDuiFocusConsole_focusClass(c, p){
    var n = MO.Class.name(c);
    if(o._focusClasses[n] != p){
       o._focusClasses[n] = p;
+      MO.Logger.debug(o, 'Focus class. (name={1}, class={2})', n, MO.Class.dump(p));
       o.lsnsFocusClass.process(p, c);
    }
 }
 MO.FDuiFocusConsole_focusHtml = function FDuiFocusConsole_focusHtml(p){
    var o = this;
    var c = MO.Window.Html.searchLinker(p, MO.FDuiControl);
+   MO.Logger.debug(o, 'Focus html control. (control={1}, element={2})', MO.Class.dump(c), p.tagName);
    if(c){
       if(o._focusControl != c){
          o.blur(c, p);
@@ -47171,6 +50318,7 @@ MO.FDuiFrameEventConsole_construct = function FDuiFrameEventConsole_construct(){
    t.setInterval(o._interval);
    t.addProcessListener(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(t);
+   MO.Logger.debug(o, 'Add event thread. (thread={1})', MO.Class.dump(t));
 }
 MO.FDuiFrameEventConsole_register = function FDuiFrameEventConsole_register(po, pc){
    this._events.push(new MO.TEvent(po, null, pc));
@@ -48634,6 +51782,7 @@ MO.FDuiButton_doClick = function FDuiButton_doClick(){
    var o = this;
    if(!o._disabled){
       MO.Console.find(MO.FDuiFocusConsole).blur();
+      MO.Logger.debug(o, 'Tool button click. (label={1})', o._label);
       var event = new MO.SClickEvent(o);
       o.processClickListener(event);
       event.dispose();
@@ -49518,10 +52667,12 @@ MO.FDuiCheckPicker_onBuildEdit = function FDuiCheckPicker_onBuildEdit(b){
 }
 MO.FDuiCheckPicker_onEditEnd = function FDuiCheckPicker_onEditEnd(editor){
    var o = this;
+   MO.Logger.debug(o, 'Begin (editor={1}:{2} value={3})', editor, editor?editor.value():'', o.dataValue);
    if(editor){
       o.set(editor.values);
    }
    o.onDataEditEnd(o);
+   MO.Logger.debug(o, 'End (editor={1} value={2})', editor, o.dataValue);
 }
 MO.FDuiCheckPicker_loadConfig = function FDuiCheckPicker_loadConfig(c){
    var o = this;
@@ -51614,6 +54765,7 @@ MO.FDuiEditor_onEditBegin = function FDuiEditor_onEditBegin(){
 }
 MO.FDuiEditor_onEditChanged = function FDuiEditor_onEditChanged(){
    var o = this;
+   MO.Logger.debug(o, 'Edit changed');
    var g = o.storage = MO.Lang.Object.nvlObj(o.storage);
    if(g.value == o.value()){
       if(o.changed){
@@ -51628,6 +54780,7 @@ MO.FDuiEditor_onEditChanged = function FDuiEditor_onEditChanged(){
 MO.FDuiEditor_onEditEnd = function FDuiEditor_onEditEnd(){
    var o = this;
    var s = o._source;
+   MO.Logger.debug(o, 'Editor end. (control={1})', MO.Class.dump(s));
    o.hide();
    if(o.lsnEditEnd){
       o.lsnEditEnd.process(o);
@@ -51676,6 +54829,7 @@ MO.FDuiEditor_linkControl = function FDuiEditor_linkControl(c){
 MO.FDuiEditor_editBegin = function FDuiEditor_editBegin(){
    var o = this;
    var s = o._source;
+   MO.Logger.debug(o, 'Editor begin. (control={1})', MO.Class.dump(s));
    if(o.lsnEditCancel){
       o.lsnEditCancel.process(o);
    }
@@ -51685,6 +54839,7 @@ MO.FDuiEditor_editBegin = function FDuiEditor_editBegin(){
 MO.FDuiEditor_editCancel = function FDuiEditor_editCancel(){
    var o = this;
    var s = o._source;
+   MO.Logger.debug(o, 'Editor cancel. (control={1})', MO.Class.dump(s));
    o.hide();
    if(o.lsnEditCancel){
       o.lsnEditCancel.process(o);
@@ -56295,6 +59450,7 @@ MO.FDuiColumn_onEditBegin = function FDuiColumn_onEditBegin(editor) {
    o.table.editRow = row;
    o.table.editColumn = o;
    o.table.select(row, true);
+   MO.Logger.debug(o, 'Edit begin (column={1} row={2} editor={3})', o.name, RClass.dump(row), RClass.dump(editor));
 }
 MO.FDuiColumn_onEditEnd = function FDuiColumn_onEditEnd(e) {
    var o = this;
@@ -56304,6 +59460,7 @@ MO.FDuiColumn_onEditEnd = function FDuiColumn_onEditEnd(e) {
    o.setText(row, text);
    o.table.setDataStatus(row, row.isChanged() ? EDataStatus.Update : EDataStatus.Unknown)
    o.editor = null;
+   MO.Logger.debug(o, '{1}={2}\n{3}\n{4}', RClass.dump(editor), o.formatValue(text), o.dump(), row.dump());
 }
 MO.FDuiColumn_onEditChanged = function FDuiColumn_onEditChanged(cell) {
    cell.row.refresh();
@@ -57192,6 +60349,7 @@ MO.FDuiGridControl_pushRow = function FDuiGridControl_pushRow(row){
 }
 MO.FDuiGridControl_removeRow = function FDuiGridControl_removeRow(row){
    var o = this;
+   MO.Assert.debugNotNull(row);
    o.dropRow(row);
    o._rows.remove(row);
 }
@@ -58885,6 +62043,7 @@ MO.FDuiMenuButton_click = function FDuiMenuButton_click(){
    var o = this;
    if(!o._disabled){
       MO.Console.find(MO.FDuiFocusConsole).blur();
+      MO.Logger.debug(o, 'Menu button click. (label={1})', o._label);
       var event = new MO.SClickEvent(o);
       o.processClickListener(event);
       event.dispose();
@@ -59277,6 +62436,7 @@ MO.FDuiSliderButton_click = function FDuiSliderButton_click(){
    var o = this;
    if(!o._disabled){
       MO.Console.find(MO.FDuiFocusConsole).blur();
+      MO.Logger.debug(o, 'Menu button click. (label={1})', o._label);
       var event = new MO.SClickEvent(o);
       o.processClickListener(event);
       event.dispose();
@@ -59644,6 +62804,7 @@ MO.FDuiToolButton_doClick = function FDuiToolButton_doClick(){
    var o = this;
    if(!o._disabled){
       MO.Console.find(MO.FDuiFocusConsole).blur();
+      MO.Logger.debug(o, 'Tool button click. (label={1})', o._label);
       var event = new MO.SClickEvent(o);
       o.processClickListener(event);
       event.dispose();
@@ -61813,12 +64974,15 @@ MO.FDuiTreeView_push = function FDuiTreeView_push(control){
    control._tree = o;
    if(MO.Class.isClass(control, MO.FDuiTreeColumn)){
       var columnName = control.name();
+      MO.Assert.debugNotEmpty(columnName);
       o._nodeColumns.set(columnName, control);
    }else if(MO.Class.isClass(control, MO.FDuiTreeLevel)){
       var levelId = control.id();
+      MO.Assert.debugNotEmpty(levelId);
       o._nodeLevels.set(levelId, control);
    }else if(MO.Class.isClass(control, MO.FDuiTreeNodeType)){
       var typeCode = control.code();
+      MO.Assert.debugNotEmpty(typeCode);
       o._nodeTypes.set(typeCode, control);
    }else if(MO.Class.isClass(control, MO.FDuiTreeNode)){
       o._nodes.push(control);
@@ -63122,6 +66286,7 @@ with(MO){
    }
    MO.FUiDataAction_invoke = function FUiDataAction_invoke(p){
       var o = this;
+      MO.Assert.debugTrue(MO.Class.isClass(p, MUiDataContainer));
       var svc = RService.parse(o._service);
       if(!svc){
          throw new TError(o, 'Unknown service.');
@@ -63132,6 +66297,7 @@ with(MO){
       root.set('action', svc.action);
       RConsole.find(FEnvironmentConsole).build(root);
       p.dsSaveValue(root.create('Data'));
+      MO.Logger.debug(this, xdocument.dump());
       o._loading = true;
       o._dataContainer = p;
       var connection = RConsole.find(FXmlConsole).sendAsync(svc.url, xdocument);
@@ -64990,6 +68156,7 @@ with(MO){
       o.table.editRow = row;
       o.table.editColumn = o;
       o.table.select(row, true);
+      MO.Logger.debug(o, 'Edit begin (column={1} row={2} editor={3})', o.name, RClass.dump(row), RClass.dump(editor));
    }
    MO.FUiDataColumn_onEditEnd = function FUiDataColumn_onEditEnd(e) {
       var o = this;
@@ -64999,6 +68166,7 @@ with(MO){
       o.setText(row, text);
       o.table.setDataStatus(row, row.isChanged() ? EDataStatus.Update : EDataStatus.Unknown)
       o.editor = null;
+      MO.Logger.debug(o, '{1}={2}\n{3}\n{4}', RClass.dump(editor), o.formatValue(text), o.dump(), row.dump());
    }
    MO.FUiDataColumn_onEditChanged = function FUiDataColumn_onEditChanged(cell) {
       cell.row.refresh();
@@ -65253,6 +68421,7 @@ with(MO){
    }
    MO.FUiDataToolButton_click = function FUiDataToolButton_click(){
       var o = this;
+      MO.Logger.debug(o, 'Mouse button click. (label={1})' + o._label);
          o.processClickListener(o);
    }
    MO.FUiDataToolButton_onShowHint = function FUiDataToolButton_onShowHint(a){
@@ -65347,6 +68516,7 @@ MO.FDuiDataTreeView_loadDefine = function FDuiDataTreeView_loadDefine(code){
 }
 MO.FDuiDataTreeView_loadService = function FDuiDataTreeView_loadService(serviceCode, attributes){
    var o = this;
+   MO.Assert.debugNotEmpty(serviceCode);
    o._serviceCode = serviceCode;
    o.clear();
    var service = MO.RDuiService.parse(serviceCode);
@@ -80731,7 +83901,7 @@ MO.FEditorDsFrameSpaceContent_loadFrame = function FEditorDsFrameSpaceContent_lo
 }
 MO.FEditorDsFrameSpaceContent_dispose = function FEditorDsFrameSpaceContent_dispose(){
    var o = this;
-   o._rotation = MO.Lang.Obejct.dispose(o._rotation)
+   o._rotation = MO.Lang.Object.dispose(o._rotation)
    o.__base.FDuiControl.dispose.call(o);
 }
 MO.FEditorDsFrameSpaceToolBar = function FEditorDsFrameSpaceToolBar(o){
@@ -80935,6 +84105,7 @@ MO.FManageCatalogContent_onButtonClick = function FManageCatalogContent_onButton
    var o = this;
    var button = event.sender;
    var frameName = button.attributeGet('frame_name');
+   MO.Assert.debugNotEmpty(frameName);
    var frame = o._frameSet.selectSpaceFrame(frameName);
    frame.psMode(MO.EUiMode.Update);
    frame.psRefresh();
@@ -81283,6 +84454,7 @@ MO.FManageDataTable_onInsertClick = function FManageDataTable_onInsertClick(even
    var frame = o._frameSet.activeFrame();
    if(MO.Class.isClass(frame, MO.FDuiTableFrame)){
       var unitFrameName = frame.unitFrameName();
+      MO.Assert.debugNotEmpty(unitFrameName);
       var unitFrame = o._frameSet.selectSpaceFrame(unitFrameName);
       unitFrame.doPrepare();
    }
@@ -81398,6 +84570,7 @@ MO.FManageDataTable_doFetch = function FManageDataTable_doFetch(){
 MO.FManageDataTable_doDetail = function FManageDataTable_doDetail(row){
    var o = this;
    var unitFrameName = o._unitFrameName;
+   MO.Assert.debugNotEmpty(unitFrameName);
    var unitFrame = o._frameSet.selectSpaceFrame(unitFrameName);
    unitFrame.doDetail(row);
    var historyBar = o._frameSet._historyBar;
@@ -81728,6 +84901,7 @@ MO.FManageSpaceToolBar_onInsertClick = function FManageSpaceToolBar_onInsertClic
    var frame = o._frameSet.activeFrame();
    if(MO.Class.isClass(frame, MO.FDuiTableFrame)){
       var unitFrameName = frame.unitFrameName();
+      MO.Assert.debugNotEmpty(unitFrameName);
       var unitFrame = o._frameSet.selectSpaceFrame(unitFrameName);
       unitFrame.doPrepare();
    }

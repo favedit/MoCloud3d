@@ -655,6 +655,7 @@ MO.TMap_get = function TMap_get(name, defaultValue){
 }
 MO.TMap_set = function TMap_set(name, value){
    var o = this;
+   MO.Assert.debugNotNull(name);
    var nameString = name.toString();
    var code = nameString.toLowerCase();
    var index = o._table[code];
@@ -1341,11 +1342,13 @@ MO.RMemory.prototype.entryAlloc = function RMemory_entryAlloc(){
 }
 MO.RMemory.prototype.entryFree = function RMemory_entryFree(entry){
    var o = this;
+   MO.Assert.debugNotNull(entry);
    entry.next = o._entryUnused;
    o._entryUnused = entry;
 }
 MO.RMemory.prototype.alloc = function RMemory_alloc(clazz){
    var o = this;
+   MO.Assert.debugNotNull(clazz);
    var className = MO.Runtime.className(clazz);
    var pools = o._pools;
    var pool = pools[className];
@@ -1358,7 +1361,9 @@ MO.RMemory.prototype.alloc = function RMemory_alloc(clazz){
    return value;
 }
 MO.RMemory.prototype.free = function RMemory_free(value){
+   MO.Assert.debugNotNull(value);
    var pool = value.__pool;
+   MO.Assert.debugNotNull(pool);
    pool.free(value);
    if(value.free){
       value.free();
@@ -1416,6 +1421,7 @@ MO.TMemoryPool_alloc = function TMemoryPool_alloc(){
 }
 MO.TMemoryPool_free = function TMemoryPool_free(value){
    var o = this;
+   MO.Assert.debugNotNull(value);
    var entry = MO.Memory.entryAlloc();
    entry.value = value;
    entry.next = o._unused;
@@ -1799,11 +1805,12 @@ MO.EDataType = new function EDataType(){
    o.Float32 = o.Float = 10;
    o.Float64 = o.Double = 11;
    o.String = 12;
-   o.Struct = 13;
-   o.Object = 14;
-   o.Array = 15;
-   o.Objects = 16;
-   o.Dictionary = 17;
+   o.Array = 13;
+   o.Struct = 14;
+   o.Structs = 15;
+   o.Object = 16;
+   o.Objects = 17;
+   o.Dictionary = 18;
    return o;
 }
 MO.EEndian = new function EEndian(){
@@ -1872,7 +1879,22 @@ MO.TClass_register = function TClass_register(annotation){
       o._annotations[annotationCd] = annotations;
    }
    if(!annotation._duplicate){
-      if(annotations[code]){
+      var duplicate = false;
+      if(ordered){
+         var acount = annotations.count();
+         for(var i = 0; i < acount; i++){
+            var afind = annotations.at(i);
+            if(afind.code() == code){
+               duplicate = true;
+               break;
+            }
+         }
+      }else{
+         if(annotations[code]){
+            duplicate = true;
+         }
+      }
+      if(duplicate){
          throw new MO.TError(o, "Duplicate annotation. (class={1}, annotation={2}, name={3}, code={4}, value={5})", MO.Class.dump(o), annotation, name, code, annotation.toString());
       }
    }
@@ -2389,10 +2411,8 @@ MO.TListeners_find = function TListeners_find(owner, callback){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
          var listener = listeners.at(i);
-         if(listener._owner == owner){
-            if(listener._callback == callback){
-               return listener;
-            }
+         if((listener._owner === owner) && (listener._callback === callback)){
+            return listener;
          }
       }
    }
@@ -2595,6 +2615,7 @@ MO.RClass.prototype.isName = function RClass_isName(value, name){
 }
 MO.RClass.prototype.isClass = function RClass_isClass(value, clazz){
    var o = this;
+   MO.Assert.debugNotNull(clazz);
    if(value){
       var name = o.name(clazz);
       if(value.__base){
@@ -2886,6 +2907,7 @@ MO.RClass.prototype.build = function RClass_build(clazz){
 }
 MO.RClass.prototype.free = function RClass_free(instance){
    var clazz = instance.__class;
+   MO.Assert.debugNotNull(clazz);
    clazz.free(instance);
 }
 MO.RClass.prototype.dump = function RClass_dump(v){
@@ -2973,7 +2995,9 @@ MO.RDate.prototype.monthDays = function RDate_monthDays(year, month){
    }
    year = parseInt(year);
    month = parseInt(month);
-   this.MonthDays[2] = (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   if(month == 2){
+      return (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   }
    return this.MonthDays[month];
 }
 MO.RDate.prototype.splitFormat = function RDate_splitFormat(value, format){
@@ -5084,6 +5108,7 @@ MO.TSpeed_end = function TSpeed_end(){
 MO.TSpeed_record = function TSpeed_record(){
    var o = this;
    var sp = new Date().getTime() - o.start;
+   MO.Logger.debug(o, 'Speed test. (caller={1}, speed={2}, arguments={3})', o.callerName, sp, o.arguments);
    o.arguments = null;
    o.start = null;
    o.callerName = null;
@@ -5384,6 +5409,11 @@ MO.RArray.prototype.reverse = function RArray_reverse(a, s, e){
    }
 }
 MO.RArray.prototype.copy = function RArray_copy(source, sourceOffset, sourceCount, target, targetOffset){
+   MO.Assert.debugNotNull(source);
+   MO.Assert.debugTrue((sourceOffset >= 0) && (sourceOffset + sourceCount <= source.length));
+   MO.Assert.debugTrue(sourceCount <= source.length);
+   MO.Assert.debugNotNull(target);
+   MO.Assert.debugTrue((targetOffset >= 0) && (targetOffset + sourceCount <= target.length));
    for(var i = 0; i < sourceCount; i++){
       target[i + targetOffset] = source[i + sourceOffset];
    }
@@ -5605,6 +5635,7 @@ MO.RConsole.prototype.get = function RConsole_get(v){
 }
 MO.RConsole.prototype.find = function RConsole_find(value){
    var o = this;
+   MO.Assert.debugNotNull(value);
    var name = null;
    if(value.constructor == String){
       name = value;
@@ -5637,6 +5668,7 @@ MO.RConsole.prototype.find = function RConsole_find(value){
       default:
          return MO.Logger.fatal(o, 'Unknown scope code. (name={1})', name);
    }
+   MO.Logger.debug(o, 'Create console. (name={1}, scope={2})', name, MO.EScope.toDisplay(scopeCd));
    return console;
 }
 MO.RConsole.prototype.release = function RConsole_release(){
@@ -6166,6 +6198,7 @@ MO.SColor4 = function SColor4(red, green, blue, alpha){
    o.saveConfig   = MO.SColor4_saveConfig;
    o.savePower    = MO.SColor4_savePower;
    o.copyArray    = MO.SColor4_copyArray;
+   o.toRGBAString = MO.SColor4_toRGBAString;
    o.toString     = MO.SColor4_toString;
    o.dispose      = MO.SColor4_dispose;
    return o;
@@ -6263,6 +6296,10 @@ MO.SColor4_copyArray = function SColor4_copyArray(d, i){
    d[i++] = o.blue;
    d[i++] = o.alpha;
    return 4;
+}
+MO.SColor4_toRGBAString = function SColor4_toRGBAString() {
+   var o = this;
+   return 'rgba(' + parseInt(o.red * 255) + ',' + parseInt(o.green * 255) + ',' + parseInt(o.blue * 255) + ',' + MO.Lang.Float.format(o.alpha) + ')';
 }
 MO.SColor4_toString = function SColor4_toString(){
    var o = this;
@@ -7440,6 +7477,7 @@ MO.SMatrix4x4 = function SMatrix4x4(){
    o.normalize       = MO.SMatrix4x4_normalize;
    o.invert          = MO.SMatrix4x4_invert;
    o.transform       = MO.SMatrix4x4_transform;
+   o.transformValue3 = MO.SMatrix4x4_transformValue3;
    o.transformPoint3 = MO.SMatrix4x4_transformPoint3;
    o.buildQuaternion = MO.SMatrix4x4_buildQuaternion;
    o.build           = MO.SMatrix4x4_build;
@@ -7758,6 +7796,20 @@ MO.SMatrix4x4_transformPoint3 = function SMatrix4x4_transformPoint3(input, outpu
    var x = (input.x * data[ 0]) + (input.y * data[ 4]) +(input.z * data[ 8]) + data[12];
    var y = (input.x * data[ 1]) + (input.y * data[ 5]) +(input.z * data[ 9]) + data[13];
    var z = (input.x * data[ 2]) + (input.y * data[ 6]) +(input.z * data[10]) + data[14];
+   var result = null;
+   if(output){
+      result = output;
+   }else{
+      result = new MO.SPoint3();
+   }
+   result.set(x, y, z);
+   return result;
+}
+MO.SMatrix4x4_transformValue3 = function SMatrix4x4_transformValue3(x, y, z, output){
+   var data = this._data;
+   var x = (x * data[ 0]) + (y * data[ 4]) +(z * data[ 8]) + data[12];
+   var y = (x * data[ 1]) + (y * data[ 5]) +(z * data[ 9]) + data[13];
+   var z = (x * data[ 2]) + (y * data[ 6]) +(z * data[10]) + data[14];
    var result = null;
    if(output){
       result = output;
@@ -8962,11 +9014,11 @@ MO.SSize2_dump = function SSize2_dump(){
    var o = this;
    return MO.Class.dump(o) + ' [' + o.width + ',' + o.height + ']';
 }
-MO.SSize3 = function SSize3(w, h, d){
+MO.SSize3 = function SSize3(width, height, deep){
    var o = this;
-   o.width    = MO.Lang.Integer.nvl(w);
-   o.height   = MO.Lang.Integer.nvl(h);
-   o.deep     = MO.Lang.Integer.nvl(d);
+   o.width    = MO.Lang.Integer.nvl(width);
+   o.height   = MO.Lang.Integer.nvl(height);
+   o.deep     = MO.Lang.Integer.nvl(deep);
    o.assign   = MO.SSize3_assign;
    o.set      = MO.SSize3_set;
    o.parse    = MO.SSize3_parse;
@@ -9121,9 +9173,11 @@ MO.SValue2 = function SValue2(x, y){
    o.absolute     = MO.SValue2_absolute;
    o.normalize    = MO.SValue2_normalize;
    o.negative     = MO.SValue2_negative;
+   o.unserialize  = MO.SValue2_unserialize;
    o.parse        = MO.SValue2_parse;
    o.toDisplay    = MO.SValue2_toDisplay;
    o.toString     = MO.SValue2_toString;
+   o.dispose      = MO.SValue2_dispose;
    return o;
 }
 MO.SValue2_isEmpty = function SValue2_isEmpty(){
@@ -9234,100 +9288,142 @@ MO.SValue2_toDisplay = function SValue2_toDisplay(){
 MO.SValue2_toString = function SValue2_toString(){
    return this.x + ',' + this.y;
 }
+MO.SValue2_dispose = function SValue2_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+}
+MO.SValue2_unserialize = function SValue2_unserialize(input, dataCd) {
+   switch (dataCd) {
+      case MO.EDataType.Int32:
+         this.x = input.readInt32();
+         this.y = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         this.x = input.readFloat();
+         this.y = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         this.x = input.readDouble();
+         this.y = input.readDouble();
+         break;
+      default:
+         break;
+   }
+}
 MO.SValue3 = function SValue3(x, y, z){
    var o = this;
-   o.x            = MO.Runtime.nvl(x, 0);
-   o.y            = MO.Runtime.nvl(y, 0);
-   o.z            = MO.Runtime.nvl(z, 0);
-   o.isEmpty      = MO.SValue3_isEmpty;
-   o.equals       = MO.SValue3_equals;
-   o.equalsData   = MO.SValue3_equalsData;
-   o.assign       = MO.SValue3_assign;
-   o.setMin       = MO.SValue3_setMin;
-   o.setMax       = MO.SValue3_setMax;
-   o.set          = MO.SValue3_set;
-   o.setAll       = MO.SValue3_setAll;
-   o.add          = MO.SValue3_add;
-   o.addValue3    = MO.SValue3_addValue3;
-   o.mul          = MO.SValue3_mul;
-   o.mulAll       = MO.SValue3_mulAll;
-   o.length       = MO.SValue3_absolute;
-   o.lengthTo     = MO.SValue3_lengthTo;
-   o.absolute     = MO.SValue3_absolute;
-   o.normalize    = MO.SValue3_normalize;
-   o.negative     = MO.SValue3_negative;
-   o.serialize    = MO.SValue3_serialize;
-   o.unserialize  = MO.SValue3_unserialize3;
-   o.unserialize2 = MO.SValue3_unserialize2;
-   o.unserialize3 = MO.SValue3_unserialize3;
-   o.parse        = MO.SValue3_parse;
-   o.toDisplay    = MO.SValue3_toDisplay;
-   o.toString     = MO.SValue3_toString;
+   o.x              = MO.Runtime.nvl(x, 0);
+   o.y              = MO.Runtime.nvl(y, 0);
+   o.z              = MO.Runtime.nvl(z, 0);
+   o.isEmpty        = MO.SValue3_isEmpty;
+   o.equals         = MO.SValue3_equals;
+   o.equalsData     = MO.SValue3_equalsData;
+   o.assign         = MO.SValue3_assign;
+   o.setMin         = MO.SValue3_setMin;
+   o.setMax         = MO.SValue3_setMax;
+   o.set            = MO.SValue3_set;
+   o.setAll         = MO.SValue3_setAll;
+   o.add            = MO.SValue3_add;
+   o.addValue3      = MO.SValue3_addValue3;
+   o.mul            = MO.SValue3_mul;
+   o.mulAll         = MO.SValue3_mulAll;
+   o.length         = MO.SValue3_absolute;
+   o.lengthTo       = MO.SValue3_lengthTo;
+   o.lengthToValue3 = MO.SValue3_lengthToValue3;
+   o.absolute       = MO.SValue3_absolute;
+   o.normalize      = MO.SValue3_normalize;
+   o.negative       = MO.SValue3_negative;
+   o.serialize      = MO.SValue3_serialize;
+   o.unserialize    = MO.SValue3_unserialize3;
+   o.unserialize2   = MO.SValue3_unserialize2;
+   o.unserialize3   = MO.SValue3_unserialize3;
+   o.parse          = MO.SValue3_parse;
+   o.toDisplay      = MO.SValue3_toDisplay;
+   o.toString       = MO.SValue3_toString;
+   o.dispose        = MO.SValue3_dispose;
    return o;
 }
 MO.SValue3_isEmpty = function SValue3_isEmpty(p){
-   return (this.x == 0) && (this.y == 0) && (this.z == 0);
+   var o = this;
+   return (o.x == 0) && (o.y == 0) && (o.z == 0);
 }
 MO.SValue3_equals = function SValue3_equals(value){
-   return (this.x == value.x) && (this.y == value.y) && (this.z == value.z);
+   var o = this;
+   return (o.x == value.x) && (o.y == value.y) && (o.z == value.z);
 }
 MO.SValue3_equalsData = function SValue3_equalsData(x, y, z){
-   return (this.x == x) && (this.y == y) && (this.z == z);
+   var o = this;
+   return (o.x == x) && (o.y == y) && (o.z == z);
 }
 MO.SValue3_assign = function SValue3_assign(value){
-   this.x = value.x;
-   this.y = value.y;
-   this.z = value.z;
+   var o = this;
+   o.x = value.x;
+   o.y = value.y;
+   o.z = value.z;
 }
 MO.SValue3_setMin = function SValue3_setMin(){
-   this.x = Number.MIN_VALUE;
-   this.y = Number.MIN_VALUE;
-   this.z = Number.MIN_VALUE;
+   var o = this;
+   o.x = o.y = o.z = Number.MIN_VALUE;
 }
 MO.SValue3_setMax = function SValue3_setMax(){
-   this.x = Number.MAX_VALUE;
-   this.y = Number.MAX_VALUE;
-   this.z = Number.MAX_VALUE;
+   var o = this;
+   o.x = o.y = o.z = Number.MAX_VALUE;
 }
 MO.SValue3_set = function SValue3_set(x, y, z){
-   this.x = x;
-   this.y = y;
-   this.z = z;
+   var o = this;
+   if(x != null){
+      o.x = x;
+   }
+   if(y != null){
+      o.y = y;
+   }
+   if(z != null){
+      o.z = z;
+   }
 }
 MO.SValue3_setAll = function SValue3_set(value){
-   this.x = value;
-   this.y = value;
-   this.z = value;
+   var o = this;
+   if(value != null){
+      o.x = value;
+      o.y = value;
+      o.z = value;
+   }
 }
 MO.SValue3_add = function SValue3_add(x, y, z){
-   this.x += x;
-   this.y += y;
-   this.z += z;
+   var o = this;
+   o.x += x;
+   o.y += y;
+   o.z += z;
 }
 MO.SValue3_addValue3 = function SValue3_addValue3(value){
-   this.x += value.x;
-   this.y += value.y;
-   this.z += value.z;
+   var o = this;
+   o.x += value.x;
+   o.y += value.y;
+   o.z += value.z;
 }
 MO.SValue3_mul = function SValue3_mul(x, y, z){
-   this.x *= x;
-   this.y *= y;
-   this.z *= z;
+   var o = this;
+   o.x *= x;
+   o.y *= y;
+   o.z *= z;
 }
 MO.SValue3_mulAll = function SValue3_mulAll(value){
-   this.x *= value;
-   this.y *= value;
-   this.z *= value;
+   var o = this;
+   o.x *= value;
+   o.y *= value;
+   o.z *= value;
 }
 MO.SValue3_normalize = function SValue3_normalize(){
-   var value = this.absolute();
+   var o = this;
+   var value = o.absolute();
    if(value != 0){
       var rate = 1 / value;
-      this.x *= rate;
-      this.y *= rate;
-      this.z *= rate;
+      o.x *= rate;
+      o.y *= rate;
+      o.z *= rate;
    }
-   return this;
+   return o;
 }
 MO.SValue3_lengthTo = function SValue3_lengthTo(x, y, z){
    var o = this;
@@ -9336,41 +9432,84 @@ MO.SValue3_lengthTo = function SValue3_lengthTo(x, y, z){
    var cz = o.z - z;
    return Math.sqrt((cx * cx) + (cy * cy) + (cz * cz));
 }
+MO.SValue3_lengthToValue3 = function SValue3_lengthTo(value){
+   var o = this;
+   var cx = o.x - value.x;
+   var cy = o.y - value.y;
+   var cz = o.z - value.z;
+   return Math.sqrt((cx * cx) + (cy * cy) + (cz * cz));
+}
 MO.SValue3_absolute = function SValue3_absolute(){
-   return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
+   var o = this;
+   return Math.sqrt((o.x * o.x) + (o.y * o.y) + (o.z * o.z));
 }
 MO.SValue3_negative = function SValue3_negative(value){
+   var o = this;
    var result = null;
    if(p){
       result = value;
    }else{
-      result = new this.constructor();
+      result = new o.constructor();
    }
-   result.x = -this.x;
-   result.y = -this.y;
-   result.z = -this.z;
+   result.x = -o.x;
+   result.y = -o.y;
+   result.z = -o.z;
    return result;
 }
 MO.SValue3_serialize = function SValue3_serialize(output){
-   output.writeFloat(this.x);
-   output.writeFloat(this.y);
-   output.writeFloat(this.z);
+   var o = this;
+   output.writeFloat(o.x);
+   output.writeFloat(o.y);
+   output.writeFloat(o.z);
 }
-MO.SValue3_unserialize2 = function SValue3_unserialize2(input){
-   this.x = input.readFloat();
-   this.y = input.readFloat();
+MO.SValue3_unserialize2 = function SValue3_unserialize2(input, dataCd){
+   var o = this;
+   switch(dataCd){
+      case MO.EDataType.Int32:
+         o.x = input.readInt32();
+         o.y = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         o.x = input.readDouble();
+         o.y = input.readDouble();
+         break;
+      default:
+         break;
+   }
 }
-MO.SValue3_unserialize3 = function SValue3_unserialize3(input){
-   this.x = input.readFloat();
-   this.y = input.readFloat();
-   this.z = input.readFloat();
+MO.SValue3_unserialize3 = function SValue3_unserialize3(input, dataCd) {
+   var o = this;
+   switch(dataCd){
+      case MO.EDataType.Int32:
+         o.x = input.readInt32();
+         o.y = input.readInt32();
+         o.z = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         o.z = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         o.x = input.readDouble();
+         o.y = input.readDouble();
+         o.z = input.readDouble();
+         break;
+      default:
+         break;
+   }
 }
 MO.SValue3_parse = function SValue3_parse(value){
+   var o = this;
    var items = value.split(',')
    if(items.length == 3){
-      this.x = parseFloat(items[0]);
-      this.y = parseFloat(items[1]);
-      this.z = parseFloat(items[2]);
+      o.x = parseFloat(items[0]);
+      o.y = parseFloat(items[1]);
+      o.z = parseFloat(items[2]);
    }else{
       throw new MO.TError(o, "Parse value failure. (value={1})", value);
    }
@@ -9383,7 +9522,14 @@ MO.SValue3_toDisplay = function SValue3_toDisplay(){
    return x + ',' + y + ',' + z;
 }
 MO.SValue3_toString = function SValue3_toString(){
-   return this.x + ',' + this.y + ',' + this.z;
+   var o = this;
+   return o.x + ',' + o.y + ',' + o.z;
+}
+MO.SValue3_dispose = function SValue3_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+   o.z = null;
 }
 MO.SValue4 = function SValue4(x, y, z, w){
    var o = this;
@@ -9403,6 +9549,7 @@ MO.SValue4 = function SValue4(x, y, z, w){
    o.parse       = MO.SValue4_parse;
    o.toDisplay   = MO.SValue4_toDisplay;
    o.toString    = MO.SValue4_toString;
+   o.dispose     = MO.SValue4_dispose;
    return o;
 }
 MO.SValue4_assign = function SValue4_assign(value){
@@ -9488,6 +9635,13 @@ MO.SValue4_toDisplay = function SValue4_toDisplay(){
 }
 MO.SValue4_toString = function SValue4_toString(){
    return this.x + ',' + this.y + ',' + this.z + ',' + this.w;
+}
+MO.SValue4_dispose = function SValue4_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+   o.z = null;
+   o.w = null;
 }
 MO.SVector2 = function SVector2(x, y, z){
    var o = this;
@@ -9854,6 +10008,7 @@ MO.RRandom = new MO.RRandom();
 MO.Lang.Random = MO.RRandom;
 MO.AListener = function AListener(name, linker){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    MO.ASource.call(o, name, MO.ESource.Listener, linker);
    o.build = MO.AListener_build;
    if(linker == null){
@@ -9872,15 +10027,15 @@ MO.AListener = function AListener(name, linker){
 MO.AListener_build = function AListener_build(clazz, instance){
    var o = this;
    var addListener = 'add' + o._linker + 'Listener';
-   instance[addListener] = MO.RListener.makeAddListener(addListener, o._linker);
+   instance[addListener] = MO.Core.Listener.makeAddListener(addListener, o._linker);
    var setListener = 'set' + o._linker + 'Listener';
-   instance[setListener] = MO.RListener.makeSetListener(setListener, o._linker);
+   instance[setListener] = MO.Core.Listener.makeSetListener(setListener, o._linker);
    var removeListener = 'remove' + o._linker + 'Listener';
-   instance[removeListener] = MO.RListener.makeRemoveListener(removeListener, o._linker);
+   instance[removeListener] = MO.Core.Listener.makeRemoveListener(removeListener, o._linker);
    var clearListeners = 'clear' + o._linker + 'Listeners';
-   instance[clearListeners] = MO.RListener.makeClearListener(clearListeners, o._linker);
+   instance[clearListeners] = MO.Core.Listener.makeClearListener(clearListeners, o._linker);
    var processListener = 'process' + o._linker + 'Listener';
-   instance[processListener] = MO.RListener.makeProcessListener(processListener, o._linker);
+   instance[processListener] = MO.Core.Listener.makeProcessListener(processListener, o._linker);
 }
 MO.EEvent = new function EEvent(){
    var o = this;
@@ -9917,6 +10072,9 @@ MO.EEvent = new function EEvent(){
    o.OperationDown    = 'OperationDown';
    o.OperationMove    = 'OperationMove';
    o.OperationUp      = 'OperationUp';
+   o.ActionStart      = 'ActionStart';
+   o.ActionStop       = 'ActionStop';
+   o.SectionStop      = 'SectionStop';
    return o;
 }
 MO.EHttpContent = new function EHttpContent(){
@@ -9970,7 +10128,11 @@ MO.MListener_addListener = function MListener_addListener(name, owner, method){
       listeners = new MO.TListeners();
       listenerss.set(name, listeners);
    }
-   return listeners.register(owner, method);
+   var listener = listeners.find(owner, method);
+   if(!listener){
+      listener = listeners.register(owner, method);
+   }
+   return listener;
 }
 MO.MListener_setListener = function MListener_setListener(name, owner, method){
    var o = this;
@@ -10416,20 +10578,22 @@ MO.RListener.prototype.makeProcessListener = function RListener_makeProcessListe
    }
    return method;
 }
-MO.RListener = new MO.RListener();
-MO.APersistence = function APersistence(name, dataCd, dataClass){
+MO.Core.Listener = new MO.RListener();
+MO.APersistence = function APersistence(name, dataCd, dataClass, innerDataCd){
    var o = this;
    MO.AAnnotation.call(o, name);
-   o._annotationCd = MO.EAnnotation.Persistence;
-   o._inherit      = true;
-   o._ordered      = true;
-   o._dataCd       = dataCd;
-   o._dataClass    = dataClass;
-   o.dataCd        = MO.APersistence_dataCd;
-   o.dataClass     = MO.APersistence_dataClass;
-   o.newStruct     = MO.APersistence_newStruct;
-   o.newInstance   = MO.APersistence_newInstance;
-   o.toString      = MO.APersistence_toString;
+   o._annotationCd  = MO.EAnnotation.Persistence;
+   o._inherit       = true;
+   o._ordered       = true;
+   o._dataCd        = dataCd;
+   o._dataClass     = dataClass;
+   o._innerDataCd   = innerDataCd;
+   o.dataCd         = MO.APersistence_dataCd;
+   o.dataClass      = MO.APersistence_dataClass;
+   o.innerDataCd    = MO.APersistence_innerDataCd;
+   o.newStruct      = MO.APersistence_newStruct;
+   o.newInstance    = MO.APersistence_newInstance;
+   o.toString       = MO.APersistence_toString;
    return o;
 }
 MO.APersistence_dataCd = function APersistence_dataCd(){
@@ -10437,6 +10601,9 @@ MO.APersistence_dataCd = function APersistence_dataCd(){
 }
 MO.APersistence_dataClass = function APersistence_dataClass(){
    return this._dataClass;
+}
+MO.APersistence_innerDataCd = function APersistence_innerDataCd() {
+   return this._innerDataCd;
 }
 MO.APersistence_newStruct = function APersistence_newStruct(){
    return new this._dataClass();
@@ -10764,8 +10931,17 @@ MO.MDataStream_readUint32 = function MDataStream_readUint32(){
 }
 MO.MDataStream_readUint64 = function MDataStream_readUint64(){
    var o = this;
-   var value = o._viewer.getUint64(o._position, o._endianCd);
-   o._position += 8;
+   var endianCd = o._endianCd;
+   var value1 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value2 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value = 0;
+   if(endianCd){
+      value = (value2 << 32) + value1;
+   }else{
+      value = (value1 << 32) + value2;
+   }
    return value;
 }
 MO.MDataStream_readFloat = function MDataStream_readFloat(){
@@ -11662,12 +11838,25 @@ MO.MPersistence_unserialize = function MPersistence_unserialize(input){
       var annotation = annotations.at(n);
       var dateCd = annotation.dataCd();
       var name = annotation.name();
+      var innerDateCd = annotation.innerDataCd();
       if(dateCd == MO.EDataType.Struct){
          var item = o[name];
          if(!item){
             item = o[name] = annotation.newStruct();
          }
-         item.unserialize(input);
+         item.unserialize(input, innerDateCd);
+      }else if(dateCd == MO.EDataType.Structs){
+         var items = o[name];
+         if(!items){
+            items = o[name] = new MO.TObjects();
+         }
+         items.clear();
+         var itemCount = input.readInt32();
+         for(var i = 0; i < itemCount; i++){
+            var item = annotation.newStruct();
+            item.unserialize(input, innerDateCd);
+            items.push(item);
+         }
       }else if(dateCd == MO.EDataType.Object){
          var item = o[name];
          if(!item){
@@ -11749,14 +11938,30 @@ MO.MPersistenceAble = function MPersistenceAble(o){
 }
 MO.MPersistenceAble_unserializeBuffer = function MPersistenceAble_unserializeBuffer(buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FDataView);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializeSignBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var bytes = new Uint8Array(buffer);
    MO.Lang.Byte.encodeBytes(bytes, 0, bytes.length, sign);
    var view = MO.Class.create(MO.FDataView);
@@ -11764,15 +11969,25 @@ MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializ
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeEncryptedBuffer = function MPersistenceAble_unserializeEncryptedBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FEncryptedView);
    view.setSign(sign);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_serializeBuffer = function MPersistenceAble_serializeBuffer(buffer, endianCd){
    var o = this;
@@ -13765,10 +13980,12 @@ MO.FEnvironmentConsole_construct = function FEnvironmentConsole_construct(){
 MO.FEnvironmentConsole_register = function FEnvironmentConsole_register(environment){
    var o = this;
    var name = environment.name();
+   MO.Assert.debugNotEmpty(name);
    o._environments.set(name, environment);
 }
 MO.FEnvironmentConsole_registerValue = function FEnvironmentConsole_registerValue(name, value){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    var environment = MO.Class.create(MO.FEnvironment);
    environment.set(name, value);
    o._environments.set(name, environment);
@@ -13788,6 +14005,7 @@ MO.FEnvironmentConsole_findValue = function FEnvironmentConsole_findValue(name){
 }
 MO.FEnvironmentConsole_parse = function FEnvironmentConsole_parse(value){
    var o = this;
+   MO.Assert.debugNotEmpty(value);
    var result = value;
    var environments = o._environments;
    var count = environments.count();
@@ -13873,6 +14091,7 @@ MO.FEventConsole_construct = function FEventConsole_construct(){
    thread.setInterval(o._interval);
    thread.lsnsProcess.register(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+   MO.Logger.debug(o, 'Add event thread. (thread={1})', MO.Class.dump(thread));
 }
 MO.FEventConsole_register = function FEventConsole_register(po, pc){
    var o = this;
@@ -14575,14 +14794,10 @@ MO.FThreadConsole_processAll = function FThreadConsole_processAll(){
    if(o._active){
       var threads = o._threads;
       var count = threads.count();
-      try{
          for(var i = 0; i < count; i++){
             var thread = threads.at(i);
             o.process(thread);
          }
-      }catch(error){
-         MO.Logger.fatal(o, error, 'Thread process failure. (thread_count={1})', count);
-      }
    }
    if(o._requestFlag){
       MO.Window.requestAnimationFrame(o.ohInterval);
@@ -14633,6 +14848,11 @@ MO.EBrowser = new function EBrowser(){
    o.FireFox = 'firefox';
    o.Chrome = 'chrome';
    o.Safari = 'safari';
+   return o;
+}
+MO.EConstant = new function EConstant(){
+   var o = this;
+   o.DeviceType = 'device.type';
    return o;
 }
 MO.EDevice = new function EDevice(){
@@ -14777,6 +14997,7 @@ MO.RWindow.prototype.ohVisibility = function RWindow_ohVisibility(hEvent){
    var event = o._eventVisibility;
    event.visibility = visibility;
    o.lsnsVisibility.process(event);
+   MO.Logger.debug(o, 'Window visibility changed. (visibility={1})', visibility);
 }
 MO.RWindow.prototype.ohOrientation = function RWindow_ohOrientation(hEvent){
    var o = MO.Window;
@@ -14784,6 +15005,7 @@ MO.RWindow.prototype.ohOrientation = function RWindow_ohOrientation(hEvent){
    var event = o._eventOrientation;
    event.orientationCd = orientationCd;
    o.lsnsOrientation.process(event);
+   MO.Logger.debug(o, 'Window orientation changed. (orientation_cd={1})', orientationCd);
 }
 MO.RWindow.prototype.ohUnload = function RWindow_ohUnload(event){
    var o = MO.Window;
@@ -14947,6 +15169,7 @@ MO.RWindow.prototype.setEnable = function RWindow_setEnable(v, f){
    o._statusEnable = v;
 }
 MO.RWindow.prototype.appendElement = function RWindow_appendElement(hPanel){
+   MO.Assert.debugNotNull(control);
    this._hContainer.appendChild(hPanel);
 }
 MO.RWindow.prototype.requestAnimationFrame = function RWindow_requestAnimationFrame(callback){
@@ -15130,6 +15353,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
    if(o._typeCd == MO.EBrowser.Chrome){
       MO.Logger.lsnsOutput.register(o, o.onLog);
    }
+   MO.Logger.debug(o, 'Parse browser agent. (platform_cd={1}, type_cd={2})', MO.Lang.Enum.decode(MO.EPlatform, platformCd), MO.Lang.Enum.decode(MO.EBrowser, o._typeCd));
    if(window.applicationCache){
       o._supportHtml5 = true;
    }
@@ -15150,6 +15374,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
    if(pixelRatio){
       if(MO.Runtime.isPlatformMobile()){
          capability.pixelRatio = Math.min(pixelRatio, 3);
+         MO.Logger.debug(o, 'Parse browser agent. (pixel_ratio={1}, capability_ratio={2})', pixelRatio, capability.pixelRatio);
       }
    }
    if(window.Worker){
@@ -15180,6 +15405,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
       events['visibilitychange'] = 'webkitvisibilitychange';
    }
    o.refreshOrientation();
+   MO.Logger.debug(o, 'Browser connect. (agent={1})', o._agent);
 }
 MO.RBrowser.prototype.agent = function RBrowser_agent(){
    return this._agent;
@@ -15565,11 +15791,6 @@ MO.RXmlUtil.prototype.unpack = function RXmlUtil_unpack(s, n){
 }
 MO.RXml = new MO.RXmlUtil();
 MO.Window.Xml = MO.RXml;
-MO.EConstant = new function EConstant(){
-   var o = this;
-   o.DeviceType = 'device.type';
-   return o;
-}
 MO.STouchEvent = function STouchEvent(){
    var o = this;
    o.dispose = MO.STouchEvent_dispose;
@@ -16296,6 +16517,7 @@ MO.RDump.prototype.stack = function RDump_stack(){
          s.appendLine();
       }
    }
+   MO.Logger.debug(this, s);
 }
 MO.RDump = new MO.RDump();
 MO.RHtml = function RHtml(){
@@ -16818,6 +17040,7 @@ MO.MGraphicObject_linkGraphicContext = function MGraphicObject_linkGraphicContex
    }else{
       throw new MO.TError(o, 'Link graphic context failure. (context={1})', context);
    }
+   MO.Assert.debugNotNull(o._graphicContext);
 }
 MO.MGraphicObject_dispose = function MGraphicObject_dispose(){
    var o = this;
@@ -17016,26 +17239,37 @@ MO.FG2dCanvasContext = function FG2dCanvasContext(o) {
    o.setScale             = MO.FG2dCanvasContext_setScale;
    o.setAlpha             = MO.FG2dCanvasContext_setAlpha;
    o.setFont              = MO.FG2dCanvasContext_setFont;
+   o.setShadow            = MO.FG2dCanvasContext_setShadow;
+   o.setLineJoin          = MO.FG2dCanvasContext_setLineJoin;
    o.store                = MO.FG2dCanvasContext_store;
    o.restore              = MO.FG2dCanvasContext_restore;
    o.prepare              = MO.FG2dCanvasContext_prepare;
    o.clear                = MO.FG2dCanvasContext_clear;
    o.clearRectangle       = MO.FG2dCanvasContext_clearRectangle;
+   o.clearShadow          = MO.FG2dCanvasContext_clearShadow;
    o.clip                 = MO.FG2dCanvasContext_clip;
    o.textWidth            = MO.FG2dCanvasContext_textWidth;
    o.createLinearGradient = MO.FG2dCanvasContext_createLinearGradient;
+   o.beginPath            = MO.FG2dCanvasContext_beginPath;
+   o.endPath              = MO.FG2dCanvasContext_endPath;
+   o.moveTo               = MO.FG2dCanvasContext_moveTo;
+   o.lineTo               = MO.FG2dCanvasContext_lineTo;
    o.drawLine             = MO.FG2dCanvasContext_drawLine;
    o.drawRectangle        = MO.FG2dCanvasContext_drawRectangle;
    o.drawTriangle         = MO.FG2dCanvasContext_drawTriangle;
    o.drawCircle           = MO.FG2dCanvasContext_drawCircle;
    o.drawText             = MO.FG2dCanvasContext_drawText;
    o.drawTextVertical     = MO.FG2dCanvasContext_drawTextVertical;
+   o.drawTextRectangle    = MO.FG2dCanvasContext_drawTextRectangle
    o.drawImage            = MO.FG2dCanvasContext_drawImage;
+   o.drawRectangleImage   = MO.FG2dCanvasContext_drawRectangleImage;
    o.drawGridImage        = MO.FG2dCanvasContext_drawGridImage;
    o.drawQuadrilateral    = MO.FG2dCanvasContext_drawQuadrilateral;
+   o.drawShape            = MO.FG2dCanvasContext_drawShape;
    o.drawBorderLine       = MO.FG2dCanvasContext_drawBorderLine;
    o.drawBorder           = MO.FG2dCanvasContext_drawBorder;
    o.fillRectangle        = MO.FG2dCanvasContext_fillRectangle;
+   o.fillShape            = MO.FG2dCanvasContext_fillShape;
    o.toBytes              = MO.FG2dCanvasContext_toBytes;
    o.saveFile             = MO.FG2dCanvasContext_saveFile;
    o.dispose              = MO.FG2dCanvasContext_dispose;
@@ -17070,10 +17304,11 @@ MO.FG2dCanvasContext_setGlobalScale = function FG2dCanvasContext_setGlobalScale(
 }
 MO.FG2dCanvasContext_setScale = function FG2dCanvasContext_setScale(width, height){
    var o = this;
-   if(!o._scale.equalsData(width, height)){
+   if((width == 1) && (height == 1)){
+      return;
+   }
       o._handle.scale(width, height);
       o._scale.set(width, height);
-   }
 }
 MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
    var o = this;
@@ -17081,6 +17316,18 @@ MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
 }
 MO.FG2dCanvasContext_setFont = function FG2dCanvasContext_setFont(font) {
    this._handle.font = font;
+}
+MO.FG2dCanvasContext_setShadow = function FG2dCanvasContext_setShadow(offsetX, offsetY, blur, color) {
+   this._handle.shadowOffsetX = offsetX;
+   this._handle.shadowOffsetY = offsetY;
+   this._handle.shadowBlur = blur;
+   this._handle.shadowColor = color;
+}
+MO.FG2dCanvasContext_clearShadow = function FG2dCanvasContext_clearShadow() {
+   this._handle.shadowOffsetX = "0";
+   this._handle.shadowOffsetY = "0";
+   this._handle.shadowBlur = "0";
+   this._handle.shadowColor = "0";
 }
 MO.FG2dCanvasContext_store = function FG2dCanvasContext_store(){
    this._handle.save();
@@ -17128,6 +17375,18 @@ MO.FG2dCanvasContext_createLinearGradient = function FG2dCanvasContext_createLin
    var handle = o._handle;
    return handle.createLinearGradient(x1, y1, x2, y2);
 }
+MO.FG2dCanvasContext_beginPath = function FG2dCanvasContext_beginPath(){
+   this._handle.beginPath();
+}
+MO.FG2dCanvasContext_endPath = function FG2dCanvasContext_endPath(){
+   this._handle.closePath();
+}
+MO.FG2dCanvasContext_moveTo = function FG2dCanvasContext_moveTo(x, y){
+   this._handle.moveTo(x, y);
+}
+MO.FG2dCanvasContext_lineTo = function FG2dCanvasContext_lineTo(x, y){
+   this._handle.lineTo(x, y);
+}
 MO.FG2dCanvasContext_drawLine = function FG2dCanvasContext_drawLine(x1, y1, x2, y2, color, lineWidth) {
    var o = this;
    var handle = o._handle;
@@ -17152,6 +17411,98 @@ MO.FG2dCanvasContext_drawText = function FG2dCanvasContext_drawText(text, x, y, 
    handle.fillStyle = color;
    handle.fillText(text, x, y);
 }
+MO.FG2dCanvasContext_drawTextRectangle = function FG2dCanvasContext_drawTextRectangle(text, x, y, width, height, lineWidth, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   var drawX = x;
+   var drawY = y;
+   var nCharWidth = handle.measureText("A").width;  //窄字符的宽度
+   var wCharWidth = handle.measureText("王").width; //宽字符的宽度
+   var beginDrawTextNumber = 0;
+   var drawTextNumber = 0;
+   var lineLengh = 0; //预测的字符长度
+   if (width == 0 || height == 0 || lineWidth == 0) {
+      return;
+   }
+   for (var i = 0; i < text.length; i++) {
+      var tmp = text.charAt(i);
+      drawTextNumber = i + 1 - beginDrawTextNumber;
+      if(text.charCodeAt(i) > 255 ) {
+         lineLengh += wCharWidth;
+      }else{
+         lineLengh += nCharWidth;
+      }
+      var currentChar = text.charAt(i);
+      var nextChar = text.charAt(i + 1);
+      if (currentChar == '\n' ) {            //linux换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 1;
+            lineLengh = 0;
+         }
+      }
+      if ( (currentChar == '\r') && (nextChar == '\n') ){ //windows换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 2;
+            i++
+            lineLengh = 0;
+         }
+      }
+      if(lineLengh > width ){
+         while(true){
+            var flag = false;
+            var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+            if(currentWidth == width){
+               flag = true;
+            }
+            if(currentWidth > width){  //预判的宽度大于实际宽度的情况 需要减少字符数量
+               if (drawTextNumber == 1) {//一个字符宽度大于给定矩形宽度的情况
+                  flag = true;
+               }else{
+                  drawTextNumber -= 1;
+                  currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+                  if (currentWidth <= width) {
+                     flag = true;
+                  }
+               }
+            }
+            if ( (flag == false) && (currentWidth < width) ) {//预判的宽度大于实际宽度的情况 需要增加字符数量
+               drawTextNumber += 1;
+               currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+               if (currentWidth >= width) {
+                  flag = true;
+               }
+            }
+            if (flag == true) {//绘制字符
+               handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+               drawY += lineWidth;
+               i = beginDrawTextNumber + drawTextNumber - 1;
+               lineLengh = 0;
+               var nextChar = text.charAt(i + 1);
+               var nextNextChar = text.charAt(i + 2);
+               if (nextChar == '\n') {
+                  i += 1;
+               }
+               if ((nextChar == '\r') && (nextNextChar == '\n')) {
+                  i += 2;
+               }
+               beginDrawTextNumber = i + 1;
+               break;
+            }
+         }
+      }
+      if ((drawY - y + lineWidth) > height) {
+         return;
+      }
+   }
+   handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+}
 MO.FG2dCanvasContext_drawTextVertical = function FG2dCanvasContext_drawTextVertical(text, x, y, font) {
    var o = this;
    var handle = o._handle;
@@ -17175,15 +17526,18 @@ MO.FG2dCanvasContext_drawImage = function FG2dCanvasContext_drawImage(content, x
       }
       data = content.image();
       if(width == null){
-         width = data.size().width;
+         width = data.width;
       }
       if(height == null){
-         height = data.size().height;
+         height = data.height;
       }
    }else{
       throw new MO.TError(o, 'Unknown content type');
    }
    handle.drawImage(data, x, y, width, height);
+}
+MO.FG2dCanvasContext_drawRectangleImage = function FG2dCanvasContext_drawRectangleImage(content, rectangle){
+   this.drawImage(content, rectangle.left, rectangle.top, rectangle.width, rectangle.height);
 }
 MO.FG2dCanvasContext_drawGridImage = function FG2dCanvasContext_drawGridImage(content, x, y, width, height, padding) {
    var o = this;
@@ -17263,14 +17617,6 @@ MO.FG2dCanvasContext_drawBorder = function FG2dCanvasContext_drawBorder(rectangl
    o.drawBorderLine(right, top, right, bottom, border.right);
    o.drawBorderLine(left - 0.5, bottom, right + 0.5, bottom, border.bottom);
 }
-MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
-   var o = this;
-   var handle = o._handle;
-   handle.fillStyle = color;
-   handle.beginPath();
-   handle.fillRect(x, y, width, height);
-   handle.closePath();
-}
 MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrilateral(x1, y1, x2, y2, x3, y3, x4, y4, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -17291,6 +17637,13 @@ MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrila
       handle.fill();
    }
 }
+MO.FG2dCanvasContext_drawShape = function FG2dCanvasContext_drawShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
 MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, y1, x2, y2, x3, y3, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -17304,6 +17657,26 @@ MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, 
    handle.closePath();
    handle.fill();
    handle.stroke();
+}
+MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   handle.beginPath();
+   handle.fillRect(x, y, width, height);
+   handle.closePath();
+}
+MO.FG2dCanvasContext_setLineJoin = function FG2dCanvasContext_setLineJoin(style) {
+   var o = this;
+   var handle = o._handle;
+   handle.lineJoin = style;
+}
+MO.FG2dCanvasContext_fillShape = function FG2dCanvasContext_fillShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.fillStyle = color;
+   handle.fill();
 }
 MO.FG2dCanvasContext_drawCircle = function FG2dCanvasContext_drawCircle(x, y, radius, lineWidth, strokeColor, fillColor) {
    var o = this;
@@ -17725,10 +18098,13 @@ MO.SG3dMaterialInfo = function SG3dMaterialInfo(){
    var o = this;
    o.effectCode           = 'automatic';
    o.optionDepth          = null;
+   o.optionDepthWrite     = null;
    o.optionDouble         = null;
    o.optionNormalInvert   = null;
    o.optionShadow         = null;
    o.optionShadowSelf     = null;
+   o.optionSort           = null;
+   o.sortLevel            = null;
    o.optionAlpha          = null;
    o.alphaBase            = 1.0;
    o.alphaRate            = 1.0;
@@ -17790,10 +18166,13 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -17842,7 +18221,7 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.opacityColor.assign(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assign(info.emissiveColor);
@@ -17852,10 +18231,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -17904,7 +18286,7 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.opacityColor.assignPower(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assignPower(info.emissiveColor);
@@ -17912,10 +18294,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
 MO.SG3dMaterialInfo_reset = function SG3dMaterialInfo_reset(){
    var o = this;
    o.optionDepth = true;
+   o.optionDepthWrite = true;
    o.optionDouble = false;
    o.optionNormalInvert = false;
    o.optionShadow = true;
    o.optionShadowSelf = true;
+   o.optionSort = true;
+   o.sortLevel = 0;
    o.optionAlpha = false;
    o.alphaBase = 0.2;
    o.alphaRate = 1;
@@ -18192,7 +18577,7 @@ MO.FG3dCamera_updateFrustum = function FG3dCamera_updateFrustum(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
@@ -18457,9 +18842,12 @@ MO.FG3dEffectConsole_construct = function FG3dEffectConsole_construct(){
    o._tagContext = MO.Class.create(MO.FTagContext);
 }
 MO.FG3dEffectConsole_register = function FG3dEffectConsole_register(name, effect){
+   MO.Assert.debugNotEmpty(name);
+   MO.Assert.debugNotNull(effect);
    this._registerEffects.set(name, effect);
 }
 MO.FG3dEffectConsole_unregister = function FG3dEffectConsole_unregister(name){
+   MO.Assert.debugNotEmpty(name);
    this._registerEffects.set(name, null);
 }
 MO.FG3dEffectConsole_create = function FG3dEffectConsole_create(context, name){
@@ -18918,6 +19306,7 @@ MO.FG3dTechnique_selectMode = function FG3dTechnique_selectMode(p){
 }
 MO.FG3dTechnique_pushPass = function FG3dTechnique_pushPass(pass){
    var o = this;
+   MO.Assert.debugNotNull(pass);
    pass.setTechnique(o);
    o._passes.push(pass);
 }
@@ -19022,6 +19411,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    var sourceMaterial = source.material().info();
    var targetMaterial = target.material().info();
    if(sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -19037,6 +19429,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    }else if(!sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
       return -1;
    }else{
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -19216,7 +19611,7 @@ MO.FG3dTrackBall_updateFrustum = function FG3dTrackBall_updateFrustum(){
 }
 MO.FG3dTrackBall_dispose = function FG3dTrackBall_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dViewport = function FG3dViewport(o){
@@ -20583,6 +20978,7 @@ MO.FG3dAutomaticEffect_bindMaterial = function FG3dAutomaticEffect_bindMaterial(
    }else{
       context.setDepthMode(false);
    }
+   context.setDepthMask(info.optionDepthWrite);
    if(info.optionAlpha){
       context.setBlendFactors(o._stateBlend, o._stateBlendSourceCd, o._stateBlendTargetCd);
    }else{
@@ -20840,6 +21236,7 @@ MO.FWglContext = function FWglContext(o){
    o._statusRecord       = false;
    o._recordBuffers      = MO.Class.register(o, new MO.AGetter('_recordBuffers'));
    o._recordSamplers     = MO.Class.register(o, new MO.AGetter('_recordSamplers'));
+   o._statusDepthMask    = MO.Class.register(o, new MO.AGetter('_statusDepthMask'), false);
    o._statusFloatTexture = MO.Class.register(o, new MO.AGetter('_statusFloatTexture'), false);
    o._statusDrawBuffers  = MO.Class.register(o, new MO.AGetter('_statusDrawBuffers'), false);
    o._statusScissor      = MO.Class.register(o, new MO.AGetter('_statusScissor'), false);
@@ -20866,6 +21263,7 @@ MO.FWglContext = function FWglContext(o){
    o.setViewport         = MO.FWglContext_setViewport;
    o.setFillMode         = MO.FWglContext_setFillMode;
    o.setDepthMode        = MO.FWglContext_setDepthMode;
+   o.setDepthMask        = MO.FWglContext_setDepthMask;
    o.setCullingMode      = MO.FWglContext_setCullingMode;
    o.setBlendFactors     = MO.FWglContext_setBlendFactors;
    o.setScissorRectangle = MO.FWglContext_setScissorRectangle;
@@ -20915,6 +21313,7 @@ MO.FWglContext_linkCanvas = function FWglContext_linkCanvas(hCanvas){
          var code = codes[i];
          handle = hCanvas.getContext(code, parameters);
          if(handle){
+            MO.Logger.debug(o, 'Create context3d. (code={1}, handle={2})', code, handle);
             break;
          }
       }
@@ -21226,6 +21625,7 @@ MO.FWglContext_setViewport = function FWglContext_setViewport(left, top, width, 
    var o = this;
    o._viewportRectangle.set(left, top, width, height);
    o._handle.viewport(left, top, width, height);
+   MO.Logger.debug(o, 'Context3d viewport. (location={1},{2}, size={3}x{4})', left, top, width, height);
 }
 MO.FWglContext_setFillMode = function FWglContext_setFillMode(fillModeCd){
    var o = this;
@@ -21271,6 +21671,16 @@ MO.FWglContext_setDepthMode = function FWglContext_setDepthMode(depthFlag, depth
       o._depthModeCd = depthCd;
    }
    return true;
+}
+MO.FWglContext_setDepthMask = function FWglContext_setDepthMask(depthMask){
+   var o = this;
+   if(o._statusDepthMask != depthMask){
+      o._statistics._frameDepthMaskCount++;
+      o._handle.depthMask(depthMask);
+      o._statusDepthMask = depthMask;
+      return true;
+   }
+   return false;
 }
 MO.FWglContext_setCullingMode = function FWglContext_setCullingMode(cullFlag, cullCd){
    var o = this;
@@ -21770,17 +22180,17 @@ MO.FWglCubeTexture_dispose = function FWglCubeTexture_dispose(){
 }
 MO.FWglFlatTexture = function FWglFlatTexture(o){
    o = MO.Class.inherits(this, o, MO.FG3dFlatTexture);
-   o._handle       = null;
-   o._statusUpdate = false;
-   o.setup         = MO.FWglFlatTexture_setup;
-   o.isValid       = MO.FWglFlatTexture_isValid;
-   o.texture       = MO.FWglFlatTexture_texture;
-   o.makeMipmap    = MO.FWglFlatTexture_makeMipmap;
-   o.uploadData    = MO.FWglFlatTexture_uploadData;
-   o.upload        = MO.FWglFlatTexture_upload;
-   o.uploadElement = MO.FWglFlatTexture_uploadElement;
-   o.update        = MO.FWglFlatTexture_update;
-   o.dispose       = MO.FWglFlatTexture_dispose;
+   o._handle         = null;
+   o._statusUpdate   = false;
+   o.setup           = MO.FWglFlatTexture_setup;
+   o.isValid         = MO.FWglFlatTexture_isValid;
+   o.texture         = MO.FWglFlatTexture_texture;
+   o.makeMipmap      = MO.FWglFlatTexture_makeMipmap;
+   o.uploadData      = MO.FWglFlatTexture_uploadData;
+   o.upload          = MO.FWglFlatTexture_upload;
+   o.uploadElement   = MO.FWglFlatTexture_uploadElement;
+   o.update          = MO.FWglFlatTexture_update;
+   o.dispose         = MO.FWglFlatTexture_dispose;
    return o;
 }
 MO.FWglFlatTexture_setup = function FWglFlatTexture_setup(){
@@ -21836,7 +22246,7 @@ MO.FWglFlatTexture_uploadData = function FWglFlatTexture_uploadData(content, wid
    o._statusLoad = context.checkError("texImage2D", "Upload content failure.");
    o.update();
 }
-MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
+MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content, left, top, width, height){
    var o = this;
    var context = o._graphicContext;
    var capability = context.capability();
@@ -21845,6 +22255,10 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    var tagName = content.tagName;
    if((tagName == 'IMG') || (tagName == 'VIDEO') || (tagName == 'CANVAS')){
       data = content;
+   }else if(content.constructor == Uint8Array){
+      data = content;
+   }else if(content.constructor == Uint8ClampedArray){
+      data = new Uint8Array(content);
    }else if(MO.Class.isClass(content, MO.FImage)){
       data = content.image();
    }else if(MO.Class.isClass(content, MO.MCanvasObject)){
@@ -21856,7 +22270,11 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    if(o._optionFlipY){
       handle.pixelStorei(handle.UNPACK_FLIP_Y_WEBGL, true);
    }
-   handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   if((left != null) && (top != null) && (width != null) && (height != null)){
+      handle.texSubImage2D(handle.TEXTURE_2D, 0, left, top, width, height, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }else{
+      handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }
    o.update();
    o._statusLoad = context.checkError("texImage2D", "Upload image failure.");
 }
@@ -22461,7 +22879,7 @@ MO.RWglUtility.prototype.convertFillMode = function RWglUtility_convertFillMode(
 }
 MO.RWglUtility.prototype.convertDrawMode = function RWglUtility_convertDrawMode(graphic, drawCd){
    switch(drawCd){
-      case MO.EG3dDrawMode.Point:
+      case MO.EG3dDrawMode.Points:
          return graphic.POINTS;
       case MO.EG3dDrawMode.Lines:
          return graphic.LINES;

@@ -1,5 +1,6 @@
 MO.AListener = function AListener(name, linker){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    MO.ASource.call(o, name, MO.ESource.Listener, linker);
    o.build = MO.AListener_build;
    if(linker == null){
@@ -18,15 +19,15 @@ MO.AListener = function AListener(name, linker){
 MO.AListener_build = function AListener_build(clazz, instance){
    var o = this;
    var addListener = 'add' + o._linker + 'Listener';
-   instance[addListener] = MO.RListener.makeAddListener(addListener, o._linker);
+   instance[addListener] = MO.Core.Listener.makeAddListener(addListener, o._linker);
    var setListener = 'set' + o._linker + 'Listener';
-   instance[setListener] = MO.RListener.makeSetListener(setListener, o._linker);
+   instance[setListener] = MO.Core.Listener.makeSetListener(setListener, o._linker);
    var removeListener = 'remove' + o._linker + 'Listener';
-   instance[removeListener] = MO.RListener.makeRemoveListener(removeListener, o._linker);
+   instance[removeListener] = MO.Core.Listener.makeRemoveListener(removeListener, o._linker);
    var clearListeners = 'clear' + o._linker + 'Listeners';
-   instance[clearListeners] = MO.RListener.makeClearListener(clearListeners, o._linker);
+   instance[clearListeners] = MO.Core.Listener.makeClearListener(clearListeners, o._linker);
    var processListener = 'process' + o._linker + 'Listener';
-   instance[processListener] = MO.RListener.makeProcessListener(processListener, o._linker);
+   instance[processListener] = MO.Core.Listener.makeProcessListener(processListener, o._linker);
 }
 MO.EEvent = new function EEvent(){
    var o = this;
@@ -63,6 +64,9 @@ MO.EEvent = new function EEvent(){
    o.OperationDown    = 'OperationDown';
    o.OperationMove    = 'OperationMove';
    o.OperationUp      = 'OperationUp';
+   o.ActionStart      = 'ActionStart';
+   o.ActionStop       = 'ActionStop';
+   o.SectionStop      = 'SectionStop';
    return o;
 }
 MO.EHttpContent = new function EHttpContent(){
@@ -116,7 +120,11 @@ MO.MListener_addListener = function MListener_addListener(name, owner, method){
       listeners = new MO.TListeners();
       listenerss.set(name, listeners);
    }
-   return listeners.register(owner, method);
+   var listener = listeners.find(owner, method);
+   if(!listener){
+      listener = listeners.register(owner, method);
+   }
+   return listener;
 }
 MO.MListener_setListener = function MListener_setListener(name, owner, method){
    var o = this;
@@ -562,20 +570,22 @@ MO.RListener.prototype.makeProcessListener = function RListener_makeProcessListe
    }
    return method;
 }
-MO.RListener = new MO.RListener();
-MO.APersistence = function APersistence(name, dataCd, dataClass){
+MO.Core.Listener = new MO.RListener();
+MO.APersistence = function APersistence(name, dataCd, dataClass, innerDataCd){
    var o = this;
    MO.AAnnotation.call(o, name);
-   o._annotationCd = MO.EAnnotation.Persistence;
-   o._inherit      = true;
-   o._ordered      = true;
-   o._dataCd       = dataCd;
-   o._dataClass    = dataClass;
-   o.dataCd        = MO.APersistence_dataCd;
-   o.dataClass     = MO.APersistence_dataClass;
-   o.newStruct     = MO.APersistence_newStruct;
-   o.newInstance   = MO.APersistence_newInstance;
-   o.toString      = MO.APersistence_toString;
+   o._annotationCd  = MO.EAnnotation.Persistence;
+   o._inherit       = true;
+   o._ordered       = true;
+   o._dataCd        = dataCd;
+   o._dataClass     = dataClass;
+   o._innerDataCd   = innerDataCd;
+   o.dataCd         = MO.APersistence_dataCd;
+   o.dataClass      = MO.APersistence_dataClass;
+   o.innerDataCd    = MO.APersistence_innerDataCd;
+   o.newStruct      = MO.APersistence_newStruct;
+   o.newInstance    = MO.APersistence_newInstance;
+   o.toString       = MO.APersistence_toString;
    return o;
 }
 MO.APersistence_dataCd = function APersistence_dataCd(){
@@ -583,6 +593,9 @@ MO.APersistence_dataCd = function APersistence_dataCd(){
 }
 MO.APersistence_dataClass = function APersistence_dataClass(){
    return this._dataClass;
+}
+MO.APersistence_innerDataCd = function APersistence_innerDataCd() {
+   return this._innerDataCd;
 }
 MO.APersistence_newStruct = function APersistence_newStruct(){
    return new this._dataClass();
@@ -910,8 +923,17 @@ MO.MDataStream_readUint32 = function MDataStream_readUint32(){
 }
 MO.MDataStream_readUint64 = function MDataStream_readUint64(){
    var o = this;
-   var value = o._viewer.getUint64(o._position, o._endianCd);
-   o._position += 8;
+   var endianCd = o._endianCd;
+   var value1 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value2 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value = 0;
+   if(endianCd){
+      value = (value2 << 32) + value1;
+   }else{
+      value = (value1 << 32) + value2;
+   }
    return value;
 }
 MO.MDataStream_readFloat = function MDataStream_readFloat(){
@@ -1808,12 +1830,25 @@ MO.MPersistence_unserialize = function MPersistence_unserialize(input){
       var annotation = annotations.at(n);
       var dateCd = annotation.dataCd();
       var name = annotation.name();
+      var innerDateCd = annotation.innerDataCd();
       if(dateCd == MO.EDataType.Struct){
          var item = o[name];
          if(!item){
             item = o[name] = annotation.newStruct();
          }
-         item.unserialize(input);
+         item.unserialize(input, innerDateCd);
+      }else if(dateCd == MO.EDataType.Structs){
+         var items = o[name];
+         if(!items){
+            items = o[name] = new MO.TObjects();
+         }
+         items.clear();
+         var itemCount = input.readInt32();
+         for(var i = 0; i < itemCount; i++){
+            var item = annotation.newStruct();
+            item.unserialize(input, innerDateCd);
+            items.push(item);
+         }
       }else if(dateCd == MO.EDataType.Object){
          var item = o[name];
          if(!item){
@@ -1895,14 +1930,30 @@ MO.MPersistenceAble = function MPersistenceAble(o){
 }
 MO.MPersistenceAble_unserializeBuffer = function MPersistenceAble_unserializeBuffer(buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FDataView);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializeSignBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var bytes = new Uint8Array(buffer);
    MO.Lang.Byte.encodeBytes(bytes, 0, bytes.length, sign);
    var view = MO.Class.create(MO.FDataView);
@@ -1910,15 +1961,25 @@ MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializ
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeEncryptedBuffer = function MPersistenceAble_unserializeEncryptedBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FEncryptedView);
    view.setSign(sign);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_serializeBuffer = function MPersistenceAble_serializeBuffer(buffer, endianCd){
    var o = this;
@@ -3911,10 +3972,12 @@ MO.FEnvironmentConsole_construct = function FEnvironmentConsole_construct(){
 MO.FEnvironmentConsole_register = function FEnvironmentConsole_register(environment){
    var o = this;
    var name = environment.name();
+   MO.Assert.debugNotEmpty(name);
    o._environments.set(name, environment);
 }
 MO.FEnvironmentConsole_registerValue = function FEnvironmentConsole_registerValue(name, value){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    var environment = MO.Class.create(MO.FEnvironment);
    environment.set(name, value);
    o._environments.set(name, environment);
@@ -3934,6 +3997,7 @@ MO.FEnvironmentConsole_findValue = function FEnvironmentConsole_findValue(name){
 }
 MO.FEnvironmentConsole_parse = function FEnvironmentConsole_parse(value){
    var o = this;
+   MO.Assert.debugNotEmpty(value);
    var result = value;
    var environments = o._environments;
    var count = environments.count();
@@ -4019,6 +4083,7 @@ MO.FEventConsole_construct = function FEventConsole_construct(){
    thread.setInterval(o._interval);
    thread.lsnsProcess.register(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+   MO.Logger.debug(o, 'Add event thread. (thread={1})', MO.Class.dump(thread));
 }
 MO.FEventConsole_register = function FEventConsole_register(po, pc){
    var o = this;
@@ -4721,14 +4786,10 @@ MO.FThreadConsole_processAll = function FThreadConsole_processAll(){
    if(o._active){
       var threads = o._threads;
       var count = threads.count();
-      try{
          for(var i = 0; i < count; i++){
             var thread = threads.at(i);
             o.process(thread);
          }
-      }catch(error){
-         MO.Logger.fatal(o, error, 'Thread process failure. (thread_count={1})', count);
-      }
    }
    if(o._requestFlag){
       MO.Window.requestAnimationFrame(o.ohInterval);

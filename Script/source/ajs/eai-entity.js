@@ -24,7 +24,6 @@ MO.FEaiCity3dEntity = function FEaiCity3dEntity(o){
    o._inputPoint             = null;
    o._outputPoint            = null;
    o.construct               = MO.FEaiCity3dEntity_construct;
-   o.calculateScreenPosition = MO.FEaiCity3dEntity_calculateScreenPosition;
    o.build                   = MO.FEaiCity3dEntity_build;
    o.addInvestmentTotal      = MO.FEaiCity3dEntity_addInvestmentTotal;
    o.reset                   = MO.FEaiCity3dEntity_reset;
@@ -36,29 +35,17 @@ MO.FEaiCity3dEntity = function FEaiCity3dEntity(o){
 MO.FEaiCity3dEntity_construct = function FEaiCity3dEntity_construct(){
    var o = this;
    o.__base.FEaiEntity.construct.call(o);
-   o._location = new MO.SPoint2();
+   o._location = new MO.SPoint3();
    o._size = new MO.SSize2();
    o._color = new MO.SColor4(1, 1, 1, 1);
    o._rangeColor = new MO.SColor4(0, 0, 0, 0);
    o._inputPoint = new MO.SPoint3();
    o._outputPoint = new MO.SPoint3();
 }
-MO.FEaiCity3dEntity_calculateScreenPosition = function FEaiCity3dEntity_calculateScreenPosition(){
-   var o = this;
-   var region = o._stage.region();
-   var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix);
-   var mMatrix = o._renderable.matrix();
-   var matrix = MO.Lang.Math.matrix;
-   matrix.identity();
-   matrix.append(mMatrix);
-   matrix.append(vpMatrix);
-   o._inputPoint.set(o._location.x, o._location.y, 0);
-   matrix.transformPoint3(o._inputPoint, o._outputPoint);
-   return o._outputPoint;
-}
 MO.FEaiCity3dEntity_build = function FEaiCity3dEntity_build(context){
    var o = this;
-   o._location.assign(o._data.location());
+   var location = o._data.location();
+   o._location.set(location.x, location.y, 0);
    o._size.set(2, 2);
 }
 MO.FEaiCity3dEntity_addInvestmentTotal = function FEaiCity3dEntity_addInvestmentTotal(level, investment){
@@ -146,6 +133,7 @@ MO.FEaiCityEntity = function FEaiCityEntity(o){
    o._location               = MO.Class.register(o, new MO.AGetter('_location'));
    o._size                   = MO.Class.register(o, new MO.AGetter('_size'));
    o._color                  = MO.Class.register(o, new MO.AGetter('_color'));
+   o._targetColor            = MO.Class.register(o, new MO.AGetter('_targetColor'));
    o._range                  = MO.Class.register(o, new MO.AGetter('_range'), 1);
    o._rangeColor             = MO.Class.register(o, new MO.AGetter('_rangeColor'));
    o._cityTotal              = 0;
@@ -164,7 +152,6 @@ MO.FEaiCityEntity = function FEaiCityEntity(o){
    o._inputPoint             = null;
    o._outputPoint            = null;
    o.construct               = MO.FEaiCityEntity_construct;
-   o.calculateScreenPosition = MO.FEaiCityEntity_calculateScreenPosition;
    o.build                   = MO.FEaiCityEntity_build;
    o.addInvestmentTotal      = MO.FEaiCityEntity_addInvestmentTotal;
    o.reset                   = MO.FEaiCityEntity_reset;
@@ -176,29 +163,18 @@ MO.FEaiCityEntity = function FEaiCityEntity(o){
 MO.FEaiCityEntity_construct = function FEaiCityEntity_construct(){
    var o = this;
    o.__base.FEaiEntity.construct.call(o);
-   o._location = new MO.SPoint2();
+   o._location = new MO.SPoint3();
    o._size = new MO.SSize2();
    o._color = new MO.SColor4(0, 0, 0, 0);
+   o._targetColor = new MO.SColor4(0, 0, 0, 0);
    o._rangeColor = new MO.SColor4(0, 0, 0, 0);
    o._inputPoint = new MO.SPoint3();
    o._outputPoint = new MO.SPoint3();
 }
-MO.FEaiCityEntity_calculateScreenPosition = function FEaiCityEntity_calculateScreenPosition(){
-   var o = this;
-   var region = o._stage.region();
-   var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix);
-   var mMatrix = o._renderable.matrix();
-   var matrix = MO.Lang.Math.matrix;
-   matrix.identity();
-   matrix.append(mMatrix);
-   matrix.append(vpMatrix);
-   o._inputPoint.set(o._location.x, o._location.y, 0);
-   matrix.transformPoint3(o._inputPoint, o._outputPoint);
-   return o._outputPoint;
-}
 MO.FEaiCityEntity_build = function FEaiCityEntity_build(context){
    var o = this;
-   o._location.assign(o._data.location());
+   var location = o._data.location();
+   o._location.set(location.x, location.y, 0);
    o._size.set(2, 2);
 }
 MO.FEaiCityEntity_addInvestmentTotal = function FEaiCityEntity_addInvestmentTotal(level, investment){
@@ -211,6 +187,7 @@ MO.FEaiCityEntity_addInvestmentTotal = function FEaiCityEntity_addInvestmentTota
    var rateResource = MO.Console.find(MO.FEaiResourceConsole).rateModule().find(MO.EEaiRate.InvestmentRange);
    var range = 200000;
    var color = rateResource.findRate(investment / range);
+   o._targetColor.setInteger(color);
    o._color.set(1, 1, 1, 1);
    o._rangeColor.setInteger(color);
    o._rangeColor.alpha = 1;
@@ -307,6 +284,7 @@ MO.FEaiCityEntityModule_findByCard = function FEaiCityEntityModule_findByCard(ca
 }
 MO.FEaiCityEntityModule_push = function FEaiCityEntityModule_push(entity){
    var code = entity.data().code();
+   MO.Assert.debugNotEmpty(code);
    this._citys.set(code, entity);
 }
 MO.FEaiCityEntityModule_build = function FEaiCityEntityModule_build(context, clazz){
@@ -474,6 +452,7 @@ MO.FEaiCountry3dEntity_loadResource = function FEaiCountry3dEntity_loadResource(
       var provinceData = provincesData.at(i);
       var provinceCode = provinceData.code();
       var provinceResource = provinceModule.findByCode(provinceCode);
+      MO.Assert.debugNotNull(provinceResource);
       var provinceEntity = MO.Class.create(MO.FEaiProvince3dEntity);
       provinceEntity._countryEntity = o;
       provinceEntity.linkGraphicContext(o);
@@ -677,6 +656,7 @@ MO.FEaiCountryEntity_loadResource = function FEaiCountryEntity_loadResource(reso
       provinceData = provincesData.at(i);
       var provinceCode = provinceData.code();
       var provinceResource = provinceModule.findByCode(provinceCode);
+      MO.Assert.debugNotNull(provinceResource);
       var provinceEntity = MO.Class.create(MO.FEaiProvinceEntity);
       provinceEntity.setResource(provinceResource);
       provinceEntity.setData(provinceData);
@@ -1535,7 +1515,7 @@ MO.FEaiProvinceEntity_dispose = function FEaiProvinceEntity_dispose(){
    o.__base.FEaiEntity.dispose.call(o);
 }
 MO.FEaiProvinceEntityModule = function FEaiProvinceEntityModule(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiEntityModule);
+   o = MO.Class.inherits(this, o, MO.FEaiEntityModule);
    o._provinces     = MO.Class.register(o, new MO.AGetter('_provinces'));
    o.construct  = MO.FEaiProvinceEntityModule_construct;
    o.findByCode = MO.FEaiProvinceEntityModule_findByCode;

@@ -143,11 +143,12 @@ MO.EDataType = new function EDataType(){
    o.Float32 = o.Float = 10;
    o.Float64 = o.Double = 11;
    o.String = 12;
-   o.Struct = 13;
-   o.Object = 14;
-   o.Array = 15;
-   o.Objects = 16;
-   o.Dictionary = 17;
+   o.Array = 13;
+   o.Struct = 14;
+   o.Structs = 15;
+   o.Object = 16;
+   o.Objects = 17;
+   o.Dictionary = 18;
    return o;
 }
 MO.EEndian = new function EEndian(){
@@ -216,7 +217,22 @@ MO.TClass_register = function TClass_register(annotation){
       o._annotations[annotationCd] = annotations;
    }
    if(!annotation._duplicate){
-      if(annotations[code]){
+      var duplicate = false;
+      if(ordered){
+         var acount = annotations.count();
+         for(var i = 0; i < acount; i++){
+            var afind = annotations.at(i);
+            if(afind.code() == code){
+               duplicate = true;
+               break;
+            }
+         }
+      }else{
+         if(annotations[code]){
+            duplicate = true;
+         }
+      }
+      if(duplicate){
          throw new MO.TError(o, "Duplicate annotation. (class={1}, annotation={2}, name={3}, code={4}, value={5})", MO.Class.dump(o), annotation, name, code, annotation.toString());
       }
    }
@@ -733,10 +749,8 @@ MO.TListeners_find = function TListeners_find(owner, callback){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
          var listener = listeners.at(i);
-         if(listener._owner == owner){
-            if(listener._callback == callback){
-               return listener;
-            }
+         if((listener._owner === owner) && (listener._callback === callback)){
+            return listener;
          }
       }
    }
@@ -939,6 +953,7 @@ MO.RClass.prototype.isName = function RClass_isName(value, name){
 }
 MO.RClass.prototype.isClass = function RClass_isClass(value, clazz){
    var o = this;
+   MO.Assert.debugNotNull(clazz);
    if(value){
       var name = o.name(clazz);
       if(value.__base){
@@ -1230,6 +1245,7 @@ MO.RClass.prototype.build = function RClass_build(clazz){
 }
 MO.RClass.prototype.free = function RClass_free(instance){
    var clazz = instance.__class;
+   MO.Assert.debugNotNull(clazz);
    clazz.free(instance);
 }
 MO.RClass.prototype.dump = function RClass_dump(v){
@@ -1317,7 +1333,9 @@ MO.RDate.prototype.monthDays = function RDate_monthDays(year, month){
    }
    year = parseInt(year);
    month = parseInt(month);
-   this.MonthDays[2] = (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   if(month == 2){
+      return (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   }
    return this.MonthDays[month];
 }
 MO.RDate.prototype.splitFormat = function RDate_splitFormat(value, format){

@@ -1589,7 +1589,7 @@ MO.FEditorDsFrameSpaceContent_loadFrame = function FEditorDsFrameSpaceContent_lo
 }
 MO.FEditorDsFrameSpaceContent_dispose = function FEditorDsFrameSpaceContent_dispose(){
    var o = this;
-   o._rotation = MO.Lang.Obejct.dispose(o._rotation)
+   o._rotation = MO.Lang.Object.dispose(o._rotation)
    o.__base.FDuiControl.dispose.call(o);
 }
 MO.FEditorDsFrameSpaceToolBar = function FEditorDsFrameSpaceToolBar(o){

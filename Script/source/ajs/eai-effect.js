@@ -345,7 +345,7 @@ MO.FEaiCitys3dRenderable_upload = function FEaiCitys3dRenderable_upload(){
          var location = city.location();
          var level = city.data().level();
          if((level != 1) && (level != 2) && (level != 3) && (level != 4)){
-            throw new TError('Invalid level.');
+            continue;
          }
          var provinceEntity = city.provinceEntity();
          var z = 0;
@@ -631,6 +631,9 @@ MO.FEaiCitysRenderable_setup = function FEaiCitysRenderable_setup(){
    var citys = o._citys;
    var count = citys.count();
    var vertexCount = o._vertexCount = 4 * count;
+   o._vertexData = new Float32Array(3 * vertexCount);
+   o._coordData = new Float32Array(2 * vertexCount);
+   o._colorData = new Uint8Array(4 * vertexCount);
    var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
    buffer.setCode('position');
    buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
@@ -676,9 +679,12 @@ MO.FEaiCitysRenderable_setup = function FEaiCitysRenderable_setup(){
 MO.FEaiCitysRenderable_upload = function FEaiCitysRenderable_upload(){
    var o = this;
    var context = o._graphicContext;
+   var vertexData = o._vertexData;
+   var coordData = o._coordData;
+   var colorData = o._colorData;
    var citys = o._citys;
-   var total = citys.count();
    var count = 0;
+   var total = citys.count();
    for(var i = 0; i < total; i++){
       var city = citys.at(i);
       if(city.visible()){
@@ -687,11 +693,8 @@ MO.FEaiCitysRenderable_upload = function FEaiCitysRenderable_upload(){
    }
    var vertexCount = o._vertexCount = 4 * count;
    var vertexPosition = 0;
-   var vertexData = new Float32Array(3 * vertexCount);
    var coordPosition = 0;
-   var coordData = new Float32Array(2 * vertexCount);
    var colorPosition = 0;
-   var colorData = new Uint8Array(4 * vertexCount);
    for(var i = 0; i < total; i++){
       var city = citys.at(i);
       if(city.visible()){

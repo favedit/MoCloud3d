@@ -34,6 +34,8 @@ MO.FGuiCanvasContext_drawFontText = function FGuiCanvasContext_drawFontText(text
       handle.fillText(text, x + (width - textWidth), cy);
    }else if(alignCd == MO.EUiAlign.Center){
       handle.fillText(text, cx, cy);
+   }else if(alignCd == MO.EUiAlign.LeftPadding){
+      handle.fillText(text, x+30, cy);
    }else{
       throw new MO.TError('Invalid align type.');
    }
@@ -157,7 +159,7 @@ MO.FGuiCanvasManager_process = function FGuiCanvasManager_process(){
          var control = readyControls.at(i);
          if(control.testDirty()){
             var controlRectangle = control.clientRectangle();
-            dirtyControls.push(control);
+            dirtyControls.pushUnique(control);
             control._flagDirty = true;
             o.filterByRectangle(dirtyControls, controlRectangle)
          }
@@ -271,7 +273,7 @@ MO.FGuiFrameConsole_createFrame = function FGuiFrameConsole_createFrame(context,
    var o = this;
    var describeConsole = MO.Console.find(MO.FGuiFrameDescribeConsole);
    var xframe = describeConsole.load(name);
-   var frame = MO.RGuiControl.build(null, xframe, null, null);
+   var frame = MO.Gui.Control.build(null, xframe, null, null);
    frame.linkGraphicContext(context);
    frame.psInitialize();
    frame.build();
@@ -362,12 +364,19 @@ MO.FGuiGeneralColorEffect = function FGuiGeneralColorEffect(o){
 MO.FGuiGeneralColorEffect_drawRenderable = function FGuiGeneralColorEffect_drawRenderable(region, renderable){
    var o = this;
    var program = o._program;
+   var control = renderable.control();
+   var controlSize = control.size();
+   var scale = control.renderableScale();
+   var adjustSize = renderable.adjustSize();
+   var rateX = controlSize.width * scale / adjustSize.width;
+   var rateY = controlSize.height * scale/ adjustSize.height;
    var modelMatrix = renderable.currentMatrix();
    var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix)
    var material = renderable.material();
    o.bindMaterial(material);
    program.setParameter('vc_model_matrix', modelMatrix);
    program.setParameter('vc_vp_matrix', vpMatrix);
+   program.setParameter4('fc_coord', rateX, rateY, 0, 1 - rateY);
    o.__base.FE3dAutomaticEffect.drawRenderable.call(o, region, renderable);
 }
 MO.FGuiGeneralControlEffect = function FGuiGeneralControlEffect(o){
@@ -542,6 +551,41 @@ MO.FGuiManager_dispose = function FGuiManager_dispose(){
    o._transforms = MO.Lang.Object.dispose(o._transforms);
    o._visibleControls = MO.Lang.Object.dispose(o._visibleControls);
    o.__base.FObject.dispose.call(o);
+}
+MO.FGuiSelectAutomaticEffect = function FGuiSelectAutomaticEffect(o){
+   o = MO.Class.inherits(this, o, MO.FG3dAutomaticEffect);
+   o._code          = 'select.gui';
+   o.drawRenderable = MO.FGuiSelectAutomaticEffect_drawRenderable;
+   return o;
+}
+MO.FGuiSelectAutomaticEffect_drawRenderable = function FGuiSelectAutomaticEffect_drawRenderable(region, renderable, index){
+   var o = this;
+   var context = o._graphicContext;
+   var size = context.size();
+   var program = o._program;
+   var selectX = region._selectX;
+   var selectY = region._selectY;
+   var material = renderable.material();
+   var materialInfo = material.info();
+   o.bindMaterial(material);
+   var matrix = renderable.currentMatrix();
+   var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix);
+   program.setParameter('vc_model_matrix', matrix);
+   program.setParameter('vc_vp_matrix', vpMatrix);
+   program.setParameter4('vc_offset', size.width, size.height, 1 - (selectX / size.width) * 2, (selectY / size.height) * 2 - 1);
+   var i = index + 1;
+   var i1 = i  & 0xFF;
+   var i2 = (i >> 8) & 0xFF;
+   var i3 = (i >> 16) & 0xFF;
+   program.setParameter4('fc_index', i1 / 255, i2 / 255, i3 / 255, materialInfo.alphaBase);
+   o.bindAttributes(renderable);
+   o.bindSamplers(renderable);
+   var indexBuffers = renderable.indexBuffers();
+   var count = indexBuffers.count();
+   for(var i = 0; i < count; i++){
+      var indexBuffer = indexBuffers.at(i);
+      context.drawTriangles(indexBuffer);
+   }
 }
 MO.FGuiTransform = function FGuiTransform(o){
    o = MO.Class.inherits(this, o, MO.FObject);

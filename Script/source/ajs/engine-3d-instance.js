@@ -108,7 +108,7 @@ MO.FE3dCamera_update = function FE3dCamera_update(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._projection = MO.Lang.Obejct.dispose(o._projection);
+   o._projection = MO.Lang.Object.dispose(o._projection);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
@@ -2030,7 +2030,7 @@ MO.FE3dSimpleDesktop_dispose = function FE3dSimpleDesktop_dispose(){
    o.__base.FDesktop.dispose.call(o);
 }
 MO.FE3dSimpleStage = function FE3dSimpleStage(o){
-   o = MO.RClass.inherits(this, o, MO.FE3dStage);
+   o = MO.Class.inherits(this, o, MO.FE3dStage);
    o._optionKeyboard = true;
    o._skyLayer       = MO.RClass.register(o, new MO.AGetter('_skyLayer'));
    o._mapLayer       = MO.RClass.register(o, new MO.AGetter('_mapLayer'));

@@ -127,7 +127,7 @@ MO.SGuiTransferCurveStyle_dispose = function SGuiTransferCurveStyle_dispose(){
 }
 MO.FEaiChartMktProductCircle = function FEaiChartMktProductCircle(o) {
    o = MO.Class.inherits(this, o, MO.FGuiControl);
-    o._ready            = false;
+   o._ready            = false;
    o._circleRadius     = MO.Class.register(o, new MO.AGetSet('_circleRadius'), 10);
    o._trendInfo        = MO.Class.register(o, new MO.AGetSet('_trendInfo'));
    o._TenderBef        = MO.Class.register(o, new MO.AGetSet('_TenderBef'));
@@ -543,7 +543,7 @@ MO.FEaiChartMktProductProcessor_dispose = function FEaiChartMktProductProcessor_
    o.__base.FObject.dispose.call(o);
 }
 MO.FEaiChartMktProductScene = function FEaiChartMktProductScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                   = MO.EEaiScene.ChartCustomer;
    o._processor              = MO.Class.register(o, new MO.AGetter('_processor'));
    o._processorCurrent       = 0;

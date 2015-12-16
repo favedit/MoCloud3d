@@ -3,6 +3,136 @@ MO.ME3dObject = function ME3dObject(o){
    o._guid = MO.Class.register(o, new MO.AGetSet('_guid'));
    return o;
 }
+MO.FE3dBoomerangTimelineAction = function FE3dBoomerangTimelineAction(o) {
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code                 = 'boomerang';
+   o._optionSin            = MO.Class.register(o, new MO.AGetSet('_optionSin'), false);
+   o._matrix                = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originTranslate    = MO.Class.register(o, new MO.AGetter('_originTranslate'));
+   o._currentTranslate   = MO.Class.register(o, new MO.AGetter('_currentTranslate'));
+   o._targetTranslate    = MO.Class.register(o, new MO.AGetter('_targetTranslate'));
+   o.onStart               = MO.FE3dBoomerangTimelineAction_onStart;
+   o.onProcess             = MO.FE3dBoomerangTimelineAction_onProcess;
+   o.onStop                = MO.FE3dBoomerangTimelineAction_onStop;
+   o.construct             = MO.FE3dBoomerangTimelineAction_construct;
+   o.link                  = MO.FE3dBoomerangTimelineAction_link;
+   o.dispose               = MO.FE3dBoomerangTimelineAction_dispose;
+   return o;
+}
+MO.FE3dBoomerangTimelineAction_onStart = function FE3dBoomerangTimelineAction_onStart(context) {
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dBoomerangTimelineAction_onProcess = function FE3dBoomerangTimelineAction_onProcess(context) {
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   rate = rate > 1 ? 1 : rate;
+   if(o._optionSin) rate = Math.sin(rate * Math.PI);
+   var matrix = o._matrix;
+   var current = o._currentTranslate;
+   var origin = o._originTranslate;
+   var target = o._targetTranslate;
+   current.x = origin.x + target.x * rate;
+   current.y = origin.y + target.y * rate;
+   current.z = origin.z + target.z * rate;
+   matrix.setTranslate(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dBoomerangTimelineAction_onStop = function FE3dBoomerangTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dBoomerangTimelineAction_construct = function FE3dBoomerangTimelineAction_construct() {
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentTranslate = new MO.SValue3();
+   o._originTranslate = new MO.SValue3();
+   o._targetTranslate = new MO.SValue3();
+}
+MO.FE3dBoomerangTimelineAction_link = function FE3dBoomerangTimelineAction_link(matrix) {
+   var o = this;
+   o._matrix = matrix;
+   o._originTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+   o._currentTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+}
+MO.FE3dBoomerangTimelineAction_dispose = function FE3dBoomerangTimelineAction_dispose() {
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dCameraTimelineAction = function FE3dCameraTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.FTimelineAction);
+   o._code            = 'move';
+   o._camera          = MO.Class.register(o, new MO.AGetter('_camera'));
+   o._speed           = MO.Class.register(o, new MO.AGetSet('_speed'), 100);
+   o._currentPosition = MO.Class.register(o, new MO.AGetter('_currentPosition'));
+   o._sourcePosition  = MO.Class.register(o, new MO.AGetter('_sourcePosition'));
+   o._targetPosition  = MO.Class.register(o, new MO.AGetter('_targetPosition'));
+   o.onStart          = MO.FE3dCameraTimelineAction_onStart;
+   o.onProcess        = MO.FE3dCameraTimelineAction_onProcess;
+   o.onStop           = MO.FE3dCameraTimelineAction_onStop;
+   o.construct        = MO.FE3dCameraTimelineAction_construct;
+   o.link             = MO.FE3dCameraTimelineAction_link;
+   o.dispose          = MO.FE3dCameraTimelineAction_dispose;
+   return o;
+}
+MO.FE3dCameraTimelineAction_onStart = function FE3dCameraTimelineAction_onStart(context){
+   var o = this;
+   o.__base.FTimelineAction.onStart.call(o, context);
+}
+MO.FE3dCameraTimelineAction_onProcess = function FE3dCameraTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.FTimelineAction.onProcess.call(o, context);
+   var direction = o._currentDirection;
+   direction.direction(o._sourcePosition, o._targetPosition);
+   direction.normalize();
+   var moveLength = o._speed * context.spanSecond;
+   var length = o._currentPosition.lengthToValue3(o._targetPosition);
+   if(moveLength > length){
+      o._currentPosition.assign(o._targetPosition);
+      o._statusStop = true;
+   }else{
+      o._currentPosition.add(direction.x * moveLength, direction.y * moveLength, direction.z * moveLength);
+   }
+   o._camera.position().assign(o._currentPosition);
+   o._camera.update();
+}
+MO.FE3dCameraTimelineAction_onStop = function FE3dCameraTimelineAction_onStop(){
+   var o = this;
+   o.__base.FTimelineAction.onStop.call(o, context);
+}
+MO.FE3dCameraTimelineAction_construct = function FE3dCameraTimelineAction_construct(){
+   var o = this;
+   o.__base.FTimelineAction.construct.call(o);
+   o._currentPosition = new MO.SPoint3();
+   o._currentDirection = new MO.SVector3();
+   o._sourcePosition = new MO.SPoint3();
+   o._targetPosition = new MO.SPoint3();
+}
+MO.FE3dCameraTimelineAction_link = function FE3dCameraTimelineAction_link(camera){
+   var o = this;
+   o._camera = camera;
+   o._currentPosition.assign(camera.position());
+   o._sourcePosition.assign(camera.position());
+}
+MO.FE3dCameraTimelineAction_setTargetControl = function FE3dCameraTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dCameraTimelineAction_dispose = function FE3dCameraTimelineAction_dispose(){
+   var o = this;
+   o._currentPosition = MO.Lang.Object.dispose(o._currentPosition);
+   o._currentDirection = MO.Lang.Object.dispose(o._currentDirection);
+   o._sourcePosition = MO.Lang.Object.dispose(o._sourcePosition);
+   o._targetPosition = MO.Lang.Object.dispose(o._targetPosition);
+   o._camera = null;
+   o.__base.FTimelineAction.dispose.call(o);
+}
 MO.FE3dCanvas = function FE3dCanvas(o){
    o = MO.Class.inherits(this, o, MO.FCanvas, MO.MGraphicObject, MO.MMouseCapture);
    o._optionAlpha        = true;
@@ -110,6 +240,7 @@ MO.FE3dCanvas_resize = function FE3dCanvas_resize(sourceWidth, sourceHeight){
    o._size.set(width, height);
    var context = o._graphicContext;
    context.setViewport(0, 0, width, height);
+   MO.Logger.debug(o, 'Canvas3d resize. (size={1}x{2}, buffer={3}x{4}, html={5})', width, height, context._handle.drawingBufferWidth, context._handle.drawingBufferHeight, hCanvas.outerHTML);
 }
 MO.FE3dCanvas_show = function FE3dCanvas_show(){
    this.setVisible(true);
@@ -332,23 +463,139 @@ MO.FE3dRenderable_remove = function FE3dRenderable_remove(){
       o._display = null;
    }
 }
+MO.FE3dRotateAxisTimelineAction = function FE3dRotateAxisTimelineAction(o) {
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code                 = 'rotateAxis';
+   o._matrix               = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._targetAxis           = MO.Class.register(o, new MO.AGetter('_targetAxis'));
+   o._targetAngle          = MO.Class.register(o, new MO.AGetSet('_targetAngle'));
+   o._currentAngle         = 0;
+   o._step                 = 0;
+   o.onStart               = MO.FE3dRotateAxisTimelineAction_onStart;
+   o.onProcess             = MO.FE3dRotateAxisTimelineAction_onProcess;
+   o.onStop                = MO.FE3dRotateAxisTimelineAction_onStop;
+   o.construct             = MO.FE3dRotateAxisTimelineAction_construct;
+   o.link                 = MO.FE3dRotateAxisTimelineAction_link;
+   o.dispose              = MO.FE3dRotateAxisTimelineAction_dispose;
+}
+MO.FE3dRotateAxisTimelineAction_onStart = function FE3dRotateAxisTimelineAction_onStart(context) {
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dRotateAxisTimelineAction_onProcess = function FE3dRotateAxisTimelineAction_onProcess(context) {
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   rate = rate > 1 ? 1 : rate;
+   var changeAngle = o._targetAngle * rate - o._currentAngle;
+   o._currentAngle += changeAngle;
+   o._matrix.addRotationAxis(o._targetAxis, changeAngle);
+}
+MO.FE3dRotateAxisTimelineAction_onStop = function FE3dRotateAxisTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dRotateAxisTimelineAction_construct = function FE3dRotateAxisTimelineAction_construct() {
+   var o = this;
+   o._targetAxis = new MO.SVector3(0, 0, 0);
+   o._targetAngle = 0;
+   o.__base.MTimelineAction.construct.call(o);
+}
+MO.FE3dRotateAxisTimelineAction_link = function FE3dRotateAxisTimelineAction_link(matrix) {
+   var o = this;
+   o._matrix = matrix;
+}
+MO.FE3dRotateAxisTimelineAction_dispose = function FE3dRotateAxisTimelineAction_dispose() {
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dRotateTimelineAction = function FE3dRotateTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code               = 'rotate';
+   o._matrix             = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originRotate       = MO.Class.register(o, new MO.AGetter('_originRotate'));
+   o._currentRotate      = MO.Class.register(o, new MO.AGetter('_currentRotate'));
+   o._targetRotate       = MO.Class.register(o, new MO.AGetter('_targetRotate'));
+   o.onStart          = MO.FE3dRotateTimelineAction_onStart;
+   o.onProcess        = MO.FE3dRotateTimelineAction_onProcess;
+   o.onStop           = MO.FE3dRotateTimelineAction_onStop;
+   o.construct        = MO.FE3dRotateTimelineAction_construct;
+   o.link             = MO.FE3dRotateTimelineAction_link;
+   o.dispose          = MO.FE3dRotateTimelineAction_dispose;
+   return o;
+}
+MO.FE3dRotateTimelineAction_onStart = function FE3dRotateTimelineAction_onStart(context){
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dRotateTimelineAction_onProcess = function FE3dRotateTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   var matrix = o._matrix;
+   var current = o._currentRotate;
+   var origin = o._originRotate;
+   var target = o._targetRotate;
+   current.x = origin.x + (target.x - origin.x) * rate;
+   current.y = origin.y + (target.y - origin.y) * rate;
+   current.z = origin.z + (target.z - origin.z) * rate;
+   matrix.setRotation(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dRotateTimelineAction_onStop = function FE3dRotateTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dRotateTimelineAction_construct = function FE3dRotateTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._originRotate = new MO.SValue3();
+   o._currentRotate = new MO.SValue3();
+   o._targetRotate = new MO.SValue3();
+}
+MO.FE3dRotateTimelineAction_link = function FE3dRotateTimelineAction_link(matrix){
+   var o = this;
+   o._matrix = matrix;
+   o._originRotate.set(matrix.rx, matrix.ry, matrix.rz);
+   o._currentRotate.set(matrix.rx, matrix.ry, matrix.rz);
+}
+MO.FE3dRotateTimelineAction_setTargetControl = function FE3dRotateTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dRotateTimelineAction_dispose = function FE3dRotateTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
 MO.FE3dStage = function FE3dStage(o){
    o = MO.Class.inherits(this, o, MO.FStage, MO.MGraphicObject);
-   o._statistics        = MO.Class.register(o, new MO.AGetter('_statistics'));
-   o._technique         = MO.Class.register(o, new MO.AGetter('_technique'));
-   o._region            = MO.Class.register(o, new MO.AGetter('_region'));
-   o._allDisplays       = null;
-   o.onProcess          = MO.FE3dStage_onProcess;
-   o.construct          = MO.FE3dStage_construct;
-   o.createRegion       = MO.FE3dStage_createRegion;
-   o.linkGraphicContext = MO.FE3dStage_linkGraphicContext;
-   o.setup              = MO.FE3dStage_setup;
-   o.camera             = MO.FE3dStage_camera;
-   o.projection         = MO.FE3dStage_projection;
-   o.directionalLight   = MO.FE3dStage_directionalLight;
-   o.selectTechnique    = MO.FE3dStage_selectTechnique;
-   o.filterDisplays     = MO.FE3dStage_filterDisplays;
-   o.allDisplays        = MO.FE3dStage_allDisplays;
+   o._statistics             = MO.Class.register(o, new MO.AGetter('_statistics'));
+   o._technique              = MO.Class.register(o, new MO.AGetter('_technique'));
+   o._region                 = MO.Class.register(o, new MO.AGetter('_region'));
+   o._allDisplays            = null;
+   o.onProcess               = MO.FE3dStage_onProcess;
+   o.construct               = MO.FE3dStage_construct;
+   o.createRegion            = MO.FE3dStage_createRegion;
+   o.linkGraphicContext      = MO.FE3dStage_linkGraphicContext;
+   o.setup                   = MO.FE3dStage_setup;
+   o.camera                  = MO.FE3dStage_camera;
+   o.projection              = MO.FE3dStage_projection;
+   o.directionalLight        = MO.FE3dStage_directionalLight;
+   o.calculateScreenPosition = MO.FE3dStage_calculateScreenPosition;
+   o.selectTechnique         = MO.FE3dStage_selectTechnique;
+   o.filterDisplays          = MO.FE3dStage_filterDisplays;
+   o.allDisplays             = MO.FE3dStage_allDisplays;
    return o;
 }
 MO.FE3dStage_onProcess = function FE3dStage_onProcess(){
@@ -422,6 +669,22 @@ MO.FE3dStage_projection = function FE3dStage_projection(){
 }
 MO.FE3dStage_directionalLight = function FE3dStage_directionalLight(){
    return this._region.directionalLight();
+}
+MO.FE3dStage_calculateScreenPosition = function FE3dStage_calculateScreenPosition(outputPosition, inputPosition, modelMatrix){
+   var o = this;
+   var graphicContext = o._graphicContext;
+   var size = graphicContext.size();
+   var camera = o.camera();
+   var matrix = MO.Lang.Math.matrix;
+   matrix.identity();
+   matrix.append(modelMatrix);
+   matrix.append(camera.matrix());
+   matrix.append(camera.projection().matrix());
+   var point3 = matrix.transformPoint3(inputPosition);
+   var cz = 1 / point3.z;
+   outputPosition.x = size.width * (point3.x * cz + 1) * 0.5;
+   outputPosition.y = size.height * (1 - point3.y * cz) * 0.5;
+   return outputPosition;
 }
 MO.FE3dStage_selectTechnique = function FE3dStage_selectTechnique(context, clazz){
    var o = this;
@@ -555,6 +818,130 @@ MO.FE3dTechnique_drawStage = function FE3dTechnique_drawStage(stage, region){
       pass.drawEnd(region);
    }
    o.present(region);
+}
+MO.FE3dTransformTimelineAction = function FE3dTransformTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code            = 'transform';
+   o._sources         = null;
+   o._currentMatrix   = MO.Class.register(o, new MO.AGetter('_currentMatrix'));
+   o._sourceMatrix    = MO.Class.register(o, new MO.AGetter('_sourceMatrix'));
+   o._targetMatrix    = MO.Class.register(o, new MO.AGetter('_targetMatrix'));
+   o.onStart          = MO.FE3dTransformTimelineAction_onStart;
+   o.onProcess        = MO.FE3dTransformTimelineAction_onProcess;
+   o.onStop           = MO.FE3dTransformTimelineAction_onStop;
+   o.construct        = MO.FE3dTransformTimelineAction_construct;
+   o.linkSource       = MO.FE3dTransformTimelineAction_linkSource;
+   o.dispose          = MO.FE3dTransformTimelineAction_dispose;
+   return o;
+}
+MO.FE3dTransformTimelineAction_onStart = function FE3dTransformTimelineAction_onStart(){
+   var o = this;
+   o.__base.MTimelineAction.onStart.call(o);
+}
+MO.FE3dTransformTimelineAction_onProcess = function FE3dTransformTimelineAction_onProcess(){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var direction = o._currentDirection;
+   direction.direction(o._sourcePosition, o._targetPosition);
+   direction.normalize();
+   var moveLength = o._speed * context.spanSecond;
+   var length = o._currentPosition.lengthToValue3(o._targetPosition);
+   if(moveLength > length){
+      o._currentPosition.assign(o._targetPosition);
+      o._statusStop = true;
+   }else{
+      o._currentPosition.add(direction.x * moveLength, direction.y * moveLength, direction.z * moveLength);
+   }
+   o._camera.position().assign(o._currentPosition);
+   o._camera.update();
+}
+MO.FE3dTransformTimelineAction_onStop = function FE3dTransformTimelineAction_onStop(){
+   var o = this;
+   o.__base.MTimelineAction.onStop.call(o);
+}
+MO.FE3dTransformTimelineAction_construct = function FE3dTransformTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentMatrix = new MO.SMatrix3d();
+   o._sourceMatrix = new MO.SMatrix3d();
+   o._targetMatrix = new MO.SMatrix3d();
+}
+MO.FE3dTransformTimelineAction_linkSource = function FE3dTransformTimelineAction_linkSource(source){
+   var o = this;
+   var matrix = source.matrix();
+   o._currentMatrix.assign(matrix);
+   o._sourceMatrix.assign(matrix);
+   o._targetMatrix.assign(matrix);
+}
+MO.FE3dTransformTimelineAction_setTargetControl = function FE3dTransformTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dTransformTimelineAction_dispose = function FE3dTransformTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dTranslateTimelineAction = function FE3dTranslateTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code               = 'translate';
+   o._matrix             = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originTranslate    = MO.Class.register(o, new MO.AGetter('_originTranslate'));
+   o._currentTranslate   = MO.Class.register(o, new MO.AGetter('_currentTranslate'));
+   o._targetTranslate    = MO.Class.register(o, new MO.AGetter('_targetTranslate'));
+   o.onStart          = MO.FE3dTranslateTimelineAction_onStart;
+   o.onProcess        = MO.FE3dTranslateTimelineAction_onProcess;
+   o.onStop           = MO.FE3dTranslateTimelineAction_onStop;
+   o.construct        = MO.FE3dTranslateTimelineAction_construct;
+   o.link             = MO.FE3dTranslateTimelineAction_link;
+   o.dispose          = MO.FE3dTranslateTimelineAction_dispose;
+   return o;
+}
+MO.FE3dTranslateTimelineAction_onStart = function FE3dTranslateTimelineAction_onStart(context){
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dTranslateTimelineAction_onProcess = function FE3dTranslateTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   var matrix = o._matrix;
+   var current = o._currentTranslate;
+   var origin = o._originTranslate;
+   var target = o._targetTranslate;
+   current.x = origin.x + (target.x - origin.x) * rate;
+   current.y = origin.y + (target.y - origin.y) * rate;
+   current.z = origin.z + (target.z - origin.z) * rate;
+   matrix.setTranslate(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dTranslateTimelineAction_onStop = function FE3dTranslateTimelineAction_onStop(context){
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dTranslateTimelineAction_construct = function FE3dTranslateTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentTranslate = new MO.SValue3();
+   o._originTranslate = new MO.SValue3();
+   o._targetTranslate = new MO.SValue3();
+}
+MO.FE3dTranslateTimelineAction_link = function FE3dTranslateTimelineAction_link(matrix){
+   var o = this;
+   o._matrix = matrix;
+   o._originTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+   o._currentTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+}
+MO.FE3dTranslateTimelineAction_setTargetControl = function FE3dTranslateTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dTranslateTimelineAction_dispose = function FE3dTranslateTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
 }
 MO.RE3dEngine = function RE3dEngine(){
    var o = this;

@@ -173,6 +173,31 @@ MO.MUiGridColumnCurrency_formatText = function MUiGridColumnCurrency_formatText(
 MO.MUiGridColumnCurrency_dispose = function MUiGridColumnCurrency_dispose(){
    var o = this;
 }
+MO.MUiGridColumnCurrencyInt = function MUiGridColumnCurrencyInt(o){
+   o = MO.Class.inherits(this, o);
+   o._currencyPercent = MO.Class.register(o, new MO.AGetSet('_currencyPercent'), 0);
+   o._normalColor     = MO.Class.register(o, new MO.AGetSet('_normalColor'), '#000000');
+   o._lowerestColor   = MO.Class.register(o, new MO.AGetSet('_lowerestColor'), '#000000');
+   o._lowerColor      = MO.Class.register(o, new MO.AGetSet('_lowerColor'), '#000000');
+   o._highColor       = MO.Class.register(o, new MO.AGetSet('_highColor'), '#000000');
+   o._highestColor    = MO.Class.register(o, new MO.AGetSet('_highestColor'), '#000000');
+   o._negativeColor   = MO.Class.register(o, new MO.AGetSet('_negativeColor'), '#000000');
+   o.construct        = MO.MUiGridColumnCurrencyInt_construct;
+   o.formatText       = MO.MUiGridColumnCurrencyInt_formatText;
+   o.dispose          = MO.MUiGridColumnCurrencyInt_dispose;
+   return o;
+}
+MO.MUiGridColumnCurrencyInt_construct = function MUiGridColumnCurrencyInt_construct(){
+   var o = this;
+}
+MO.MUiGridColumnCurrencyInt_formatText = function MUiGridColumnCurrencyInt_formatText(value){
+   var o = this;
+   var text = MO.Lang.Integer.format(MO.Runtime.nvl(value, 0), null, null, o._currencyPercent, '0');
+   return text;
+}
+MO.MUiGridColumnCurrencyInt_dispose = function MUiGridColumnCurrencyInt_dispose(){
+   var o = this;
+}
 MO.MUiGridColumnDate = function MUiGridColumnDate(o){
    o = MO.Class.inherits(this, o);
    o._dateFormat = MO.Class.register(o, new MO.AGetSet('_dateFormat'), 'YYYY/MM/DD HH24:MI:SS');
@@ -221,7 +246,7 @@ MO.MUiGridControl = function MUiGridControl(o){
    o._rowClass      = MO.FUiGridRow;
    o._rowFont       = MO.Class.register(o, new MO.AGetter('_rowFont'));
    o._rowHeight     = MO.Class.register(o, new MO.AGetSet('_rowHeight'), 28);
-   o._rowLimitCount = MO.Class.register(o, new MO.AGetter('_rowLimitCount'), 0);
+   o._rowLimitCount = MO.Class.register(o, new MO.AGetSet('_rowLimitCount'), 200);
    o._rows          = MO.Class.register(o, new MO.AGetter('_rows'));
    o._rowPool       = null;
    o._focusRow      = null;

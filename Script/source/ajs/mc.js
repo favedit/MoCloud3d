@@ -655,6 +655,7 @@ MO.TMap_get = function TMap_get(name, defaultValue){
 }
 MO.TMap_set = function TMap_set(name, value){
    var o = this;
+   MO.Assert.debugNotNull(name);
    var nameString = name.toString();
    var code = nameString.toLowerCase();
    var index = o._table[code];
@@ -1321,11 +1322,12 @@ MO.EDataType = new function EDataType(){
    o.Float32 = o.Float = 10;
    o.Float64 = o.Double = 11;
    o.String = 12;
-   o.Struct = 13;
-   o.Object = 14;
-   o.Array = 15;
-   o.Objects = 16;
-   o.Dictionary = 17;
+   o.Array = 13;
+   o.Struct = 14;
+   o.Structs = 15;
+   o.Object = 16;
+   o.Objects = 17;
+   o.Dictionary = 18;
    return o;
 }
 MO.EEndian = new function EEndian(){
@@ -1394,7 +1396,22 @@ MO.TClass_register = function TClass_register(annotation){
       o._annotations[annotationCd] = annotations;
    }
    if(!annotation._duplicate){
-      if(annotations[code]){
+      var duplicate = false;
+      if(ordered){
+         var acount = annotations.count();
+         for(var i = 0; i < acount; i++){
+            var afind = annotations.at(i);
+            if(afind.code() == code){
+               duplicate = true;
+               break;
+            }
+         }
+      }else{
+         if(annotations[code]){
+            duplicate = true;
+         }
+      }
+      if(duplicate){
          throw new MO.TError(o, "Duplicate annotation. (class={1}, annotation={2}, name={3}, code={4}, value={5})", MO.Class.dump(o), annotation, name, code, annotation.toString());
       }
    }
@@ -1911,10 +1928,8 @@ MO.TListeners_find = function TListeners_find(owner, callback){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
          var listener = listeners.at(i);
-         if(listener._owner == owner){
-            if(listener._callback == callback){
-               return listener;
-            }
+         if((listener._owner === owner) && (listener._callback === callback)){
+            return listener;
          }
       }
    }
@@ -2117,6 +2132,7 @@ MO.RClass.prototype.isName = function RClass_isName(value, name){
 }
 MO.RClass.prototype.isClass = function RClass_isClass(value, clazz){
    var o = this;
+   MO.Assert.debugNotNull(clazz);
    if(value){
       var name = o.name(clazz);
       if(value.__base){
@@ -2408,6 +2424,7 @@ MO.RClass.prototype.build = function RClass_build(clazz){
 }
 MO.RClass.prototype.free = function RClass_free(instance){
    var clazz = instance.__class;
+   MO.Assert.debugNotNull(clazz);
    clazz.free(instance);
 }
 MO.RClass.prototype.dump = function RClass_dump(v){
@@ -2495,7 +2512,9 @@ MO.RDate.prototype.monthDays = function RDate_monthDays(year, month){
    }
    year = parseInt(year);
    month = parseInt(month);
-   this.MonthDays[2] = (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   if(month == 2){
+      return (((year % 4 == 0) || (year % 400 == 0)) && (year % 100 != 0)) ? 29 : 28 ;
+   }
    return this.MonthDays[month];
 }
 MO.RDate.prototype.splitFormat = function RDate_splitFormat(value, format){
@@ -3867,6 +3886,7 @@ MO.RString = new MO.RString();
 MO.Lang.String = MO.RString;
 MO.AListener = function AListener(name, linker){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    MO.ASource.call(o, name, MO.ESource.Listener, linker);
    o.build = MO.AListener_build;
    if(linker == null){
@@ -3885,15 +3905,15 @@ MO.AListener = function AListener(name, linker){
 MO.AListener_build = function AListener_build(clazz, instance){
    var o = this;
    var addListener = 'add' + o._linker + 'Listener';
-   instance[addListener] = MO.RListener.makeAddListener(addListener, o._linker);
+   instance[addListener] = MO.Core.Listener.makeAddListener(addListener, o._linker);
    var setListener = 'set' + o._linker + 'Listener';
-   instance[setListener] = MO.RListener.makeSetListener(setListener, o._linker);
+   instance[setListener] = MO.Core.Listener.makeSetListener(setListener, o._linker);
    var removeListener = 'remove' + o._linker + 'Listener';
-   instance[removeListener] = MO.RListener.makeRemoveListener(removeListener, o._linker);
+   instance[removeListener] = MO.Core.Listener.makeRemoveListener(removeListener, o._linker);
    var clearListeners = 'clear' + o._linker + 'Listeners';
-   instance[clearListeners] = MO.RListener.makeClearListener(clearListeners, o._linker);
+   instance[clearListeners] = MO.Core.Listener.makeClearListener(clearListeners, o._linker);
    var processListener = 'process' + o._linker + 'Listener';
-   instance[processListener] = MO.RListener.makeProcessListener(processListener, o._linker);
+   instance[processListener] = MO.Core.Listener.makeProcessListener(processListener, o._linker);
 }
 MO.EEvent = new function EEvent(){
    var o = this;
@@ -3930,6 +3950,9 @@ MO.EEvent = new function EEvent(){
    o.OperationDown    = 'OperationDown';
    o.OperationMove    = 'OperationMove';
    o.OperationUp      = 'OperationUp';
+   o.ActionStart      = 'ActionStart';
+   o.ActionStop       = 'ActionStop';
+   o.SectionStop      = 'SectionStop';
    return o;
 }
 MO.EHttpContent = new function EHttpContent(){
@@ -3983,7 +4006,11 @@ MO.MListener_addListener = function MListener_addListener(name, owner, method){
       listeners = new MO.TListeners();
       listenerss.set(name, listeners);
    }
-   return listeners.register(owner, method);
+   var listener = listeners.find(owner, method);
+   if(!listener){
+      listener = listeners.register(owner, method);
+   }
+   return listener;
 }
 MO.MListener_setListener = function MListener_setListener(name, owner, method){
    var o = this;
@@ -4429,7 +4456,7 @@ MO.RListener.prototype.makeProcessListener = function RListener_makeProcessListe
    }
    return method;
 }
-MO.RListener = new MO.RListener();
+MO.Core.Listener = new MO.RListener();
 MO.EBrowser = new function EBrowser(){
    var o = this;
    o.Unknown = 'unknown';
@@ -4437,6 +4464,11 @@ MO.EBrowser = new function EBrowser(){
    o.FireFox = 'firefox';
    o.Chrome = 'chrome';
    o.Safari = 'safari';
+   return o;
+}
+MO.EConstant = new function EConstant(){
+   var o = this;
+   o.DeviceType = 'device.type';
    return o;
 }
 MO.EDevice = new function EDevice(){
@@ -4581,6 +4613,7 @@ MO.RWindow.prototype.ohVisibility = function RWindow_ohVisibility(hEvent){
    var event = o._eventVisibility;
    event.visibility = visibility;
    o.lsnsVisibility.process(event);
+   MO.Logger.debug(o, 'Window visibility changed. (visibility={1})', visibility);
 }
 MO.RWindow.prototype.ohOrientation = function RWindow_ohOrientation(hEvent){
    var o = MO.Window;
@@ -4588,6 +4621,7 @@ MO.RWindow.prototype.ohOrientation = function RWindow_ohOrientation(hEvent){
    var event = o._eventOrientation;
    event.orientationCd = orientationCd;
    o.lsnsOrientation.process(event);
+   MO.Logger.debug(o, 'Window orientation changed. (orientation_cd={1})', orientationCd);
 }
 MO.RWindow.prototype.ohUnload = function RWindow_ohUnload(event){
    var o = MO.Window;
@@ -4751,6 +4785,7 @@ MO.RWindow.prototype.setEnable = function RWindow_setEnable(v, f){
    o._statusEnable = v;
 }
 MO.RWindow.prototype.appendElement = function RWindow_appendElement(hPanel){
+   MO.Assert.debugNotNull(control);
    this._hContainer.appendChild(hPanel);
 }
 MO.RWindow.prototype.requestAnimationFrame = function RWindow_requestAnimationFrame(callback){
@@ -4934,6 +4969,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
    if(o._typeCd == MO.EBrowser.Chrome){
       MO.Logger.lsnsOutput.register(o, o.onLog);
    }
+   MO.Logger.debug(o, 'Parse browser agent. (platform_cd={1}, type_cd={2})', MO.Lang.Enum.decode(MO.EPlatform, platformCd), MO.Lang.Enum.decode(MO.EBrowser, o._typeCd));
    if(window.applicationCache){
       o._supportHtml5 = true;
    }
@@ -4954,6 +4990,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
    if(pixelRatio){
       if(MO.Runtime.isPlatformMobile()){
          capability.pixelRatio = Math.min(pixelRatio, 3);
+         MO.Logger.debug(o, 'Parse browser agent. (pixel_ratio={1}, capability_ratio={2})', pixelRatio, capability.pixelRatio);
       }
    }
    if(window.Worker){
@@ -4984,6 +5021,7 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
       events['visibilitychange'] = 'webkitvisibilitychange';
    }
    o.refreshOrientation();
+   MO.Logger.debug(o, 'Browser connect. (agent={1})', o._agent);
 }
 MO.RBrowser.prototype.agent = function RBrowser_agent(){
    return this._agent;

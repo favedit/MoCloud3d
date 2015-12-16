@@ -27,6 +27,7 @@ MO.SColor4 = function SColor4(red, green, blue, alpha){
    o.saveConfig   = MO.SColor4_saveConfig;
    o.savePower    = MO.SColor4_savePower;
    o.copyArray    = MO.SColor4_copyArray;
+   o.toRGBAString = MO.SColor4_toRGBAString;
    o.toString     = MO.SColor4_toString;
    o.dispose      = MO.SColor4_dispose;
    return o;
@@ -124,6 +125,10 @@ MO.SColor4_copyArray = function SColor4_copyArray(d, i){
    d[i++] = o.blue;
    d[i++] = o.alpha;
    return 4;
+}
+MO.SColor4_toRGBAString = function SColor4_toRGBAString() {
+   var o = this;
+   return 'rgba(' + parseInt(o.red * 255) + ',' + parseInt(o.green * 255) + ',' + parseInt(o.blue * 255) + ',' + MO.Lang.Float.format(o.alpha) + ')';
 }
 MO.SColor4_toString = function SColor4_toString(){
    var o = this;
@@ -1301,6 +1306,7 @@ MO.SMatrix4x4 = function SMatrix4x4(){
    o.normalize       = MO.SMatrix4x4_normalize;
    o.invert          = MO.SMatrix4x4_invert;
    o.transform       = MO.SMatrix4x4_transform;
+   o.transformValue3 = MO.SMatrix4x4_transformValue3;
    o.transformPoint3 = MO.SMatrix4x4_transformPoint3;
    o.buildQuaternion = MO.SMatrix4x4_buildQuaternion;
    o.build           = MO.SMatrix4x4_build;
@@ -1619,6 +1625,20 @@ MO.SMatrix4x4_transformPoint3 = function SMatrix4x4_transformPoint3(input, outpu
    var x = (input.x * data[ 0]) + (input.y * data[ 4]) +(input.z * data[ 8]) + data[12];
    var y = (input.x * data[ 1]) + (input.y * data[ 5]) +(input.z * data[ 9]) + data[13];
    var z = (input.x * data[ 2]) + (input.y * data[ 6]) +(input.z * data[10]) + data[14];
+   var result = null;
+   if(output){
+      result = output;
+   }else{
+      result = new MO.SPoint3();
+   }
+   result.set(x, y, z);
+   return result;
+}
+MO.SMatrix4x4_transformValue3 = function SMatrix4x4_transformValue3(x, y, z, output){
+   var data = this._data;
+   var x = (x * data[ 0]) + (y * data[ 4]) +(z * data[ 8]) + data[12];
+   var y = (x * data[ 1]) + (y * data[ 5]) +(z * data[ 9]) + data[13];
+   var z = (x * data[ 2]) + (y * data[ 6]) +(z * data[10]) + data[14];
    var result = null;
    if(output){
       result = output;
@@ -2823,11 +2843,11 @@ MO.SSize2_dump = function SSize2_dump(){
    var o = this;
    return MO.Class.dump(o) + ' [' + o.width + ',' + o.height + ']';
 }
-MO.SSize3 = function SSize3(w, h, d){
+MO.SSize3 = function SSize3(width, height, deep){
    var o = this;
-   o.width    = MO.Lang.Integer.nvl(w);
-   o.height   = MO.Lang.Integer.nvl(h);
-   o.deep     = MO.Lang.Integer.nvl(d);
+   o.width    = MO.Lang.Integer.nvl(width);
+   o.height   = MO.Lang.Integer.nvl(height);
+   o.deep     = MO.Lang.Integer.nvl(deep);
    o.assign   = MO.SSize3_assign;
    o.set      = MO.SSize3_set;
    o.parse    = MO.SSize3_parse;
@@ -2982,9 +3002,11 @@ MO.SValue2 = function SValue2(x, y){
    o.absolute     = MO.SValue2_absolute;
    o.normalize    = MO.SValue2_normalize;
    o.negative     = MO.SValue2_negative;
+   o.unserialize  = MO.SValue2_unserialize;
    o.parse        = MO.SValue2_parse;
    o.toDisplay    = MO.SValue2_toDisplay;
    o.toString     = MO.SValue2_toString;
+   o.dispose      = MO.SValue2_dispose;
    return o;
 }
 MO.SValue2_isEmpty = function SValue2_isEmpty(){
@@ -3095,100 +3117,142 @@ MO.SValue2_toDisplay = function SValue2_toDisplay(){
 MO.SValue2_toString = function SValue2_toString(){
    return this.x + ',' + this.y;
 }
+MO.SValue2_dispose = function SValue2_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+}
+MO.SValue2_unserialize = function SValue2_unserialize(input, dataCd) {
+   switch (dataCd) {
+      case MO.EDataType.Int32:
+         this.x = input.readInt32();
+         this.y = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         this.x = input.readFloat();
+         this.y = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         this.x = input.readDouble();
+         this.y = input.readDouble();
+         break;
+      default:
+         break;
+   }
+}
 MO.SValue3 = function SValue3(x, y, z){
    var o = this;
-   o.x            = MO.Runtime.nvl(x, 0);
-   o.y            = MO.Runtime.nvl(y, 0);
-   o.z            = MO.Runtime.nvl(z, 0);
-   o.isEmpty      = MO.SValue3_isEmpty;
-   o.equals       = MO.SValue3_equals;
-   o.equalsData   = MO.SValue3_equalsData;
-   o.assign       = MO.SValue3_assign;
-   o.setMin       = MO.SValue3_setMin;
-   o.setMax       = MO.SValue3_setMax;
-   o.set          = MO.SValue3_set;
-   o.setAll       = MO.SValue3_setAll;
-   o.add          = MO.SValue3_add;
-   o.addValue3    = MO.SValue3_addValue3;
-   o.mul          = MO.SValue3_mul;
-   o.mulAll       = MO.SValue3_mulAll;
-   o.length       = MO.SValue3_absolute;
-   o.lengthTo     = MO.SValue3_lengthTo;
-   o.absolute     = MO.SValue3_absolute;
-   o.normalize    = MO.SValue3_normalize;
-   o.negative     = MO.SValue3_negative;
-   o.serialize    = MO.SValue3_serialize;
-   o.unserialize  = MO.SValue3_unserialize3;
-   o.unserialize2 = MO.SValue3_unserialize2;
-   o.unserialize3 = MO.SValue3_unserialize3;
-   o.parse        = MO.SValue3_parse;
-   o.toDisplay    = MO.SValue3_toDisplay;
-   o.toString     = MO.SValue3_toString;
+   o.x              = MO.Runtime.nvl(x, 0);
+   o.y              = MO.Runtime.nvl(y, 0);
+   o.z              = MO.Runtime.nvl(z, 0);
+   o.isEmpty        = MO.SValue3_isEmpty;
+   o.equals         = MO.SValue3_equals;
+   o.equalsData     = MO.SValue3_equalsData;
+   o.assign         = MO.SValue3_assign;
+   o.setMin         = MO.SValue3_setMin;
+   o.setMax         = MO.SValue3_setMax;
+   o.set            = MO.SValue3_set;
+   o.setAll         = MO.SValue3_setAll;
+   o.add            = MO.SValue3_add;
+   o.addValue3      = MO.SValue3_addValue3;
+   o.mul            = MO.SValue3_mul;
+   o.mulAll         = MO.SValue3_mulAll;
+   o.length         = MO.SValue3_absolute;
+   o.lengthTo       = MO.SValue3_lengthTo;
+   o.lengthToValue3 = MO.SValue3_lengthToValue3;
+   o.absolute       = MO.SValue3_absolute;
+   o.normalize      = MO.SValue3_normalize;
+   o.negative       = MO.SValue3_negative;
+   o.serialize      = MO.SValue3_serialize;
+   o.unserialize    = MO.SValue3_unserialize3;
+   o.unserialize2   = MO.SValue3_unserialize2;
+   o.unserialize3   = MO.SValue3_unserialize3;
+   o.parse          = MO.SValue3_parse;
+   o.toDisplay      = MO.SValue3_toDisplay;
+   o.toString       = MO.SValue3_toString;
+   o.dispose        = MO.SValue3_dispose;
    return o;
 }
 MO.SValue3_isEmpty = function SValue3_isEmpty(p){
-   return (this.x == 0) && (this.y == 0) && (this.z == 0);
+   var o = this;
+   return (o.x == 0) && (o.y == 0) && (o.z == 0);
 }
 MO.SValue3_equals = function SValue3_equals(value){
-   return (this.x == value.x) && (this.y == value.y) && (this.z == value.z);
+   var o = this;
+   return (o.x == value.x) && (o.y == value.y) && (o.z == value.z);
 }
 MO.SValue3_equalsData = function SValue3_equalsData(x, y, z){
-   return (this.x == x) && (this.y == y) && (this.z == z);
+   var o = this;
+   return (o.x == x) && (o.y == y) && (o.z == z);
 }
 MO.SValue3_assign = function SValue3_assign(value){
-   this.x = value.x;
-   this.y = value.y;
-   this.z = value.z;
+   var o = this;
+   o.x = value.x;
+   o.y = value.y;
+   o.z = value.z;
 }
 MO.SValue3_setMin = function SValue3_setMin(){
-   this.x = Number.MIN_VALUE;
-   this.y = Number.MIN_VALUE;
-   this.z = Number.MIN_VALUE;
+   var o = this;
+   o.x = o.y = o.z = Number.MIN_VALUE;
 }
 MO.SValue3_setMax = function SValue3_setMax(){
-   this.x = Number.MAX_VALUE;
-   this.y = Number.MAX_VALUE;
-   this.z = Number.MAX_VALUE;
+   var o = this;
+   o.x = o.y = o.z = Number.MAX_VALUE;
 }
 MO.SValue3_set = function SValue3_set(x, y, z){
-   this.x = x;
-   this.y = y;
-   this.z = z;
+   var o = this;
+   if(x != null){
+      o.x = x;
+   }
+   if(y != null){
+      o.y = y;
+   }
+   if(z != null){
+      o.z = z;
+   }
 }
 MO.SValue3_setAll = function SValue3_set(value){
-   this.x = value;
-   this.y = value;
-   this.z = value;
+   var o = this;
+   if(value != null){
+      o.x = value;
+      o.y = value;
+      o.z = value;
+   }
 }
 MO.SValue3_add = function SValue3_add(x, y, z){
-   this.x += x;
-   this.y += y;
-   this.z += z;
+   var o = this;
+   o.x += x;
+   o.y += y;
+   o.z += z;
 }
 MO.SValue3_addValue3 = function SValue3_addValue3(value){
-   this.x += value.x;
-   this.y += value.y;
-   this.z += value.z;
+   var o = this;
+   o.x += value.x;
+   o.y += value.y;
+   o.z += value.z;
 }
 MO.SValue3_mul = function SValue3_mul(x, y, z){
-   this.x *= x;
-   this.y *= y;
-   this.z *= z;
+   var o = this;
+   o.x *= x;
+   o.y *= y;
+   o.z *= z;
 }
 MO.SValue3_mulAll = function SValue3_mulAll(value){
-   this.x *= value;
-   this.y *= value;
-   this.z *= value;
+   var o = this;
+   o.x *= value;
+   o.y *= value;
+   o.z *= value;
 }
 MO.SValue3_normalize = function SValue3_normalize(){
-   var value = this.absolute();
+   var o = this;
+   var value = o.absolute();
    if(value != 0){
       var rate = 1 / value;
-      this.x *= rate;
-      this.y *= rate;
-      this.z *= rate;
+      o.x *= rate;
+      o.y *= rate;
+      o.z *= rate;
    }
-   return this;
+   return o;
 }
 MO.SValue3_lengthTo = function SValue3_lengthTo(x, y, z){
    var o = this;
@@ -3197,41 +3261,84 @@ MO.SValue3_lengthTo = function SValue3_lengthTo(x, y, z){
    var cz = o.z - z;
    return Math.sqrt((cx * cx) + (cy * cy) + (cz * cz));
 }
+MO.SValue3_lengthToValue3 = function SValue3_lengthTo(value){
+   var o = this;
+   var cx = o.x - value.x;
+   var cy = o.y - value.y;
+   var cz = o.z - value.z;
+   return Math.sqrt((cx * cx) + (cy * cy) + (cz * cz));
+}
 MO.SValue3_absolute = function SValue3_absolute(){
-   return Math.sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
+   var o = this;
+   return Math.sqrt((o.x * o.x) + (o.y * o.y) + (o.z * o.z));
 }
 MO.SValue3_negative = function SValue3_negative(value){
+   var o = this;
    var result = null;
    if(p){
       result = value;
    }else{
-      result = new this.constructor();
+      result = new o.constructor();
    }
-   result.x = -this.x;
-   result.y = -this.y;
-   result.z = -this.z;
+   result.x = -o.x;
+   result.y = -o.y;
+   result.z = -o.z;
    return result;
 }
 MO.SValue3_serialize = function SValue3_serialize(output){
-   output.writeFloat(this.x);
-   output.writeFloat(this.y);
-   output.writeFloat(this.z);
+   var o = this;
+   output.writeFloat(o.x);
+   output.writeFloat(o.y);
+   output.writeFloat(o.z);
 }
-MO.SValue3_unserialize2 = function SValue3_unserialize2(input){
-   this.x = input.readFloat();
-   this.y = input.readFloat();
+MO.SValue3_unserialize2 = function SValue3_unserialize2(input, dataCd){
+   var o = this;
+   switch(dataCd){
+      case MO.EDataType.Int32:
+         o.x = input.readInt32();
+         o.y = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         o.x = input.readDouble();
+         o.y = input.readDouble();
+         break;
+      default:
+         break;
+   }
 }
-MO.SValue3_unserialize3 = function SValue3_unserialize3(input){
-   this.x = input.readFloat();
-   this.y = input.readFloat();
-   this.z = input.readFloat();
+MO.SValue3_unserialize3 = function SValue3_unserialize3(input, dataCd) {
+   var o = this;
+   switch(dataCd){
+      case MO.EDataType.Int32:
+         o.x = input.readInt32();
+         o.y = input.readInt32();
+         o.z = input.readInt32();
+         break;
+      case MO.EDataType.Float:
+         o.x = input.readFloat();
+         o.y = input.readFloat();
+         o.z = input.readFloat();
+         break;
+      case MO.EDataType.Double:
+         o.x = input.readDouble();
+         o.y = input.readDouble();
+         o.z = input.readDouble();
+         break;
+      default:
+         break;
+   }
 }
 MO.SValue3_parse = function SValue3_parse(value){
+   var o = this;
    var items = value.split(',')
    if(items.length == 3){
-      this.x = parseFloat(items[0]);
-      this.y = parseFloat(items[1]);
-      this.z = parseFloat(items[2]);
+      o.x = parseFloat(items[0]);
+      o.y = parseFloat(items[1]);
+      o.z = parseFloat(items[2]);
    }else{
       throw new MO.TError(o, "Parse value failure. (value={1})", value);
    }
@@ -3244,7 +3351,14 @@ MO.SValue3_toDisplay = function SValue3_toDisplay(){
    return x + ',' + y + ',' + z;
 }
 MO.SValue3_toString = function SValue3_toString(){
-   return this.x + ',' + this.y + ',' + this.z;
+   var o = this;
+   return o.x + ',' + o.y + ',' + o.z;
+}
+MO.SValue3_dispose = function SValue3_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+   o.z = null;
 }
 MO.SValue4 = function SValue4(x, y, z, w){
    var o = this;
@@ -3264,6 +3378,7 @@ MO.SValue4 = function SValue4(x, y, z, w){
    o.parse       = MO.SValue4_parse;
    o.toDisplay   = MO.SValue4_toDisplay;
    o.toString    = MO.SValue4_toString;
+   o.dispose     = MO.SValue4_dispose;
    return o;
 }
 MO.SValue4_assign = function SValue4_assign(value){
@@ -3349,6 +3464,13 @@ MO.SValue4_toDisplay = function SValue4_toDisplay(){
 }
 MO.SValue4_toString = function SValue4_toString(){
    return this.x + ',' + this.y + ',' + this.z + ',' + this.w;
+}
+MO.SValue4_dispose = function SValue4_dispose(){
+   var o = this;
+   o.x = null;
+   o.y = null;
+   o.z = null;
+   o.w = null;
 }
 MO.SVector2 = function SVector2(x, y, z){
    var o = this;

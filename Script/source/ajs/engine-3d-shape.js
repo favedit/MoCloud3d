@@ -144,11 +144,15 @@ MO.FE3dBitmapConsole_loadByUrl = function FE3dBitmapConsole_loadByUrl(context, u
 }
 MO.FE3dBitmapConsole_loadByGuid = function FE3dBitmapConsole_loadByGuid(context, guid){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(guid);
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?do=view&guid=' + guid);
    return o.loadByUrl(context, url);
 }
 MO.FE3dBitmapConsole_loadDataByUrl = function FE3dBitmapConsole_loadDataByUrl(context, url){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(url);
    var dataUrl = MO.Window.Browser.contentPath(url);
    MO.Logger.info(o, 'Load bitmap data from url. (url={1})', dataUrl);
    var data = o._bitmapDatas.get(url);
@@ -163,6 +167,8 @@ MO.FE3dBitmapConsole_loadDataByUrl = function FE3dBitmapConsole_loadDataByUrl(co
 }
 MO.FE3dBitmapConsole_loadDataByGuid = function FE3dBitmapConsole_loadDataByGuid(context, guid){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(guid);
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?do=view&guid=' + guid);
    return o.loadDataByUrl(context, url);
 }
@@ -472,7 +478,7 @@ MO.EE3dBoundaryShape_buildSphere = function EE3dBoundaryShape_buildSphere(contex
 }
 MO.EE3dBoundaryShape_dispose = function EE3dBoundaryShape_dispose(){
    var o = this;
-   o._polygons = MO.Lang.Obejct.dispose(o._polygons);
+   o._polygons = MO.Lang.Object.dispose(o._polygons);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dBoundaryShape3d = function FE3dBoundaryShape3d(o){
@@ -750,7 +756,7 @@ MO.FE3dBoundaryShape3d_build = function FE3dBoundaryShape3d_build(context){
 }
 MO.FE3dBoundaryShape3d_dispose = function FE3dBoundaryShape3d_dispose(){
    var o = this;
-   o._polygons = MO.Lang.Obejct.dispose(o._polygons);
+   o._polygons = MO.Lang.Object.dispose(o._polygons);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dBoundBox = function FE3dBoundBox(o){
@@ -903,6 +909,124 @@ MO.FE3dCube_setup = function FE3dCube_setup(p){
    var mi = o.material().info();
    mi.effectCode = 'control';
    mi.ambientColor.set(1, 1, 1, 1);
+}
+MO.FE3dCubes = function FE3dCubes(o){
+   o = MO.Class.inherits(this, o, MO.FE3dRenderable);
+   o._optionCenterX        = MO.Class.register(o, new MO.AGetSet('_optionCenterX'), true);
+   o._optionCenterY        = MO.Class.register(o, new MO.AGetSet('_optionCenterY'), true);
+   o._optionCenterZ        = MO.Class.register(o, new MO.AGetSet('_optionCenterZ'), true);
+   o._outline              = null;
+   o._drawModeCd           = MO.Class.register(o, new MO.AGetSet('_drawModeCd'), MO.EG3dDrawMode.Triangles);
+   o._size                 = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits               = MO.Class.register(o, new MO.AGetter('_splits'));
+   o._vertexPositionBuffer = null;
+   o._vertexNormalBuffer   = null;
+   o._vertexCoordBuffer    = null;
+   o._indexBuffer          = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o.construct             = MO.FE3dCubes_construct;
+   o.setup                 = MO.FE3dCubes_setup;
+   return o;
+}
+MO.FE3dCubes_construct = function FE3dCubes_construct(){
+   var o = this;
+   o.__base.FE3dRenderable.construct.call(o);
+   o._size = new MO.SSize3(1, 1, 1);
+   o._splits = new MO.SSize3(4, 4, 4);
+   o._material = MO.Class.create(MO.FE3dMaterial);
+   o._outline = new MO.SOutline3();
+}
+MO.FE3dCubes_setup = function FE3dCubes_setup(){
+   var o = this;
+   var context = o._graphicContext;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var cz = splits.deep;
+   var size = o._size;
+   var sx = size.width / cx;
+   var sy = size.height / cy;
+   var sz = size.deep / cz;
+   var centerX = size.width * 0.5;
+   if(!o._optionCenterX){
+      centerX = 0;
+   }
+   var centerY = size.height * 0.5;
+   if(!o._optionCenterY){
+      centerY = 0;
+   }
+   var centerZ = size.deep * 0.5;
+   if(!o._optionCenterZ){
+      centerZ = 0;
+   }
+   var vertexCount = o._vertexCount = (cx + 1) * (cy + 1) * (cz + 1);
+   var positionIndex = 0;
+   var positionData = new Float32Array(3 * vertexCount);
+   var colorIndex = 0;
+   var colorData = new Uint8Array(4 * vertexCount);
+   for(var z = 0; z <= cz; z++){
+      for(var y = 0; y <= cy; y++){
+         for(var x = 0; x <= cx; x++){
+            positionData[positionIndex++] = sx * x - centerX;
+            positionData[positionIndex++] = sy * y - centerY;
+            positionData[positionIndex++] = sz * z - centerZ;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0xFF;
+         }
+      }
+   }
+   var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
+   buffer.setCode('position');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
+   buffer.upload(positionData, 4 * 3, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var buffer = o._vertexColorBuffer = context.createVertexBuffer();
+   buffer.setCode('color');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
+   buffer.upload(colorData, 4, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var drawModeCd = o._drawModeCd;
+   var indexes = new MO.TArray();
+   if(drawModeCd == MO.EG3dDrawMode.Lines){
+      var strideY = (cx + 1);
+      var strideZ = strideY * (cy + 1);
+      for(var z = 0; z <= cz; z++){
+         var zindex = (cx + 1) * (cy + 1) * z;
+         for(var y = 0; y <= cy; y++){
+            var yindex = strideY * y;
+            for(var x = 0; x <= cx; x++){
+               var index = zindex + yindex + x;
+               if(x < cx){
+                  indexes.push(index, index + 1);
+               }
+               if(y < cy){
+                  indexes.push(index, index + strideY);
+               }
+               if(z < cz){
+                  indexes.push(index, index + strideZ);
+               }
+            }
+         }
+      }
+   }else{
+      throw new TError();
+   }
+   var buffer = o._indexBuffer = context.createIndexBuffer();
+   buffer.setDrawModeCd(drawModeCd);
+   var indexLength = indexes.length();
+   var indexMemory = indexes.memory();
+   if(indexLength > 65535){
+      buffer.setStrideCd(MO.EG3dIndexStride.Uint32);
+      buffer.upload(new Uint32Array(indexMemory), indexLength);
+   }else{
+      buffer.upload(new Uint16Array(indexMemory), indexLength);
+   }
+   o.pushIndexBuffer(buffer);
+   o.update();
+   var info = o.material().info();
+   info.optionAlpha = true;
+   info.specularLevel = 64;
 }
 MO.FE3dDataBox = function FE3dDataBox(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable, MO.ME3dDynamicRenderable);
@@ -1100,6 +1224,122 @@ MO.FE3dDimensional_setup = function FE3dDimensional_setup(){
    var materialInfo = o.material().info();
    materialInfo.effectCode = 'control';
    materialInfo.ambientColor.set(1, 1, 1, 1);
+}
+MO.FE3dDoubleSidedPlanes = function FE3dDoubleSidedPlanes(o) {
+   o = MO.Class.inherits(this, o, MO.FE3dDisplay);
+   o._front                   = null;
+   o._back                    = null;
+   o._axis                    = MO.Class.register(o, new MO.AGetSet('_axis'));
+   o._frontUrl                = MO.Class.register(o, new MO.AGetSet('_frontUrl'));
+   o._backUrl                 = MO.Class.register(o, new MO.AGetSet('_backUrl'));
+   o._size                    = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits                  = MO.Class.register(o, new MO.AGetter('_splits'));
+   o.construct                = MO.FE3dDoubleSidedPlanes_construct;
+   o.setup                    = MO.FE3dDoubleSidedPlanes_setup;
+   o.addPlaneRotation         = MO.FE3dDoubleSidedPlanes_addPlaneRotation;
+   o.addPlaneRotationAxis     = MO.FE3dDoubleSidedPlanes_addPlaneRotationAxis;
+   o.update                   = MO.FE3dDoubleSidedPlanes_update;
+   o.turningAnimation         = MO.FE3dDoubleSidedPlanes_turningAnimation;
+   return o;
+}
+MO.FE3dDoubleSidedPlanes_construct = function FE3dDoubleSidedPlanes_construct() {
+   var o = this;
+   o.__base.FE3dDisplay.construct.call(o);
+   o._size = new MO.SSize2();
+   o._splits = new MO.SSize2();
+}
+MO.FE3dDoubleSidedPlanes_setup = function FE3dDoubleSidedPlanes_setup() {
+   var o = this;
+   if(!o._axis) {
+      o._axis = new MO.SVector3(1, 1, 0);
+   }
+   o._axis.normalize();
+   var front = o._front = MO.Class.create(MO.FE3dPlanes);
+   front.linkGraphicContext(o);
+   front.setOptionSelect(false);
+   front.size().assign(o._size);
+   front.splits().assign(o._splits);
+   front.setUrl(o._frontUrl);
+   front.material().info().sortLevel = 1;
+   front.material().info().alphaRate = 1;
+   front.setup();
+   front.setVisible(true);
+   o.push(front);
+   var back = o._back = MO.Class.create(MO.FE3dPlanes);
+   back.linkGraphicContext(o);
+   back.setOptionSelect(false);
+   back.size().assign(o._size);
+   back.splits().assign(o._splits);
+   back.setInitRotationAxis(o._axis, Math.PI);
+   back.setUrl(o._backUrl);
+   back.material().info().sortLevel = 1;
+   back.material().info().alphaRate = 1;
+   back.setup();
+   back.setVisible(true);
+   o.push(back);
+}
+MO.FE3dDoubleSidedPlanes_addPlaneRotation = function FE3dDoubleSidedPlanes_addPlaneRotation(planeX, planeY, x, y, z) {
+   var o = this;
+   var front = o._front;
+   front.rotatePlane(planeX, planeY, x, y, z);
+   var back = o._back;
+   back.rotatePlane(planeX, planeY, x, y, z);
+}
+MO.FE3dDoubleSidedPlanes_addPlaneRotationAxis = function FE3dDoubleSidedPlanes_addPlaneRotationAxis(planeX, planeY, axis, angle) {
+   var o = this;
+   var front = o._front;
+   front.rotatePlaneAxis(planeX, planeY, axis, angle);
+   var back = o._back;
+   back.rotatePlaneAxis(planeX, planeY, axis, angle);
+}
+MO.FE3dDoubleSidedPlanes_update = function FE3dDoubleSidedPlanes_update() {
+   var o = this;
+   o._front.updateAll();
+   o._back.updateAll();
+}
+MO.FE3dDoubleSidedPlanes_turningAnimation = function FE3dDoubleSidedPlanes_turningAnimation() {
+   var o = this;
+   var section = MO.Class.create(MO.FTimelineSection);
+   var splits = o._splits;
+   var duration = 400;
+   var start = new MO.SValue2(0, splits.height-1);
+   for (var i = 0; i < splits.width; i++) {
+      for (var j = 0; j < splits.height; j++) {
+         var length = start.length2(i ,j);
+         var delay = 1000 + length * 100;
+         var front = o._front.getPlane(i, j);
+         var action = MO.Class.create(MO.FE3dBoomerangTimelineAction);
+         action.targetTranslate().set(0, 0, -2);
+         action.setOptionSin(true);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(front.matrix());
+         section.pushAction(action);
+         var action = MO.Class.create(MO.FE3dRotateAxisTimelineAction);
+         action.targetAxis().set(o._axis.x, o._axis.y, o._axis.z);
+         action.setTargetAngle(Math.PI);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(front.matrix());
+         section.pushAction(action);
+         var back = o._back.getPlane(i, j);
+         var action = MO.Class.create(MO.FE3dBoomerangTimelineAction);
+         action.targetTranslate().set(0, 0, -2);
+         action.setOptionSin(true);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(back.matrix());
+         section.pushAction(action);
+         var action = MO.Class.create(MO.FE3dRotateAxisTimelineAction);
+         action.targetAxis().set(o._axis.x, o._axis.y, o._axis.z);
+         action.setTargetAngle(Math.PI);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(back.matrix());
+         section.pushAction(action);
+      }
+   }
+   return section;
 }
 MO.FE3dDynamicMesh = function FE3dDynamicMesh(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
@@ -1315,6 +1555,7 @@ MO.FE3dDynamicMesh_build = function FE3dDynamicMesh_build(){
    var indexData = indexBuffer.data();
    indexBuffer.upload(indexData, indexTotal);
    indexBuffer.setData(null);
+   MO.Logger.debug(o, 'Merge mesh. (renderable_count={1}, vertex={2}, index={3})', renderableCount, vertexTotal, indexTotal);
 }
 MO.FE3dDynamicMesh_calculateOutline = function FE3dDynamicMesh_calculateOutline(){
    var o = this;
@@ -1474,10 +1715,10 @@ MO.FE3dFaceData = function FE3dFaceData(o){
    o._optionCenter         = MO.Class.register(o, new MO.AGetSet('_optionCenter'), false);
    o._size                 = MO.Class.register(o, new MO.AGetter('_size'));
    o._adjustSize           = MO.Class.register(o, new MO.AGetter('_adjustSize'));
-   o._vertexPositionBuffer = null;
-   o._vertexCoordBuffer    = null;
-   o._indexBuffer          = null;
-   o._texture              = null;
+   o._vertexPositionBuffer = MO.Class.register(o, new MO.AGetter('_vertexPositionBuffer'));
+   o._vertexCoordBuffer    = MO.Class.register(o, new MO.AGetter('_vertexCoordBuffer'));
+   o._indexBuffer          = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._texture              = MO.Class.register(o, new MO.AGetter('_texture'));
    o.construct             = MO.FE3dFaceData_construct;
    o.testReady             = MO.FE3dFaceData_testReady;
    o.setup                 = MO.FE3dFaceData_setup;
@@ -1611,6 +1852,301 @@ MO.FE3dLines_dispose = function FE3dLines_dispose(){
    o._colorsData = null;
    o._material = MO.Lang.Object.dispose(o._material);
    o.__base.FE3dRenderable.dispose.call(o);
+}
+MO.FE3dPlaneData = function FE3dPlaneData(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._vertexs           = MO.Class.register(o, new MO.AGetter('_vertexs'));;
+   o._initVertexs       = null;
+   o._matrix            = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._centerX           = MO.Class.register(o, new MO.AGetter('_centerX'), 0);
+   o._centerY           = MO.Class.register(o, new MO.AGetter('_centerY'), 0);
+   o._z                 = MO.Class.register(o, new MO.AGetSet('_z'));
+   o._dataLength        = 4 * 3;
+   o.construct          = MO.FE3dPlaneData_construct;
+   o.setup              = MO.FE3dPlaneData_setup;
+   o.setVertexs         = MO.FE3dPlaneData_setVertexs;
+   o.move               = MO.FE3dPlaneData_move;
+   o.rotate             = MO.FE3dPlaneData_rotate;
+   o.rotateAxis         = MO.FE3dPlaneData_rotateAxis;
+   o.update             = MO.FE3dPlaneData_update;
+   o.format             = MO.FE3dPlaneData_format;
+   return o;
+}
+MO.FE3dPlaneData_construct = function FE3dPlaneData_construct() {
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._vertexs = new Float32Array(o._dataLength);
+   o._initVertexs = new Float32Array(o._dataLength);
+   o._matrix = new MO.SMatrix3d();
+   o._z = 0;
+}
+MO.FE3dPlaneData_setup = function FE3dPlaneData_setup() {
+   var o = this;
+}
+MO.FE3dPlaneData_setVertexs = function FE3dPlaneData_setVertexs(centerX, centerY, halfWidth, halfHeight) {
+   var o = this;
+   o._centerX = centerX;
+   o._centerY = centerY;
+   var initIndex = 0;
+   var index = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o.format();
+}
+MO.FE3dPlaneData_move = function FE3dPlaneData_move(x, y, z) {
+   var o = this;
+   o._centerX = x;
+   o._centerY = y;
+   o._z = z;
+}
+MO.FE3dPlaneData_rotate = function FE3dPlaneData_rotate(x, y, z) {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.addRotation(x, y, z);
+}
+MO.FE3dPlaneData_rotateAxis = function FE3dPlaneData_rotateAxis(axis, angle) {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.addRotationAxis(axis, angle);
+}
+MO.FE3dPlaneData_format = function FE3dPlaneData_format() {
+   var o = this;
+   var vertexs = o._vertexs;
+   for(var i = 0; i < o._dataLength; i += 3) {
+      vertexs[i] += o._centerX;
+      vertexs[i + 1] += o._centerY;
+      vertexs[i + 2] += o._z;
+   }
+}
+MO.FE3dPlaneData_update = function FE3dPlaneData_update() {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.transform(o._vertexs, 0, o._initVertexs, 0, o._dataLength);
+   o.format();
+}
+MO.FE3dPlanes = function FE3dPlanes(o) {
+   o = MO.Class.inherits(this, o, MO.FE3dRenderable);
+   o._optionCenterX           = MO.Class.register(o, new MO.AGetSet('_optionCenterX'), true);
+   o._optionCenterY           = MO.Class.register(o, new MO.AGetSet('_optionCenterY'), true);
+   o._optionCenterZ           = MO.Class.register(o, new MO.AGetSet('_optionCenterZ'), true);
+   o._url                     = MO.Class.register(o, new MO.AGetSet('_url'));
+   o._initRotation            = null;
+   o._initAxis                = null;
+   o._initAngle               = null;
+   o._size                    = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits                  = MO.Class.register(o, new MO.AGetter('_splits'));
+   o._texture                 = MO.Class.register(o, new MO.AGetter('_texture'));
+   o._planes                  = null;
+   o._vertexPositionBuffer    = null;
+   o._indexBuffer             = null;
+   o._image                   = null;
+   o.onLoad                   = MO.FE3dPlanes_onLoad;
+   o.construct                = MO.FE3dPlanes_construct;
+   o.setup                    = MO.FE3dPlanes_setup;
+   o.updateVertex             = MO.FE3dPlanes_updateVertex;
+   o.getInitCenterX           = MO.FE3dPlanes_getInitCenterX;
+   o.getInitCenterY           = MO.FE3dPlanes_getInitCenterY;
+   o.movePlane                = MO.FE3dPlanes_movePlane;
+   o.rotatePlane              = MO.FE3dPlanes_rotatePlane;
+   o.rotatePlaneAxis          = MO.FE3dPlanes_rotatePlaneAxis;
+   o.getPlaneMatrix           = MO.FE3dPlanes_getPlaneMatrix;
+   o.getPlane                 = MO.FE3dPlanes_getPlane;
+   o.updateAll                = MO.FE3dPlanes_updateAll;
+   o.setInitRotation          = MO.FE3dPlanes_setInitRotation;
+   o.setInitRotationAxis      = MO.FE3dPlanes_setInitRotationAxis;
+   return o;
+}
+MO.FE3dPlanes_construct = function FE3dPlanes_construct() {
+   var o = this;
+   o.__base.FE3dRenderable.construct.call(o);
+   o._size = new MO.SSize2(1, 1);
+   o._splits = new MO.SSize2(4, 4);
+   o._planes = new MO.TArray();
+   o._material = MO.Class.create(MO.FE3dMaterial);
+}
+MO.FE3dPlanes_setup = function FE3dPlanes_setup() {
+   var o = this;
+   var context = o._graphicContext;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var size = o._size;
+   var halfWidth = size.width / cx / 2;
+   var halfHeight = size.height / cy / 2;
+   var vertexCount = o._vertexCount = cx * cy * 4;
+   var coordIndex = 0;
+   var coordData = new Float32Array(2 * vertexCount);
+   for(var y = 0; y < cy; y++) {
+      for(var x = 0; x < cx; x++) {
+         var plane = MO.Class.create(MO.FE3dPlaneData);
+         var nextLinePlus = (y + 1) * (cx + 1);
+         plane.setVertexs(o.getInitCenterX(x), o.getInitCenterY(y), halfWidth, halfHeight);
+         if(o._initRotation) plane.rotate(o._initRotation.width, o._initRotation.height, o._initRotation.deep);
+         if(o._initAxis) {
+            plane.rotateAxis(o._initAxis, o._initAngle);
+         }
+         plane.update();
+         coordData[coordIndex++] = x / cx;
+         coordData[coordIndex++] = y / cy;
+         coordData[coordIndex++] = (x + 1) / cx;
+         coordData[coordIndex++] = y / cy;
+         coordData[coordIndex++] = (x + 1) / cx;
+         coordData[coordIndex++] = (y + 1) / cy;
+         coordData[coordIndex++] = x / cx;
+         coordData[coordIndex++] = (y + 1) / cy;
+         o._planes.push(plane);
+      }
+   }
+   var planes = o._planes;
+   var length = planes.length();
+   var vertexCount = length * 4;
+   var positionIndex = 0;
+   var positionData = o._positionData = new Float32Array(3 * vertexCount);
+   for(var i = 0; i < length; i++) {
+      var plane = planes.get(i);
+      positionData.set(plane.vertexs(), i * 12);
+   }
+   var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
+   buffer.setCode('position');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
+   buffer.upload(positionData, 4 * 3, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var buffer = o._vertexColorBuffer = context.createVertexBuffer();
+   buffer.setCode('coord');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
+   buffer.upload(coordData, 4 * 2, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var indexes = new MO.TArray();
+   for (var y = 0; y < cy; y++) {
+      for(var x = 0; x < cx; x++) {
+         var offset = (cx * y + x) * 4;
+         indexes.push(offset, offset + 2, offset + 1);
+         indexes.push(offset, offset + 3, offset + 2);
+      }
+   }
+   var buffer = o._indexBuffer = context.createIndexBuffer();
+   var indexLength = indexes.length();
+   var indexMemory = indexes.memory();
+   if(indexLength > 65535) {
+      buffer.setStrideCd(MO.EG3dIndexStride.Uint32);
+      buffer.upload(new Uint32Array(indexMemory), indexLength);
+   }else {
+      buffer.upload(new Uint16Array(indexMemory), indexLength);
+   }
+   o.pushIndexBuffer(buffer);
+   var texture = o._texture = context.createFlatTexture();
+   texture.setOptionFlipY(true);
+   texture.setWrapCd(MO.EG3dSamplerFilter.ClampToEdge, MO.EG3dSamplerFilter.ClampToEdge);
+   o.pushTexture(texture, 'diffuse');
+   o.update();
+   var info = o.material().info();
+   info.optionAlpha = true;
+   info.specularLevel = 64;
+   o.material()._textures = o._textures;
+   if(o._url) {
+      var image = o._image = MO.Class.create(MO.FImage);
+      image.addLoadListener(o, o.onLoad);
+      image.loadUrl(o._url);
+   }
+}
+MO.FE3dPlanes_getInitCenterX = function FE3dPlanes_getInitCenterX(x) {
+   var o = this;
+   var splits = o._splits;
+   var cx = splits.width;
+   var size = o._size;
+   var sx = size.width / cx;
+   var centerX = o._optionCenterX ? size.width * 0.5 : 0;
+   return sx * x - centerX + sx / 2;
+}
+MO.FE3dPlanes_getInitCenterY = function FE3dPlanes_getInitCenterY(y) {
+   var o = this;
+   var splits = o._splits;
+   var cy = splits.height;
+   var size = o._size;
+   var sy = size.height / cy;
+   var centerY = o._optionCenterY ? size.height * 0.5 : 0;
+   return sy * y - centerY + sy / 2;
+}
+MO.FE3dPlanes_onLoad = function FE3dPlanes_onLoad(event) {
+   var o = this;
+   var texture = o._texture;
+   texture.upload(o._image);
+   texture.makeMipmap();
+   o._image = MO.Lang.Object.dispose(o._image);
+   o.updateAll();
+}
+MO.FE3dPlanes_updateAll = function FE3dPlanes_updateAll() {
+   var o = this;
+   var planes = o._planes;
+   var length = planes.length();
+   for( var i = 0; i < length; ++i) {
+      var plane = planes.get(i);
+      plane.update();
+   }
+   o.updateVertex();
+   o.update();
+}
+MO.FE3dPlanes_updateVertex = function FE3dPlanes_updateVertex() {
+   var o = this;
+   var context = o._graphicContext;
+   var planes = o._planes;
+   var length = planes.length();
+   var vertexCount = length * 4;
+   var positionIndex = 0;
+   var positionData = o._positionData;
+   for(var i = 0; i < length; i++) {
+      var plane = planes.get(i);
+      positionData.set(plane.vertexs(), i * 12);
+   }
+   var buffer = o._vertexPositionBuffer;
+   buffer.upload(positionData, 4 * 3, vertexCount);
+}
+MO.FE3dPlanes_movePlane = function FE3dPlanes_movePlane(planeX, planeY, toX, toY, toZ) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.move(toX, toY, toZ);
+}
+MO.FE3dPlanes_rotatePlane = function FE3dPlanes_rotatePlane(planeX, planeY, rx, ry, rz) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.rotate(rx, ry, rz);
+}
+MO.FE3dPlanes_rotatePlaneAxis = function FE3dPlanes_rotatePlaneAxis(planeX, planeY, axis, angle) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.rotateAxis(axis, angle);
+}
+MO.FE3dPlanes_getPlaneMatrix = function FE3dPlanes_getPlaneMatrix(planeX, planeY) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+}
+MO.FE3dPlanes_getPlane = function FE3dPlanes_getPlane(planeX, planeY) {
+   var o = this;
+   var planes = o._planes;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var plane = planes.get(cx * planeY + planeX);
+   return plane;
+}
+MO.FE3dPlanes_setInitRotation = function FE3dPlanes_setInitRotation(x, y, z) {
+   var o = this;
+   var rotation = o._initRotation = new MO.SSize3(x, y, z);
+}
+MO.FE3dPlanes_setInitRotationAxis = function FE3dPlanes_setInitRotationAxis(axis, angle) {
+   var o = this;
+   o._initAxis = axis;
+   o._initAngle = angle;
 }
 MO.FE3dPolygon = function FE3dPolygon(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
@@ -1968,6 +2504,7 @@ MO.FE3dShapeData_beginDraw = function FE3dShapeData_beginDraw(){
 MO.FE3dShapeData_endDraw = function FE3dShapeData_endDraw(){
    var o = this;
    var graphic = o._graphic;
+   MO.Assert.debugNotNull(graphic);
    o._texture.upload(o._canvas);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    canvasConsole.free(o._canvas);

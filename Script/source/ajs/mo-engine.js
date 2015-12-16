@@ -29,6 +29,13 @@ MO.EStageKey = new function EStageKey(){
    o.FocusRight    = MO.EKeyCode.L;
    return o;
 }
+MO.ETimelineLoop = new function ETimelineLoop(){
+   var o = this;
+   o.Play       = 'play';
+   o.Loop       = 'loop';
+   o.LoopRevert = 'loop.revert';
+   return o;
+}
 MO.MEventDispatcher = function MEventDispatcher(o){
    o = MO.Class.inherits(this, o);
    o.onOperationDown        = MO.Method.empty;
@@ -148,67 +155,109 @@ MO.MTimelineAction = function MTimelineAction(o){
 }
 MO.MTimelineActions = function MTimelineActions(o){
    o = MO.Class.inherits(this, o);
-   o._actions   = MO.Class.register(o, new MO.AGetter('_actions'));
-   o.construct  = MO.MTimelineActions_construct;
-   o.setup      = MO.MTimelineActions_setup;
-   o.pushAction = MO.MTimelineActions_pushAction;
-   o.process    = MO.MTimelineActions_process;
-   o.dispose    = MO.MTimelineActions_dispose;
+   o._processors = MO.Class.register(o, new MO.AGetter('_processors'));
+   o.construct   = MO.MTimelineActions_construct;
+   o.testStop    = MO.MTimelineActions_testStop;
+   o.pushAction  = MO.MTimelineActions_pushAction;
+   o.process     = MO.MTimelineActions_process;
+   o.stop        = MO.MTimelineActions_stop;
+   o.clear       = MO.MTimelineActions_clear;
+   o.dispose     = MO.MTimelineActions_dispose;
    return o;
 }
 MO.MTimelineActions_construct = function MTimelineActions_construct(){
    var o = this;
-   o.__base.FObject.construct.call(o);
-   o._actions = new MO.TObjects();
+   o._processors = new MO.TObjects();
 }
-MO.MTimelineActions_setup = function MTimelineActions_setup(){
+MO.MTimelineActions_testStop = function MTimelineActions_testStop(){
    var o = this;
+   if(o._processors.isEmpty()){
+      return true;
+   }
+   return false;
 }
-MO.MTimelineActions_pushAction = function MTimelineActions_pushAction(action){
-   this._actions.push(action);
+MO.MTimelineActions_pushAction = function MTimelineActions_pushAction(action, loopCd, loopCount){
+   var o = this;
+   MO.Assert.debugNotNull(action);
+   var processor = new MO.STimelineActionProcessor();
+   processor.loopCd = MO.Runtime.nvl(loopCd, MO.ETimelineLoop.Play);
+   processor.loopCount = MO.Runtime.nvl(loopCount, 1);
+   processor.action = action;
+   o._processors.push(processor);
 }
 MO.MTimelineActions_process = function MTimelineActions_process(context){
    var o = this;
    var tick = context.tick;
-   var actions = o._actions;
-   var count = actions.count();
+   var processors = o._processors;
+   var count = processors.count();
    for(var i = count - 1; i >= 0; i--){
-      var action = actions.at(i);
-      var actionTick = tick - action.tick;
-      if(actionTick < 0){
+      var processor = processors.at(i);
+      var action = processor.action;
+      var recordTick = action.recordTick();
+      if(recordTick == 0){
+         action.setRecordTick(tick);
          continue;
       }
+      var recordSpan = tick - recordTick;
+      var delay = action.delay();
+      if(delay != 0){
+         if(recordSpan < delay){
+            continue;
+         }
+      }
       if(!action.statusStart()){
-         action.start();
+         action.start(context);
       }else if(action.statusStop()){
-         actions.erase(i);
+         processors.erase(i);
+         action.stop(context);
          action.dispose();
       }else{
+         action.process(context);
          var duration = action.duration();
          if(duration != 0){
-            if(actionTick > duration){
-               action.stop();
+            var actionSpan = tick - action.startTick();
+            if(actionSpan > duration){
+               processors.erase(i);
+               context.currentTick = duration;
+               action.stop(context);
+               action.dispose();
                continue;
             }
          }
-         context.tick = actionTick;
-         action.process(context);
       }
    }
-   context.tick = tick;
+}
+MO.MTimelineActions_stop = function MTimelineActions_stop(){
+   var o = this;
+   var processors = o._processors;
+   var count = processors.count();
+   for(var i = 0; i < count; i++){
+      var processor = processors.at(i);
+      processor.stop();
+   }
+}
+MO.MTimelineActions_clear = function MTimelineActions_clear(){
+   var o = this;
+   var processors = o._processors;
+   var count = processors.count();
+   for(var i = 0; i < count; i++){
+      var processor = processors.at(i);
+      processor.clear();
+   }
+   processors.clear();
 }
 MO.MTimelineActions_dispose = function MTimelineActions_dispose(){
    var o = this;
-   o._actions = MO.Lang.Obejct.dispose(o._actions);
-   o.__base.FObject.dispose.call(o);
+   o._processors = MO.Lang.Object.dispose(o._processors);
 }
 MO.MTimelines = function MTimelines(o){
    o = MO.Class.inherits(this, o);
    o._timelines   = MO.Class.register(o, new MO.AGetter('_timelines'));
    o.construct    = MO.MTimelines_construct;
-   o.setup        = MO.MTimelines_setup;
    o.pushTimeline = MO.MTimelines_pushTimeline;
    o.process      = MO.MTimelines_process;
+   o.stop         = MO.MTimelines_stop;
+   o.clear        = MO.MTimelines_clear;
    o.dispose      = MO.MTimelines_dispose;
    return o;
 }
@@ -217,11 +266,11 @@ MO.MTimelines_construct = function MTimelines_construct(){
    o.__base.FObject.construct.call(o);
    o._timelines = new MO.TObjects();
 }
-MO.MTimelines_setup = function MTimelines_setup(){
-   var o = this;
-}
 MO.MTimelines_pushTimeline = function MTimelines_pushTimeline(timeline){
-   this._timelines.push(timeline);
+   var o = this;
+   MO.Assert.debugNotNull(timeline);
+   timeline.setRecordTick(0);
+   o._timelines.push(timeline);
 }
 MO.MTimelines_process = function MTimelines_process(context){
    var o = this;
@@ -230,42 +279,152 @@ MO.MTimelines_process = function MTimelines_process(context){
    var count = timelines.count();
    for(var i = count - 1; i >= 0; i--){
       var timeline = timelines.at(i);
-      var timelineTick = tick - timeline.tick;
-      if(timelineTick < 0){
+      var recordTick = timeline.recordTick();
+      if(recordTick == 0){
+         timeline.setRecordTick(tick);
          continue;
       }
+      var recordSpan = tick - recordTick;
+      var delay = timeline.delay();
+      if(delay != 0){
+         if(recordSpan < delay){
+            continue;
+         }
+      }
       if(!timeline.statusStart()){
-         timeline.start();
+         timeline.start(context);
       }else if(timeline.statusStop()){
          timelines.erase(i);
+         timeline.stop(context);
          timeline.dispose();
       }else{
          var duration = timeline.duration();
          if(duration != 0){
-            if(timelineTick > duration){
-               timeline.stop();
+            var timelineSpan = tick - timeline.startTick();
+            if(timelineSpan > duration){
+               timelines.erase(i);
+               timeline.stop(context);
+               timeline.dispose();
                continue;
             }
          }
-         context.tick = timelineTick;
          timeline.process(context);
       }
    }
-   context.tick = tick;
+}
+MO.MTimelines_stop = function MTimelines_stop(){
+   var o = this;
+   var timelines = o._timelines;
+   var count = timelines.count();
+   for(var i = 0; i < count; i++){
+      var timeline = timelines.at(i);
+      timeline.stop();
+   }
+}
+MO.MTimelines_clear = function MTimelines_clear(){
+   var o = this;
+   var timelines = o._timelines;
+   var count = timelines.count();
+   for(var i = 0; i < count; i++){
+      var timeline = timelines.at(i);
+      timeline.clear();
+   }
+   timelines.clear();
 }
 MO.MTimelines_dispose = function MTimelines_dispose(){
    var o = this;
-   o._timelines = MO.Lang.Obejct.dispose(o._timelines);
+   o._timelines = MO.Lang.Object.dispose(o._timelines);
    o.__base.FObject.dispose.call(o);
 }
-MO.MTimelineWorker = function MTimelineWorker(o){
+MO.MTimelineSections = function MTimelineSections(o){
    o = MO.Class.inherits(this, o);
+   o._currentSection   = MO.Class.register(o, new MO.AGetter('_currentSection'));
+   o._sections         = MO.Class.register(o, new MO.AGetter('_sections'));
+   o.construct         = MO.MTimelineSections_construct;
+   o.pushSection       = MO.MTimelineSections_pushSection;
+   o.pushSectionAction = MO.MTimelineSections_pushSectionAction;
+   o.process           = MO.MTimelineSections_process;
+   o.stop              = MO.MTimelineSections_stop;
+   o.clear             = MO.MTimelineSections_clear;
+   o.dispose           = MO.MTimelineSections_dispose;
+   return o;
+}
+MO.MTimelineSections_construct = function MTimelineSections_construct(){
+   var o = this;
+   o._sections = new MO.TObjects();
+}
+MO.MTimelineSections_pushSection = function MTimelineSections_pushSection(section){
+   var o = this;
+   MO.Assert.debugNotNull(section);
+   o._sections.push(section);
+}
+MO.MTimelineSections_pushSectionAction = function MTimelineSections_pushSectionAction(action, loopCd, loopCount){
+   var o = this;
+   MO.Assert.debugNotNull(action);
+   var section = MO.Class.create(MO.FTimelineSection);
+   section.pushAction(action, loopCd, loopCount);
+   o._sections.push(section);
+}
+MO.MTimelineSections_process = function MTimelineSections_process(context){
+   var o = this;
+   var sections = o._sections;
+   var section = o._currentSection;
+   if(!section){
+      if(!sections.isEmpty()){
+         section = o._currentSection = sections.shift();
+      }
+   }
+   if(section){
+      section.process(context);
+      if(section.testStop()){
+         section.stop(context);
+         section.dispose();
+         o._currentSection = null;
+      }
+   }
+}
+MO.MTimelineSections_stop = function MTimelineSections_stop(){
+   var o = this;
+   var sections = o._sections;
+   var count = sections.count();
+   for(var i = 0; i < count; i++){
+      var section = sections.at(i);
+      section.stop();
+   }
+}
+MO.MTimelineSections_clear = function MTimelineSections_clear(){
+   var o = this;
+   var sections = o._sections;
+   var count = sections.count();
+   for(var i = 0; i < count; i++){
+      var section = sections.at(i);
+      section.clear();
+   }
+   sections.clear();
+   o._currentSection = null;
+}
+MO.MTimelineSections_dispose = function MTimelineSections_dispose(){
+   var o = this;
+   o._sections = MO.Lang.Object.dispose(o._sections);
+   o._currentSection;
+}
+MO.MTimelineWorker = function MTimelineWorker(o){
+   o = MO.Class.inherits(this, o, MO.MListener);
    o._code        = MO.Class.register(o, new MO.AGetSet('_code'));
-   o._tick        = MO.Class.register(o, new MO.AGetSet('_tick'), 0);
+   o._delay       = MO.Class.register(o, new MO.AGetSet('_delay'), 0);
    o._duration    = MO.Class.register(o, new MO.AGetSet('_duration'), 0);
+   o._tick        = MO.Class.register(o, new MO.AGetter('_tick'), 0);
+   o._recordTick  = MO.Class.register(o, new MO.AGetSet('_recordTick'), 0);
+   o._startTick   = MO.Class.register(o, new MO.AGetter('_startTick'), 0);
+   o._lastTick    = MO.Class.register(o, new MO.AGetter('_lastTick'), 0);
    o._statusStart = MO.Class.register(o, new MO.AGetter('_statusStart'), false);
    o._statusStop  = MO.Class.register(o, new MO.AGetter('_statusStop'), false);
+   o._eventActionStart     = null;
+   o._listenersActionStart = MO.Class.register(o, new MO.AListener('_listenersActionStart', MO.EEvent.ActionStart));
+   o._eventActionStop      = null;
+   o._listenersActionStop  = MO.Class.register(o, new MO.AListener('_listenersActionStop', MO.EEvent.ActionStop));
    o.onStart      = MO.MTimelineWorker_onStart;
+   o.onProcess    = MO.MTimelineWorker_onProcess;
    o.onStop       = MO.MTimelineWorker_onStop;
    o.construct    = MO.MTimelineWorker_construct;
    o.setup        = MO.MTimelineWorker_setup;
@@ -275,45 +434,87 @@ MO.MTimelineWorker = function MTimelineWorker(o){
    o.dispose      = MO.MTimelineWorker_dispose;
    return o;
 }
-MO.MTimelineWorker_onStart = function MTimelineWorker_onStart(){
+MO.MTimelineWorker_onStart = function MTimelineWorker_onStart(context) {
+   var o = this;
+   o._startTick = context.tick;
+   o._lastTick = context.tick;
+   o.processActionStartListener(context);
+}
+MO.MTimelineWorker_onProcess = function MTimelineWorker_onProcess(context){
    var o = this;
 }
-MO.MTimelineWorker_onStop = function MTimelineWorker_onStop(){
+MO.MTimelineWorker_onStop = function MTimelineWorker_onStop(context) {
    var o = this;
+   o.processActionStopListener(context);
 }
 MO.MTimelineWorker_construct = function MTimelineWorker_construct(){
    var o = this;
+   o._eventActionStart = new MO.SEvent(o);
+   o._eventActionStop = new MO.SEvent(o);
 }
 MO.MTimelineWorker_setup = function MTimelineWorker_setup(){
    var o = this;
    o._statusStart = false;
 }
-MO.MTimelineWorker_start = function MTimelineWorker_start(){
+MO.MTimelineWorker_start = function MTimelineWorker_start(context){
    var o = this;
    if(!o._statusStart){
-      o.onStart();
+      o.onStart(context);
       o._statusStart = true;
    }
    o._statusStop = false;
 }
-MO.MTimelineWorker_process = function MTimelineWorker_process(){
+MO.MTimelineWorker_process = function MTimelineWorker_process(context){
    var o = this;
+   var tick = context.tick;
+   var span = tick - o._lastTick;
+   context.currentTick = o._tick = tick - o._startTick;
+   context.span = span;
+   context.spanSecond = span * 0.001;
+   o.onProcess(context);
+   o._lastTick = tick;
 }
-MO.MTimelineWorker_stop = function MTimelineWorker_stop(){
+MO.MTimelineWorker_stop = function MTimelineWorker_stop(context){
    var o = this;
    if(!o._statusStop){
-      o.onStop();
+      o.onStop(context);
       o._statusStop = true;
    }
+   o._statusStart = false;
 }
 MO.MTimelineWorker_dispose = function MTimelineWorker_dispose(){
    var o = this;
+   o._eventActionStart = MO.Lang.Object.dispose(o._eventActionStart);
+   o._eventActionStop = MO.Lang.Object.dispose(o._eventActionStop);
+   o.__base.MListener.dispose.call(o);
+}
+MO.STimelineActionProcessor = function STimelineActionProcessor(){
+   var o = this;
+   o.loopCd    = null;
+   o.loopCount = null;
+   o.action    = null;
+   o.stop      = MO.STimelineActionProcessor_stop;
+   o.clear     = MO.STimelineActionProcessor_clear;
+   return o;
+}
+MO.STimelineActionProcessor_stop = function STimelineActionProcessor_stop(){
+   var o = this;
+   o.action.stop();
+}
+MO.STimelineActionProcessor_clear = function STimelineActionProcessor_clear(){
+   var o = this;
+   o.loopCd = null;
+   o.loopCount = null;
+   o.action = null;
 }
 MO.STimelineContext = function STimelineContext(){
    var o = this;
-   o._mainTimeline = null;
-   o._timeline     = null;
-   o._action       = null;
+   o.mainTimeline = null;
+   o.timeline     = null;
+   o.action       = null;
+   o.tick         = null;
+   o.currentTick  = null;
+   o.frameSpan    = null;
    return o;
 }
 MO.FCanvas = function FCanvas(o){
@@ -337,12 +538,14 @@ MO.FDesktop = function FDesktop(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
    o._size            = MO.Class.register(o, new MO.AGetter('_size'));
    o._sizeRate        = MO.Class.register(o, new MO.AGetter('_sizeRate'), 1);
+   o._sizeScale       = MO.Class.register(o, new MO.AGetter('_sizeScale'), 1);
    o._calculateSize   = MO.Class.register(o, new MO.AGetter('_calculateSize'));
    o._calculateRate   = MO.Class.register(o, new MO.AGetter('_calculateRate'));
    o._logicSize       = MO.Class.register(o, new MO.AGetter('_logicSize'));
    o._logicRate       = MO.Class.register(o, new MO.AGetter('_logicRate'));
    o._screenSize      = MO.Class.register(o, new MO.AGetter('_screenSize'));
    o._virtualSize     = MO.Class.register(o, new MO.AGetter('_virtualSize'));
+   o._guiBufferScale  = MO.Class.register(o, new MO.AGetSet('_guiBufferScale'), 1);
    o._canvases        = MO.Class.register(o, new MO.AGetter('_canvases'));
    o.construct        = MO.FDesktop_construct;
    o.canvasRegister   = MO.FDesktop_canvasRegister;
@@ -369,10 +572,12 @@ MO.FDesktop_construct = function FDesktop_construct(){
 }
 MO.FDesktop_canvasRegister = function FDesktop_canvasRegister(canvas){
    var canvases = this._canvases;
+   MO.Assert.debugFalse(canvases.contains(canvas));
    canvases.push(canvas);
 }
 MO.FDesktop_canvasUnregister = function FDesktop_canvasUnregister(canvas){
    var canvases = this._canvases;
+   MO.Assert.debugTrue(canvases.contains(canvas));
    canvases.remove(canvas);
 }
 MO.FDesktop_processEvent = function FDesktop_processEvent(event){
@@ -482,16 +687,17 @@ MO.FDisplay_filterDisplays = function FDisplay_filterDisplays(p){
       p.push(o);
    }
 }
-MO.FDisplay_filterRenderables = function FDisplay_filterRenderables(p){
+MO.FDisplay_filterRenderables = function FDisplay_filterRenderables(region){
    var o = this;
    if(!o._visible){
       return false;
    }
-   var s = o._renderables;
-   if(s){
-      var c = s.count();
-      for(var i = 0; i < c; i++){
-         s.getAt(i).filterDrawables(p);
+   var renderables = o._renderables;
+   if(renderables){
+      var count = renderables.count();
+      for(var i = 0; i < count; i++){
+         var renderable = renderables.at(i);
+         renderable.filterDrawables(region);
       }
    }
    return true;
@@ -715,7 +921,7 @@ MO.FDrawable_testVisible = function FDrawable_testVisible(){
    return this._visible;
 }
 MO.FMainTimeline = function FMainTimeline(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimeline, MO.MTimelines);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimelineSections, MO.MTimelines);
    o._context   = null;
    o._startTick = 0;
    o._lastTick  = 0;
@@ -724,6 +930,8 @@ MO.FMainTimeline = function FMainTimeline(o){
    o.setup      = MO.FMainTimeline_setup;
    o.start      = MO.FMainTimeline_start;
    o.process    = MO.FMainTimeline_process;
+   o.stop       = MO.FMainTimeline_stop;
+   o.clear      = MO.FMainTimeline_clear;
    o.dispose    = MO.FMainTimeline_dispose;
    return o;
 }
@@ -731,7 +939,10 @@ MO.FMainTimeline_construct = function FMainTimeline_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MTimelineActions.construct.call(o);
-   o._context = new MO.STimelineContext();
+   o.__base.MTimelineSections.construct.call(o);
+   o.__base.MTimelines.construct.call(o);
+   var context = o._context = new MO.STimelineContext();
+   context.mainTimeline = o;
    o._timelines = new MO.TObjects();
 }
 MO.FMainTimeline_setup = function FMainTimeline_setup(){
@@ -742,23 +953,39 @@ MO.FMainTimeline_start = function FMainTimeline_start(){
 }
 MO.FMainTimeline_process = function FMainTimeline_process(){
    var o = this;
-   var tick = MO.Timer.current();
-   if(tick - o._lastTick < o._interval){
+   var currentTick = MO.Timer.current();
+   if(currentTick - o._lastTick < o._interval){
       return false;
    }
-   o._lastTick = tick;
    if(o._startTick == 0){
-      o._startTick = tick;
+      o._startTick = currentTick;
+      return true;
    }
    var context = o._context;
-   context.tick = o._startTick - tick;
+   context.tick = currentTick - o._startTick;
    o.__base.MTimelineActions.process.call(o, context);
+   o.__base.MTimelineSections.process.call(o, context);
    o.__base.MTimelines.process.call(o, context);
+   o._lastTick = currentTick;
+}
+MO.FMainTimeline_stop = function FMainTimeline_stop(){
+   var o = this;
+   o.__base.MTimelineActions.stop.call(o);
+   o.__base.MTimelineSections.stop.call(o);
+   o.__base.MTimelines.stop.call(o);
+}
+MO.FMainTimeline_clear = function FMainTimeline_clear(){
+   var o = this;
+   o.__base.MTimelineActions.clear.call(o);
+   o.__base.MTimelineSections.clear.call(o);
+   o.__base.MTimelines.clear.call(o);
 }
 MO.FMainTimeline_dispose = function FMainTimeline_dispose(){
    var o = this;
    o._timelines = MO.Lang.Object.dispose(o._timelines);
    o._context = MO.Lang.Object.dispose(o._context);
+   o.__base.MTimelines.dispose.call(o);
+   o.__base.MTimelineSections.dispose.call(o);
    o.__base.MTimelineActions.dispose.call(o);
    o.__base.FObject.dispose.call(o);
 }
@@ -965,11 +1192,12 @@ MO.FStage_dispose = function FStage_dispose(){
    o.__base.FComponent.dispose.call(o);
 }
 MO.FTimeline = function FTimeline(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimeline, MO.MTimelines);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions, MO.MTimelineSections, MO.MTimelines);
    o._mainTimeline = MO.Class.register(o, new MO.AGetter('_mainTimeline'));
    o.construct     = MO.FTimeline_construct;
-   o.setup         = MO.FTimeline_setup;
    o.process       = MO.FTimeline_process;
+   o.stop          = MO.FTimeline_stop;
+   o.clear         = MO.FTimeline_clear;
    o.dispose       = MO.FTimeline_dispose;
    return o;
 }
@@ -977,19 +1205,80 @@ MO.FTimeline_construct = function FTimeline_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MTimelineActions.construct.call(o);
-   o._actions = new MO.TObejcts();
-}
-MO.FTimeline_setup = function FTimeline_setup(){
-   var o = this;
+   o.__base.MTimelineSections.construct.call(o);
+   o.__base.MTimelines.construct.call(o);
 }
 MO.FTimeline_process = function FTimeline_process(context){
    var o = this;
    o.__base.MTimelineActions.process.call(o, context);
+   o.__base.MTimelineSections.process.call(o, context);
    o.__base.MTimelines.process.call(o, context);
+}
+MO.FTimelineSection_stop = function FTimelineSection_stop(){
+   var o = this;
+   o.__base.MTimelineActions.stop.call(o);
+   o.__base.MTimelineSections.stop.call(o);
+   o.__base.MTimelines.stop.call(o);
+}
+MO.FTimelineSection_clear = function FTimelineSection_clear(){
+   var o = this;
+   o.__base.MTimelineActions.clear.call(o);
+   o.__base.MTimelineSections.clear.call(o);
+   o.__base.MTimelines.clear.call(o);
 }
 MO.FTimeline_dispose = function FTimeline_dispose(){
    var o = this;
-   o._actions = MO.Lang.Obejct.dispose(o._actions);
+   o.__base.MTimelines.dispose.call(o);
+   o.__base.MTimelineSections.dispose.call(o);
+   o.__base.MTimelineActions.dispose.call(o);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FTimelineAction = function FTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineAction);
+   o.construct     = MO.FTimelineAction_construct;
+   o.dispose       = MO.FTimelineAction_dispose;
+   return o;
+}
+MO.FTimelineAction_construct = function FTimelineAction_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o.__base.MTimelineAction.construct.call(o);
+}
+MO.FTimelineAction_dispose = function FTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FTimelineSection = function FTimelineSection(o){
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MTimelineActions);
+   o._eventSectionStop = null;
+   o._listenersSectionStop = MO.Class.register(o, new MO.AListener('_listenersSectionStop', MO.EEvent.SectionStop));
+   o.construct = MO.FTimelineSection_construct;
+   o.stop      = MO.FTimelineSection_stop;
+   o.clear     = MO.FTimelineSection_clear;
+   o.dispose   = MO.FTimelineSection_dispose;
+   return o;
+}
+MO.FTimelineSection_construct = function FTimelineSection_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o.__base.MTimelineActions.construct.call(o);
+   o._eventSectionStop = new MO.SEvent(o);
+}
+MO.FTimelineSection_stop = function FTimelineSection_stop(){
+   var o = this;
+   o.__base.MTimelineActions.stop.call(o);
+   o.processSectionStopListener(o._eventSectionStop);
+}
+MO.FTimelineSection_clear = function FTimelineSection_clear(){
+   var o = this;
+   o.stop();
+   o.__base.MTimelineActions.clear.call(o);
+}
+MO.FTimelineSection_dispose = function FTimelineSection_dispose(){
+   var o = this;
+   o._eventSectionStop = MO.Lang.Object.dispose(o._eventSectionStop);
+   o.__base.MListener.dispose.call(o);
    o.__base.MTimelineActions.dispose.call(o);
    o.__base.FObject.dispose.call(o);
 }
@@ -1208,10 +1497,12 @@ MO.FAudio_play = function FAudio_play(position){
       }
    }
    hAudio.play();
+   MO.Logger.debug(o, 'Audio play. (url={1}, position={2})', o._url, position);
 }
 MO.FAudio_pause = function FAudio_pause(){
    var o = this;
    o._hAudio.pause();
+   MO.Logger.debug(o, 'Audio pause. (url={1})', o._url);
 }
 MO.FAudio_loadUrl = function FAudio_loadUrl(uri){
    var o = this;
@@ -1854,12 +2145,14 @@ MO.FResourcePackage_onLoad = function FResourcePackage_onLoad(event){
    var o = this;
    o.unserializeBuffer(event.content, true);
    o._statusReady = true;
+   MO.Logger.debug(o, 'Load resource package success. (url={1})', o._url);
 }
 MO.FResourcePackage_testReady = function FResourcePackage_testReady(){
    return this._statusReady;
 }
 MO.FResourcePackage_load = function FResourcePackage_load(){
    var o = this;
+   MO.Assert.debugFalse(o._statusReady);
    var url = o._url = MO.Console.find(MO.FEnvironmentConsole).parseUrl(o._uri);
    var connection = MO.Console.find(MO.FHttpConsole).sendAsync(url);
    connection.addLoadListener(o, o.onLoad);
@@ -2189,6 +2482,7 @@ MO.FE2dCanvas_resize = function FE2dCanvas_resize(width, height){
    hCanvas.height = height;
    o._size.set(width, height);
    o._graphicContext.size().set(width, height);
+   MO.Logger.debug(o, 'Canvas2d resize. (size={1}x{2}, html={3})', width, height, hCanvas.outerHTML);
 }
 MO.FE2dCanvas_show = function FE2dCanvas_show(){
    this.setVisible(true);
@@ -2252,6 +2546,136 @@ MO.ME3dObject = function ME3dObject(o){
    o = MO.Class.inherits(this, o, MO.MGraphicObject, MO.MAttributeCode);
    o._guid = MO.Class.register(o, new MO.AGetSet('_guid'));
    return o;
+}
+MO.FE3dBoomerangTimelineAction = function FE3dBoomerangTimelineAction(o) {
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code                 = 'boomerang';
+   o._optionSin            = MO.Class.register(o, new MO.AGetSet('_optionSin'), false);
+   o._matrix                = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originTranslate    = MO.Class.register(o, new MO.AGetter('_originTranslate'));
+   o._currentTranslate   = MO.Class.register(o, new MO.AGetter('_currentTranslate'));
+   o._targetTranslate    = MO.Class.register(o, new MO.AGetter('_targetTranslate'));
+   o.onStart               = MO.FE3dBoomerangTimelineAction_onStart;
+   o.onProcess             = MO.FE3dBoomerangTimelineAction_onProcess;
+   o.onStop                = MO.FE3dBoomerangTimelineAction_onStop;
+   o.construct             = MO.FE3dBoomerangTimelineAction_construct;
+   o.link                  = MO.FE3dBoomerangTimelineAction_link;
+   o.dispose               = MO.FE3dBoomerangTimelineAction_dispose;
+   return o;
+}
+MO.FE3dBoomerangTimelineAction_onStart = function FE3dBoomerangTimelineAction_onStart(context) {
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dBoomerangTimelineAction_onProcess = function FE3dBoomerangTimelineAction_onProcess(context) {
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   rate = rate > 1 ? 1 : rate;
+   if(o._optionSin) rate = Math.sin(rate * Math.PI);
+   var matrix = o._matrix;
+   var current = o._currentTranslate;
+   var origin = o._originTranslate;
+   var target = o._targetTranslate;
+   current.x = origin.x + target.x * rate;
+   current.y = origin.y + target.y * rate;
+   current.z = origin.z + target.z * rate;
+   matrix.setTranslate(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dBoomerangTimelineAction_onStop = function FE3dBoomerangTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dBoomerangTimelineAction_construct = function FE3dBoomerangTimelineAction_construct() {
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentTranslate = new MO.SValue3();
+   o._originTranslate = new MO.SValue3();
+   o._targetTranslate = new MO.SValue3();
+}
+MO.FE3dBoomerangTimelineAction_link = function FE3dBoomerangTimelineAction_link(matrix) {
+   var o = this;
+   o._matrix = matrix;
+   o._originTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+   o._currentTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+}
+MO.FE3dBoomerangTimelineAction_dispose = function FE3dBoomerangTimelineAction_dispose() {
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dCameraTimelineAction = function FE3dCameraTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.FTimelineAction);
+   o._code            = 'move';
+   o._camera          = MO.Class.register(o, new MO.AGetter('_camera'));
+   o._speed           = MO.Class.register(o, new MO.AGetSet('_speed'), 100);
+   o._currentPosition = MO.Class.register(o, new MO.AGetter('_currentPosition'));
+   o._sourcePosition  = MO.Class.register(o, new MO.AGetter('_sourcePosition'));
+   o._targetPosition  = MO.Class.register(o, new MO.AGetter('_targetPosition'));
+   o.onStart          = MO.FE3dCameraTimelineAction_onStart;
+   o.onProcess        = MO.FE3dCameraTimelineAction_onProcess;
+   o.onStop           = MO.FE3dCameraTimelineAction_onStop;
+   o.construct        = MO.FE3dCameraTimelineAction_construct;
+   o.link             = MO.FE3dCameraTimelineAction_link;
+   o.dispose          = MO.FE3dCameraTimelineAction_dispose;
+   return o;
+}
+MO.FE3dCameraTimelineAction_onStart = function FE3dCameraTimelineAction_onStart(context){
+   var o = this;
+   o.__base.FTimelineAction.onStart.call(o, context);
+}
+MO.FE3dCameraTimelineAction_onProcess = function FE3dCameraTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.FTimelineAction.onProcess.call(o, context);
+   var direction = o._currentDirection;
+   direction.direction(o._sourcePosition, o._targetPosition);
+   direction.normalize();
+   var moveLength = o._speed * context.spanSecond;
+   var length = o._currentPosition.lengthToValue3(o._targetPosition);
+   if(moveLength > length){
+      o._currentPosition.assign(o._targetPosition);
+      o._statusStop = true;
+   }else{
+      o._currentPosition.add(direction.x * moveLength, direction.y * moveLength, direction.z * moveLength);
+   }
+   o._camera.position().assign(o._currentPosition);
+   o._camera.update();
+}
+MO.FE3dCameraTimelineAction_onStop = function FE3dCameraTimelineAction_onStop(){
+   var o = this;
+   o.__base.FTimelineAction.onStop.call(o, context);
+}
+MO.FE3dCameraTimelineAction_construct = function FE3dCameraTimelineAction_construct(){
+   var o = this;
+   o.__base.FTimelineAction.construct.call(o);
+   o._currentPosition = new MO.SPoint3();
+   o._currentDirection = new MO.SVector3();
+   o._sourcePosition = new MO.SPoint3();
+   o._targetPosition = new MO.SPoint3();
+}
+MO.FE3dCameraTimelineAction_link = function FE3dCameraTimelineAction_link(camera){
+   var o = this;
+   o._camera = camera;
+   o._currentPosition.assign(camera.position());
+   o._sourcePosition.assign(camera.position());
+}
+MO.FE3dCameraTimelineAction_setTargetControl = function FE3dCameraTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dCameraTimelineAction_dispose = function FE3dCameraTimelineAction_dispose(){
+   var o = this;
+   o._currentPosition = MO.Lang.Object.dispose(o._currentPosition);
+   o._currentDirection = MO.Lang.Object.dispose(o._currentDirection);
+   o._sourcePosition = MO.Lang.Object.dispose(o._sourcePosition);
+   o._targetPosition = MO.Lang.Object.dispose(o._targetPosition);
+   o._camera = null;
+   o.__base.FTimelineAction.dispose.call(o);
 }
 MO.FE3dCanvas = function FE3dCanvas(o){
    o = MO.Class.inherits(this, o, MO.FCanvas, MO.MGraphicObject, MO.MMouseCapture);
@@ -2360,6 +2784,7 @@ MO.FE3dCanvas_resize = function FE3dCanvas_resize(sourceWidth, sourceHeight){
    o._size.set(width, height);
    var context = o._graphicContext;
    context.setViewport(0, 0, width, height);
+   MO.Logger.debug(o, 'Canvas3d resize. (size={1}x{2}, buffer={3}x{4}, html={5})', width, height, context._handle.drawingBufferWidth, context._handle.drawingBufferHeight, hCanvas.outerHTML);
 }
 MO.FE3dCanvas_show = function FE3dCanvas_show(){
    this.setVisible(true);
@@ -2582,23 +3007,139 @@ MO.FE3dRenderable_remove = function FE3dRenderable_remove(){
       o._display = null;
    }
 }
+MO.FE3dRotateAxisTimelineAction = function FE3dRotateAxisTimelineAction(o) {
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code                 = 'rotateAxis';
+   o._matrix               = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._targetAxis           = MO.Class.register(o, new MO.AGetter('_targetAxis'));
+   o._targetAngle          = MO.Class.register(o, new MO.AGetSet('_targetAngle'));
+   o._currentAngle         = 0;
+   o._step                 = 0;
+   o.onStart               = MO.FE3dRotateAxisTimelineAction_onStart;
+   o.onProcess             = MO.FE3dRotateAxisTimelineAction_onProcess;
+   o.onStop                = MO.FE3dRotateAxisTimelineAction_onStop;
+   o.construct             = MO.FE3dRotateAxisTimelineAction_construct;
+   o.link                 = MO.FE3dRotateAxisTimelineAction_link;
+   o.dispose              = MO.FE3dRotateAxisTimelineAction_dispose;
+}
+MO.FE3dRotateAxisTimelineAction_onStart = function FE3dRotateAxisTimelineAction_onStart(context) {
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dRotateAxisTimelineAction_onProcess = function FE3dRotateAxisTimelineAction_onProcess(context) {
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   rate = rate > 1 ? 1 : rate;
+   var changeAngle = o._targetAngle * rate - o._currentAngle;
+   o._currentAngle += changeAngle;
+   o._matrix.addRotationAxis(o._targetAxis, changeAngle);
+}
+MO.FE3dRotateAxisTimelineAction_onStop = function FE3dRotateAxisTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dRotateAxisTimelineAction_construct = function FE3dRotateAxisTimelineAction_construct() {
+   var o = this;
+   o._targetAxis = new MO.SVector3(0, 0, 0);
+   o._targetAngle = 0;
+   o.__base.MTimelineAction.construct.call(o);
+}
+MO.FE3dRotateAxisTimelineAction_link = function FE3dRotateAxisTimelineAction_link(matrix) {
+   var o = this;
+   o._matrix = matrix;
+}
+MO.FE3dRotateAxisTimelineAction_dispose = function FE3dRotateAxisTimelineAction_dispose() {
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dRotateTimelineAction = function FE3dRotateTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code               = 'rotate';
+   o._matrix             = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originRotate       = MO.Class.register(o, new MO.AGetter('_originRotate'));
+   o._currentRotate      = MO.Class.register(o, new MO.AGetter('_currentRotate'));
+   o._targetRotate       = MO.Class.register(o, new MO.AGetter('_targetRotate'));
+   o.onStart          = MO.FE3dRotateTimelineAction_onStart;
+   o.onProcess        = MO.FE3dRotateTimelineAction_onProcess;
+   o.onStop           = MO.FE3dRotateTimelineAction_onStop;
+   o.construct        = MO.FE3dRotateTimelineAction_construct;
+   o.link             = MO.FE3dRotateTimelineAction_link;
+   o.dispose          = MO.FE3dRotateTimelineAction_dispose;
+   return o;
+}
+MO.FE3dRotateTimelineAction_onStart = function FE3dRotateTimelineAction_onStart(context){
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dRotateTimelineAction_onProcess = function FE3dRotateTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   var matrix = o._matrix;
+   var current = o._currentRotate;
+   var origin = o._originRotate;
+   var target = o._targetRotate;
+   current.x = origin.x + (target.x - origin.x) * rate;
+   current.y = origin.y + (target.y - origin.y) * rate;
+   current.z = origin.z + (target.z - origin.z) * rate;
+   matrix.setRotation(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dRotateTimelineAction_onStop = function FE3dRotateTimelineAction_onStop(context) {
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dRotateTimelineAction_construct = function FE3dRotateTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._originRotate = new MO.SValue3();
+   o._currentRotate = new MO.SValue3();
+   o._targetRotate = new MO.SValue3();
+}
+MO.FE3dRotateTimelineAction_link = function FE3dRotateTimelineAction_link(matrix){
+   var o = this;
+   o._matrix = matrix;
+   o._originRotate.set(matrix.rx, matrix.ry, matrix.rz);
+   o._currentRotate.set(matrix.rx, matrix.ry, matrix.rz);
+}
+MO.FE3dRotateTimelineAction_setTargetControl = function FE3dRotateTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dRotateTimelineAction_dispose = function FE3dRotateTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
 MO.FE3dStage = function FE3dStage(o){
    o = MO.Class.inherits(this, o, MO.FStage, MO.MGraphicObject);
-   o._statistics        = MO.Class.register(o, new MO.AGetter('_statistics'));
-   o._technique         = MO.Class.register(o, new MO.AGetter('_technique'));
-   o._region            = MO.Class.register(o, new MO.AGetter('_region'));
-   o._allDisplays       = null;
-   o.onProcess          = MO.FE3dStage_onProcess;
-   o.construct          = MO.FE3dStage_construct;
-   o.createRegion       = MO.FE3dStage_createRegion;
-   o.linkGraphicContext = MO.FE3dStage_linkGraphicContext;
-   o.setup              = MO.FE3dStage_setup;
-   o.camera             = MO.FE3dStage_camera;
-   o.projection         = MO.FE3dStage_projection;
-   o.directionalLight   = MO.FE3dStage_directionalLight;
-   o.selectTechnique    = MO.FE3dStage_selectTechnique;
-   o.filterDisplays     = MO.FE3dStage_filterDisplays;
-   o.allDisplays        = MO.FE3dStage_allDisplays;
+   o._statistics             = MO.Class.register(o, new MO.AGetter('_statistics'));
+   o._technique              = MO.Class.register(o, new MO.AGetter('_technique'));
+   o._region                 = MO.Class.register(o, new MO.AGetter('_region'));
+   o._allDisplays            = null;
+   o.onProcess               = MO.FE3dStage_onProcess;
+   o.construct               = MO.FE3dStage_construct;
+   o.createRegion            = MO.FE3dStage_createRegion;
+   o.linkGraphicContext      = MO.FE3dStage_linkGraphicContext;
+   o.setup                   = MO.FE3dStage_setup;
+   o.camera                  = MO.FE3dStage_camera;
+   o.projection              = MO.FE3dStage_projection;
+   o.directionalLight        = MO.FE3dStage_directionalLight;
+   o.calculateScreenPosition = MO.FE3dStage_calculateScreenPosition;
+   o.selectTechnique         = MO.FE3dStage_selectTechnique;
+   o.filterDisplays          = MO.FE3dStage_filterDisplays;
+   o.allDisplays             = MO.FE3dStage_allDisplays;
    return o;
 }
 MO.FE3dStage_onProcess = function FE3dStage_onProcess(){
@@ -2672,6 +3213,22 @@ MO.FE3dStage_projection = function FE3dStage_projection(){
 }
 MO.FE3dStage_directionalLight = function FE3dStage_directionalLight(){
    return this._region.directionalLight();
+}
+MO.FE3dStage_calculateScreenPosition = function FE3dStage_calculateScreenPosition(outputPosition, inputPosition, modelMatrix){
+   var o = this;
+   var graphicContext = o._graphicContext;
+   var size = graphicContext.size();
+   var camera = o.camera();
+   var matrix = MO.Lang.Math.matrix;
+   matrix.identity();
+   matrix.append(modelMatrix);
+   matrix.append(camera.matrix());
+   matrix.append(camera.projection().matrix());
+   var point3 = matrix.transformPoint3(inputPosition);
+   var cz = 1 / point3.z;
+   outputPosition.x = size.width * (point3.x * cz + 1) * 0.5;
+   outputPosition.y = size.height * (1 - point3.y * cz) * 0.5;
+   return outputPosition;
 }
 MO.FE3dStage_selectTechnique = function FE3dStage_selectTechnique(context, clazz){
    var o = this;
@@ -2805,6 +3362,130 @@ MO.FE3dTechnique_drawStage = function FE3dTechnique_drawStage(stage, region){
       pass.drawEnd(region);
    }
    o.present(region);
+}
+MO.FE3dTransformTimelineAction = function FE3dTransformTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code            = 'transform';
+   o._sources         = null;
+   o._currentMatrix   = MO.Class.register(o, new MO.AGetter('_currentMatrix'));
+   o._sourceMatrix    = MO.Class.register(o, new MO.AGetter('_sourceMatrix'));
+   o._targetMatrix    = MO.Class.register(o, new MO.AGetter('_targetMatrix'));
+   o.onStart          = MO.FE3dTransformTimelineAction_onStart;
+   o.onProcess        = MO.FE3dTransformTimelineAction_onProcess;
+   o.onStop           = MO.FE3dTransformTimelineAction_onStop;
+   o.construct        = MO.FE3dTransformTimelineAction_construct;
+   o.linkSource       = MO.FE3dTransformTimelineAction_linkSource;
+   o.dispose          = MO.FE3dTransformTimelineAction_dispose;
+   return o;
+}
+MO.FE3dTransformTimelineAction_onStart = function FE3dTransformTimelineAction_onStart(){
+   var o = this;
+   o.__base.MTimelineAction.onStart.call(o);
+}
+MO.FE3dTransformTimelineAction_onProcess = function FE3dTransformTimelineAction_onProcess(){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var direction = o._currentDirection;
+   direction.direction(o._sourcePosition, o._targetPosition);
+   direction.normalize();
+   var moveLength = o._speed * context.spanSecond;
+   var length = o._currentPosition.lengthToValue3(o._targetPosition);
+   if(moveLength > length){
+      o._currentPosition.assign(o._targetPosition);
+      o._statusStop = true;
+   }else{
+      o._currentPosition.add(direction.x * moveLength, direction.y * moveLength, direction.z * moveLength);
+   }
+   o._camera.position().assign(o._currentPosition);
+   o._camera.update();
+}
+MO.FE3dTransformTimelineAction_onStop = function FE3dTransformTimelineAction_onStop(){
+   var o = this;
+   o.__base.MTimelineAction.onStop.call(o);
+}
+MO.FE3dTransformTimelineAction_construct = function FE3dTransformTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentMatrix = new MO.SMatrix3d();
+   o._sourceMatrix = new MO.SMatrix3d();
+   o._targetMatrix = new MO.SMatrix3d();
+}
+MO.FE3dTransformTimelineAction_linkSource = function FE3dTransformTimelineAction_linkSource(source){
+   var o = this;
+   var matrix = source.matrix();
+   o._currentMatrix.assign(matrix);
+   o._sourceMatrix.assign(matrix);
+   o._targetMatrix.assign(matrix);
+}
+MO.FE3dTransformTimelineAction_setTargetControl = function FE3dTransformTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dTransformTimelineAction_dispose = function FE3dTransformTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
+}
+MO.FE3dTranslateTimelineAction = function FE3dTranslateTimelineAction(o){
+   o = MO.Class.inherits(this, o, MO.MTimelineAction);
+   o._code               = 'translate';
+   o._matrix             = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._originTranslate    = MO.Class.register(o, new MO.AGetter('_originTranslate'));
+   o._currentTranslate   = MO.Class.register(o, new MO.AGetter('_currentTranslate'));
+   o._targetTranslate    = MO.Class.register(o, new MO.AGetter('_targetTranslate'));
+   o.onStart          = MO.FE3dTranslateTimelineAction_onStart;
+   o.onProcess        = MO.FE3dTranslateTimelineAction_onProcess;
+   o.onStop           = MO.FE3dTranslateTimelineAction_onStop;
+   o.construct        = MO.FE3dTranslateTimelineAction_construct;
+   o.link             = MO.FE3dTranslateTimelineAction_link;
+   o.dispose          = MO.FE3dTranslateTimelineAction_dispose;
+   return o;
+}
+MO.FE3dTranslateTimelineAction_onStart = function FE3dTranslateTimelineAction_onStart(context){
+   var o = this;
+   var startEvent = o._eventActionStop;
+   startEvent.context = context;
+   startEvent.action = o;
+   o.__base.MTimelineAction.onStart.call(o, context);
+}
+MO.FE3dTranslateTimelineAction_onProcess = function FE3dTranslateTimelineAction_onProcess(context){
+   var o = this;
+   o.__base.MTimelineAction.onProcess.call(o, context);
+   var rate = context.currentTick / o.duration();
+   var matrix = o._matrix;
+   var current = o._currentTranslate;
+   var origin = o._originTranslate;
+   var target = o._targetTranslate;
+   current.x = origin.x + (target.x - origin.x) * rate;
+   current.y = origin.y + (target.y - origin.y) * rate;
+   current.z = origin.z + (target.z - origin.z) * rate;
+   matrix.setTranslate(current.x, current.y, current.z);
+   matrix.update();
+}
+MO.FE3dTranslateTimelineAction_onStop = function FE3dTranslateTimelineAction_onStop(context){
+   var o = this;
+   var stopEvent = o._eventActionStop;
+   stopEvent.context = context;
+   stopEvent.action = o;
+   o.__base.MTimelineAction.onStop.call(o, context);
+}
+MO.FE3dTranslateTimelineAction_construct = function FE3dTranslateTimelineAction_construct(){
+   var o = this;
+   o.__base.MTimelineAction.construct.call(o);
+   o._currentTranslate = new MO.SValue3();
+   o._originTranslate = new MO.SValue3();
+   o._targetTranslate = new MO.SValue3();
+}
+MO.FE3dTranslateTimelineAction_link = function FE3dTranslateTimelineAction_link(matrix){
+   var o = this;
+   o._matrix = matrix;
+   o._originTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+   o._currentTranslate.set(matrix.tx, matrix.ty, matrix.tz);
+}
+MO.FE3dTranslateTimelineAction_setTargetControl = function FE3dTranslateTimelineAction_setTargetControl(){
+   var o = this;
+}
+MO.FE3dTranslateTimelineAction_dispose = function FE3dTranslateTimelineAction_dispose(){
+   var o = this;
+   o.__base.MTimelineAction.dispose.call(o);
 }
 MO.RE3dEngine = function RE3dEngine(){
    var o = this;
@@ -8331,7 +9012,7 @@ MO.FE3dCamera_update = function FE3dCamera_update(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._projection = MO.Lang.Obejct.dispose(o._projection);
+   o._projection = MO.Lang.Object.dispose(o._projection);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dDirectionalLight = function FE3dDirectionalLight(o){
@@ -10253,7 +10934,7 @@ MO.FE3dSimpleDesktop_dispose = function FE3dSimpleDesktop_dispose(){
    o.__base.FDesktop.dispose.call(o);
 }
 MO.FE3dSimpleStage = function FE3dSimpleStage(o){
-   o = MO.RClass.inherits(this, o, MO.FE3dStage);
+   o = MO.Class.inherits(this, o, MO.FE3dStage);
    o._optionKeyboard = true;
    o._skyLayer       = MO.RClass.register(o, new MO.AGetter('_skyLayer'));
    o._mapLayer       = MO.RClass.register(o, new MO.AGetter('_mapLayer'));
@@ -11683,11 +12364,15 @@ MO.FE3dBitmapConsole_loadByUrl = function FE3dBitmapConsole_loadByUrl(context, u
 }
 MO.FE3dBitmapConsole_loadByGuid = function FE3dBitmapConsole_loadByGuid(context, guid){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(guid);
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?do=view&guid=' + guid);
    return o.loadByUrl(context, url);
 }
 MO.FE3dBitmapConsole_loadDataByUrl = function FE3dBitmapConsole_loadDataByUrl(context, url){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(url);
    var dataUrl = MO.Window.Browser.contentPath(url);
    MO.Logger.info(o, 'Load bitmap data from url. (url={1})', dataUrl);
    var data = o._bitmapDatas.get(url);
@@ -11702,6 +12387,8 @@ MO.FE3dBitmapConsole_loadDataByUrl = function FE3dBitmapConsole_loadDataByUrl(co
 }
 MO.FE3dBitmapConsole_loadDataByGuid = function FE3dBitmapConsole_loadDataByGuid(context, guid){
    var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotNull(guid);
    var url = MO.Window.Browser.hostPath(o._dataUrl + '?do=view&guid=' + guid);
    return o.loadDataByUrl(context, url);
 }
@@ -12011,7 +12698,7 @@ MO.EE3dBoundaryShape_buildSphere = function EE3dBoundaryShape_buildSphere(contex
 }
 MO.EE3dBoundaryShape_dispose = function EE3dBoundaryShape_dispose(){
    var o = this;
-   o._polygons = MO.Lang.Obejct.dispose(o._polygons);
+   o._polygons = MO.Lang.Object.dispose(o._polygons);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dBoundaryShape3d = function FE3dBoundaryShape3d(o){
@@ -12289,7 +12976,7 @@ MO.FE3dBoundaryShape3d_build = function FE3dBoundaryShape3d_build(context){
 }
 MO.FE3dBoundaryShape3d_dispose = function FE3dBoundaryShape3d_dispose(){
    var o = this;
-   o._polygons = MO.Lang.Obejct.dispose(o._polygons);
+   o._polygons = MO.Lang.Object.dispose(o._polygons);
    o.__base.FObject.dispose.call(o);
 }
 MO.FE3dBoundBox = function FE3dBoundBox(o){
@@ -12442,6 +13129,124 @@ MO.FE3dCube_setup = function FE3dCube_setup(p){
    var mi = o.material().info();
    mi.effectCode = 'control';
    mi.ambientColor.set(1, 1, 1, 1);
+}
+MO.FE3dCubes = function FE3dCubes(o){
+   o = MO.Class.inherits(this, o, MO.FE3dRenderable);
+   o._optionCenterX        = MO.Class.register(o, new MO.AGetSet('_optionCenterX'), true);
+   o._optionCenterY        = MO.Class.register(o, new MO.AGetSet('_optionCenterY'), true);
+   o._optionCenterZ        = MO.Class.register(o, new MO.AGetSet('_optionCenterZ'), true);
+   o._outline              = null;
+   o._drawModeCd           = MO.Class.register(o, new MO.AGetSet('_drawModeCd'), MO.EG3dDrawMode.Triangles);
+   o._size                 = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits               = MO.Class.register(o, new MO.AGetter('_splits'));
+   o._vertexPositionBuffer = null;
+   o._vertexNormalBuffer   = null;
+   o._vertexCoordBuffer    = null;
+   o._indexBuffer          = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o.construct             = MO.FE3dCubes_construct;
+   o.setup                 = MO.FE3dCubes_setup;
+   return o;
+}
+MO.FE3dCubes_construct = function FE3dCubes_construct(){
+   var o = this;
+   o.__base.FE3dRenderable.construct.call(o);
+   o._size = new MO.SSize3(1, 1, 1);
+   o._splits = new MO.SSize3(4, 4, 4);
+   o._material = MO.Class.create(MO.FE3dMaterial);
+   o._outline = new MO.SOutline3();
+}
+MO.FE3dCubes_setup = function FE3dCubes_setup(){
+   var o = this;
+   var context = o._graphicContext;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var cz = splits.deep;
+   var size = o._size;
+   var sx = size.width / cx;
+   var sy = size.height / cy;
+   var sz = size.deep / cz;
+   var centerX = size.width * 0.5;
+   if(!o._optionCenterX){
+      centerX = 0;
+   }
+   var centerY = size.height * 0.5;
+   if(!o._optionCenterY){
+      centerY = 0;
+   }
+   var centerZ = size.deep * 0.5;
+   if(!o._optionCenterZ){
+      centerZ = 0;
+   }
+   var vertexCount = o._vertexCount = (cx + 1) * (cy + 1) * (cz + 1);
+   var positionIndex = 0;
+   var positionData = new Float32Array(3 * vertexCount);
+   var colorIndex = 0;
+   var colorData = new Uint8Array(4 * vertexCount);
+   for(var z = 0; z <= cz; z++){
+      for(var y = 0; y <= cy; y++){
+         for(var x = 0; x <= cx; x++){
+            positionData[positionIndex++] = sx * x - centerX;
+            positionData[positionIndex++] = sy * y - centerY;
+            positionData[positionIndex++] = sz * z - centerZ;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0x00;
+            colorData[colorIndex++] = 0xFF;
+         }
+      }
+   }
+   var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
+   buffer.setCode('position');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
+   buffer.upload(positionData, 4 * 3, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var buffer = o._vertexColorBuffer = context.createVertexBuffer();
+   buffer.setCode('color');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Byte4Normal);
+   buffer.upload(colorData, 4, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var drawModeCd = o._drawModeCd;
+   var indexes = new MO.TArray();
+   if(drawModeCd == MO.EG3dDrawMode.Lines){
+      var strideY = (cx + 1);
+      var strideZ = strideY * (cy + 1);
+      for(var z = 0; z <= cz; z++){
+         var zindex = (cx + 1) * (cy + 1) * z;
+         for(var y = 0; y <= cy; y++){
+            var yindex = strideY * y;
+            for(var x = 0; x <= cx; x++){
+               var index = zindex + yindex + x;
+               if(x < cx){
+                  indexes.push(index, index + 1);
+               }
+               if(y < cy){
+                  indexes.push(index, index + strideY);
+               }
+               if(z < cz){
+                  indexes.push(index, index + strideZ);
+               }
+            }
+         }
+      }
+   }else{
+      throw new TError();
+   }
+   var buffer = o._indexBuffer = context.createIndexBuffer();
+   buffer.setDrawModeCd(drawModeCd);
+   var indexLength = indexes.length();
+   var indexMemory = indexes.memory();
+   if(indexLength > 65535){
+      buffer.setStrideCd(MO.EG3dIndexStride.Uint32);
+      buffer.upload(new Uint32Array(indexMemory), indexLength);
+   }else{
+      buffer.upload(new Uint16Array(indexMemory), indexLength);
+   }
+   o.pushIndexBuffer(buffer);
+   o.update();
+   var info = o.material().info();
+   info.optionAlpha = true;
+   info.specularLevel = 64;
 }
 MO.FE3dDataBox = function FE3dDataBox(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable, MO.ME3dDynamicRenderable);
@@ -12639,6 +13444,122 @@ MO.FE3dDimensional_setup = function FE3dDimensional_setup(){
    var materialInfo = o.material().info();
    materialInfo.effectCode = 'control';
    materialInfo.ambientColor.set(1, 1, 1, 1);
+}
+MO.FE3dDoubleSidedPlanes = function FE3dDoubleSidedPlanes(o) {
+   o = MO.Class.inherits(this, o, MO.FE3dDisplay);
+   o._front                   = null;
+   o._back                    = null;
+   o._axis                    = MO.Class.register(o, new MO.AGetSet('_axis'));
+   o._frontUrl                = MO.Class.register(o, new MO.AGetSet('_frontUrl'));
+   o._backUrl                 = MO.Class.register(o, new MO.AGetSet('_backUrl'));
+   o._size                    = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits                  = MO.Class.register(o, new MO.AGetter('_splits'));
+   o.construct                = MO.FE3dDoubleSidedPlanes_construct;
+   o.setup                    = MO.FE3dDoubleSidedPlanes_setup;
+   o.addPlaneRotation         = MO.FE3dDoubleSidedPlanes_addPlaneRotation;
+   o.addPlaneRotationAxis     = MO.FE3dDoubleSidedPlanes_addPlaneRotationAxis;
+   o.update                   = MO.FE3dDoubleSidedPlanes_update;
+   o.turningAnimation         = MO.FE3dDoubleSidedPlanes_turningAnimation;
+   return o;
+}
+MO.FE3dDoubleSidedPlanes_construct = function FE3dDoubleSidedPlanes_construct() {
+   var o = this;
+   o.__base.FE3dDisplay.construct.call(o);
+   o._size = new MO.SSize2();
+   o._splits = new MO.SSize2();
+}
+MO.FE3dDoubleSidedPlanes_setup = function FE3dDoubleSidedPlanes_setup() {
+   var o = this;
+   if(!o._axis) {
+      o._axis = new MO.SVector3(1, 1, 0);
+   }
+   o._axis.normalize();
+   var front = o._front = MO.Class.create(MO.FE3dPlanes);
+   front.linkGraphicContext(o);
+   front.setOptionSelect(false);
+   front.size().assign(o._size);
+   front.splits().assign(o._splits);
+   front.setUrl(o._frontUrl);
+   front.material().info().sortLevel = 1;
+   front.material().info().alphaRate = 1;
+   front.setup();
+   front.setVisible(true);
+   o.push(front);
+   var back = o._back = MO.Class.create(MO.FE3dPlanes);
+   back.linkGraphicContext(o);
+   back.setOptionSelect(false);
+   back.size().assign(o._size);
+   back.splits().assign(o._splits);
+   back.setInitRotationAxis(o._axis, Math.PI);
+   back.setUrl(o._backUrl);
+   back.material().info().sortLevel = 1;
+   back.material().info().alphaRate = 1;
+   back.setup();
+   back.setVisible(true);
+   o.push(back);
+}
+MO.FE3dDoubleSidedPlanes_addPlaneRotation = function FE3dDoubleSidedPlanes_addPlaneRotation(planeX, planeY, x, y, z) {
+   var o = this;
+   var front = o._front;
+   front.rotatePlane(planeX, planeY, x, y, z);
+   var back = o._back;
+   back.rotatePlane(planeX, planeY, x, y, z);
+}
+MO.FE3dDoubleSidedPlanes_addPlaneRotationAxis = function FE3dDoubleSidedPlanes_addPlaneRotationAxis(planeX, planeY, axis, angle) {
+   var o = this;
+   var front = o._front;
+   front.rotatePlaneAxis(planeX, planeY, axis, angle);
+   var back = o._back;
+   back.rotatePlaneAxis(planeX, planeY, axis, angle);
+}
+MO.FE3dDoubleSidedPlanes_update = function FE3dDoubleSidedPlanes_update() {
+   var o = this;
+   o._front.updateAll();
+   o._back.updateAll();
+}
+MO.FE3dDoubleSidedPlanes_turningAnimation = function FE3dDoubleSidedPlanes_turningAnimation() {
+   var o = this;
+   var section = MO.Class.create(MO.FTimelineSection);
+   var splits = o._splits;
+   var duration = 400;
+   var start = new MO.SValue2(0, splits.height-1);
+   for (var i = 0; i < splits.width; i++) {
+      for (var j = 0; j < splits.height; j++) {
+         var length = start.length2(i ,j);
+         var delay = 1000 + length * 100;
+         var front = o._front.getPlane(i, j);
+         var action = MO.Class.create(MO.FE3dBoomerangTimelineAction);
+         action.targetTranslate().set(0, 0, -2);
+         action.setOptionSin(true);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(front.matrix());
+         section.pushAction(action);
+         var action = MO.Class.create(MO.FE3dRotateAxisTimelineAction);
+         action.targetAxis().set(o._axis.x, o._axis.y, o._axis.z);
+         action.setTargetAngle(Math.PI);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(front.matrix());
+         section.pushAction(action);
+         var back = o._back.getPlane(i, j);
+         var action = MO.Class.create(MO.FE3dBoomerangTimelineAction);
+         action.targetTranslate().set(0, 0, -2);
+         action.setOptionSin(true);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(back.matrix());
+         section.pushAction(action);
+         var action = MO.Class.create(MO.FE3dRotateAxisTimelineAction);
+         action.targetAxis().set(o._axis.x, o._axis.y, o._axis.z);
+         action.setTargetAngle(Math.PI);
+         action.setDelay(delay)
+         action.setDuration(duration);
+         action.link(back.matrix());
+         section.pushAction(action);
+      }
+   }
+   return section;
 }
 MO.FE3dDynamicMesh = function FE3dDynamicMesh(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
@@ -12854,6 +13775,7 @@ MO.FE3dDynamicMesh_build = function FE3dDynamicMesh_build(){
    var indexData = indexBuffer.data();
    indexBuffer.upload(indexData, indexTotal);
    indexBuffer.setData(null);
+   MO.Logger.debug(o, 'Merge mesh. (renderable_count={1}, vertex={2}, index={3})', renderableCount, vertexTotal, indexTotal);
 }
 MO.FE3dDynamicMesh_calculateOutline = function FE3dDynamicMesh_calculateOutline(){
    var o = this;
@@ -13013,10 +13935,10 @@ MO.FE3dFaceData = function FE3dFaceData(o){
    o._optionCenter         = MO.Class.register(o, new MO.AGetSet('_optionCenter'), false);
    o._size                 = MO.Class.register(o, new MO.AGetter('_size'));
    o._adjustSize           = MO.Class.register(o, new MO.AGetter('_adjustSize'));
-   o._vertexPositionBuffer = null;
-   o._vertexCoordBuffer    = null;
-   o._indexBuffer          = null;
-   o._texture              = null;
+   o._vertexPositionBuffer = MO.Class.register(o, new MO.AGetter('_vertexPositionBuffer'));
+   o._vertexCoordBuffer    = MO.Class.register(o, new MO.AGetter('_vertexCoordBuffer'));
+   o._indexBuffer          = MO.Class.register(o, new MO.AGetter('_indexBuffer'));
+   o._texture              = MO.Class.register(o, new MO.AGetter('_texture'));
    o.construct             = MO.FE3dFaceData_construct;
    o.testReady             = MO.FE3dFaceData_testReady;
    o.setup                 = MO.FE3dFaceData_setup;
@@ -13150,6 +14072,301 @@ MO.FE3dLines_dispose = function FE3dLines_dispose(){
    o._colorsData = null;
    o._material = MO.Lang.Object.dispose(o._material);
    o.__base.FE3dRenderable.dispose.call(o);
+}
+MO.FE3dPlaneData = function FE3dPlaneData(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._vertexs           = MO.Class.register(o, new MO.AGetter('_vertexs'));;
+   o._initVertexs       = null;
+   o._matrix            = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._centerX           = MO.Class.register(o, new MO.AGetter('_centerX'), 0);
+   o._centerY           = MO.Class.register(o, new MO.AGetter('_centerY'), 0);
+   o._z                 = MO.Class.register(o, new MO.AGetSet('_z'));
+   o._dataLength        = 4 * 3;
+   o.construct          = MO.FE3dPlaneData_construct;
+   o.setup              = MO.FE3dPlaneData_setup;
+   o.setVertexs         = MO.FE3dPlaneData_setVertexs;
+   o.move               = MO.FE3dPlaneData_move;
+   o.rotate             = MO.FE3dPlaneData_rotate;
+   o.rotateAxis         = MO.FE3dPlaneData_rotateAxis;
+   o.update             = MO.FE3dPlaneData_update;
+   o.format             = MO.FE3dPlaneData_format;
+   return o;
+}
+MO.FE3dPlaneData_construct = function FE3dPlaneData_construct() {
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._vertexs = new Float32Array(o._dataLength);
+   o._initVertexs = new Float32Array(o._dataLength);
+   o._matrix = new MO.SMatrix3d();
+   o._z = 0;
+}
+MO.FE3dPlaneData_setup = function FE3dPlaneData_setup() {
+   var o = this;
+}
+MO.FE3dPlaneData_setVertexs = function FE3dPlaneData_setVertexs(centerX, centerY, halfWidth, halfHeight) {
+   var o = this;
+   o._centerX = centerX;
+   o._centerY = centerY;
+   var initIndex = 0;
+   var index = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = -halfWidth;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = halfHeight;
+   o._vertexs[index ++] = o._initVertexs[initIndex ++] = 0;
+   o.format();
+}
+MO.FE3dPlaneData_move = function FE3dPlaneData_move(x, y, z) {
+   var o = this;
+   o._centerX = x;
+   o._centerY = y;
+   o._z = z;
+}
+MO.FE3dPlaneData_rotate = function FE3dPlaneData_rotate(x, y, z) {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.addRotation(x, y, z);
+}
+MO.FE3dPlaneData_rotateAxis = function FE3dPlaneData_rotateAxis(axis, angle) {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.addRotationAxis(axis, angle);
+}
+MO.FE3dPlaneData_format = function FE3dPlaneData_format() {
+   var o = this;
+   var vertexs = o._vertexs;
+   for(var i = 0; i < o._dataLength; i += 3) {
+      vertexs[i] += o._centerX;
+      vertexs[i + 1] += o._centerY;
+      vertexs[i + 2] += o._z;
+   }
+}
+MO.FE3dPlaneData_update = function FE3dPlaneData_update() {
+   var o = this;
+   var matrix = o._matrix;
+   matrix.transform(o._vertexs, 0, o._initVertexs, 0, o._dataLength);
+   o.format();
+}
+MO.FE3dPlanes = function FE3dPlanes(o) {
+   o = MO.Class.inherits(this, o, MO.FE3dRenderable);
+   o._optionCenterX           = MO.Class.register(o, new MO.AGetSet('_optionCenterX'), true);
+   o._optionCenterY           = MO.Class.register(o, new MO.AGetSet('_optionCenterY'), true);
+   o._optionCenterZ           = MO.Class.register(o, new MO.AGetSet('_optionCenterZ'), true);
+   o._url                     = MO.Class.register(o, new MO.AGetSet('_url'));
+   o._initRotation            = null;
+   o._initAxis                = null;
+   o._initAngle               = null;
+   o._size                    = MO.Class.register(o, new MO.AGetter('_size'));
+   o._splits                  = MO.Class.register(o, new MO.AGetter('_splits'));
+   o._texture                 = MO.Class.register(o, new MO.AGetter('_texture'));
+   o._planes                  = null;
+   o._vertexPositionBuffer    = null;
+   o._indexBuffer             = null;
+   o._image                   = null;
+   o.onLoad                   = MO.FE3dPlanes_onLoad;
+   o.construct                = MO.FE3dPlanes_construct;
+   o.setup                    = MO.FE3dPlanes_setup;
+   o.updateVertex             = MO.FE3dPlanes_updateVertex;
+   o.getInitCenterX           = MO.FE3dPlanes_getInitCenterX;
+   o.getInitCenterY           = MO.FE3dPlanes_getInitCenterY;
+   o.movePlane                = MO.FE3dPlanes_movePlane;
+   o.rotatePlane              = MO.FE3dPlanes_rotatePlane;
+   o.rotatePlaneAxis          = MO.FE3dPlanes_rotatePlaneAxis;
+   o.getPlaneMatrix           = MO.FE3dPlanes_getPlaneMatrix;
+   o.getPlane                 = MO.FE3dPlanes_getPlane;
+   o.updateAll                = MO.FE3dPlanes_updateAll;
+   o.setInitRotation          = MO.FE3dPlanes_setInitRotation;
+   o.setInitRotationAxis      = MO.FE3dPlanes_setInitRotationAxis;
+   return o;
+}
+MO.FE3dPlanes_construct = function FE3dPlanes_construct() {
+   var o = this;
+   o.__base.FE3dRenderable.construct.call(o);
+   o._size = new MO.SSize2(1, 1);
+   o._splits = new MO.SSize2(4, 4);
+   o._planes = new MO.TArray();
+   o._material = MO.Class.create(MO.FE3dMaterial);
+}
+MO.FE3dPlanes_setup = function FE3dPlanes_setup() {
+   var o = this;
+   var context = o._graphicContext;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var size = o._size;
+   var halfWidth = size.width / cx / 2;
+   var halfHeight = size.height / cy / 2;
+   var vertexCount = o._vertexCount = cx * cy * 4;
+   var coordIndex = 0;
+   var coordData = new Float32Array(2 * vertexCount);
+   for(var y = 0; y < cy; y++) {
+      for(var x = 0; x < cx; x++) {
+         var plane = MO.Class.create(MO.FE3dPlaneData);
+         var nextLinePlus = (y + 1) * (cx + 1);
+         plane.setVertexs(o.getInitCenterX(x), o.getInitCenterY(y), halfWidth, halfHeight);
+         if(o._initRotation) plane.rotate(o._initRotation.width, o._initRotation.height, o._initRotation.deep);
+         if(o._initAxis) {
+            plane.rotateAxis(o._initAxis, o._initAngle);
+         }
+         plane.update();
+         coordData[coordIndex++] = x / cx;
+         coordData[coordIndex++] = y / cy;
+         coordData[coordIndex++] = (x + 1) / cx;
+         coordData[coordIndex++] = y / cy;
+         coordData[coordIndex++] = (x + 1) / cx;
+         coordData[coordIndex++] = (y + 1) / cy;
+         coordData[coordIndex++] = x / cx;
+         coordData[coordIndex++] = (y + 1) / cy;
+         o._planes.push(plane);
+      }
+   }
+   var planes = o._planes;
+   var length = planes.length();
+   var vertexCount = length * 4;
+   var positionIndex = 0;
+   var positionData = o._positionData = new Float32Array(3 * vertexCount);
+   for(var i = 0; i < length; i++) {
+      var plane = planes.get(i);
+      positionData.set(plane.vertexs(), i * 12);
+   }
+   var buffer = o._vertexPositionBuffer = context.createVertexBuffer();
+   buffer.setCode('position');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float3);
+   buffer.upload(positionData, 4 * 3, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var buffer = o._vertexColorBuffer = context.createVertexBuffer();
+   buffer.setCode('coord');
+   buffer.setFormatCd(MO.EG3dAttributeFormat.Float2);
+   buffer.upload(coordData, 4 * 2, vertexCount);
+   o.pushVertexBuffer(buffer);
+   var indexes = new MO.TArray();
+   for (var y = 0; y < cy; y++) {
+      for(var x = 0; x < cx; x++) {
+         var offset = (cx * y + x) * 4;
+         indexes.push(offset, offset + 2, offset + 1);
+         indexes.push(offset, offset + 3, offset + 2);
+      }
+   }
+   var buffer = o._indexBuffer = context.createIndexBuffer();
+   var indexLength = indexes.length();
+   var indexMemory = indexes.memory();
+   if(indexLength > 65535) {
+      buffer.setStrideCd(MO.EG3dIndexStride.Uint32);
+      buffer.upload(new Uint32Array(indexMemory), indexLength);
+   }else {
+      buffer.upload(new Uint16Array(indexMemory), indexLength);
+   }
+   o.pushIndexBuffer(buffer);
+   var texture = o._texture = context.createFlatTexture();
+   texture.setOptionFlipY(true);
+   texture.setWrapCd(MO.EG3dSamplerFilter.ClampToEdge, MO.EG3dSamplerFilter.ClampToEdge);
+   o.pushTexture(texture, 'diffuse');
+   o.update();
+   var info = o.material().info();
+   info.optionAlpha = true;
+   info.specularLevel = 64;
+   o.material()._textures = o._textures;
+   if(o._url) {
+      var image = o._image = MO.Class.create(MO.FImage);
+      image.addLoadListener(o, o.onLoad);
+      image.loadUrl(o._url);
+   }
+}
+MO.FE3dPlanes_getInitCenterX = function FE3dPlanes_getInitCenterX(x) {
+   var o = this;
+   var splits = o._splits;
+   var cx = splits.width;
+   var size = o._size;
+   var sx = size.width / cx;
+   var centerX = o._optionCenterX ? size.width * 0.5 : 0;
+   return sx * x - centerX + sx / 2;
+}
+MO.FE3dPlanes_getInitCenterY = function FE3dPlanes_getInitCenterY(y) {
+   var o = this;
+   var splits = o._splits;
+   var cy = splits.height;
+   var size = o._size;
+   var sy = size.height / cy;
+   var centerY = o._optionCenterY ? size.height * 0.5 : 0;
+   return sy * y - centerY + sy / 2;
+}
+MO.FE3dPlanes_onLoad = function FE3dPlanes_onLoad(event) {
+   var o = this;
+   var texture = o._texture;
+   texture.upload(o._image);
+   texture.makeMipmap();
+   o._image = MO.Lang.Object.dispose(o._image);
+   o.updateAll();
+}
+MO.FE3dPlanes_updateAll = function FE3dPlanes_updateAll() {
+   var o = this;
+   var planes = o._planes;
+   var length = planes.length();
+   for( var i = 0; i < length; ++i) {
+      var plane = planes.get(i);
+      plane.update();
+   }
+   o.updateVertex();
+   o.update();
+}
+MO.FE3dPlanes_updateVertex = function FE3dPlanes_updateVertex() {
+   var o = this;
+   var context = o._graphicContext;
+   var planes = o._planes;
+   var length = planes.length();
+   var vertexCount = length * 4;
+   var positionIndex = 0;
+   var positionData = o._positionData;
+   for(var i = 0; i < length; i++) {
+      var plane = planes.get(i);
+      positionData.set(plane.vertexs(), i * 12);
+   }
+   var buffer = o._vertexPositionBuffer;
+   buffer.upload(positionData, 4 * 3, vertexCount);
+}
+MO.FE3dPlanes_movePlane = function FE3dPlanes_movePlane(planeX, planeY, toX, toY, toZ) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.move(toX, toY, toZ);
+}
+MO.FE3dPlanes_rotatePlane = function FE3dPlanes_rotatePlane(planeX, planeY, rx, ry, rz) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.rotate(rx, ry, rz);
+}
+MO.FE3dPlanes_rotatePlaneAxis = function FE3dPlanes_rotatePlaneAxis(planeX, planeY, axis, angle) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+   plane.rotateAxis(axis, angle);
+}
+MO.FE3dPlanes_getPlaneMatrix = function FE3dPlanes_getPlaneMatrix(planeX, planeY) {
+   var o = this;
+   var plane = o.getPlane(planeX, planeY);
+}
+MO.FE3dPlanes_getPlane = function FE3dPlanes_getPlane(planeX, planeY) {
+   var o = this;
+   var planes = o._planes;
+   var splits = o._splits;
+   var cx = splits.width;
+   var cy = splits.height;
+   var plane = planes.get(cx * planeY + planeX);
+   return plane;
+}
+MO.FE3dPlanes_setInitRotation = function FE3dPlanes_setInitRotation(x, y, z) {
+   var o = this;
+   var rotation = o._initRotation = new MO.SSize3(x, y, z);
+}
+MO.FE3dPlanes_setInitRotationAxis = function FE3dPlanes_setInitRotationAxis(axis, angle) {
+   var o = this;
+   o._initAxis = axis;
+   o._initAngle = angle;
 }
 MO.FE3dPolygon = function FE3dPolygon(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
@@ -13507,6 +14724,7 @@ MO.FE3dShapeData_beginDraw = function FE3dShapeData_beginDraw(){
 MO.FE3dShapeData_endDraw = function FE3dShapeData_endDraw(){
    var o = this;
    var graphic = o._graphic;
+   MO.Assert.debugNotNull(graphic);
    o._texture.upload(o._canvas);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    canvasConsole.free(o._canvas);
@@ -14473,7 +15691,7 @@ MO.MFrameProcessor_dispose = function MFrameProcessor_dispose(){
 }
 MO.FApplication = function FApplication(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
-   o._sessionId           = MO.Class.register(o, new MO.AGetSet('_sessionId'));
+   o._sessionCode         = MO.Class.register(o, new MO.AGetSet('_sessionCode'));
    o._activeChapter       = MO.Class.register(o, new MO.AGetter('_activeChapter'));
    o._chapters            = MO.Class.register(o, new MO.AGetter('_chapters'));
    o.onProcessReady       = MO.FApplication_onProcessReady;
@@ -14493,6 +15711,7 @@ MO.FApplication = function FApplication(o){
    return o;
 }
 MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
+   MO.Logger.debug(this, 'Application process ready.');
 }
 MO.FApplication_onProcess = function FApplication_onProcess(event){
    var o = this;
@@ -14505,12 +15724,8 @@ MO.FApplication_construct = function FApplication_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MFrameProcessor.construct.call(o);
-   o._sessionId = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
+   o._sessionCode = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
    o._chapters = new MO.TDictionary();
-}
-MO.FApplication_findSessionId = function FApplication_findSessionId(){
-   var o = this;
-   return o._sessionId;
 }
 MO.FApplication_registerChapter = function FApplication_registerChapter(chapter){
    var o = this;
@@ -14542,6 +15757,7 @@ MO.FApplication_selectChapterByCode = function FApplication_selectChapterByCode(
    var chapter = o._chapters.get(code);
    if(!chapter){
       chapter = o.createChapter(code);
+      MO.Assert.debugNotNull(chapter);
       o.registerChapter(chapter);
    }
    o.selectChapter(chapter);
@@ -14600,6 +15816,7 @@ MO.FChapter = function FChapter(o){
    return o;
 }
 MO.FChapter_onProcessReady = function FChapter_onProcessReady(event){
+   MO.Logger.debug(this, 'Chapter process ready. (code={1})', this._code);
 }
 MO.FChapter_construct = function FChapter_construct(){
    var o = this;
@@ -14610,6 +15827,7 @@ MO.FChapter_construct = function FChapter_construct(){
 MO.FChapter_registerScene = function FChapter_registerScene(scene){
    var o = this;
    var code = scene.code();
+   MO.Assert.debugNotEmpty(code);
    scene.setApplication(o._application);
    scene.setChapter(o);
    o._scenes.set(code, scene);
@@ -14637,6 +15855,7 @@ MO.FChapter_selectSceneByCode = function FChapter_selectSceneByCode(code){
    var scene = o._scenes.get(code);
    if(!scene){
       scene = o.createScene(code);
+      MO.Assert.debugNotNull(scene);
       o.registerScene(scene);
    }
    o.selectScene(scene);
@@ -14649,10 +15868,12 @@ MO.FChapter_active = function FChapter_active(){
       o._statusSetup = true;
    }
    o._statusActive = true;
+   MO.Logger.debug(o, 'Chapter active. (code={1})', o._code);
 }
 MO.FChapter_deactive = function FChapter_deactive(){
    var o = this;
    o._statusActive = false;
+   MO.Logger.debug(o, 'Chapter deactive. (code={1})', o._code);
 }
 MO.FChapter_processEvent = function FChapter_processEvent(event){
    var o = this;
@@ -14715,6 +15936,7 @@ MO.FScene_onOperationVisibility = function FScene_onOperationVisibility(event){
    o._visible = event.visibility;
 }
 MO.FScene_onProcessReady = function FScene_onProcessReady(event){
+   MO.Logger.debug(this, 'Scene process ready. (code={1})', this._code);
 }
 MO.FScene_construct = function FScene_construct(){
    var o = this;
@@ -14728,11 +15950,13 @@ MO.FScene_active = function FScene_active(){
       o._statusSetup = true;
    }
    o._statusActive = true;
+   MO.Logger.debug(o, 'Scene active. (code={1})', o._code);
    o.processResize();
 }
 MO.FScene_deactive = function FScene_deactive(){
    var o = this;
    o._statusActive = false;
+   MO.Logger.debug(o, 'Scene deactive. (code={1})', o._code);
 }
 MO.FScene_process = function FScene_process(){
    var o = this;

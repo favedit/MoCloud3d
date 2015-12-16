@@ -372,10 +372,13 @@ MO.SG3dMaterialInfo = function SG3dMaterialInfo(){
    var o = this;
    o.effectCode           = 'automatic';
    o.optionDepth          = null;
+   o.optionDepthWrite     = null;
    o.optionDouble         = null;
    o.optionNormalInvert   = null;
    o.optionShadow         = null;
    o.optionShadowSelf     = null;
+   o.optionSort           = null;
+   o.sortLevel            = null;
    o.optionAlpha          = null;
    o.alphaBase            = 1.0;
    o.alphaRate            = 1.0;
@@ -437,10 +440,13 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -489,7 +495,7 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.opacityColor.assign(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assign(info.emissiveColor);
@@ -499,10 +505,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -551,7 +560,7 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.opacityColor.assignPower(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assignPower(info.emissiveColor);
@@ -559,10 +568,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
 MO.SG3dMaterialInfo_reset = function SG3dMaterialInfo_reset(){
    var o = this;
    o.optionDepth = true;
+   o.optionDepthWrite = true;
    o.optionDouble = false;
    o.optionNormalInvert = false;
    o.optionShadow = true;
    o.optionShadowSelf = true;
+   o.optionSort = true;
+   o.sortLevel = 0;
    o.optionAlpha = false;
    o.alphaBase = 0.2;
    o.alphaRate = 1;
@@ -839,7 +851,7 @@ MO.FG3dCamera_updateFrustum = function FG3dCamera_updateFrustum(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
@@ -1104,9 +1116,12 @@ MO.FG3dEffectConsole_construct = function FG3dEffectConsole_construct(){
    o._tagContext = MO.Class.create(MO.FTagContext);
 }
 MO.FG3dEffectConsole_register = function FG3dEffectConsole_register(name, effect){
+   MO.Assert.debugNotEmpty(name);
+   MO.Assert.debugNotNull(effect);
    this._registerEffects.set(name, effect);
 }
 MO.FG3dEffectConsole_unregister = function FG3dEffectConsole_unregister(name){
+   MO.Assert.debugNotEmpty(name);
    this._registerEffects.set(name, null);
 }
 MO.FG3dEffectConsole_create = function FG3dEffectConsole_create(context, name){
@@ -1565,6 +1580,7 @@ MO.FG3dTechnique_selectMode = function FG3dTechnique_selectMode(p){
 }
 MO.FG3dTechnique_pushPass = function FG3dTechnique_pushPass(pass){
    var o = this;
+   MO.Assert.debugNotNull(pass);
    pass.setTechnique(o);
    o._passes.push(pass);
 }
@@ -1669,6 +1685,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    var sourceMaterial = source.material().info();
    var targetMaterial = target.material().info();
    if(sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -1684,6 +1703,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    }else if(!sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
       return -1;
    }else{
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -1863,7 +1885,7 @@ MO.FG3dTrackBall_updateFrustum = function FG3dTrackBall_updateFrustum(){
 }
 MO.FG3dTrackBall_dispose = function FG3dTrackBall_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dViewport = function FG3dViewport(o){

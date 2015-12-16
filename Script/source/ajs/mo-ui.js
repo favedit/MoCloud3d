@@ -6,6 +6,9 @@ MO.EDataStatus = new function EDataStatus(){
    o.Delete = 'D';
    return o;
 }
+MO.Ui = new function MoUiSpace(){return this;}
+MO.Gui = new function MoGuiSpace(){return this;}
+MO.Dui = new function MoDuiSpace(){return this;}
 MO.FDataRow = function FDataRow(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    o._dataset    = MO.Class.register(o, new MO.AGetSet('_dataset'));
@@ -400,6 +403,7 @@ MO.FDataSource_loadConfig = function FDataSource_loadConfig(xconfig){
          var xnode = xnodes.at(i);
          if(xnode.isName('Dataset')){
             var datasetName = xnode.get('name');
+            MO.Assert.debugNotEmpty(datasetName);
             var dataset = o.selectDataset(datasetName);
             dataset.loadConfig(xnode);
          }
@@ -1230,6 +1234,7 @@ MO.APtyString_toString = function APtyString_toString(){
 MO.EUiAlign = new function EUiAlign(){
    var o = this;
    o.Left        = 'left';
+   o.LeftPadding = 'LeftPadding';
    o.Center      = 'center';
    o.Right       = 'right';
    o.Top         = 'up';
@@ -2808,7 +2813,7 @@ MO.MUiEditValue_setInfo = function MUiEditValue_setInfo(f){
    this.set(f.value);
 }
 MO.MUiMargin = function MUiMargin(o){
-   o = MO.RClass.inherits(this, o);
+   o = MO.Class.inherits(this, o);
    o._margin   = MO.RClass.register(o, [new MO.APtyPadding('_margin'), new MO.AGetter('_margin')]);
    o.construct = MO.MUiMargin_construct;
    o.setMargin = MO.MUiMargin_setMargin;
@@ -2827,7 +2832,7 @@ MO.MUiMargin_dispose = function MUiMargin_dispose(){
    o._margin = MO.Lang.Object.dispose(o._margin);
 }
 MO.MUiPadding = function MUiPadding(o){
-   o = MO.RClass.inherits(this, o);
+   o = MO.Class.inherits(this, o);
    o._padding   = MO.RClass.register(o, [new MO.APtyPadding('_padding'), new MO.AGetter('_padding')]);
    o.construct  = MO.MUiPadding_construct;
    o.setPadding = MO.MUiPadding_setPadding;
@@ -2995,9 +3000,6 @@ MO.MUiValue = function MUiValue(o){
    o.set = MO.Method.empty;
    return o;
 }
-MO.Ui = new function MoUiSpace(){return this;}
-MO.Gui = new function MoGuiSpace(){return this;}
-MO.Dui = new function MoDuiSpace(){return this;}
 MO.SUiDispatchEvent = function SUiDispatchEvent(owner, invokeName, clazz){
    var o = this;
    MO.SEvent.call(o);
@@ -3318,6 +3320,31 @@ MO.MUiGridColumnCurrency_formatText = function MUiGridColumnCurrency_formatText(
 MO.MUiGridColumnCurrency_dispose = function MUiGridColumnCurrency_dispose(){
    var o = this;
 }
+MO.MUiGridColumnCurrencyInt = function MUiGridColumnCurrencyInt(o){
+   o = MO.Class.inherits(this, o);
+   o._currencyPercent = MO.Class.register(o, new MO.AGetSet('_currencyPercent'), 0);
+   o._normalColor     = MO.Class.register(o, new MO.AGetSet('_normalColor'), '#000000');
+   o._lowerestColor   = MO.Class.register(o, new MO.AGetSet('_lowerestColor'), '#000000');
+   o._lowerColor      = MO.Class.register(o, new MO.AGetSet('_lowerColor'), '#000000');
+   o._highColor       = MO.Class.register(o, new MO.AGetSet('_highColor'), '#000000');
+   o._highestColor    = MO.Class.register(o, new MO.AGetSet('_highestColor'), '#000000');
+   o._negativeColor   = MO.Class.register(o, new MO.AGetSet('_negativeColor'), '#000000');
+   o.construct        = MO.MUiGridColumnCurrencyInt_construct;
+   o.formatText       = MO.MUiGridColumnCurrencyInt_formatText;
+   o.dispose          = MO.MUiGridColumnCurrencyInt_dispose;
+   return o;
+}
+MO.MUiGridColumnCurrencyInt_construct = function MUiGridColumnCurrencyInt_construct(){
+   var o = this;
+}
+MO.MUiGridColumnCurrencyInt_formatText = function MUiGridColumnCurrencyInt_formatText(value){
+   var o = this;
+   var text = MO.Lang.Integer.format(MO.Runtime.nvl(value, 0), null, null, o._currencyPercent, '0');
+   return text;
+}
+MO.MUiGridColumnCurrencyInt_dispose = function MUiGridColumnCurrencyInt_dispose(){
+   var o = this;
+}
 MO.MUiGridColumnDate = function MUiGridColumnDate(o){
    o = MO.Class.inherits(this, o);
    o._dateFormat = MO.Class.register(o, new MO.AGetSet('_dateFormat'), 'YYYY/MM/DD HH24:MI:SS');
@@ -3366,7 +3393,7 @@ MO.MUiGridControl = function MUiGridControl(o){
    o._rowClass      = MO.FUiGridRow;
    o._rowFont       = MO.Class.register(o, new MO.AGetter('_rowFont'));
    o._rowHeight     = MO.Class.register(o, new MO.AGetSet('_rowHeight'), 28);
-   o._rowLimitCount = MO.Class.register(o, new MO.AGetter('_rowLimitCount'), 0);
+   o._rowLimitCount = MO.Class.register(o, new MO.AGetSet('_rowLimitCount'), 200);
    o._rows          = MO.Class.register(o, new MO.AGetter('_rows'));
    o._rowPool       = null;
    o._focusRow      = null;
@@ -3506,6 +3533,265 @@ MO.SUiGridCellStyle_dispose = function SUiGridCellStyle_dispose(){
    var o = this;
    o.alignCd = null;
    o.font = null;
+}
+MO.MUiChart = function MUiChart(o){
+   o = MO.Class.inherits(this, o);
+   o._dataset  = MO.Class.register(o, new MO.AGetSet('_dataset'));
+   o.construct = MO.MUiChart_construct;
+   o.dispose   = MO.MUiChart_dispose;
+   return o;
+}
+MO.MUiChart_construct = function MUiChart_construct(){
+   var o = this;
+}
+MO.MUiChart_dispose = function MUiChart_dispose(){
+   var o = this;
+}
+MO.FUiChartAxis = function FUiChartAxis(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._degrees                 = MO.Class.register(o, new MO.AGetter('_degrees'));
+   o._optionShowAxis          = MO.Class.register(o, new MO.AGetSet('_optionShowAxis'), true);
+   o._optionShowLabel         = MO.Class.register(o, new MO.AGetSet('_optionShowLabel'), true);
+   o._optionShowFirstLine     = MO.Class.register(o, new MO.AGetSet('_optionShowFirstLine'), false);
+   o._font                    = MO.Class.register(o, new MO.AGetter('_font'));
+   o._lineWidth               = MO.Class.register(o, new MO.AGetSet('_lineWidth'), 1);;
+   o._lineColor               = MO.Class.register(o, new MO.AGetSet('_lineColor'), '#FFFFFF');
+   o._divisor                 = MO.Class.register(o, new MO.AGetSet('_divisor'), 1);
+   o._degreeLabelGap          = MO.Class.register(o, new MO.AGetSet('_degreeLabelGap'), 2);
+   o._label                   = MO.Class.register(o, new MO.AGetSet('_label'), "");
+   o._labelFont               = MO.Class.register(o, new MO.AGetSet('_labelFont'));
+   o._optionLabelVertical     = MO.Class.register(o, new MO.AGetSet('_optionLabelVertical'), false);
+   o.construct                = MO.FUiChartAxis_construct;
+   o.pushDegree               = MO.FUiChartAxis_pushDegree;
+   o.createDegrees            = MO.FUiChartAxis_createDegrees;
+   o.createDegreesStandard    = MO.FUiChartAxis_createDegreesStandard;
+   o.findDegreeByValue        = MO.FUiChartAxis_findDegreeByValue;
+   o.formatLabels             = MO.FUiChartAxis_formatLabels;
+   o.dispose                  = MO.FUiChartAxis_dispose;
+   return o;
+}
+MO.FUiChartAxis_construct = function FUiChartAxis_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._degrees = new MO.TObjects();
+   o._font = new MO.SUiFont();
+   o._labelFont = new MO.SUiFont();
+}
+MO.FUiChartAxis_pushDegree = function FUiChartAxis_pushDegree(degree) {
+   var o = this;
+   degree.setAxis
+   o._degrees.push(degree);
+}
+MO.FUiChartAxis_createDegrees = function FUiChartAxis_createDegrees(start, end) {
+   var o = this;
+   for(var i = start; i <= end; ++i) {
+      var degree = MO.Class.create(MO.FUiChartAxisDegree);
+      degree.setValue(i);
+      o._degrees.push(degree);
+   }
+}
+MO.FUiChartAxis_createDegreesStandard = function FUiChartAxis_createDegreesStandard(data) {
+   var o = this;
+   var max = data[0];
+   var min = data[1];
+   var cor = data[2];
+   o._degrees.clear();
+   var step = (max - min) / cor;
+   for( var i = 0; i <= cor; ++i) {
+      var degree = MO.Class.create(MO.FUiChartAxisDegree);
+      var value = min + step * i;
+      degree.setValue(value);
+      o._degrees.push(degree);
+   }
+}
+MO.FUiChartAxis_findDegreeByValue = function FUiChartAxis_findDegreeByValue(value) {
+   var o = this;
+   var result;
+   var degrees = o._degrees;
+   var count = degrees.count();
+   while(--count > -1) {
+      var degree = degrees.get(count);
+      if(degree.value() == value) {
+         result = degree;
+         break;
+      }
+   }
+   return result;
+}
+MO.FUiChartAxis_formatLabels = function FUiChartAxis_formatLabels() {
+   var o = this;
+   var degrees = o._degrees;
+   var count = degrees.count();
+   for(var i = 0; i < count; ++i) {
+      var degree = degrees.get(i);
+      var value = degree.value();
+      degree.setLabel((value / o._divisor).toFixed().toString());
+   }
+}
+MO.FUiChartAxis_dispose = function FUiChartAxis_dispose(){
+   var o = this;
+   o._degrees = MO.Lang.Object.dispose(o._degrees);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FUiChartAxisDegree = function FUiChartAxisDegree(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._axis     = MO.Class.register(o, new MO.AGetSet('_axis'));
+   o._value    = MO.Class.register(o, new MO.AGetSet('_value'));
+   o._label    = MO.Class.register(o, new MO.AGetSet('_label'), "");
+   o._optionShowAxis          = MO.Class.register(o, new MO.AGetSet('_optionShowAxis'), true);
+   o._optionShowLabel         = MO.Class.register(o, new MO.AGetSet('_optionShowLabel'), true);
+   o._font                    = MO.Class.register(o, new MO.AGetter('_font'));
+   o._lineWidth               = MO.Class.register(o, new MO.AGetSet('_lineWidth'));
+   o._lineColor               = MO.Class.register(o, new MO.AGetSet('_lineColor'));
+   o.construct = MO.FUiChartAxisDegree_construct;
+   o.dispose   = MO.FUiChartAxisDegree_dispose;
+   return o;
+}
+MO.FUiChartAxisDegree_construct = function FUiChartAxisDegree_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+}
+MO.FUiChartAxisDegree_dispose = function FUiChartAxisDegree_dispose(){
+   var o = this;
+   o._axis = null;
+   o._value = null;
+   o.__base.FObject.dispose.call(o);
+}
+MO.FUiChartDataSeries = function FUiChartDataSeries(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._dataset           = MO.Class.register(o, new MO.AGetSet('_dataset'));
+   o._values            = MO.Class.register(o, new MO.AGetSet('_values'));
+   o._lineColor         = MO.Class.register(o, new MO.AGetSet('_lineColor'), '#FFFFFF');
+   o._lineWidth         = MO.Class.register(o, new MO.AGetSet('_lineWidth'), 1);
+   o._rectWidth         = MO.Class.register(o, new MO.AGetSet('_rectWidth'), 10);
+   o._rectMargin        = MO.Class.register(o, new MO.AGetSet('_rectMargin'), 4);
+   o._fillColor         = MO.Class.register(o, new MO.AGetSet('_fillColor'), '#FFFFFF');
+   o._fillGradient      = MO.Class.register(o, new MO.AGetSet('_fillGradient'));
+   o._optionShowBorder  = MO.Class.register(o, new MO.AGetSet('_optionShowBorder'), true);
+   o._dotSize           = MO.Class.register(o, new MO.AGetSet('_dotSize'), 1);
+   o._dotColor          = MO.Class.register(o, new MO.AGetSet('_dotColor'), '#FFFFFF');
+   o._optionShowDot     = MO.Class.register(o, new MO.AGetSet('_optionShowDot'), false);
+   o.construct          = MO.FUiChartDataSeries_construct;
+   o.dispose            = MO.FUiChartDataSeries_dispose;
+   return o;
+}
+MO.FUiChartDataSeries_construct = function FUiChartDataSeries_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._values = new MO.TObjects();
+}
+MO.FUiChartAxis_dispose = function FUiChartAxis_dispose(){
+   var o = this;
+   o._values = MO.Lang.Object.dispose(o._values);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FUiChartDataset = function FUiChartDataset(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._serieses                = MO.Class.register(o, new MO.AGetter('_serieses'));
+   o.construct                = MO.FUiChartDataset_construct;
+   o.push                     = MO.FUiChartDataset_push;
+   o.maxValue                 = MO.FUiChartDataset_maxValue;
+   o.minValue                 = MO.FUiChartDataset_minValue;
+   o.standardCor              = MO.FUiChartDataset_standardCor;
+   o.dispose                  = MO.FUiChartDataset_dispose;
+   return o;
+}
+MO.FUiChartDataset_construct = function FUiChartDataset_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+   o._serieses = new MO.TObjects();
+}
+MO.FUiChartDataset_push = function FUiChartDataset_push(data) {
+   var o = this;
+   data.setDataset(o);
+   o._serieses.push(data);
+}
+MO.FUiChartDataset_maxValue = function FUiChartDataset_maxValue() {
+   var o = this;
+   var serieses = o._serieses;
+   var count = serieses.count();
+   var result = Number.NEGATIVE_INFINITY;
+   for(var i = 0; i < count; ++i) {
+      var series = serieses.get(i);
+      var values = series.values();
+      var valueCount = values.count();
+      for (var v = 0; v < valueCount; ++v) {
+         var value = values.get(v);
+         result = result < value ? value : result;
+      }
+   }
+   return result;
+}
+MO.FUiChartDataset_minValue = function FUiChartDataset_minValue() {
+   var o = this;
+   var serieses = o._serieses;
+   var count = serieses.count();
+   var result = Number.POSITIVE_INFINITY;
+   for(var i = 0; i < count; ++i) {
+      var series = serieses.get(i);
+      var values = series.values();
+      var valueCount = values.count();
+      for (var v = 0; v < valueCount; ++v) {
+         var value = values.get(v);
+         result = result > value ? value : result;
+      }
+   }
+   return result;
+}
+MO.FUiChartDataset_standardCor = function FUiChartDataset_standardCor(corCount) {
+   var o = this;
+   var result = new MO.TArray();
+   var corMax = o.maxValue();
+   var corMin = o.minValue();
+   var corNumber = corCount;
+   var corStep = (corMax - corMin) / corNumber;
+   var temp, tmpStep, tmpNumber, extraNumber;
+   if(Math.pow(10, parseInt(Math.log(corStep) / Math.log(10))) == corStep) {
+      temp = Math.pow(10, parseInt(Math.log(corStep) / Math.log(10)));
+   }else {
+      temp = Math.pow(10, (parseInt(Math.log(corStep) / Math.log(10)) + 1));
+   }
+   tmpStep = (corStep / temp).toFixed(6);
+   if(tmpStep >= 0 && tmpStep <= 0.1) {
+      tmpStep = 0.1;
+   }else if ( tmpStep >= 0.100001 && tmpStep <= 0.2) {
+      tmpStep = 0.2;
+   }else if ( tmpStep >= 0.200001 && tmpStep <= 0.25) {
+      tmpStep = 0.25;
+   }else if ( tmpStep >= 0.250001 && tmpStep <= 0.5) {
+      tmpStep = 0.5;
+   }else {
+      tmpStep = 1;
+   }
+   tmpStep = tmpStep * temp;
+   if(parseInt(corMin / tmpStep) != (corMin / tmpStep)) {
+      if(corMin < 0) {
+         corMin = (-1) * Math.ceil(Math.abs(corMin / tmpStep)) * tmpStep;
+      }else {
+         corMin = parseInt(Math.abs(corMin / tmpStep)) * tmpStep;
+      }
+   }
+   if(parseInt(corMax / tmpStep) != (corMax / tmpStep)) {
+      corMax = parseInt(corMax / tmpStep + 1) * tmpStep;
+   }
+   tmpNumber = (corMax - corMin) / tmpStep;
+   if(tmpNumber < corNumber) {
+      extraNumber = corNumber - tmpNumber;
+      tmpNumber = corNumber;
+      if(extraNumber % 2 == 0) {
+         corMax = corMax + tmpStep * parseInt(extraNumber / 2);
+      }else {
+         corMax = corMax + tmpStep * parseInt(extraNumber / 2 + 1);
+      }
+      corMin = corMin - tmpStep * parseInt(extraNumber / 2);
+   }
+   corNumber = tmpNumber;
+   return [corMax, corMin, corNumber];
+}
+MO.FUiChartDataset_dispose = function FUiChartDataset_dispose(){
+   var o = this;
+   o._serieses = MO.Lang.Object.dispose(o._serieses);
+   o.__base.FObject.dispose.call(o);
 }
 MO.EApplicationConstant = new function EApplicationConstant(){
    var o = this;
@@ -3749,6 +4035,8 @@ MO.FCanvasDesktop_resize = function FCanvasDesktop_resize(targetWidth, targetHei
    }else{
       calculateRate.set(1, 1);
    }
+   o._sizeScale = 1 / sizeRate;
+   MO.Logger.debug(o, 'Change screen size. (orientation={1}, ratio={2}, screen_size={3}, size={4}, rate={5}, calculate_rate={6})', browser.orientationCd(), pixelRatio, o._screenSize.toDisplay(), o._size.toDisplay(), sizeRate, o._calculateRate.toDisplay());
    var canvas3d = o._canvas3d;
    var context3d = canvas3d.graphicContext();
    context3d.size().set(width, height);

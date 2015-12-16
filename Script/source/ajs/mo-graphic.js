@@ -35,6 +35,7 @@ MO.MGraphicObject_linkGraphicContext = function MGraphicObject_linkGraphicContex
    }else{
       throw new MO.TError(o, 'Link graphic context failure. (context={1})', context);
    }
+   MO.Assert.debugNotNull(o._graphicContext);
 }
 MO.MGraphicObject_dispose = function MGraphicObject_dispose(){
    var o = this;
@@ -233,26 +234,37 @@ MO.FG2dCanvasContext = function FG2dCanvasContext(o) {
    o.setScale             = MO.FG2dCanvasContext_setScale;
    o.setAlpha             = MO.FG2dCanvasContext_setAlpha;
    o.setFont              = MO.FG2dCanvasContext_setFont;
+   o.setShadow            = MO.FG2dCanvasContext_setShadow;
+   o.setLineJoin          = MO.FG2dCanvasContext_setLineJoin;
    o.store                = MO.FG2dCanvasContext_store;
    o.restore              = MO.FG2dCanvasContext_restore;
    o.prepare              = MO.FG2dCanvasContext_prepare;
    o.clear                = MO.FG2dCanvasContext_clear;
    o.clearRectangle       = MO.FG2dCanvasContext_clearRectangle;
+   o.clearShadow          = MO.FG2dCanvasContext_clearShadow;
    o.clip                 = MO.FG2dCanvasContext_clip;
    o.textWidth            = MO.FG2dCanvasContext_textWidth;
    o.createLinearGradient = MO.FG2dCanvasContext_createLinearGradient;
+   o.beginPath            = MO.FG2dCanvasContext_beginPath;
+   o.endPath              = MO.FG2dCanvasContext_endPath;
+   o.moveTo               = MO.FG2dCanvasContext_moveTo;
+   o.lineTo               = MO.FG2dCanvasContext_lineTo;
    o.drawLine             = MO.FG2dCanvasContext_drawLine;
    o.drawRectangle        = MO.FG2dCanvasContext_drawRectangle;
    o.drawTriangle         = MO.FG2dCanvasContext_drawTriangle;
    o.drawCircle           = MO.FG2dCanvasContext_drawCircle;
    o.drawText             = MO.FG2dCanvasContext_drawText;
    o.drawTextVertical     = MO.FG2dCanvasContext_drawTextVertical;
+   o.drawTextRectangle    = MO.FG2dCanvasContext_drawTextRectangle
    o.drawImage            = MO.FG2dCanvasContext_drawImage;
+   o.drawRectangleImage   = MO.FG2dCanvasContext_drawRectangleImage;
    o.drawGridImage        = MO.FG2dCanvasContext_drawGridImage;
    o.drawQuadrilateral    = MO.FG2dCanvasContext_drawQuadrilateral;
+   o.drawShape            = MO.FG2dCanvasContext_drawShape;
    o.drawBorderLine       = MO.FG2dCanvasContext_drawBorderLine;
    o.drawBorder           = MO.FG2dCanvasContext_drawBorder;
    o.fillRectangle        = MO.FG2dCanvasContext_fillRectangle;
+   o.fillShape            = MO.FG2dCanvasContext_fillShape;
    o.toBytes              = MO.FG2dCanvasContext_toBytes;
    o.saveFile             = MO.FG2dCanvasContext_saveFile;
    o.dispose              = MO.FG2dCanvasContext_dispose;
@@ -287,10 +299,11 @@ MO.FG2dCanvasContext_setGlobalScale = function FG2dCanvasContext_setGlobalScale(
 }
 MO.FG2dCanvasContext_setScale = function FG2dCanvasContext_setScale(width, height){
    var o = this;
-   if(!o._scale.equalsData(width, height)){
+   if((width == 1) && (height == 1)){
+      return;
+   }
       o._handle.scale(width, height);
       o._scale.set(width, height);
-   }
 }
 MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
    var o = this;
@@ -298,6 +311,18 @@ MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
 }
 MO.FG2dCanvasContext_setFont = function FG2dCanvasContext_setFont(font) {
    this._handle.font = font;
+}
+MO.FG2dCanvasContext_setShadow = function FG2dCanvasContext_setShadow(offsetX, offsetY, blur, color) {
+   this._handle.shadowOffsetX = offsetX;
+   this._handle.shadowOffsetY = offsetY;
+   this._handle.shadowBlur = blur;
+   this._handle.shadowColor = color;
+}
+MO.FG2dCanvasContext_clearShadow = function FG2dCanvasContext_clearShadow() {
+   this._handle.shadowOffsetX = "0";
+   this._handle.shadowOffsetY = "0";
+   this._handle.shadowBlur = "0";
+   this._handle.shadowColor = "0";
 }
 MO.FG2dCanvasContext_store = function FG2dCanvasContext_store(){
    this._handle.save();
@@ -345,6 +370,18 @@ MO.FG2dCanvasContext_createLinearGradient = function FG2dCanvasContext_createLin
    var handle = o._handle;
    return handle.createLinearGradient(x1, y1, x2, y2);
 }
+MO.FG2dCanvasContext_beginPath = function FG2dCanvasContext_beginPath(){
+   this._handle.beginPath();
+}
+MO.FG2dCanvasContext_endPath = function FG2dCanvasContext_endPath(){
+   this._handle.closePath();
+}
+MO.FG2dCanvasContext_moveTo = function FG2dCanvasContext_moveTo(x, y){
+   this._handle.moveTo(x, y);
+}
+MO.FG2dCanvasContext_lineTo = function FG2dCanvasContext_lineTo(x, y){
+   this._handle.lineTo(x, y);
+}
 MO.FG2dCanvasContext_drawLine = function FG2dCanvasContext_drawLine(x1, y1, x2, y2, color, lineWidth) {
    var o = this;
    var handle = o._handle;
@@ -369,6 +406,98 @@ MO.FG2dCanvasContext_drawText = function FG2dCanvasContext_drawText(text, x, y, 
    handle.fillStyle = color;
    handle.fillText(text, x, y);
 }
+MO.FG2dCanvasContext_drawTextRectangle = function FG2dCanvasContext_drawTextRectangle(text, x, y, width, height, lineWidth, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   var drawX = x;
+   var drawY = y;
+   var nCharWidth = handle.measureText("A").width;  //窄字符的宽度
+   var wCharWidth = handle.measureText("王").width; //宽字符的宽度
+   var beginDrawTextNumber = 0;
+   var drawTextNumber = 0;
+   var lineLengh = 0; //预测的字符长度
+   if (width == 0 || height == 0 || lineWidth == 0) {
+      return;
+   }
+   for (var i = 0; i < text.length; i++) {
+      var tmp = text.charAt(i);
+      drawTextNumber = i + 1 - beginDrawTextNumber;
+      if(text.charCodeAt(i) > 255 ) {
+         lineLengh += wCharWidth;
+      }else{
+         lineLengh += nCharWidth;
+      }
+      var currentChar = text.charAt(i);
+      var nextChar = text.charAt(i + 1);
+      if (currentChar == '\n' ) {            //linux换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 1;
+            lineLengh = 0;
+         }
+      }
+      if ( (currentChar == '\r') && (nextChar == '\n') ){ //windows换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 2;
+            i++
+            lineLengh = 0;
+         }
+      }
+      if(lineLengh > width ){
+         while(true){
+            var flag = false;
+            var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+            if(currentWidth == width){
+               flag = true;
+            }
+            if(currentWidth > width){  //预判的宽度大于实际宽度的情况 需要减少字符数量
+               if (drawTextNumber == 1) {//一个字符宽度大于给定矩形宽度的情况
+                  flag = true;
+               }else{
+                  drawTextNumber -= 1;
+                  currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+                  if (currentWidth <= width) {
+                     flag = true;
+                  }
+               }
+            }
+            if ( (flag == false) && (currentWidth < width) ) {//预判的宽度大于实际宽度的情况 需要增加字符数量
+               drawTextNumber += 1;
+               currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+               if (currentWidth >= width) {
+                  flag = true;
+               }
+            }
+            if (flag == true) {//绘制字符
+               handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+               drawY += lineWidth;
+               i = beginDrawTextNumber + drawTextNumber - 1;
+               lineLengh = 0;
+               var nextChar = text.charAt(i + 1);
+               var nextNextChar = text.charAt(i + 2);
+               if (nextChar == '\n') {
+                  i += 1;
+               }
+               if ((nextChar == '\r') && (nextNextChar == '\n')) {
+                  i += 2;
+               }
+               beginDrawTextNumber = i + 1;
+               break;
+            }
+         }
+      }
+      if ((drawY - y + lineWidth) > height) {
+         return;
+      }
+   }
+   handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+}
 MO.FG2dCanvasContext_drawTextVertical = function FG2dCanvasContext_drawTextVertical(text, x, y, font) {
    var o = this;
    var handle = o._handle;
@@ -392,15 +521,18 @@ MO.FG2dCanvasContext_drawImage = function FG2dCanvasContext_drawImage(content, x
       }
       data = content.image();
       if(width == null){
-         width = data.size().width;
+         width = data.width;
       }
       if(height == null){
-         height = data.size().height;
+         height = data.height;
       }
    }else{
       throw new MO.TError(o, 'Unknown content type');
    }
    handle.drawImage(data, x, y, width, height);
+}
+MO.FG2dCanvasContext_drawRectangleImage = function FG2dCanvasContext_drawRectangleImage(content, rectangle){
+   this.drawImage(content, rectangle.left, rectangle.top, rectangle.width, rectangle.height);
 }
 MO.FG2dCanvasContext_drawGridImage = function FG2dCanvasContext_drawGridImage(content, x, y, width, height, padding) {
    var o = this;
@@ -480,14 +612,6 @@ MO.FG2dCanvasContext_drawBorder = function FG2dCanvasContext_drawBorder(rectangl
    o.drawBorderLine(right, top, right, bottom, border.right);
    o.drawBorderLine(left - 0.5, bottom, right + 0.5, bottom, border.bottom);
 }
-MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
-   var o = this;
-   var handle = o._handle;
-   handle.fillStyle = color;
-   handle.beginPath();
-   handle.fillRect(x, y, width, height);
-   handle.closePath();
-}
 MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrilateral(x1, y1, x2, y2, x3, y3, x4, y4, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -508,6 +632,13 @@ MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrila
       handle.fill();
    }
 }
+MO.FG2dCanvasContext_drawShape = function FG2dCanvasContext_drawShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
 MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, y1, x2, y2, x3, y3, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -521,6 +652,26 @@ MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, 
    handle.closePath();
    handle.fill();
    handle.stroke();
+}
+MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   handle.beginPath();
+   handle.fillRect(x, y, width, height);
+   handle.closePath();
+}
+MO.FG2dCanvasContext_setLineJoin = function FG2dCanvasContext_setLineJoin(style) {
+   var o = this;
+   var handle = o._handle;
+   handle.lineJoin = style;
+}
+MO.FG2dCanvasContext_fillShape = function FG2dCanvasContext_fillShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.fillStyle = color;
+   handle.fill();
 }
 MO.FG2dCanvasContext_drawCircle = function FG2dCanvasContext_drawCircle(x, y, radius, lineWidth, strokeColor, fillColor) {
    var o = this;
@@ -942,10 +1093,13 @@ MO.SG3dMaterialInfo = function SG3dMaterialInfo(){
    var o = this;
    o.effectCode           = 'automatic';
    o.optionDepth          = null;
+   o.optionDepthWrite     = null;
    o.optionDouble         = null;
    o.optionNormalInvert   = null;
    o.optionShadow         = null;
    o.optionShadowSelf     = null;
+   o.optionSort           = null;
+   o.sortLevel            = null;
    o.optionAlpha          = null;
    o.alphaBase            = 1.0;
    o.alphaRate            = 1.0;
@@ -1007,10 +1161,13 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -1059,7 +1216,7 @@ MO.SG3dMaterialInfo_assign = function SG3dMaterialInfo_assign(info){
    o.opacityColor.assign(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assign(info.emissiveColor);
@@ -1069,10 +1226,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.effectCode = info.effectCode;
    o.transformName = info.transformName;
    o.optionDepth = info.optionDepth;
+   o.optionDepthWrite = info.optionDepthWrite;
    o.optionDouble = info.optionDouble;
    o.optionNormalInvert = info.optionNormalInvert;
    o.optionShadow = info.optionShadow;
    o.optionShadowSelf = info.optionShadowSelf;
+   o.optionSort = info.optionSort;
+   o.sortLevel = info.sortLevel;
    o.optionAlpha = info.optionAlpha;
    o.alphaBase = info.alphaBase;
    o.alphaRate = info.alphaRate;
@@ -1121,7 +1281,7 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
    o.opacityColor.assignPower(info.opacityColor);
    o.opacityRate = info.opacityRate;
    o.opacityAlpha = info.optionAlpha;
-   o.opacityDepth = info.optionDepth;
+   o.opacityDepth = info.opacityDepth;
    o.opacityTransmittance = info.optionTransmittance;
    o.optionEmissive = info.optionEmissive;
    o.emissiveColor.assignPower(info.emissiveColor);
@@ -1129,10 +1289,13 @@ MO.SG3dMaterialInfo_calculate = function SG3dMaterialInfo_calculate(info){
 MO.SG3dMaterialInfo_reset = function SG3dMaterialInfo_reset(){
    var o = this;
    o.optionDepth = true;
+   o.optionDepthWrite = true;
    o.optionDouble = false;
    o.optionNormalInvert = false;
    o.optionShadow = true;
    o.optionShadowSelf = true;
+   o.optionSort = true;
+   o.sortLevel = 0;
    o.optionAlpha = false;
    o.alphaBase = 0.2;
    o.alphaRate = 1;
@@ -1409,7 +1572,7 @@ MO.FG3dCamera_updateFrustum = function FG3dCamera_updateFrustum(){
 }
 MO.FG3dCamera_dispose = function FG3dCamera_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dDirectionalLight = function FG3dDirectionalLight(o){
@@ -1674,9 +1837,12 @@ MO.FG3dEffectConsole_construct = function FG3dEffectConsole_construct(){
    o._tagContext = MO.Class.create(MO.FTagContext);
 }
 MO.FG3dEffectConsole_register = function FG3dEffectConsole_register(name, effect){
+   MO.Assert.debugNotEmpty(name);
+   MO.Assert.debugNotNull(effect);
    this._registerEffects.set(name, effect);
 }
 MO.FG3dEffectConsole_unregister = function FG3dEffectConsole_unregister(name){
+   MO.Assert.debugNotEmpty(name);
    this._registerEffects.set(name, null);
 }
 MO.FG3dEffectConsole_create = function FG3dEffectConsole_create(context, name){
@@ -2135,6 +2301,7 @@ MO.FG3dTechnique_selectMode = function FG3dTechnique_selectMode(p){
 }
 MO.FG3dTechnique_pushPass = function FG3dTechnique_pushPass(pass){
    var o = this;
+   MO.Assert.debugNotNull(pass);
    pass.setTechnique(o);
    o._passes.push(pass);
 }
@@ -2239,6 +2406,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    var sourceMaterial = source.material().info();
    var targetMaterial = target.material().info();
    if(sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -2254,6 +2424,9 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
    }else if(!sourceMaterial.optionAlpha && targetMaterial.optionAlpha){
       return -1;
    }else{
+      if(sourceMaterial.sortLevel != targetMaterial.sortLevel){
+         return sourceMaterial.sortLevel - targetMaterial.sortLevel;
+      }
       var sourceEffect = source.activeEffect();
       var targetEffect = target.activeEffect();
       if(sourceEffect == targetEffect){
@@ -2433,7 +2606,7 @@ MO.FG3dTrackBall_updateFrustum = function FG3dTrackBall_updateFrustum(){
 }
 MO.FG3dTrackBall_dispose = function FG3dTrackBall_dispose(){
    var o = this;
-   o._matrix = MO.Lang.Obejct.dispose(o._matrix);
+   o._matrix = MO.Lang.Object.dispose(o._matrix);
    o.__base.FObject.dispose.call(o);
 }
 MO.FG3dViewport = function FG3dViewport(o){
@@ -3800,6 +3973,7 @@ MO.FG3dAutomaticEffect_bindMaterial = function FG3dAutomaticEffect_bindMaterial(
    }else{
       context.setDepthMode(false);
    }
+   context.setDepthMask(info.optionDepthWrite);
    if(info.optionAlpha){
       context.setBlendFactors(o._stateBlend, o._stateBlendSourceCd, o._stateBlendTargetCd);
    }else{
@@ -4057,6 +4231,7 @@ MO.FWglContext = function FWglContext(o){
    o._statusRecord       = false;
    o._recordBuffers      = MO.Class.register(o, new MO.AGetter('_recordBuffers'));
    o._recordSamplers     = MO.Class.register(o, new MO.AGetter('_recordSamplers'));
+   o._statusDepthMask    = MO.Class.register(o, new MO.AGetter('_statusDepthMask'), false);
    o._statusFloatTexture = MO.Class.register(o, new MO.AGetter('_statusFloatTexture'), false);
    o._statusDrawBuffers  = MO.Class.register(o, new MO.AGetter('_statusDrawBuffers'), false);
    o._statusScissor      = MO.Class.register(o, new MO.AGetter('_statusScissor'), false);
@@ -4083,6 +4258,7 @@ MO.FWglContext = function FWglContext(o){
    o.setViewport         = MO.FWglContext_setViewport;
    o.setFillMode         = MO.FWglContext_setFillMode;
    o.setDepthMode        = MO.FWglContext_setDepthMode;
+   o.setDepthMask        = MO.FWglContext_setDepthMask;
    o.setCullingMode      = MO.FWglContext_setCullingMode;
    o.setBlendFactors     = MO.FWglContext_setBlendFactors;
    o.setScissorRectangle = MO.FWglContext_setScissorRectangle;
@@ -4132,6 +4308,7 @@ MO.FWglContext_linkCanvas = function FWglContext_linkCanvas(hCanvas){
          var code = codes[i];
          handle = hCanvas.getContext(code, parameters);
          if(handle){
+            MO.Logger.debug(o, 'Create context3d. (code={1}, handle={2})', code, handle);
             break;
          }
       }
@@ -4443,6 +4620,7 @@ MO.FWglContext_setViewport = function FWglContext_setViewport(left, top, width, 
    var o = this;
    o._viewportRectangle.set(left, top, width, height);
    o._handle.viewport(left, top, width, height);
+   MO.Logger.debug(o, 'Context3d viewport. (location={1},{2}, size={3}x{4})', left, top, width, height);
 }
 MO.FWglContext_setFillMode = function FWglContext_setFillMode(fillModeCd){
    var o = this;
@@ -4488,6 +4666,16 @@ MO.FWglContext_setDepthMode = function FWglContext_setDepthMode(depthFlag, depth
       o._depthModeCd = depthCd;
    }
    return true;
+}
+MO.FWglContext_setDepthMask = function FWglContext_setDepthMask(depthMask){
+   var o = this;
+   if(o._statusDepthMask != depthMask){
+      o._statistics._frameDepthMaskCount++;
+      o._handle.depthMask(depthMask);
+      o._statusDepthMask = depthMask;
+      return true;
+   }
+   return false;
 }
 MO.FWglContext_setCullingMode = function FWglContext_setCullingMode(cullFlag, cullCd){
    var o = this;
@@ -4987,17 +5175,17 @@ MO.FWglCubeTexture_dispose = function FWglCubeTexture_dispose(){
 }
 MO.FWglFlatTexture = function FWglFlatTexture(o){
    o = MO.Class.inherits(this, o, MO.FG3dFlatTexture);
-   o._handle       = null;
-   o._statusUpdate = false;
-   o.setup         = MO.FWglFlatTexture_setup;
-   o.isValid       = MO.FWglFlatTexture_isValid;
-   o.texture       = MO.FWglFlatTexture_texture;
-   o.makeMipmap    = MO.FWglFlatTexture_makeMipmap;
-   o.uploadData    = MO.FWglFlatTexture_uploadData;
-   o.upload        = MO.FWglFlatTexture_upload;
-   o.uploadElement = MO.FWglFlatTexture_uploadElement;
-   o.update        = MO.FWglFlatTexture_update;
-   o.dispose       = MO.FWglFlatTexture_dispose;
+   o._handle         = null;
+   o._statusUpdate   = false;
+   o.setup           = MO.FWglFlatTexture_setup;
+   o.isValid         = MO.FWglFlatTexture_isValid;
+   o.texture         = MO.FWglFlatTexture_texture;
+   o.makeMipmap      = MO.FWglFlatTexture_makeMipmap;
+   o.uploadData      = MO.FWglFlatTexture_uploadData;
+   o.upload          = MO.FWglFlatTexture_upload;
+   o.uploadElement   = MO.FWglFlatTexture_uploadElement;
+   o.update          = MO.FWglFlatTexture_update;
+   o.dispose         = MO.FWglFlatTexture_dispose;
    return o;
 }
 MO.FWglFlatTexture_setup = function FWglFlatTexture_setup(){
@@ -5053,7 +5241,7 @@ MO.FWglFlatTexture_uploadData = function FWglFlatTexture_uploadData(content, wid
    o._statusLoad = context.checkError("texImage2D", "Upload content failure.");
    o.update();
 }
-MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
+MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content, left, top, width, height){
    var o = this;
    var context = o._graphicContext;
    var capability = context.capability();
@@ -5062,6 +5250,10 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    var tagName = content.tagName;
    if((tagName == 'IMG') || (tagName == 'VIDEO') || (tagName == 'CANVAS')){
       data = content;
+   }else if(content.constructor == Uint8Array){
+      data = content;
+   }else if(content.constructor == Uint8ClampedArray){
+      data = new Uint8Array(content);
    }else if(MO.Class.isClass(content, MO.FImage)){
       data = content.image();
    }else if(MO.Class.isClass(content, MO.MCanvasObject)){
@@ -5073,7 +5265,11 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    if(o._optionFlipY){
       handle.pixelStorei(handle.UNPACK_FLIP_Y_WEBGL, true);
    }
-   handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   if((left != null) && (top != null) && (width != null) && (height != null)){
+      handle.texSubImage2D(handle.TEXTURE_2D, 0, left, top, width, height, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }else{
+      handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }
    o.update();
    o._statusLoad = context.checkError("texImage2D", "Upload image failure.");
 }
@@ -5678,7 +5874,7 @@ MO.RWglUtility.prototype.convertFillMode = function RWglUtility_convertFillMode(
 }
 MO.RWglUtility.prototype.convertDrawMode = function RWglUtility_convertDrawMode(graphic, drawCd){
    switch(drawCd){
-      case MO.EG3dDrawMode.Point:
+      case MO.EG3dDrawMode.Points:
          return graphic.POINTS;
       case MO.EG3dDrawMode.Lines:
          return graphic.LINES;

@@ -165,9 +165,9 @@ MO.FEaiLogic_sendService = function FEaiLogic_sendService(uri, parameters, owner
    var sign = MO.Lang.String.calculateHash(signSource, token);
    url += '&sign=' + sign;
    var application = MO.Desktop.application();
-   var sessionId = application.findSessionId();
-   if(!MO.Lang.String.isEmpty(sessionId)){
-      url += '&sid=' + sessionId;
+   var sessionCode = application.sessionCode();
+   if(!MO.Lang.String.isEmpty(sessionCode)){
+      url += '&sid=' + sessionCode;
    }
    var connection = MO.Console.find(MO.FHttpConsole).alloc();
    connection.setAsynchronous(true);
@@ -197,6 +197,311 @@ MO.FEaiLogicAchievement_doSort = function FEaiLogicAchievement_doSort(owner, cal
 MO.FEaiLogicAchievement_doQuery = function FEaiLogicAchievement_doQuery(owner, callback){
    return this.send('query', null, owner, callback);
 }
+MO.FEaiLogicCockpit = function FEaiLogicCockpit(o){
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o._code        = 'statistics';
+   o._title       = MO.Class.register(o, new MO.AGetter('_title'));
+   o._achievement = MO.Class.register(o, new MO.AGetter('_achievement'));
+   o._trend       = MO.Class.register(o, new MO.AGetter('_trend'));
+   o._notice      = MO.Class.register(o, new MO.AGetter('_notice'));
+   o._project     = MO.Class.register(o, new MO.AGetter('_project'));
+   o._forecast    = MO.Class.register(o, new MO.AGetter('_forecast'));
+   o._warning     = MO.Class.register(o, new MO.AGetter('_warning'));
+   o._status      = MO.Class.register(o, new MO.AGetter('_status'));
+   o.doFetchLayout = MO.FEaiLogicCockpit_doFetchLayout;
+   o.construct    = MO.FEaiLogicCockpit_construct;
+   o.dispose      = MO.FEaiLogicCockpit_dispose;
+   return o;
+}
+MO.FEaiLogicCockpit_doFetchLayout = function FEaiLogicCockpit_doFetchLayout(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.wv?do=find', parameters, owner, callback);
+}
+MO.FEaiLogicCockpit_construct = function FEaiLogicCockpit_construct(){
+   var o = this;
+   o.__base.FEaiLogic.construct.call(o);
+   o._title = MO.Class.create(MO.FEaiLogicCockpitTitle);
+   o._achievement = MO.Class.create(MO.FEaiLogicCockpitAchievement);
+   o._trend = MO.Class.create(MO.FEaiLogicCockpitTrend);
+   o._notice = MO.Class.create(MO.FEaiLogicCockpitNotice);
+   o._project = MO.Class.create(MO.FEaiLogicCockpitProject);
+   o._warning = MO.Class.create(MO.FEaiLogicCockpitWarning);
+   o._status = MO.Class.create(MO.FEaiLogicCockpitStatus);
+   o._forecast =  MO.Class.create(MO.FEaiLogicCockpitForecast);
+}
+MO.FEaiLogicCockpit_dispose = function FEaiLogicCockpit_dispose(){
+   var o = this;
+   o._title = MO.Lang.Object.dispose(o._title);
+   o._achievement = MO.Lang.Object.dispose(o._achievement);
+   o._trend = MO.Lang.Object.dispose(o._trend);
+   o._notice = MO.Lang.Object.dispose(o._notice);
+   o._project = MO.Lang.Object.dispose(o._project);
+   o._forecast = MO.Lang.Object.dispose(o._forecast);
+   o._warning = MO.Lang.Object.dispose(o._warning);
+   o._status = MO.Lang.Object.dispose(o._status)
+   o.__base.FEaiLogic.dispose.call(o);
+}
+MO.FEaiLogicCockpitAchievement = function FEaiLogicCockpitAchievement(o){
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch      = MO.FEaiLogicCockpitAchievement_doFetch;
+   o.doFetchDay   = MO.FEaiLogicCockpitAchievement_doFetchDay;
+   o.doFetchMonth = MO.FEaiLogicCockpitAchievement_doFetchMonth;
+   o.doFetchTitle = MO.FEaiLogicCockpitAchievement_doFetchTitle;
+   o.doFetchRank  = MO.FEaiLogicCockpitAchievement_doFetchRank;
+   o.doFetchRate  = MO.FEaiLogicCockpitAchievement_doFetchRate;
+   o.doFetchRadar = MO.FEaiLogicCockpitAchievement_doFetchRadar;
+   o.doFetchHistogram = MO.FEaiLogicCockpitAchievement_doFetchHistogram;
+   o.doFetchBusinessCard = MO.FEaiLogicCockpitAchievement_doFetchBusinessCard;
+   return o;
+}
+MO.FEaiLogicCockpitAchievement_doFetch = function FEaiLogicCockpitAchievement_doFetch(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchMonth = function FEaiLogicCockpitAchievement_doFetchMonth(owner,callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=monthCurve',parameters,owner,callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchDay = function FEaiLogicCockpitAchievement_doFetchDay(owner,callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=dayCurve',parameters,owner,callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchTitle = function FEaiLogicCockpitAchievement_doFetchTitle(owner,callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=titleAchievement',parameters,owner,callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchRank = function FEaiLogicCockpitAchievement_doFetchRank(owner,callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=titleRank',parameters,owner,callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchRate = function FEaiLogicCockpitAchievement_doFetchRate(owner,callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=investmentRate',parameters,owner,callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchRadar = function FEaiLogicCockpitAchievement_doFetchRadar(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=radar', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchBusinessCard = function FEaiLogicCockpitAchievement_doFetchBusinessCard(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=businessCard', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitAchievement_doFetchHistogram = function FEaiLogicCockpitAchievement_doFetchHistogram(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.achievement.subpage.wv?do=achievementHistogram', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitForecast = function FEaiLogicCockpitForecast(o){
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch                   = MO.FEaiLogicCockpitForecast_doFetch;
+   o.doFetchExponentForecast   = MO.FEaiLogicCockpitForecast_doFetchExponentForecast;
+   o.doFetchOwnVote            = MO.FEaiLogicCockpitForecast_doFetchOwnVote;
+   o.doFetchAchievementProblem = MO.FEaiLogicCockpitForecast_doFetchAchievementProblem;
+   o.doFetchUniqueCustomer     = MO.FEaiLogicCockpitForecast_doFetchUniqueCustomer;
+   o.doFetchOwnVoteHistogram   = MO.FEaiLogicCockpitForecast_doFetchOwnVoteHistogram;
+   return o;
+}
+MO.FEaiLogicCockpitForecast_doFetch = function FEaiLogicCockpitForecast_doFetch(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.forecast.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitForecast_doFetchExponentForecast = function FEaiLogicCockpitForecast_doFetchExponentForecast(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.forecast.subpage.wv?do=fetchExponentForecast', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitForecast_doFetchOwnVote = function FEaiLogicCockpitForecast_doFetchOwnVote(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.forecast.subpage.wv?do=fetchInvestmentSelf', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitForecast_doFetchAchievementProblem = function FEaiLogicCockpitForecast_doFetchAchievementProblem(owner,callback){
+	  var o = this;
+    var parameters = o.prepareParemeters();
+    o.sendService('{eai.logic.service}/eai.cockpit.forecast.subpage.wv?do=fetchAchievementProblem', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitForecast_doFetchUniqueCustomer = function FEaiLogicCockpitForecast_doFetchUniqueCustomer(owner,callback){
+    var o = this;
+    var parameters = o.prepareParemeters();
+    o.sendService('{eai.logic.service}/eai.cockpit.forecast.subpage.wv?do=FetchUniqueCustomer', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitForecast_doFetchOwnVoteHistogram = function FEaiLogicCockpitForecast_doFetchOwnVoteHistogram(owner,callback){
+    var o = this;
+    var parameters = o.prepareParemeters();
+    o.sendService('{eai.logic.service}/eai.cockpit.forecast.subpage.wv?do=fetchInvestmentSelfChart', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitNotice = function FEaiLogicCockpitNotice(o){
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch = MO.FEaiLogicCockpitNotice_doFetch;
+   o.doFetchUserInfo = MO.FEaiLogicCockpitNotice_doFetchUserInfo;
+   o.doFetchNewest    = MO.FEaiLogicNoticeInfo_doFetchNewest;
+   o.doFetchList    = MO.FEaiLogicNoticeInfo_doFetchList;
+   o.doFetchDynamic    = MO.FEaiLogicNoticeInfo_doFetchDynamic;
+   o.doFetchRead    = MO.FEaiLogicNoticeInfo_doFetchRead;
+   return o;
+}
+MO.FEaiLogicCockpitNotice_doFetch = function FEaiLogicCockpitNotice_doFetch(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.notice.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitNotice_doFetchUserInfo = function FEaiLogicCockpitNotice_doFetchUserInfo(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.notice.wv?do=userInfo', parameters, owner, callback);
+}
+MO.FEaiLogicNoticeInfo_doFetchNewest = function FEaiLogicNoticeInfo_doFetchNewest(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.notice.wv?do=findNewestNotice', parameters, owner, callback);
+}
+MO.FEaiLogicNoticeInfo_doFetchList = function FEaiLogicNoticeInfo_doFetchList(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.notice.wv?do=listNotices', parameters, owner, callback);
+}
+MO.FEaiLogicNoticeInfo_doFetchDynamic = function FEaiLogicNoticeInfo_doFetchDynamic(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.notice.wv?do=dynamicNotices', parameters, owner, callback);
+}
+MO.FEaiLogicNoticeInfo_doFetchRead = function FEaiLogicNoticeInfo_doFetchRead(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.notice.wv?do=worstNotices', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitProject = function FEaiLogicCockpitProject(o){
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch = MO.FEaiLogicCockpitProject_doFetch;
+   o.doFetchContents = MO.FEaiLogicCockpitProject_doFetchContents;
+   return o;
+}
+MO.FEaiLogicCockpitProject_doFetch = function FEaiLogicCockpitProject_doFetch(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.project.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitProject_doFetchContents = function FEaiLogicCockpitProject_doFetchContents(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.project.subpage.wv?do=fetchProjectList', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus = function FEaiLogicCockpitStatus(o) {
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch                      = MO.FEaiLogicCockpitStatus_doFetch;
+   o.doFetchFinishMonth           = MO.FEaiLogicCockpitStatus_doFetchFinishMonth;
+   o.doFetchPlannedTarget         = MO.FEaiLogicCockpitStatus_doFetchPlannedTarget;
+   o.doFetchFinishInvestmentRate  = MO.FEaiLogicCockpitStatus_doFetchFinishInvestmentRate;
+   o.doFetchfinishPerformanceRate = MO.FEaiLogicCockpitStatus_doFetchfinishPerformanceRate;
+   o.doFetchEntryRate             = MO.FEaiLogicCockpitStatus_doFetchEntryRate;
+   o.doFetchLeaveOfficeRate       = MO.FEaiLogicCockpitStatus_doFetchLeaveOfficeRate;
+   o.doFetchInvestmentRate        = MO.FEaiLogicCockpitStatus_doFetchInvestmentRate;
+   o.doFetchLiabilitiesTotalRate  = MO.FEaiLogicCockpitStatus_doFetchLiabilitiesTotalRate;
+   return o;
+}
+MO.FEaiLogicCockpitStatus_doFetch = function FEaiLogicCockpitStatus_doFetch(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchFinishMonth = function FEaiLogicCockpitStatus_doFetchFinishMonth(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=finishMonthRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchPlannedTarget = function FEaiLogicCockpitStatus_doFetchPlannedTarget(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=plannedTargetRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchFinishInvestmentRate = function FEaiLogicCockpitStatus_doFetchFinishInvestmentRate(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=finishInvestmentTotalRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchfinishPerformanceRate = function FEaiLogicCockpitStatus_doFetchfinishPerformanceRate(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=finishPerformanceRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchEntryRate = function FEaiLogicCockpitStatus_doFetchEntryRate(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=entryRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchLeaveOfficeRate = function FEaiLogicCockpitStatus_doFetchLeaveOfficeRate(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=leaveOfficeRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchInvestmentRate = function FEaiLogicCockpitStatus_doFetchInvestmentRate(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=investmentRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitStatus_doFetchLiabilitiesTotalRate = function FEaiLogicCockpitStatus_doFetchLiabilitiesTotalRate(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.status.subpage.wv?do=liabilitiesTotalRate', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitTitle = function FEaiLogicCockpitTitle(o) {
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch = MO.FEaiLogicCockpitTitle_doFetch;
+   return o;
+}
+MO.FEaiLogicCockpitTitle_doFetch = function FEaiLogicCockpitTitle_doFetch(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.title.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitTrend = function FEaiLogicCockpitTrend(o) {
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch = MO.FEaiLogicCockpitTrend_doFetch;
+   return o;
+}
+MO.FEaiLogicCockpitTrend_doFetch = function FEaiLogicCockpitTrend_doFetch(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.trend.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitWarning = function FEaiLogicCockpitWarning(o) {
+   o = MO.Class.inherits(this, o, MO.FEaiLogic);
+   o.doFetch                  = MO.FEaiLogicCockpitWarning_doFetch;
+   o.fetchWarningPageType     = MO.FEaiLogicCockpitWarning_fetchWarningPageType;
+   o.fetchCapital             = MO.FEaiLogicCockpitWarning_fetchCapital;
+   o.fetchRedemption          = MO.FEaiLogicCockpitWarning_fetchRedemption;
+   return o;
+}
+MO.FEaiLogicCockpitWarning_fetchRedemption = function FEaiLogicCockpitWarning_fetchRedemption(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.warning.subpage.wv?do=redemption', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitWarning_doFetch = function FEaiLogicCockpitWarning_doFetch(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.warning.wv?do=fetch', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitWarning_fetchWarningPageType = function FEaiLogicCockpitWarning_doFetch(owner, callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.warning.subpage.wv?do=fetchWarningPageType', parameters, owner, callback);
+}
+MO.FEaiLogicCockpitWarning_fetchCapital   =   function FEaiLogicCockpitWarning_fetchCapital(owner,callback) {
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.cockpit.warning.subpage.wv?do=capiteAchievements', parameters, owner, callback);
+}
 MO.FEaiLogicConsole = function FEaiLogicConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._system             = MO.Class.register(o, new MO.AGetter('_system'));
@@ -204,9 +509,7 @@ MO.FEaiLogicConsole = function FEaiLogicConsole(o){
    o._achievement        = MO.Class.register(o, new MO.AGetter('_achievement'));
    o._schedule           = MO.Class.register(o, new MO.AGetter('_schedule'));
    o._statistics         = MO.Class.register(o, new MO.AGetter('_statistics'));
-   o._jsonTableData      = MO.Class.register(o, new MO.AGetter('_jsonTableData'));
-   o._jsonTimerLineData  = MO.Class.register(o, new MO.AGetter('_jsonTimerLineData'));
-   o._jsonSystem         = MO.Class.register(o, new MO.AGetter('_jsonSystem'));
+   o._cockpit            = MO.Class.register(o, new MO.AGetter('_cockpit'));
    o._thread             = null;
    o._interval           = 1000 * 60 * 10;
    o.onProcess           = MO.FEaiLogicConsole_onProcess;
@@ -226,9 +529,7 @@ MO.FEaiLogicConsole_construct = function FEaiLogicConsole_construct(){
    o._achievement = MO.Class.create(MO.FEaiLogicAchievement);
    o._schedule = MO.Class.create(MO.FEaiLogicSchedule);
    o._statistics = MO.Class.create(MO.FEaiLogicStatistics);
-   o._jsonTableData = MO.Class.create(MO.FEaiLogicJsonTableData);
-   o._jsonSystem = MO.Class.create(MO.FEaiLogicJsonSystem);
-   o._jsonTimerLineData = MO.Class.create(MO.FEaiLogicJsonTimerLineData);
+   o._cockpit = MO.Class.create(MO.FEaiLogicCockpit);
    var thread = o._thread = MO.Class.create(MO.FThread);
    thread.setInterval(o._interval);
    thread.addProcessListener(o, o.onProcess);
@@ -241,8 +542,7 @@ MO.FEaiLogicConsole_dispose = function FEaiLogicConsole_dispose(){
    o._achievement = MO.Lang.Object.dispose(o._achievement);
    o._schedule = MO.Lang.Object.dispose(o._schedule);
    o._statistics = MO.Lang.Object.dispose(o._statistics);
-   o._jsonTableData = MO.Lang.Object.dispose(o._jsonTableData);
-   o._jsonSystem = MO.Lang.Object.dispose(o._jsonSystem);
+   o._cockpit = MO.Lang.Object.dispose(o._cockpit);
    o.__base.FConsole.dispose.call(o);
 }
 MO.FEaiLogicInfoCustomerDynamic = function FEaiLogicInfoCustomerDynamic(o){
@@ -252,6 +552,12 @@ MO.FEaiLogicInfoCustomerDynamic = function FEaiLogicInfoCustomerDynamic(o){
    o._customerCount   = MO.Class.register(o, [new MO.AGetter('_customerCount'), new MO.APersistence('_customerCount', MO.EDataType.Int32)]);
    o._customerTotal   = MO.Class.register(o, [new MO.AGetter('_customerTotal'), new MO.APersistence('_customerTotal', MO.EDataType.Int32)]);
    o._rankUnits       = MO.Class.register(o, [new MO.AGetter('_rankUnits'), new MO.APersistence('_rankUnits', MO.EDataType.Objects, MO.FEaiLogicInfoCustomerDynamicRankUnit)]);
+   o._investment1w    = MO.Class.register(o, [new MO.AGetter('_investment1w'), new MO.APersistence('_investment1w', MO.EDataType.Int32)]);
+   o._investment10w   = MO.Class.register(o, [new MO.AGetter('_investment10w'), new MO.APersistence('_investment10w', MO.EDataType.Int32)]);
+   o._investment50w   = MO.Class.register(o, [new MO.AGetter('_investment50w'), new MO.APersistence('_investment50w', MO.EDataType.Int32)]);
+   o._investment100w  = MO.Class.register(o, [new MO.AGetter('_investment100w'), new MO.APersistence('_investment100w', MO.EDataType.Int32)]);
+   o._investment500w  = MO.Class.register(o, [new MO.AGetter('_investment500w'), new MO.APersistence('_investment500w', MO.EDataType.Int32)]);
+   o._investment1000w = MO.Class.register(o, [new MO.AGetter('_investment1000w'), new MO.APersistence('_investment1000w', MO.EDataType.Int32)]);
    o._units           = MO.Class.register(o, [new MO.AGetter('_units'), new MO.APersistence('_units', MO.EDataType.Objects, MO.FEaiLogicInfoCustomerDynamicUnit)]);
    return o;
 }
@@ -265,6 +571,7 @@ MO.FEaiLogicInfoCustomerDynamicRankUnit = function FEaiLogicInfoCustomerDynamicR
 }
 MO.FEaiLogicInfoCustomerDynamicUnit = function FEaiLogicInfoCustomerDynamicUnit(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MPersistence);
+   o._recordId        = MO.Class.register(o, [new MO.AGetter('_recordId'), new MO.APersistence('_recordId', MO.EDataType.Uint64)]);
    o._recordDate      = MO.Class.register(o, [new MO.AGetter('_recordDate'), new MO.APersistence('_recordDate', MO.EDataType.String)]);
    o._label           = MO.Class.register(o, [new MO.AGetter('_label'), new MO.APersistence('_label', MO.EDataType.String)]);
    o._card            = MO.Class.register(o, [new MO.AGetter('_card'), new MO.APersistence('_card', MO.EDataType.String)]);
@@ -283,9 +590,15 @@ MO.FEaiLogicInfoCustomerDynamicUnit = function FEaiLogicInfoCustomerDynamicUnit(
 }
 MO.FEaiLogicInfoCustomerTrend = function FEaiLogicInfoCustomerTrend(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MPersistence);
-   o._investmentTotal = MO.Class.register(o, [new MO.AGetter('_investmentTotal'), new MO.APersistence('_investmentTotal', MO.EDataType.Double)]);
-   o._customerTotal   = MO.Class.register(o, [new MO.AGetter('_customerTotal'), new MO.APersistence('_customerTotal', MO.EDataType.Uint32)]);
-   o._units           = MO.Class.register(o, [new MO.AGetter('_units'), new MO.APersistence('_units', MO.EDataType.Objects, MO.FEaiLogicInfoCustomerTrendUnit)]);
+   o._investmentTotal          = MO.Class.register(o, [new MO.AGetter('_investmentTotal'), new MO.APersistence('_investmentTotal', MO.EDataType.Double)]);
+   o._customerTotal            = MO.Class.register(o, [new MO.AGetter('_customerTotal'), new MO.APersistence('_customerTotal', MO.EDataType.Uint32)]);
+   o._yesterdayInvestmentTotal = MO.Class.register(o, [new MO.AGetter('_yesterdayInvestmentTotal'), new MO.APersistence('_yesterdayInvestmentTotal', MO.EDataType.Double)]);
+   o._yesterdayCustomerTotal   = MO.Class.register(o, [new MO.AGetter('_yesterdayCustomerTotal'), new MO.APersistence('_yesterdayCustomerTotal', MO.EDataType.Uint32)]);
+   o._weekInvestmentTotal      = MO.Class.register(o, [new MO.AGetter('_weekInvestmentTotal'), new MO.APersistence('_weekInvestmentTotal', MO.EDataType.Double)]);
+   o._weekCustomerTotal        = MO.Class.register(o, [new MO.AGetter('_weekCustomerTotal'), new MO.APersistence('_weekCustomerTotal', MO.EDataType.Uint32)]);
+   o._monthInvestmentTotal     = MO.Class.register(o, [new MO.AGetter('_monthInvestmentTotal'), new MO.APersistence('_monthInvestmentTotal', MO.EDataType.Double)]);
+   o._monthCustomerTotal       = MO.Class.register(o, [new MO.AGetter('_monthCustomerTotal'), new MO.APersistence('_monthCustomerTotal', MO.EDataType.Uint32)]);
+   o._units                    = MO.Class.register(o, [new MO.AGetter('_units'), new MO.APersistence('_units', MO.EDataType.Objects, MO.FEaiLogicInfoCustomerTrendUnit)]);
    return o;
 }
 MO.FEaiLogicInfoCustomerTrendUnit = function FEaiLogicInfoCustomerTrendUnit(o){
@@ -304,6 +617,7 @@ MO.FEaiLogicInfoTrendUnit = function FEaiLogicInfoTrendUnit(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MPersistence);
    o._code            = MO.Class.register(o, [new MO.AGetter('_code'), new MO.APersistence('_code', MO.EDataType.String)]);
    o._label           = MO.Class.register(o, [new MO.AGetter('_label'), new MO.APersistence('_label', MO.EDataType.String)]);
+   o._project         = MO.Class.register(o, [new MO.AGetter('_project'), new MO.APersistence('_project', MO.EDataType.String)]);
    o._rate            = MO.Class.register(o, [new MO.AGetter('_rate'), new MO.APersistence('_rate', MO.EDataType.Float)]);
    o._tenderInvesment = MO.Class.register(o, [new MO.AGetter('_tenderInvesment'), new MO.APersistence('_tenderInvesment', MO.EDataType.Double)]);
    o._tenderTotal     = MO.Class.register(o, [new MO.AGetter('_tenderTotal'), new MO.APersistence('_tenderTotal', MO.EDataType.Double)]);
@@ -563,6 +877,7 @@ MO.FEaiLogicStatisticsMarketer = function FEaiLogicStatisticsMarketer(o){
    o._marketerDynamicFirst = true;
    o.doCustomerDynamic     = MO.FEaiLogicStatisticsMarketer_doCustomerDynamic;
    o.doCustomerTrend       = MO.FEaiLogicStatisticsMarketer_doCustomerTrend;
+   o.doCustomerTender      = MO.FEaiLogicStatisticsMarketer_doCustomerTender;
    o.doMarketerDynamic     = MO.FEaiLogicStatisticsMarketer_doMarketerDynamic;
    o.doMarketerTrend       = MO.FEaiLogicStatisticsMarketer_doMarketerTrend;
    return o;
@@ -585,6 +900,11 @@ MO.FEaiLogicStatisticsMarketer_doCustomerTrend = function FEaiLogicStatisticsMar
    parameters.set('begin', startDate);
    parameters.set('end', endDate);
    o.sendService('{eai.logic.service}/eai.financial.marketer.customer.wv?do=trend', parameters, owner, callback);
+}
+MO.FEaiLogicStatisticsMarketer_doCustomerTender = function FEaiLogicStatisticsMarketer_doCustomerTender(owner, callback){
+   var o = this;
+   var parameters = o.prepareParemeters();
+   o.sendService('{eai.logic.service}/eai.financial.marketer.customer.wv?do=tender', parameters, owner, callback);
 }
 MO.FEaiLogicStatisticsMarketer_doMarketerDynamic = function FEaiLogicStatisticsMarketer_doMarketerDynamic(owner, callback, startDate, endDate){
    var o = this;
@@ -664,7 +984,7 @@ MO.FEaiLogicSystem_construct = function FEaiLogicSystem_construct(){
    o._localDate = new MO.TDate();
    o._systemDate = new MO.TDate();
 }
-MO.FEaiLogicSystem_doInfo = function FEaiLogicSystem_doInfo(owner, callback) {
+MO.FEaiLogicSystem_doInfo = function FEaiLogicSystem_doInfo(owner, callback){
    var o = this;
    var useToken = MO.Console.find(MO.FEnvironmentConsole).findValue(MO.EEaiVerificationMode.Token);
    var none = MO.Console.find(MO.FEnvironmentConsole).findValue(MO.EEaiVerificationMode.None);

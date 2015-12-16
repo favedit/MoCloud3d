@@ -721,7 +721,7 @@ MO.FEaiChartPerfMarketerProcessor_dispose = function FEaiChartPerfMarketerProces
    o.__base.FObject.dispose.call(o);
 }
 MO.FEaiChartPerfMarketerScene = function FEaiChartPerfMarketerScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                   = MO.EEaiScene.ChartCustomer;
    o._optionMapCountry       = false;
    o._processor              = MO.Class.register(o, new MO.AGetter('_processor'));

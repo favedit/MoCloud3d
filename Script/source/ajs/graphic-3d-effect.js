@@ -380,6 +380,7 @@ MO.FG3dAutomaticEffect_bindMaterial = function FG3dAutomaticEffect_bindMaterial(
    }else{
       context.setDepthMode(false);
    }
+   context.setDepthMask(info.optionDepthWrite);
    if(info.optionAlpha){
       context.setBlendFactors(o._stateBlend, o._stateBlendSourceCd, o._stateBlendTargetCd);
    }else{

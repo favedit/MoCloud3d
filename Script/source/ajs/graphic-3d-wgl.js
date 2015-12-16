@@ -13,6 +13,7 @@ MO.FWglContext = function FWglContext(o){
    o._statusRecord       = false;
    o._recordBuffers      = MO.Class.register(o, new MO.AGetter('_recordBuffers'));
    o._recordSamplers     = MO.Class.register(o, new MO.AGetter('_recordSamplers'));
+   o._statusDepthMask    = MO.Class.register(o, new MO.AGetter('_statusDepthMask'), false);
    o._statusFloatTexture = MO.Class.register(o, new MO.AGetter('_statusFloatTexture'), false);
    o._statusDrawBuffers  = MO.Class.register(o, new MO.AGetter('_statusDrawBuffers'), false);
    o._statusScissor      = MO.Class.register(o, new MO.AGetter('_statusScissor'), false);
@@ -39,6 +40,7 @@ MO.FWglContext = function FWglContext(o){
    o.setViewport         = MO.FWglContext_setViewport;
    o.setFillMode         = MO.FWglContext_setFillMode;
    o.setDepthMode        = MO.FWglContext_setDepthMode;
+   o.setDepthMask        = MO.FWglContext_setDepthMask;
    o.setCullingMode      = MO.FWglContext_setCullingMode;
    o.setBlendFactors     = MO.FWglContext_setBlendFactors;
    o.setScissorRectangle = MO.FWglContext_setScissorRectangle;
@@ -88,6 +90,7 @@ MO.FWglContext_linkCanvas = function FWglContext_linkCanvas(hCanvas){
          var code = codes[i];
          handle = hCanvas.getContext(code, parameters);
          if(handle){
+            MO.Logger.debug(o, 'Create context3d. (code={1}, handle={2})', code, handle);
             break;
          }
       }
@@ -399,6 +402,7 @@ MO.FWglContext_setViewport = function FWglContext_setViewport(left, top, width, 
    var o = this;
    o._viewportRectangle.set(left, top, width, height);
    o._handle.viewport(left, top, width, height);
+   MO.Logger.debug(o, 'Context3d viewport. (location={1},{2}, size={3}x{4})', left, top, width, height);
 }
 MO.FWglContext_setFillMode = function FWglContext_setFillMode(fillModeCd){
    var o = this;
@@ -444,6 +448,16 @@ MO.FWglContext_setDepthMode = function FWglContext_setDepthMode(depthFlag, depth
       o._depthModeCd = depthCd;
    }
    return true;
+}
+MO.FWglContext_setDepthMask = function FWglContext_setDepthMask(depthMask){
+   var o = this;
+   if(o._statusDepthMask != depthMask){
+      o._statistics._frameDepthMaskCount++;
+      o._handle.depthMask(depthMask);
+      o._statusDepthMask = depthMask;
+      return true;
+   }
+   return false;
 }
 MO.FWglContext_setCullingMode = function FWglContext_setCullingMode(cullFlag, cullCd){
    var o = this;
@@ -943,17 +957,17 @@ MO.FWglCubeTexture_dispose = function FWglCubeTexture_dispose(){
 }
 MO.FWglFlatTexture = function FWglFlatTexture(o){
    o = MO.Class.inherits(this, o, MO.FG3dFlatTexture);
-   o._handle       = null;
-   o._statusUpdate = false;
-   o.setup         = MO.FWglFlatTexture_setup;
-   o.isValid       = MO.FWglFlatTexture_isValid;
-   o.texture       = MO.FWglFlatTexture_texture;
-   o.makeMipmap    = MO.FWglFlatTexture_makeMipmap;
-   o.uploadData    = MO.FWglFlatTexture_uploadData;
-   o.upload        = MO.FWglFlatTexture_upload;
-   o.uploadElement = MO.FWglFlatTexture_uploadElement;
-   o.update        = MO.FWglFlatTexture_update;
-   o.dispose       = MO.FWglFlatTexture_dispose;
+   o._handle         = null;
+   o._statusUpdate   = false;
+   o.setup           = MO.FWglFlatTexture_setup;
+   o.isValid         = MO.FWglFlatTexture_isValid;
+   o.texture         = MO.FWglFlatTexture_texture;
+   o.makeMipmap      = MO.FWglFlatTexture_makeMipmap;
+   o.uploadData      = MO.FWglFlatTexture_uploadData;
+   o.upload          = MO.FWglFlatTexture_upload;
+   o.uploadElement   = MO.FWglFlatTexture_uploadElement;
+   o.update          = MO.FWglFlatTexture_update;
+   o.dispose         = MO.FWglFlatTexture_dispose;
    return o;
 }
 MO.FWglFlatTexture_setup = function FWglFlatTexture_setup(){
@@ -1009,7 +1023,7 @@ MO.FWglFlatTexture_uploadData = function FWglFlatTexture_uploadData(content, wid
    o._statusLoad = context.checkError("texImage2D", "Upload content failure.");
    o.update();
 }
-MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
+MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content, left, top, width, height){
    var o = this;
    var context = o._graphicContext;
    var capability = context.capability();
@@ -1018,6 +1032,10 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    var tagName = content.tagName;
    if((tagName == 'IMG') || (tagName == 'VIDEO') || (tagName == 'CANVAS')){
       data = content;
+   }else if(content.constructor == Uint8Array){
+      data = content;
+   }else if(content.constructor == Uint8ClampedArray){
+      data = new Uint8Array(content);
    }else if(MO.Class.isClass(content, MO.FImage)){
       data = content.image();
    }else if(MO.Class.isClass(content, MO.MCanvasObject)){
@@ -1029,7 +1047,11 @@ MO.FWglFlatTexture_upload = function FWglFlatTexture_upload(content){
    if(o._optionFlipY){
       handle.pixelStorei(handle.UNPACK_FLIP_Y_WEBGL, true);
    }
-   handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   if((left != null) && (top != null) && (width != null) && (height != null)){
+      handle.texSubImage2D(handle.TEXTURE_2D, 0, left, top, width, height, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }else{
+      handle.texImage2D(handle.TEXTURE_2D, 0, handle.RGBA, handle.RGBA, handle.UNSIGNED_BYTE, data);
+   }
    o.update();
    o._statusLoad = context.checkError("texImage2D", "Upload image failure.");
 }
@@ -1634,7 +1656,7 @@ MO.RWglUtility.prototype.convertFillMode = function RWglUtility_convertFillMode(
 }
 MO.RWglUtility.prototype.convertDrawMode = function RWglUtility_convertDrawMode(graphic, drawCd){
    switch(drawCd){
-      case MO.EG3dDrawMode.Point:
+      case MO.EG3dDrawMode.Points:
          return graphic.POINTS;
       case MO.EG3dDrawMode.Lines:
          return graphic.LINES;

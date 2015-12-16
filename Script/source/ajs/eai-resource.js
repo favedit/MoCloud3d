@@ -524,6 +524,7 @@ MO.FEaiMapResourceModule_findCountryByCode = function FEaiMapResourceModule_find
 MO.FEaiMapResourceModule_loadCountry = function FEaiMapResourceModule_loadCountry(code){
    var o = this;
    var countries = o._countries;
+   MO.Assert.debugNull(countries.get(name));
    var country = MO.Class.create(MO.FEaiMapCountryResource);
    country.setCode(code);
    country.setUri('{eai.resource}-{device.type}/map/country/' + code + '.dat');
@@ -533,6 +534,7 @@ MO.FEaiMapResourceModule_loadCountry = function FEaiMapResourceModule_loadCountr
 }
 MO.FEaiMapResourceModule_loadWorld = function FEaiMapResourceModule_loadWorld(){
    var o = this;
+   MO.Assert.debugNull(o._world);
    var world = o._world = MO.Class.create(MO.FEaiMapWorldResource);
    world.load();
    return world;

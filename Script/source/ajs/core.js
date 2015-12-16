@@ -1,5 +1,6 @@
 MO.AListener = function AListener(name, linker){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    MO.ASource.call(o, name, MO.ESource.Listener, linker);
    o.build = MO.AListener_build;
    if(linker == null){
@@ -18,15 +19,15 @@ MO.AListener = function AListener(name, linker){
 MO.AListener_build = function AListener_build(clazz, instance){
    var o = this;
    var addListener = 'add' + o._linker + 'Listener';
-   instance[addListener] = MO.RListener.makeAddListener(addListener, o._linker);
+   instance[addListener] = MO.Core.Listener.makeAddListener(addListener, o._linker);
    var setListener = 'set' + o._linker + 'Listener';
-   instance[setListener] = MO.RListener.makeSetListener(setListener, o._linker);
+   instance[setListener] = MO.Core.Listener.makeSetListener(setListener, o._linker);
    var removeListener = 'remove' + o._linker + 'Listener';
-   instance[removeListener] = MO.RListener.makeRemoveListener(removeListener, o._linker);
+   instance[removeListener] = MO.Core.Listener.makeRemoveListener(removeListener, o._linker);
    var clearListeners = 'clear' + o._linker + 'Listeners';
-   instance[clearListeners] = MO.RListener.makeClearListener(clearListeners, o._linker);
+   instance[clearListeners] = MO.Core.Listener.makeClearListener(clearListeners, o._linker);
    var processListener = 'process' + o._linker + 'Listener';
-   instance[processListener] = MO.RListener.makeProcessListener(processListener, o._linker);
+   instance[processListener] = MO.Core.Listener.makeProcessListener(processListener, o._linker);
 }
 MO.EEvent = new function EEvent(){
    var o = this;
@@ -63,6 +64,9 @@ MO.EEvent = new function EEvent(){
    o.OperationDown    = 'OperationDown';
    o.OperationMove    = 'OperationMove';
    o.OperationUp      = 'OperationUp';
+   o.ActionStart      = 'ActionStart';
+   o.ActionStop       = 'ActionStop';
+   o.SectionStop      = 'SectionStop';
    return o;
 }
 MO.EHttpContent = new function EHttpContent(){
@@ -116,7 +120,11 @@ MO.MListener_addListener = function MListener_addListener(name, owner, method){
       listeners = new MO.TListeners();
       listenerss.set(name, listeners);
    }
-   return listeners.register(owner, method);
+   var listener = listeners.find(owner, method);
+   if(!listener){
+      listener = listeners.register(owner, method);
+   }
+   return listener;
 }
 MO.MListener_setListener = function MListener_setListener(name, owner, method){
    var o = this;
@@ -562,4 +570,4 @@ MO.RListener.prototype.makeProcessListener = function RListener_makeProcessListe
    }
    return method;
 }
-MO.RListener = new MO.RListener();
+MO.Core.Listener = new MO.RListener();

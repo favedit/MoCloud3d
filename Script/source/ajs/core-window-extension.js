@@ -1,8 +1,3 @@
-MO.EConstant = new function EConstant(){
-   var o = this;
-   o.DeviceType = 'device.type';
-   return o;
-}
 MO.STouchEvent = function STouchEvent(){
    var o = this;
    o.dispose = MO.STouchEvent_dispose;
@@ -729,6 +724,7 @@ MO.RDump.prototype.stack = function RDump_stack(){
          s.appendLine();
       }
    }
+   MO.Logger.debug(this, s);
 }
 MO.RDump = new MO.RDump();
 MO.RHtml = function RHtml(){

@@ -217,10 +217,12 @@ MO.FEnvironmentConsole_construct = function FEnvironmentConsole_construct(){
 MO.FEnvironmentConsole_register = function FEnvironmentConsole_register(environment){
    var o = this;
    var name = environment.name();
+   MO.Assert.debugNotEmpty(name);
    o._environments.set(name, environment);
 }
 MO.FEnvironmentConsole_registerValue = function FEnvironmentConsole_registerValue(name, value){
    var o = this;
+   MO.Assert.debugNotEmpty(name);
    var environment = MO.Class.create(MO.FEnvironment);
    environment.set(name, value);
    o._environments.set(name, environment);
@@ -240,6 +242,7 @@ MO.FEnvironmentConsole_findValue = function FEnvironmentConsole_findValue(name){
 }
 MO.FEnvironmentConsole_parse = function FEnvironmentConsole_parse(value){
    var o = this;
+   MO.Assert.debugNotEmpty(value);
    var result = value;
    var environments = o._environments;
    var count = environments.count();
@@ -325,6 +328,7 @@ MO.FEventConsole_construct = function FEventConsole_construct(){
    thread.setInterval(o._interval);
    thread.lsnsProcess.register(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+   MO.Logger.debug(o, 'Add event thread. (thread={1})', MO.Class.dump(thread));
 }
 MO.FEventConsole_register = function FEventConsole_register(po, pc){
    var o = this;
@@ -1027,14 +1031,10 @@ MO.FThreadConsole_processAll = function FThreadConsole_processAll(){
    if(o._active){
       var threads = o._threads;
       var count = threads.count();
-      try{
          for(var i = 0; i < count; i++){
             var thread = threads.at(i);
             o.process(thread);
          }
-      }catch(error){
-         MO.Logger.fatal(o, error, 'Thread process failure. (thread_count={1})', count);
-      }
    }
    if(o._requestFlag){
       MO.Window.requestAnimationFrame(o.ohInterval);

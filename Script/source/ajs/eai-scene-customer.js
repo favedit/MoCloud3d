@@ -204,7 +204,7 @@ MO.FEaiChartCustomerProcessor_dispose = function FEaiChartCustomerProcessor_disp
    o.__base.FObject.dispose.call(o);
 }
 MO.FEaiChartCustomerScene = function FEaiChartCustomerScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code = MO.EEaiScene.ChartCustomer;
    o._processor = MO.Class.register(o, new MO.AGetter('_processor'));
    o._processorCurrent = 0;

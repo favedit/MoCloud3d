@@ -160,6 +160,7 @@ MO.SGuiPaintEvent = function SGuiPaintEvent(){
    o.graphic         = null;
    o.parentRectangle = new MO.SRectangle();
    o.rectangle       = new MO.SRectangle();
+   o.calculateRate   = new MO.SSize2(1, 1);
    o.free            = MO.SGuiPaintEvent_free;
    o.dispose         = MO.SGuiPaintEvent_dispose;
    return o;
@@ -173,6 +174,7 @@ MO.SGuiPaintEvent_dispose = function SGuiPaintEvent_dispose(){
    var o = this;
    o.parentRectangle = MO.Lang.Object.dispose(o.parentRectangle);
    o.rectangle = MO.Lang.Object.dispose(o.rectangle);
+   o.calculateRate = MO.Lang.Object.dispose(o.calculateRate);
    return o;
 }
 MO.SGuiUpdateEvent = function SGuiUpdateEvent(){
@@ -223,7 +225,7 @@ MO.FGuiAction_startControl = function FGuiAction_startControl(context, control){
 }
 MO.FGuiAction_start = function FGuiAction_start(context){
    var o = this;
-   o.__base.MTimelineAction.start.call(o);
+   o.__base.MTimelineAction.start.call(o, context);
    var controls = o._controls;
    var count = controls.count();
    for(var i = 0; i < count; i++){
@@ -236,7 +238,7 @@ MO.FGuiAction_processControl = function FGuiAction_processControl(context, contr
 }
 MO.FGuiAction_process = function FGuiAction_process(context){
    var o = this;
-   o.__base.MTimelineAction.process.call(o);
+   o.__base.MTimelineAction.process.call(o, context);
    var controls = o._controls;
    var count = controls.count();
    for(var i = 0; i < count; i++){
@@ -329,7 +331,7 @@ MO.FGuiContainer = function FGuiContainer(o){
 }
 MO.FGuiContainer_createChild = function FGuiContainer_createChild(xconfig){
    var o = this;
-   var child = MO.RGuiControl.newInstance(xconfig);
+   var child = MO.Gui.Control.newInstance(xconfig);
    child._parent = o;
    return child;
 }
@@ -353,6 +355,7 @@ MO.FGuiControl = function FGuiControl(o){
    o._statusHover            = false;
    o._backImage              = null;
    o._backHoverResource      = null;
+   o._renderableScale        = MO.Class.register(o, new MO.AGetSet('_renderableScale'), 1);
    o._clientRectangle        = MO.Class.register(o, new MO.AGetter('_clientRectangle'));
    o._parentRectangle        = MO.Class.register(o, new MO.AGetter('_parentRectangle'));
    o._eventRectangle         = null;
@@ -360,6 +363,7 @@ MO.FGuiControl = function FGuiControl(o){
    o._operationMoveListeners = MO.Class.register(o, new MO.AListener('_operationMoveListeners', MO.EEvent.OperationMove));
    o._operationUpListeners   = MO.Class.register(o, new MO.AListener('_operationUpListeners', MO.EEvent.OperationUp));
    o._paintEvent             = null;
+   o.onResourceLoad          = MO.FGuiControl_onResourceLoad;
    o.onUpdate                = MO.FGuiControl_onUpdate;
    o.onPaintBegin            = MO.FGuiControl_onPaintBegin;
    o.onPaintEnd              = MO.FGuiControl_onPaintEnd;
@@ -375,10 +379,13 @@ MO.FGuiControl = function FGuiControl(o){
    o.isDirty                 = MO.FGuiControl_isDirty;
    o.setVisible              = MO.FGuiControl_setVisible;
    o.setSize                 = MO.FGuiControl_setSize;
+   o.findManager             = MO.FGuiControl_findManager;
    o.testReady               = MO.FGuiControl_testReady;
    o.testDirty               = MO.FGuiControl_testDirty;
    o.testInRange             = MO.FGuiControl_testInRange;
+   o.loadResourceImage       = MO.FGuiControl_loadResourceImage;
    o.paint                   = MO.FGuiControl_paint;
+   o.paintGraphic            = MO.FGuiControl_paintGraphic;
    o.update                  = MO.FGuiControl_update;
    o.build                   = MO.Method.empty;
    o.makeRenderable          = MO.FGuiControl_makeRenderable;
@@ -390,6 +397,9 @@ MO.FGuiControl = function FGuiControl(o){
    o.psUpdate                = MO.FGuiControl_psUpdate;
    o.dispose                 = MO.FGuiControl_dispose;
    return o;
+}
+MO.FGuiControl_onResourceLoad = function FGuiControl_onResourceLoad(event){
+   this.dirty();
 }
 MO.FGuiControl_onUpdate = function FGuiControl_onUpdate(event){
    var o = this;
@@ -411,8 +421,11 @@ MO.FGuiControl_onPaintBegin = function FGuiControl_onPaintBegin(event){
    var o = this;
    var graphic = event.graphic;
    var rectangle = event.rectangle;
+   if(MO.Gui.Control.optionDebugBorder){
+      graphic.drawRectangle(rectangle.left, rectangle.top, rectangle.width, rectangle.height, '#FF0000', 1);
+   }
    if(o._backColor){
-      graphic.fillRectangle(rectangle.left, rectangle.top, rectangle.width, rectangle.height, o._styleBackcolor, 1);
+      graphic.fillRectangle(rectangle.left, rectangle.top, rectangle.width, rectangle.height, o._backColor);
    }
    var image = null;
    var imageGrid = null;
@@ -531,9 +544,14 @@ MO.FGuiControl_setVisible = function FGuiControl_setVisible(flag){
 MO.FGuiControl_setSize = function FGuiControl_setSize(width, height){
    var o = this;
    o.__base.MGuiSize.setSize.call(o, width, height);
-   var renderable = o._renderable;
-   if(renderable){
-      renderable.setSize(width, height);
+}
+MO.FGuiControl_findManager = function FGuiControl_findManager(){
+   var o = this;
+   var manager = o._manager;
+   if(!manager){
+      var findControl = o._parent;
+      while(findControl){
+      }
    }
 }
 MO.FGuiControl_testReady = function FGuiControl_testReady(){
@@ -573,6 +591,13 @@ MO.FGuiControl_testDirty = function FGuiControl_testDirty(){
 MO.FGuiControl_testInRange = function FGuiControl_testInRange(x, y){
    var o = this;
 }
+MO.FGuiControl_loadResourceImage = function FGuiControl_loadResourceImage(uri){
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole);
+   var image = imageConsole.load(uri);
+   image.addLoadListener(o, o.onResourceLoad);
+   return image;
+}
 MO.FGuiControl_paint = function FGuiControl_paint(event){
    var o = this;
    var location = o._location;
@@ -582,7 +607,6 @@ MO.FGuiControl_paint = function FGuiControl_paint(event){
    var graphic = event.graphic;
    var parentRectangle = event.parentRectangle;
    var rectangle = event.rectangle;
-   var sizeRate = event.sizeRate;
    var calculateRate = event.calculateRate;
    var calculateWidth = calculateRate.width;
    var calculateHeight = calculateRate.height;
@@ -672,6 +696,20 @@ MO.FGuiControl_paint = function FGuiControl_paint(event){
    parentRectangle.assign(o._parentRectangle);
    o._statusDirty = false;
 }
+MO.FGuiControl_paintGraphic = function FGuiControl_paintGraphic(graphic, left, top, width, height, parameters){
+   var o = this;
+   var statusDirty = o._statusDirty;
+   var event = o._paintEvent;
+   event.optionScale = false;
+   event.graphic = graphic;
+   event.parentRectangle.set(left, top, width, height);
+   event.rectangle.set(left, top, width, height);
+   event.calculateRate.set(1, 1);
+   event.parameters = parameters;
+   o.paint(event);
+   event.parameters = null;
+   o._statusDirty = statusDirty;
+}
 MO.FGuiControl_update = function FGuiControl_update(){
    var o = this;
    var size = o._size;
@@ -685,6 +723,7 @@ MO.FGuiControl_dirty = function FGuiControl_dirty(){
 }
 MO.FGuiControl_makeRenderable = function FGuiControl_makeRenderable(){
    var o = this;
+   o._renderableScale = MO.Desktop.application().desktop().guiBufferScale();
    var renderable = o._renderable;
    if(!renderable){
       renderable = o._renderable = o._graphicContext.createObject(MO.FGuiControlRenderable);
@@ -697,13 +736,15 @@ MO.FGuiControl_updateRenderable = function FGuiControl_updateRenderable(){
    var renderable = o._renderable;
    var graphic = renderable.beginDraw();
    var size = o._size;
+   var scale = o._renderableScale;
+   graphic.setGlobalScale(o._renderableScale, o._renderableScale);
+   graphic.prepare();
    var event = o._paintEvent;
    event.optionScale = false;
    event.graphic = graphic;
-   event.virtualSize = size;
    event.parentRectangle.set(0, 0, size.width, size.height);
    event.rectangle.set(0, 0, size.width, size.height);
-   event.calculateRate = 1;
+   event.calculateRate = new MO.SSize2(1, 1);
    o.paint(event);
    renderable.endDraw();
 }
@@ -764,16 +805,17 @@ MO.FGuiControl_dispose = function FGuiControl_dispose(){
 }
 MO.FGuiControlRenderable = function FGuiControlRenderable(o){
    o = MO.Class.inherits(this, o, MO.FE3dFaceData);
-   o._optionFull = MO.Class.register(o, new MO.AGetSet('_optionFull'));
-   o._control    = MO.Class.register(o, new MO.AGetSet('_control'));
-   o._graphic    = null;
-   o.construct   = MO.FGuiControlRenderable_construct;
-   o.setup       = MO.FGuiControlRenderable_setup;
-   o.setLocation = MO.FGuiControlRenderable_setLocation;
-   o.setSize     = MO.FGuiControlRenderable_setSize;
-   o.beginDraw   = MO.FGuiControlRenderable_beginDraw;
-   o.endDraw     = MO.FGuiControlRenderable_endDraw;
-   o.dispose     = MO.FGuiControlRenderable_dispose;
+   o._optionCenter = true;
+   o._optionFull   = MO.Class.register(o, new MO.AGetSet('_optionFull'));
+   o._control      = MO.Class.register(o, new MO.AGetSet('_control'));
+   o._graphic      = null;
+   o.construct     = MO.FGuiControlRenderable_construct;
+   o.setup         = MO.FGuiControlRenderable_setup;
+   o.testVisible   = MO.FGuiControlRenderable_testVisible;
+   o.beginDraw     = MO.FGuiControlRenderable_beginDraw;
+   o.endDraw       = MO.FGuiControlRenderable_endDraw;
+   o.process       = MO.FGuiControlRenderable_process;
+   o.dispose       = MO.FGuiControlRenderable_dispose;
    return o;
 }
 MO.FGuiControlRenderable_construct = function FGuiControlRenderable_construct(){
@@ -785,23 +827,23 @@ MO.FGuiControlRenderable_setup = function FGuiControlRenderable_setup(){
    o.__base.FE3dFaceData.setup.call(o);
    var materialInfo = o._material.info();
    materialInfo.effectCode = 'gui';
-   materialInfo.optionDouble = true;
+   materialInfo.optionAlpha = true;
+   var texture = o._texture;
+   texture.setFilterCd(MO.EG3dSamplerFilter.Linear, MO.EG3dSamplerFilter.Nearest);
 }
-MO.FGuiControlRenderable_setLocation = function FGuiControlRenderable_setLocation(x, y){
-   var o = this;
-   o._matrix.setTranslate(x, y, 0);
-}
-MO.FGuiControlRenderable_setSize = function FGuiControlRenderable_setSize(width, height){
-   var o = this;
-   o._size.set(width, height);
+MO.FGuiControlRenderable_testVisible = function FGuiControlRenderable_testVisible(){
+   return this._control.visible();
 }
 MO.FGuiControlRenderable_beginDraw = function FGuiControlRenderable_beginDraw(){
    var o = this;
-   var size = o._control.size();
-   var adjustWidth = MO.Lang.Integer.pow2(size.width);
-   var adjustHeight = MO.Lang.Integer.pow2(size.height);
+   var control = o._control;
+   var size = control.size();
+   var scale = control.renderableScale();
+   var width = size.width * scale;
+   var height = size.height * scale;
+   var adjustWidth = MO.Lang.Integer.pow2(width);
+   var adjustHeight = MO.Lang.Integer.pow2(height);
    o._adjustSize.set(adjustWidth, adjustHeight);
-   o._matrix.setScale(adjustWidth, adjustHeight, 1);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    var canvas = o._canvas = canvasConsole.allocBySize(adjustWidth, adjustHeight, MO.FGuiCanvas);
    var graphic = o._graphic = canvas.graphicContext();
@@ -810,12 +852,21 @@ MO.FGuiControlRenderable_beginDraw = function FGuiControlRenderable_beginDraw(){
 MO.FGuiControlRenderable_endDraw = function FGuiControlRenderable_endDraw(){
    var o = this;
    var graphic = o._graphic;
+   MO.Assert.debugNotNull(graphic);
    o._texture.upload(o._canvas);
    var canvasConsole = MO.Console.find(MO.FE2dCanvasConsole);
    canvasConsole.free(o._canvas);
    o._canvas = null;
    o._graphic = null;
    o._ready = true;
+}
+MO.FGuiControlRenderable_process = function FGuiControlRenderable_process(){
+   var o = this;
+   o.__base.FE3dFaceData.process.call(o);
+   var control = o._control;
+   if(control.testDirty()){
+      control.updateRenderable();
+   }
 }
 MO.FGuiControlRenderable_dispose = function FGuiControlRenderable_dispose(){
    var o = this;
@@ -889,7 +940,8 @@ MO.RGuiColor.prototype.makeRgbString = function RGuiColor_makeRgbString(color, a
 MO.GuiColor = new MO.RGuiColor();
 MO.RGuiControl = function RGuiControl(){
    var o = this;
-   o.PREFIX    = 'FGui';
+   o.PREFIX            = 'FGui';
+   o.optionDebugBorder = false;
    return o;
 }
 MO.RGuiControl.prototype.newInstance = function RGuiControl_newInstance(type){
@@ -1004,7 +1056,7 @@ MO.RGuiControl.prototype.saveConfig = function RGuiControl_saveConfig(control, x
    }
    return xconfig;
 }
-MO.RGuiControl = new MO.RGuiControl();
+MO.Gui.Control = new MO.RGuiControl();
 MO.FGuiCanvas = function FGuiCanvas(o){
    o = MO.Class.inherits(this, o, MO.FE2dCanvas);
    o.createContext = MO.FGuiCanvas_createContext;
@@ -1041,6 +1093,8 @@ MO.FGuiCanvasContext_drawFontText = function FGuiCanvasContext_drawFontText(text
       handle.fillText(text, x + (width - textWidth), cy);
    }else if(alignCd == MO.EUiAlign.Center){
       handle.fillText(text, cx, cy);
+   }else if(alignCd == MO.EUiAlign.LeftPadding){
+      handle.fillText(text, x+30, cy);
    }else{
       throw new MO.TError('Invalid align type.');
    }
@@ -1164,7 +1218,7 @@ MO.FGuiCanvasManager_process = function FGuiCanvasManager_process(){
          var control = readyControls.at(i);
          if(control.testDirty()){
             var controlRectangle = control.clientRectangle();
-            dirtyControls.push(control);
+            dirtyControls.pushUnique(control);
             control._flagDirty = true;
             o.filterByRectangle(dirtyControls, controlRectangle)
          }
@@ -1278,7 +1332,7 @@ MO.FGuiFrameConsole_createFrame = function FGuiFrameConsole_createFrame(context,
    var o = this;
    var describeConsole = MO.Console.find(MO.FGuiFrameDescribeConsole);
    var xframe = describeConsole.load(name);
-   var frame = MO.RGuiControl.build(null, xframe, null, null);
+   var frame = MO.Gui.Control.build(null, xframe, null, null);
    frame.linkGraphicContext(context);
    frame.psInitialize();
    frame.build();
@@ -1369,12 +1423,19 @@ MO.FGuiGeneralColorEffect = function FGuiGeneralColorEffect(o){
 MO.FGuiGeneralColorEffect_drawRenderable = function FGuiGeneralColorEffect_drawRenderable(region, renderable){
    var o = this;
    var program = o._program;
+   var control = renderable.control();
+   var controlSize = control.size();
+   var scale = control.renderableScale();
+   var adjustSize = renderable.adjustSize();
+   var rateX = controlSize.width * scale / adjustSize.width;
+   var rateY = controlSize.height * scale/ adjustSize.height;
    var modelMatrix = renderable.currentMatrix();
    var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix)
    var material = renderable.material();
    o.bindMaterial(material);
    program.setParameter('vc_model_matrix', modelMatrix);
    program.setParameter('vc_vp_matrix', vpMatrix);
+   program.setParameter4('fc_coord', rateX, rateY, 0, 1 - rateY);
    o.__base.FE3dAutomaticEffect.drawRenderable.call(o, region, renderable);
 }
 MO.FGuiGeneralControlEffect = function FGuiGeneralControlEffect(o){
@@ -1550,6 +1611,41 @@ MO.FGuiManager_dispose = function FGuiManager_dispose(){
    o._visibleControls = MO.Lang.Object.dispose(o._visibleControls);
    o.__base.FObject.dispose.call(o);
 }
+MO.FGuiSelectAutomaticEffect = function FGuiSelectAutomaticEffect(o){
+   o = MO.Class.inherits(this, o, MO.FG3dAutomaticEffect);
+   o._code          = 'select.gui';
+   o.drawRenderable = MO.FGuiSelectAutomaticEffect_drawRenderable;
+   return o;
+}
+MO.FGuiSelectAutomaticEffect_drawRenderable = function FGuiSelectAutomaticEffect_drawRenderable(region, renderable, index){
+   var o = this;
+   var context = o._graphicContext;
+   var size = context.size();
+   var program = o._program;
+   var selectX = region._selectX;
+   var selectY = region._selectY;
+   var material = renderable.material();
+   var materialInfo = material.info();
+   o.bindMaterial(material);
+   var matrix = renderable.currentMatrix();
+   var vpMatrix = region.calculate(MO.EG3dRegionParameter.CameraViewProjectionMatrix);
+   program.setParameter('vc_model_matrix', matrix);
+   program.setParameter('vc_vp_matrix', vpMatrix);
+   program.setParameter4('vc_offset', size.width, size.height, 1 - (selectX / size.width) * 2, (selectY / size.height) * 2 - 1);
+   var i = index + 1;
+   var i1 = i  & 0xFF;
+   var i2 = (i >> 8) & 0xFF;
+   var i3 = (i >> 16) & 0xFF;
+   program.setParameter4('fc_index', i1 / 255, i2 / 255, i3 / 255, materialInfo.alphaBase);
+   o.bindAttributes(renderable);
+   o.bindSamplers(renderable);
+   var indexBuffers = renderable.indexBuffers();
+   var count = indexBuffers.count();
+   for(var i = 0; i < count; i++){
+      var indexBuffer = indexBuffers.at(i);
+      context.drawTriangles(indexBuffer);
+   }
+}
 MO.FGuiTransform = function FGuiTransform(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    o._finish   = false;
@@ -1632,6 +1728,105 @@ MO.FGuiLabel_setLabel = function FGuiLabel_setLabel(label){
       o.dirty();
    }
    o.__base.FGuiControl.setLabel.call(o, label);
+}
+MO.FGuiListBox = function FGuiListBox(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._gap                   = MO.Class.register(o, new MO.AGetSet('_gap'), 0);
+   o._items                 = MO.Class.register(o, new MO.AGetSet('_items'));
+   o._displayCount          = MO.Class.register(o, new MO.AGetSet('_displayCount'), 5);
+   o._startTick             = MO.Class.register(o, new MO.AGetSet('_startTick'), 0);
+   o._dataAnimationDuration = 5000;
+   o._animationPlaying      = MO.Class.register(o, new MO.AGetSet('_animationPlaying'), false);
+   o._itemRectangle         = null;
+   o.onPaintBegin           = MO.FGuiListBox_onPaintBegin;
+   o.construct              = MO.FGuiListBox_construct;
+   o.createItem             = MO.FGuiListBox_createItem;
+   o.push                   = MO.FGuiListBox_push;
+   o.clear                  = MO.FGuiListBox_clear;
+   o.dispose                = MO.FGuiListBox_dispose;
+   return o;
+}
+MO.FGuiListBox_onPaintBegin = function FGuiListBox_onPaintBegin(event) {
+   var o = this;
+   var rectangle = event.rectangle;
+   var graphic = event.graphic;
+   var padding = o._padding;
+   var left = rectangle.left + padding.left;
+   var top = rectangle.top + padding.top;
+   var bottom = rectangle.bottom() - padding.bottom;
+   var width = rectangle.width - padding.left - padding.right;
+   var height = rectangle.height - padding.top - padding.bottom;
+   var itemRect = o._itemRectangle;
+   var itemDrawX = left;
+   var itemDrawY = top;
+   var itemWidth = 0;
+   var itemHeight = 0;
+   var items = o._items;
+   var itemCount = items.count();
+   var displayCount = o._displayCount;
+   var gap = o._gap;
+   var rate = o._animationPlaying ? (MO.Timer.current() - o._startTick) / o._dataAnimationDuration : 1;
+   if (rate > 1) {
+      rate = 1;
+      o._animationPlaying = false;
+   }
+   for (var i = 0; i < itemCount && i < displayCount; i++) {
+      var item = items.at(i);
+      itemWidth = item.width() > rectangle.width ? rectangle.width : item.width();
+      itemHeight = item.height();
+      itemRect.set(itemDrawX, itemDrawY, itemWidth, itemHeight);
+      item.draw(graphic, itemRect, rate);
+      itemDrawY += itemHeight + gap;
+   }
+}
+MO.FGuiListBox_construct = function FGuiListBox_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+   o._items = new MO.TObjects();
+   o._itemRectangle = new MO.SRectangle();
+}
+MO.FGuiListBox_createItem = function FGuiListBox_createItem(clazz){
+   var o = this;
+   var item = MO.Class.create(clazz);
+   item.setListBox(o);
+   o.push(item);
+   return item;
+}
+MO.FGuiListBox_push = function FGuiListBox_push(control){
+   var o = this;
+   o.__base.FGuiControl.push.call(o, control);
+   if(MO.Class.isClass(control, MO.FGuiListBoxItem)){
+      o._items.push(control);
+   }
+}
+MO.FGuiListBox_clear = function FGuiListBox_clear(){
+   var o = this;
+   o.__base.FGuiControl.clear.call(o);
+   o._items.clear();
+}
+MO.FGuiListBox_dispose = function FGuiListBox_dispose() {
+   var o = this;
+   o._items = MO.Lang.Object.dispose(o._items);
+   o._itemRectangle = MO.Lang.Object.dispose(o._itemRectangle);
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiListBoxItem = function FGuiListBoxItem(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._listBox  = MO.Class.register(o, new MO.AGetSet('_listBox'));
+   o.construct = MO.FGuiListBoxItem_construct;
+   o.draw      = MO.FGuiListBoxItem_draw;
+   o.dispose   = MO.FGuiListBoxItem_dispose;
+   return o;
+}
+MO.FGuiListBoxItem_construct = function FGuiListBoxItem_construct(){
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiListBoxItem_draw = function FGuiListBoxItem_draw(graphic, rectangle){
+}
+MO.FGuiListBoxItem_dispose = function FGuiListBoxItem_dispose(){
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
 }
 MO.FGuiPanel = function FGuiPanel(o){
    o = MO.Class.inherits(this, o, MO.FGuiControl);
@@ -1971,6 +2166,7 @@ MO.FGuiGridCellCurrency_draw = function FGuiGridCellCurrency_draw(context){
    var width = rectangle.width;
    var height = rectangle.height;
    var column = o._column;
+   var optionDecimal = column.optionDecimal();
    var cellPadding = column.cellPadding();
    var value = o.value();
    var text = o.text();
@@ -1978,43 +2174,86 @@ MO.FGuiGridCellCurrency_draw = function FGuiGridCellCurrency_draw(context){
    var numberFont = o._numberFont;
    numberFont.assign(font);
    var contentWidth = width - cellPadding.right;
-   if(value >= 0){
-      if(textLength > 11){
-         var fontColor = null;
-         var highest = text.substring(0, text.length - 11);
-         var high = text.substring(textLength - 11, textLength - 7);
-         var low = text.substring(textLength - 7, textLength);
-         var highestWidth = graphic.textWidth(highest);
-         var highWidth = graphic.textWidth(high);
-         var lowWidth = graphic.textWidth(low);
-         numberFont.color = column.highestColor();
-         graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.highColor();
-         graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.normalColor();
-         graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
-      }else if(textLength > 7){
-         var fontColor = null;
-         if(textLength > 9){
-            fontColor = column.highColor();
+   if(optionDecimal){
+      if(value >= 0){
+         if(textLength > 11){
+            var fontColor = null;
+            var highest = text.substring(0, text.length - 11);
+            var high = text.substring(textLength - 11, textLength - 7);
+            var low = text.substring(textLength - 7, textLength);
+            var highestWidth = graphic.textWidth(highest);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = column.highestColor();
+            graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.highColor();
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else if(textLength > 7){
+            var fontColor = null;
+            if(textLength > 9){
+               fontColor = column.highColor();
+            }else{
+               fontColor = column.lowerColor();
+            }
+            var high = text.substring(0, textLength - 7);
+            var low = text.substring(textLength - 7, textLength);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = fontColor;
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
          }else{
-            fontColor = column.lowerColor();
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
          }
-         var high = text.substring(0, textLength - 7);
-         var low = text.substring(textLength - 7, textLength);
-         var highWidth = graphic.textWidth(high);
-         var lowWidth = graphic.textWidth(low);
-         numberFont.color = fontColor;
-         graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.normalColor();
-         graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
-      }else{
-         numberFont.color = column.normalColor();
+      }else if(value < 0){
+         numberFont.color = column.negativeColor();
          graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
       }
-   }else if(value < 0){
-      numberFont.color = column.negativeColor();
-      graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+   }else{
+      var text = value + '';
+      var textLength = text.length;
+      if(value >= 0){
+         if(textLength > 8){
+            var fontColor = null;
+            var highest = text.substring(0, text.length - 8);
+            var high = text.substring(textLength - 8, textLength - 4);
+            var low = text.substring(textLength - 4, textLength);
+            var highestWidth = graphic.textWidth(highest);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = column.highestColor();
+            graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.highColor();
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else if(textLength > 4){
+            var fontColor = null;
+            if(textLength > 6){
+               fontColor = column.highColor();
+            }else{
+               fontColor = column.lowerColor();
+            }
+            var high = text.substring(0, textLength - 4);
+            var low = text.substring(textLength - 4, textLength);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = fontColor;
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else{
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }
+      }else if(value < 0){
+         numberFont.color = column.negativeColor();
+         graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+      }
    }
 }
 MO.FGuiGridCellCurrency_dispose = function FGuiGridCellCurrency_dispose(){
@@ -2053,8 +2292,8 @@ MO.FGuiGridCellPicture = function FGuiGridCellPicture(o) {
    o._image = null;
    o.construct = MO.FGuiGridCellPicture_construct;
    o.testReady = MO.FGuiGridCellPicture_testReady;
-   o.setValue = MO.FGuiGridCellPicture_setValue;
-   o.draw = MO.FGuiGridCellPicture_draw;
+   o.setValue  = MO.FGuiGridCellPicture_setValue;
+   o.draw      = MO.FGuiGridCellPicture_draw;
    o.dispose = MO.FGuiGridCellPicture_dispose;
    return o;
 }
@@ -2106,13 +2345,76 @@ MO.FGuiGridCellPicture_setValue = function FGuiGridCellPicture_setValue(value) {
    var o = this;
    o.__base.FGuiGridCell.setValue.call(o, value);
    var url = o.text();
-   if (MO.Lang.String.isEmpty(url)) {
+   if(MO.Lang.String.isEmpty(url)){
       o._image = null;
-   } else {
-      o._image = MO.Console.find(MO.FImageConsole).load(url);
+   }else{
+      o._image = o._grid.loadResourceImage(url);
    }
 }
 MO.FGuiGridCellPicture_dispose = function FGuiGridCellPicture_dispose() {
+   var o = this;
+   o.__base.MUiGridCellPicture.dispose.call(o);
+   o.__base.FGuiGridCell.dispose.call(o);
+}
+MO.FGuiGridCellProgressBar = function FGuiGridCellProgressBar(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiGridCell, MO.MUiGridCellPicture);
+   o.construct = MO.FGuiGridCellProgressBar_construct;
+   o.testReady = MO.FGuiGridCellProgressBar_testReady;
+   o.draw      = MO.FGuiGridCellProgressBar_draw;
+   o.dispose   = MO.FGuiGridCellProgressBar_dispose;
+   return o;
+}
+MO.FGuiGridCellProgressBar_construct = function FGuiGridCellProgressBar_construct() {
+   var o = this;
+   o.__base.FGuiGridCell.construct.call(o);
+   o.__base.MUiGridCellPicture.construct.call(o);
+}
+MO.FGuiGridCellProgressBar_testReady = function FGuiGridCellProgressBar_testReady() {
+   var o = this;
+   var bgImage = o._column._bgImage;
+   var fillImage = o._column._fillImage;
+   if (bgImage && fillImage) {
+      return (bgImage.testReady() && fillImage.testReady());
+   }
+   return false;
+}
+MO.FGuiGridCellProgressBar_draw = function FGuiGridCellProgressBar_draw(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var bgImage = o._column._bgImage;
+   var fillImage = o._column._fillImage;
+   var imageSize = bgImage.size();
+   var imageWidth = imageSize.width;
+   var imageHeight = imageSize.height;
+   var rectangleHeight = rectangle.height;
+   var align = o._column._align;
+   var imageX = 0;
+   var imageY = rectangle.top;
+   if (rectangleHeight >= imageHeight) {
+      imageY = (rectangleHeight / 2) - (imageHeight / 2) + imageY + 3;
+   } else {
+      imageY = imageY - (imageHeight - rectangleHeight);
+   }
+   if (align == MO.EUiAlign.Left) {
+      imageX = rectangle.left;
+   } else if (align == MO.EUiAlign.Center) {
+      imageX = (rectangle.width / 2) - (imageWidth / 2) + rectangle.left;
+   } else if (align == MO.EUiAlign.Right) {
+      imageX = (rectangle.width / 2) + (imageWidth / 2) + rectangle.left;
+   }
+   var drawScale = o._column._drawScale;
+   graphic.drawImage(bgImage, imageX, imageY, imageWidth * drawScale, imageHeight * drawScale);
+   var percent = o.value() / o._column.maxValue();
+   var clipWidth = imageWidth * drawScale * percent;
+   var clipHeight = imageHeight * drawScale;
+   graphic._handle.save();
+   graphic._handle.rect(imageX, imageY, clipWidth, clipHeight);
+   graphic._handle.clip();
+   graphic.drawImage(fillImage, imageX, imageY, imageWidth * drawScale, imageHeight * drawScale);
+   graphic._handle.restore();
+}
+MO.FGuiGridCellProgressBar_dispose = function FGuiGridCellProgressBar_dispose() {
    var o = this;
    o.__base.MUiGridCellPicture.dispose.call(o);
    o.__base.FGuiGridCell.dispose.call(o);
@@ -2204,9 +2506,10 @@ MO.FGuiGridColumnBigNumber_dispose = function FGuiGridColumnBigNumber_dispose(){
 }
 MO.FGuiGridColumnCurrency = function FGuiGridColumnCurrency(o){
    o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnCurrency);
-   o.construct    = MO.FGuiGridColumnCurrency_construct;
-   o.formatText   = MO.FGuiGridColumnCurrency_formatText;
-   o.dispose      = MO.FGuiGridColumnCurrency_dispose;
+   o._optionDecimal = MO.Class.register(o, new MO.AGetSet('_optionDecimal'), true);
+   o.construct      = MO.FGuiGridColumnCurrency_construct;
+   o.formatText     = MO.FGuiGridColumnCurrency_formatText;
+   o.dispose        = MO.FGuiGridColumnCurrency_dispose;
    return o;
 }
 MO.FGuiGridColumnCurrency_construct = function FGuiGridColumnCurrency_construct(){
@@ -2263,6 +2566,35 @@ MO.FGuiGridColumnPicture_dispose = function FGuiGridColumnPicture_dispose() {
    o.__base.MUiGridColumnText.dispose.call(o);
    o.__base.FGuiGridColumn.dispose.call(o);
 }
+MO.FGuiGridColumnProgressBar = function FGuiGridColumnProgressBar(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnText);
+   o._align     = MO.Class.register(o, new MO.AGetSet('_align'));
+   o._drawScale = MO.Class.register(o, new MO.AGetSet('_drawScale'), 1.0);
+   o._bgImage   = MO.Class.register(o, new MO.AGetSet('_bgImage'));
+   o._fillImage = MO.Class.register(o, new MO.AGetSet('_fillImage'));
+   o._maxValue  = MO.Class.register(o, new MO.AGetSet('_maxValue'), 100);
+   o.construct  = MO.FGuiGridColumnProgressBar_construct;
+   o.setup      = MO.FGuiGridColumnProgressBar_setup;
+   o.dispose    = MO.FGuiGridColumnProgressBar_dispose;
+   return o;
+}
+MO.FGuiGridColumnProgressBar_construct = function FGuiGridColumnProgressBar_construct() {
+   var o = this;
+   o.__base.FGuiGridColumn.construct.call(o);
+   o.__base.MUiGridColumnText.construct.call(o);
+   o._cellClass = MO.FGuiGridCellProgressBar;
+}
+MO.FGuiGridColumnProgressBar_setup = function FGuiGridColumnProgressBar_setup(bgImageUrl, fillImageUrl) {
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole)
+   o._bgImage = imageConsole.load(bgImageUrl);
+   o._fillImage = imageConsole.load(fillImageUrl);
+}
+MO.FGuiGridColumnProgressBar_dispose = function FGuiGridColumnProgressBar_dispose() {
+   var o = this;
+   o.__base.MUiGridColumnText.dispose.call(o);
+   o.__base.FGuiGridColumn.dispose.call(o);
+}
 MO.FGuiGridColumnText = function FGuiGridColumnText(o){
    o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnText);
    o.construct = MO.FGuiGridColumnText_construct;
@@ -2282,18 +2614,26 @@ MO.FGuiGridColumnText_dispose = function FGuiGridColumnText_dispose(){
 }
 MO.FGuiGridControl = function FGuiGridControl(o) {
    o = MO.Class.inherits(this, o, MO.FGuiControl, MO.MUiGridControl);
-   o._optionClip     = MO.Class.register(o, new MO.AGetSet('_optionClip'), true);
-   o._headPadding    = MO.Class.register(o, new MO.AGetter('_headPadding'));
-   o._rowScroll      = 0;
-   o._rowScrollSpeed = 1;
-   o._paintContext   = null;
-   o.onPaintBegin    = MO.FGuiGridControl_onPaintBegin;
-   o.construct       = MO.FGuiGridControl_construct;
-   o.dispose         = MO.FGuiGridControl_dispose;
+   o._optionClip          = MO.Class.register(o, new MO.AGetSet('_optionClip'), true);
+   o._headPadding         = MO.Class.register(o, new MO.AGetter('_headPadding'));
+   o._headBackgroundUri   = MO.Class.register(o, new MO.AGetSet('_headBackgroundUri'));
+   o._headBackgroundImage = null;
+   o._outerLineColor      = MO.Class.register(o, new MO.AGetSet('_outerLineColor'), '#FFFFFF');
+   o._outerLineThickness  = MO.Class.register(o, new MO.AGetSet('_outerLineThickness'), 0);
+   o._innerLineColor      = MO.Class.register(o, new MO.AGetSet('_innerLineColor'), '#FFFFFF');
+   o._innerLineThickness  = MO.Class.register(o, new MO.AGetSet('_innerLineThickness'), 0);
+   o._rowScroll           = 0;
+   o._rowScrollSpeed      = 1;
+   o._paintContext        = null;
+   o.onPaintBegin         = MO.FGuiGridControl_onPaintBegin;
+   o.construct            = MO.FGuiGridControl_construct;
+   o.setup                = MO.FGuiGridControl_setup;
+   o.dispose              = MO.FGuiGridControl_dispose;
    return o;
 }
 MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
    var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
    var dirty = false;
    var padding = o._padding;
    var context = o._paintContext;
@@ -2309,7 +2649,10 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
    var height = rectangle.height - padding.top - padding.bottom;
    var headPadding = o._headPadding;
    var drawX = left;
-   var drawY = top + headPadding.top;;
+   var drawY = top + headPadding.top;
+   if (o._outerLineThickness > 0) {
+      graphic.drawRectangle(left, top, width, height, o._outerLineColor, o._outerLineThickness);
+   }
    var gridWidth = width;
    var columnWidthTotal = 0;
    var columns = o._columns;
@@ -2318,11 +2661,14 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
       var column = columns.at(i);
       columnWidthTotal += column.width();
    }
+   var headTextTop = columnY + 0;
+   var headHeight = o._headHeight;
+   if (o._headBackgroundImage) {
+      graphic.drawImage(o._headBackgroundImage, drawX + headPadding.left, drawY, width - headPadding.left - headPadding.right, headHeight - headPadding.top, height - headPadding.bottom);
+   }
    if (o._displayHead) {
       var columnX = drawX;
       var columnY = drawY;
-      var headTextTop = columnY + 0;
-      var headHeight = o._headHeight;
       for (var i = 0; i < columnCount; i++) {
          var column = columns.at(i);
          if(!column.testReady()){
@@ -2368,6 +2714,22 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
          break;
       }
    }
+   if (o._innerLineThickness > 0) {
+      var drawY = top + headPadding.top;
+      drawY += headHeight + headPadding.bottom;
+      graphic.drawLine(drawX, drawY, columnX, drawY, o._innerLineColor, o._innerLineThickness);
+      for (var i = 0; i < rowCount - 1; i++) {
+         drawY += rowHeight;
+         graphic.drawLine(drawX, drawY, columnX, drawY, o._innerLineColor, o._innerLineThickness);
+      }
+      var columnX = drawX;
+      for (var i = 0; i < columnCount - 1; i++) {
+         var column = columns.at(i);
+         var columnWidth = gridWidth * column.width() / columnWidthTotal;
+         columnX += columnWidth;
+         graphic.drawLine(columnX, top + headHeight + headPadding.top, columnX, bottom, o._innerLineColor, o._innerLineThickness);
+      }
+   }
    if(dirty){
       o.dirty();
    }
@@ -2379,6 +2741,13 @@ MO.FGuiGridControl_construct = function FGuiGridControl_construct() {
    o._rowClass = MO.FGuiGridRow;
    o._paintContext = new MO.SGuiGridPaintContext();
    o._headPadding = new MO.SPadding();
+}
+MO.FGuiGridControl_setup = function FGuiGridControl_setup() {
+   var o = this;
+   var headBackgroundUri = o._headBackgroundUri;
+   if (headBackgroundUri) {
+      o._headBackgroundImage = o.loadResourceImage(headBackgroundUri);
+   }
 }
 MO.FGuiGridControl_dispose = function FGuiGridControl_dispose() {
    var o = this;
@@ -2416,22 +2785,22 @@ MO.FGuiTable = function FGuiTable(o){
 MO.FGuiTable_oeUpdate = function FGuiTable_oeUpdate(event){
    var o = this;
    o.__base.FGuiGridControl.oeUpdate.call(o, event);
+   var rows = o._rows;
    if(event.isBefore()){
       if(o._rowScroll < 0){
-         var rows = o._rows;
          var scrollSpeed = Math.max(parseInt(-o._rowScroll / o._rowHeight), o._rowScrollSpeed);
          o._rowScroll += scrollSpeed;
          if(o._rowScroll >= 0){
-            var limitCount = o._rowLimitCount;
-            if(limitCount != 0){
-               if(rows.count() > limitCount){
-                  var row = rows.pop();
-                  o.freeRow(row);
-               }
-            }
             o._rowScroll = 0;
          }
          o.dirty();
+      }
+      var limitCount = o._rowLimitCount;
+      if (limitCount != 0) {
+         if (rows.count() > limitCount) {
+            var row = rows.pop();
+            o.freeRow(row);
+         }
       }
    }
 }
@@ -2443,6 +2812,7 @@ MO.FGuiTable_construct = function FGuiTable_construct(){
 }
 MO.FGuiTable_insertRow = function FGuiTable_insertRow(row){
    var o = this;
+   MO.Assert.debugNotNull(row);
    o._rows.unshift(row);
    o._rowScroll -= o._rowHeight;
    o.dirty();
@@ -2453,6 +2823,494 @@ MO.FGuiTable_dispose = function FGuiTable_dispose(){
    var o = this;
    o.__base.MUiGridControl.dispose.call(o);
    o.__base.FGuiGridControl.dispose.call(o);
+}
+MO.FGuiChart = function FGuiChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl, MO.MUiChart);
+   o._painter        = MO.Class.register(o, new MO.AGetter('_painter'));
+   o._paintRectangle = MO.Class.register(o, new MO.AGetter('_paintRectangle'));
+   o._axisX          = MO.Class.register(o, new MO.AGetter('_axisX'));
+   o._axisY          = MO.Class.register(o, new MO.AGetter('_axisY'));
+   o._title          = MO.Class.register(o, new MO.AGetSet('_title'));
+   o._titleFont      = MO.Class.register(o, new MO.AGetter('_titleFont'));
+   o._titleGap       = MO.Class.register(o, new MO.AGetSet('_titleGap'), 2);
+   o._paintContext   = null;
+   o.onPaintBegin    = MO.FGuiChart_onPaintBegin;
+   o.construct       = MO.FGuiChart_construct;
+   o.selectPainter   = MO.FGuiChart_selectPainter;
+   o.dispose         = MO.FGuiChart_dispose;
+   return o;
+}
+MO.FGuiChart_onPaintBegin = function FGuiChart_onPaintBegin(event) {
+   var o = this;
+   event.dataset = o._dataset;
+   event.axisX = o._axisX;
+   event.axisY = o._axisY;
+   event.paintRectangle = o._paintRectangle;
+   event.title = o._title;
+   event.titleFont = o._titleFont;
+   event.titleGap = o._titleGap;
+   o._painter.draw(event);
+}
+MO.FGuiChart_construct = function FGuiChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+   o.__base.MUiChart.construct.call(o);
+   o._paintContext = new MO.SGuiGridPaintContext();
+   o._paintRectangle = new MO.SRectangle();
+   o._axisX = MO.Class.create(MO.FUiChartAxis);
+   o._axisY = MO.Class.create(MO.FUiChartAxis);
+   o._titleFont = new MO.SUiFont();
+}
+MO.FGuiChart_selectPainter = function FGuiChart_selectPainter(clazz){
+   var o = this;
+   var painter = o._painter = MO.Class.create(clazz);
+   painter.setChart(o);
+}
+MO.FGuiChart_dispose = function FGuiChart_dispose() {
+   var o = this;
+   o._paintContext = MO.Lang.Object.dispose(o._paintContext);
+   o.__base.MUiChart.dispose.call(o);
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiChartBarPainter = function FGuiChartBarPainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiChartPainter);
+   o.onPaintBegin  = MO.FGuiChartBarPainter_onPaintBegin;
+   o.construct     = MO.FGuiChartBarPainter_construct;
+   o.draw          = MO.FGuiChartBarPainter_draw;
+   o.drawAxis      = MO.FGuiChartBarPainter_drawAxis;
+   o.drawLine      = MO.FGuiChartBarPainter_drawLine;
+   o.drawTitle     = MO.FGuiChartBarPainter_drawTitle;
+   o.dispose       = MO.FGuiChartBarPainter_dispose;
+   return o;
+}
+MO.FGuiChartBarPainter_construct = function FGuiChartBarPainter_construct() {
+   var o = this;
+   o.__base.FGuiChartPainter.construct.call(o);
+}
+MO.FGuiChartBarPainter_draw = function FGuiChartBarPainter_draw(context){
+   var o = this;
+   o.__base.FGuiChartPainter.draw.call(o);
+   var dataset = context.dataset;
+   o.drawTitle(context);
+   o.drawAxis(context);
+   if(dataset) {
+      var serieses = dataset.serieses();
+      var seriesCount = serieses.count();
+      for(var i = 0; i < seriesCount; ++i) {
+         var series = serieses.at(i);
+         o.drawLine(context, series);
+      }
+   }
+}
+MO.FGuiChartBarPainter_drawTitle = function FGuiChartBarPainter_drawTitle(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var title = context.title;
+   if(title == null || title == "") return;
+   var titleFont = context.titleFont;
+   var titleGap = context.titleGap;
+   var titleWidth = graphic.textWidth(title);
+   graphic.setFont(titleFont);
+   graphic.drawText(title, pLeft + pWidth / 2 - titleWidth / 2, pTop - titleFont.size - titleGap, titleFont.color);
+}
+MO.FGuiChartBarPainter_drawAxis = function FGuiChartBarPainter_drawAxis(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var xDegrees = axisX.degrees();
+   var yDegrees = axisY.degrees();
+   var xCount = xDegrees.count();
+   var yCount = yDegrees.count();
+   if(xCount == 0 || yCount == 0) return;
+   var stepHeight = pHeight / (yCount - 1);
+   var stepWidth = pWidth / (xCount + 1);
+   var yGap = axisY.degreeLabelGap();
+   var xGap = axisX.degreeLabelGap();
+   var xFont = axisX.font();
+   var yFont = axisY.font();
+   var xShowFirstLine = axisX.optionShowFirstLine();
+   var yShowFirstLine = axisY.optionShowFirstLine();
+   var xLabelVertical = axisX.optionLabelVertical();
+   for( var i = 0; i < yCount; ++i) {
+      var y = pTop + pHeight - stepHeight * i;
+      var degree = yDegrees.get(i);
+      var label = degree.label();
+      var lineWidth = degree.lineWidth() == null ? axisY.lineWidth() : degree.lineWidth();
+      var lineColor = degree.lineColor() == null ? axisY.lineColor() : degree.lineColor();
+      if(axisY.optionShowAxis() || (yShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(pLeft, y);
+         graphic.lineTo(pLeft + pWidth, y);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(axisY.optionShowLabel()) {
+         graphic.setFont(yFont.toString());
+         var textWidth = graphic.textWidth(label);
+         graphic.drawText(label, pLeft - yGap - textWidth, y, yFont.color);
+      }
+   }
+   var yLabel = axisY.label();
+   var yLabelFont = axisY.labelFont();
+   if(yLabel && yLabel != "") {
+      graphic.drawText(yLabel, pLeft, pTop - yLabelFont.size / 2, yLabelFont.color);
+   }
+   for( var i = 0; i <= xCount + 1; ++i) {
+      var x = pLeft + stepWidth * i;
+      if(i == 0 || i > xCount) {
+         var lineWidth = axisX.lineWidth();
+         var lineColor = axisX.lineColor();
+      }else {
+         var degree = xDegrees.get(i-1);
+         var lineWidth = degree.lineWidth() == null ? axisX.lineWidth() : degree.lineWidth();
+         var lineColor = degree.lineColor() == null ? axisX.lineColor() : degree.lineColor();
+      }
+      if(axisX.optionShowAxis() || (xShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(x, pTop);
+         graphic.lineTo(x, pTop + pHeight);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(i > 0 && i <= xCount && axisX.optionShowLabel()) {
+         var label = degree.label();
+         var x = pLeft + stepWidth * i;
+         var textWidth = graphic.textWidth(label);
+         if(xLabelVertical) {
+            graphic.drawTextVertical(label, x - xFont.size / 2, pTop + pHeight + xGap + xFont.size, xFont);
+         }else {
+            graphic.drawText(label, x - textWidth / 2, pTop + pHeight + xGap + xFont.size, xFont.color);
+         }
+      }
+   }
+   var xLabel = axisX.label();
+   var xLabelFont = axisX.labelFont();
+   if(xLabel && xLabel != "") {
+      graphic.setFont(xLabelFont);
+      graphic.drawText(xLabel, pLeft + pWidth, pTop + pHeight, xLabelFont.color);
+   }
+}
+MO.FGuiChartBarPainter_drawLine = function FGuiChartBarPainter_drawLine(context, series) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var xDegrees = axisX.degrees();
+   var yDegrees = axisY.degrees();
+   var xCount = xDegrees.count();
+   var yCount = yDegrees.count();
+   if(xCount == 0 || yCount == 0) return;
+   var maxValue = yDegrees.get(yCount - 1).value();
+   var minValue = yDegrees.get(0).value();
+   var stepHeight = pHeight / (maxValue - minValue);
+   var stepWidth = pWidth / (xCount + 1);
+   var lineWidth = series.lineWidth();
+   var lineColor = series.lineColor();
+   var rectWidth = series.rectWidth();
+   var fillColor = series.fillColor();
+   var fillType = fillColor;
+   var fillGradient = series.fillGradient();
+   var optionShowBorder = series.optionShowBorder();
+   var values = series.values();
+   var valueCount = values.count();
+   if(fillGradient != null) {
+      var len = fillGradient.length;
+      var gradient = graphic.createLinearGradient(0, pTop, 0, pHeight);
+      for( var i = 0; i < len; ++i) {
+         var array = fillGradient[i];
+         gradient.addColorStop(array[0], array[1]);
+      }
+      fillType = gradient;
+   }
+   for(var i = 0; i < valueCount; ++i) {
+      var value = values.at(i);
+      var x = pLeft + stepWidth * (i+1) - rectWidth / 2;
+      var y = pTop + (maxValue - value) * stepHeight;
+      var h = (value - minValue) * stepHeight - 1;
+      graphic.fillRectangle(x, y, rectWidth, h, fillType);
+      if(optionShowBorder) {
+         graphic.beginPath();
+         graphic.moveTo(x, pTop + pHeight);
+         graphic.lineTo(x, y);
+         graphic.lineTo(x + rectWidth, y);
+         graphic.lineTo(x + rectWidth, pTop + pHeight);
+         graphic.drawShape(lineWidth, lineColor);
+         graphic.endPath();
+      }
+   }
+}
+MO.FGuiChartBarPainter_dispose = function FGuiChartBarPainter_dispose() {
+   var o = this;
+   o.__base.FGuiChartPainter.dispose.call(o);
+}
+MO.FGuiChartLinePainter = function FGuiChartLinePainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiChartPainter);
+   o.onPaintBegin = MO.FGuiChartLinePainter_onPaintBegin;
+   o.construct    = MO.FGuiChartLinePainter_construct;
+   o.drawAxis     = MO.FGuiChartLinePainter_drawAxis;
+   o.drawLine     = MO.FGuiChartLinePainter_drawLine;
+   o.drawTitle    = MO.FGuiChartLinePainter_drawTitle;
+   o.draw         = MO.FGuiChartLinePainter_draw;
+   o.dispose      = MO.FGuiChartLinePainter_dispose;
+   return o;
+}
+MO.FGuiChartLinePainter_construct = function FGuiChartLinePainter_construct() {
+   var o = this;
+   o.__base.FGuiChartPainter.construct.call(o);
+}
+MO.FGuiChartLinePainter_drawTitle = function FGuiChartLinePainter_drawTitle(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var dataset = context.dataset;
+   var paintRectangle = context.paintRectangle;
+   var axisX = context.axisX;
+   var axisY = context.axisY;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var title = context.title;
+   if(title == null || title == "") return;
+   var titleFont = context.titleFont;
+   var titleGap = context.titleGap;
+   var titleWidth = graphic.textWidth(title);
+   graphic.setFont(titleFont);
+   graphic.drawText(title, pLeft + pWidth / 2 - titleWidth / 2, pTop - titleFont.size - titleGap, titleFont.color);
+}
+MO.FGuiChartLinePainter_drawAxis = function FGuiChartLinePainter_drawAxis(context){
+   var o = this;
+   var graphic = context.graphic;
+   var dataset = context.dataset;
+   var rectangle = context.rectangle;
+   var paintRectangle = context.paintRectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var xAxis = context.axisX;
+   var yAxis = context.axisY;
+   var xDegrees = xAxis.degrees();
+   var yDegrees = yAxis.degrees();
+   var yCorCount = yAxis.degrees().count();
+   var xCorCount = xAxis.degrees().count();
+   if(yCorCount == 0 || xCorCount == 0) return;
+   var stepHeight = pHeight / (yCorCount - 1);
+   var stepWidth = pWidth / (xCorCount - 1);
+   var yGap = yAxis.degreeLabelGap();
+   var xGap = xAxis.degreeLabelGap();
+   var yFont = yAxis.font();
+   var xFont = xAxis.font();
+   var xShowFirstLine = xAxis.optionShowFirstLine();
+   var yShowFirstLine = yAxis.optionShowFirstLine();
+   var xLabelVertical = xAxis.optionLabelVertical();
+   for( var i = 0; i < yCorCount; ++i) {
+      var y = pTop + pHeight - stepHeight * i;
+      var degree = yDegrees.get(i);
+      var label = degree.label();
+      var lineWidth = degree.lineWidth() == null ? yAxis.lineWidth() : degree.lineWidth();
+      var lineColor = degree.lineColor() == null ? yAxis.lineColor() : degree.lineColor();
+      if(yAxis.optionShowAxis() || (yShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(pLeft, y);
+         graphic.lineTo(pLeft + pWidth, y);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(yAxis.optionShowLabel()) {
+         graphic.setFont(yFont.toString());
+         var textWidth = graphic.textWidth(label);
+         graphic.drawText(label, pLeft - yGap - textWidth, y, yFont.color);
+      }
+   }
+   var yLabel = yAxis.label();
+   var yLabelFont = yAxis.labelFont();
+   if(yLabel && yLabel != "") {
+      graphic.drawText(yLabel, pLeft, pTop - yLabelFont.size / 2, yLabelFont.color);
+   }
+   for( var i = 0; i < xCorCount; ++i) {
+      var x = pLeft + stepWidth * i;
+      var degree = xDegrees.get(i);
+      var label = degree.label();
+      var lineWidth = degree.lineWidth() == null ? xAxis.lineWidth() : degree.lineWidth();
+      var lineColor = degree.lineColor() == null ? xAxis.lineColor() : degree.lineColor();
+      if(xAxis.optionShowAxis() || (xShowFirstLine && i == 0)) {
+         graphic.beginPath();
+         graphic.moveTo(x, pTop);
+         graphic.lineTo(x, pTop + pHeight);
+         graphic.drawShape(lineWidth, lineColor);
+      }
+      if(xAxis.optionShowLabel()) {
+         var x = pLeft + stepWidth * i;
+         var textWidth = graphic.textWidth(label);
+         if(xLabelVertical) {
+            graphic.drawTextVertical(label, x - xFont.size / 2, pTop + pHeight + xGap + xFont.size, xFont);
+         }else {
+            graphic.drawText(label, x - textWidth / 2, pTop + pHeight + xGap + xFont.size, xFont.color);
+         }
+      }
+   }
+   var xLabel = xAxis.label();
+   var xLabelFont = xAxis.labelFont();
+   if(xLabel && xLabel != "") {
+      graphic.drawText(xLabel, pLeft + pWidth, pTop + pHeight, xLabelFont.color);
+   }
+}
+MO.FGuiChartLinePainter_drawLine = function FGuiChartLinePainter_drawLine(context, series){
+   var o = this;
+   var graphic = context.graphic;
+   var dataset = context.dataset;
+   var rectangle = context.rectangle;
+   var paintRectangle = context.paintRectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var pLeft = left + paintRectangle.left;
+   var pTop = top + paintRectangle.top;
+   var pWidth = paintRectangle.width;
+   var pHeight = paintRectangle.height;
+   var yAxis = context.axisY;
+   var xAxis = context.axisX;
+   var yDegrees = yAxis.degrees();
+   var xDegrees = xAxis.degrees();
+   var yCount = yDegrees.count();
+   var xCount = xDegrees.count();
+   if(xCount == 0 || yCount == 0) return;
+   var maxValue = yDegrees.get(yCount - 1).value();
+   var minValue = yDegrees.get(0).value();
+   var lineColor = series.lineColor();
+   var lineWidth = series.lineWidth();
+   graphic.beginPath();
+   graphic.setLineJoin("round");
+   var values = series.values();
+   var optionShowDot = series.optionShowDot();
+   var dotSize = series.dotSize();
+   var dotColor = series.dotColor();
+   var count = values.count();
+   var stepWidth = pWidth / (xCount - 1);
+   var stepHeight = pHeight / (maxValue - minValue);
+   for(var n = 0; n < count; ++n){
+      var value = values.at(n);
+      var x = pLeft + stepWidth * n;
+      var y = pTop + (maxValue - value) * stepHeight;
+      if(n == 0){
+         graphic.moveTo(x, y);
+      }else{
+         graphic.lineTo(x, y);
+      }
+   }
+   graphic.drawShape(lineWidth, lineColor);
+   if(optionShowDot) {
+      for( var n = 0; n < count; ++n) {
+         var value = values.at(n);
+         var x = pLeft + stepWidth * n;
+         var y = pTop + (maxValue - value) * stepHeight;
+         graphic.drawCircle(x, y, dotSize, 1, dotColor, dotColor);
+      }
+   }
+}
+MO.FGuiChartLinePainter_draw = function FGuiChartLinePainter_draw(context){
+   var o = this;
+   o.__base.FGuiChartPainter.draw.call(o);
+   var dataset = context.dataset;
+   o.drawTitle(context);
+   o.drawAxis(context);
+   if(dataset){
+      var serieses = dataset.serieses();
+      var seriesCount = serieses.count();
+      for(var i = 0; i < seriesCount; i++){
+         var series = serieses.at(i);
+         o.drawLine(context, series);
+      }
+   }
+}
+MO.FGuiChartLinePainter_dispose = function FGuiChartLinePainter_dispose() {
+   var o = this;
+   o.__base.FGuiChartPainter.dispose.call(o);
+}
+MO.FGuiChartPainter = function FGuiChartPainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._chart    = MO.Class.register(o, new MO.AGetSet('_chart'));
+   o.construct = MO.FGuiChartPainter_construct;
+   o.draw      = MO.FGuiChartPainter_draw;
+   o.dispose   = MO.FGuiChartPainter_dispose;
+   return o;
+}
+MO.FGuiChartPainter_construct = function FGuiChartPainter_construct(){
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiChartPainter_draw = function FGuiChartPainter_draw(context){
+   var o = this;
+}
+MO.FGuiChartPainter_dispose = function FGuiChartPainter_dispose(){
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiChartPiePainter = function FGuiChartPiePainter(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiChartPainter);
+   o._paintContext = null;
+   o.onPaintBegin  = MO.FGuiChartPiePainter_onPaintBegin;
+   o.construct     = MO.FGuiChartPiePainter_construct;
+   o.draw          = MO.FGuiChartPiePainter_draw;
+   o.dispose       = MO.FGuiChartPiePainter_dispose;
+   return o;
+}
+MO.FGuiChartPiePainter_construct = function FGuiChartPiePainter_construct() {
+   var o = this;
+   o.__base.FGuiChartPainter.construct.call(o);
+   o._paintContext = new MO.SGuiGridPaintContext();
+}
+MO.FGuiChartPiePainter_draw = function FGuiChartPiePainter_draw(context){
+   var o = this;
+   o.__base.FGuiChartPainter.draw.call(o);
+}
+MO.FGuiChartPiePainter_dispose = function FGuiChartPiePainter_dispose() {
+   var o = this;
+   o._paintContext = MO.Lang.Object.dispose(o._paintContext);
+   o.__base.FGuiChartPainter.dispose.call(o);
 }
 MO.FGuiBar = function FGuiBar(o){
    o = MO.Class.inherits(this, o, MO.FGuiFrame);
@@ -2606,6 +3464,356 @@ MO.FGuiChartTotal_onPaintBegin = function FGuiChartTotal_onPaintBegin(event) {
    }
 }
 MO.FGuiChartTotal_dispose = function FGuiChartTotal_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiFiveForceModul = function FGuiFiveForceModul(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o._pointCount              = MO.Class.register(o, new MO.AGetSet('_pointCount'),5);
+   o._ratationDegree          = MO.Class.register(o, new MO.AGetSet('_ratationDegree'));
+   o._angleLineColor          = MO.Class.register(o, new MO.AGetSet('_angleLineColor'),'#ffffff');
+   o._angleLineWidth          = MO.Class.register(o, new MO.AGetSet('_angleLineWidth'),3);
+   o._radius                  = MO.Class.register(o, new MO.AGetSet('_radius'),30);
+   o._pointZero               = MO.Class.register(o, new MO.AGetSet('_pointZero'));
+   o.construct                = MO.FGuiFiveForceModul_construct;
+   o.setup                    = MO.FGuiFiveForceModul_setup;
+   o.onImageLoad              = MO.FGuiFiveForceModul_onImageLoad;
+   o.onPaintBegin             = MO.FGuiFiveForceModul_onPaintBegin;
+   o.dispose                  = MO.FGuiFiveForceModul_dispose;
+   o.setData                  = MO.FGuiFiveForceModul_setData;
+   o._fiveforce               = null;
+   return o;
+}
+MO.FGuiFiveForceModul_construct = function FGuiFiveForceModul_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+   o._ratationDegree = (2*Math.PI)/o._pointCount;
+   o._pointZero = new MO.SPoint2(0,0);
+}
+MO.FGuiFiveForceModul_setup = function FGuiFiveForceModul_setup() {
+   var o = this;
+   o._fiveforce = o.loadResourceImage('{eai.resource}/cockpit/achievement/optionCilck1.png');
+   o._fiveforce.addLoadListener(o,o.onImageLoad);
+}
+MO.FGuiFiveForceModul_onImageLoad = function FGuiFiveForceModul_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiFiveForceModul_onPaintBegin = function FGuiFiveForceModul_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   graphic.drawRectangle(left, top, width, height, '#ffffff', 3);
+   var ctx = graphic._handle;
+   var pointCount = o._pointCount;
+   var graphHeight = height/pointCount;
+   var ratationDegree = o._ratationDegree;
+   var graphicLeft = left;
+   var graphicTop = top;
+   var radius = o._radius;
+   var ss= o._fiveforce;
+   graphic.drawImage(o._fiveforce, 0, 0, width, height);
+   var sinr = radius*Math.sin(ratationDegree);
+   var cosr = radius*Math.cos(ratationDegree);
+   var point1x = 0;
+   var point1y = radius;
+}
+MO.FGuiFiveForceModul_setData = function FGuiFiveForceModul_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiFiveForceModul_dispose = function FGuiFiveForceModul_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiLineChart = function FGuiLineChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o.construct                = MO.FGuiLineChart_construct;
+   o.setup                    = MO.FGuiLineChart_setup;
+   o.onImageLoad              = MO.FGuiLineChart_onImageLoad;
+   o.onPaintBegin             = MO.FGuiLineChart_onPaintBegin;
+   o.dispose                  = MO.FGuiLineChart_dispose;
+   o.setData                  = MO.FGuiLineChart_setData;
+   o.drawLine                 = MO.FGuiLineChart_drawLine;
+   return o;
+}
+MO.FGuiLineChart_drawLine = function FGuiLineChart_drawLine(graphic, rectangle, dataheigt, maxValue, code, color, lineWidth){
+   var o = this;
+   var handle = graphic._handle;
+   handle.beginPath();
+   var units = o._data.units();
+   var count = units.count();
+   var left = rectangle.left + 140;
+   var top = rectangle.top;
+   var width = rectangle.width - 180;
+   var height = dataheigt ;
+   var stepWidth = width / count;
+   var stepHeight = dataheigt / maxValue;
+   for(var n = 0; n < count; n++){
+      var unit = units.at(n);
+      var x = left + stepWidth * n;
+      var y = top + height - stepHeight * unit[code]+35;
+      if(n == 0){
+         handle.moveTo(x, y);
+      }else{
+         handle.lineTo(x, y);
+      }
+   }
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
+MO.FGuiLineChart_construct = function FGuiLineChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiLineChart_setup = function FGuiLineChart_setup() {
+   var o = this;
+}
+MO.FGuiLineChart_onImageLoad = function FGuiLineChart_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiLineChart_onPaintBegin = function FGuiLineChart_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   if(!data){
+      return;
+   }
+   var units = data.units();
+   var count = units._count;
+   var maxValue =0;
+   var minValue =0;
+   for(var i=0;i<count;i++){
+      var unit = units.at(i);
+      maxValue = Math.max(unit.value(), maxValue);
+   }
+   o.drawLine(graphic, rectangle, dataheigt, maxValue, '_value', '#ffffff', 2);
+}
+MO.FGuiLineChart_setData = function FGuiLineChart_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiLineChart_dispose = function FGuiLineChart_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiLineChartData = function FGuiLineChartData(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._labels = MO.Class.register(o, new MO.AGetSet('_labels'));
+   o._datas = MO.Class.register(o, new MO.AGetSet('_datas'));
+   return o;
+}
+MO.FGuiLineChartDataSet = function FGuiLineChartDataSet(o) {
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._strokeColor = MO.Class.register(o, new MO.AGetSet('_strokeColor'));
+   o._pointColor = MO.Class.register(o, new MO.AGetSet('_pointColor'));
+   o._pointStrokeColor = MO.Class.register(o, new MO.AGetSet('_pointStrokeColor'));
+   o._data = MO.Class.register(o, new MO.AGetSet('_data'));
+   return o;
+}
+MO.FGuiSixLineChart = function FGuiSixLineChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o.construct                = MO.FGuiSixLineChart_construct;
+   o.setup                    = MO.FGuiSixLineChart_setup;
+   o.onImageLoad              = MO.FGuiSixLineChart_onImageLoad;
+   o.onPaintBegin             = MO.FGuiSixLineChart_onPaintBegin;
+   o.dispose                  = MO.FGuiSixLineChart_dispose;
+   o.setData                  = MO.FGuiSixLineChart_setData;
+   o.drawLine                 = MO.FGuiSixLineChart_drawLine;
+   return o;
+}
+MO.FGuiSixLineChart_drawLine = function FGuiSixLineChart_drawLine(graphic, rectangle, dataheigt, minValue,maxValue, code, color, lineWidth){
+   var o = this;
+   var handle = graphic._handle;
+   handle.beginPath();
+   var units = o._data.days();
+   var count = units.count();
+   var left = rectangle.left + 140;
+   var top = rectangle.top;
+   var width = rectangle.width - 180;
+   var height = dataheigt ;
+   var stepWidth = width / count;
+   var stepHeight = dataheigt / maxValue;
+   for(var n = 0; n < count; n++){
+      var unit = units.at(n);
+      var x = left + stepWidth * n;
+      var y = top + height - stepHeight * unit[code]+35;
+      if(n == 0){
+         handle.moveTo(x, y);
+      }else{
+         handle.lineTo(x, y);
+      }
+   }
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
+MO.FGuiSixLineChart_construct = function FGuiSixLineChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiSixLineChart_setup = function FGuiSixLineChart_setup() {
+   var o = this;
+}
+MO.FGuiSixLineChart_onImageLoad = function FGuiSixLineChart_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiSixLineChart_onPaintBegin = function FGuiSixLineChart_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   graphic.drawRectangle(left, top, width, height, '#ffffff', 3);
+   if(!data){
+      return;
+   }
+   var units = data.days();
+   var count = units._count;
+   var maxValue =0;
+   var minValue =0;
+   var maxValueInvest =0;
+   var minValueInvest =0;
+   for(var i=0;i<count;i++){
+      var day = units.at(i);
+      maxValueInvest = Math.max(day.priorInvestmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.priorRedemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.priorNetinvestmentAmount(), minValueInvest);
+      maxValueInvest = Math.max(day.investmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.redemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.netinvestmentAmount(), minValueInvest);
+   }
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorInvestmentAmount', '#4b5e6f', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorRedemptionAmount', '#80a861', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorNetinvestmentAmount', '#947b91', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_investmentAmount', '#51c0db', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_redemptionAmount', '#68f34e', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_netinvestmentAmount', '#9b1933', 3);
+}
+MO.FGuiSixLineChart_setData = function FGuiSixLineChart_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiSixLineChart_dispose = function FGuiSixLineChart_dispose() {
+   var o = this;
+   o.__base.FGuiControl.dispose.call(o);
+}
+MO.FGuiTableRankChart = function FGuiTableRankChart(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiControl);
+   o._data                    = null;
+   o.construct                = MO.FGuiTableRankChart_construct;
+   o.setup                    = MO.FGuiTableRankChart_setup;
+   o.onImageLoad              = MO.FGuiTableRankChart_onImageLoad;
+   o.onPaintBegin             = MO.FGuiTableRankChart_onPaintBegin;
+   o.dispose                  = MO.FGuiTableRankChart_dispose;
+   o._background              = null;
+   o.setData                  = MO.FGuiTableRankChart_setData;
+   o.drawLine                 = MO.FGuiTableRankChart_drawLine;
+   return o;
+}
+MO.FGuiTableRankChart_drawLine = function FGuiTableRankChart_drawLine(graphic, rectangle, dataheigt, minValue,maxValue, code, color, lineWidth){
+   var o = this;
+   var handle = graphic._handle;
+   handle.beginPath();
+   var units = o._data.days();
+   var count = units.count();
+   var left = rectangle.left + 140;
+   var top = rectangle.top;
+   var width = rectangle.width - 180;
+   var height = dataheigt ;
+   var stepWidth = width / count;
+   var stepHeight = dataheigt / maxValue;
+   for(var n = 0; n < count; n++){
+      var unit = units.at(n);
+      var x = left + stepWidth * n;
+      var y = top + height - stepHeight * unit[code]+35;
+      if(n == 0){
+         handle.moveTo(x, y);
+      }else{
+         handle.lineTo(x, y);
+      }
+   }
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
+MO.FGuiTableRankChart_construct = function FGuiTableRankChart_construct() {
+   var o = this;
+   o.__base.FGuiControl.construct.call(o);
+}
+MO.FGuiTableRankChart_setup = function FGuiTableRankChart_setup() {
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole);
+   var image = o._background = imageConsole.load('{eai.resource}/cockpit/achievement/NextLogo.png');
+   image.addLoadListener(o, o.onImageLoad);
+}
+MO.FGuiTableRankChart_onImageLoad = function FGuiTableRankChart_onImageLoad() {
+   this.dirty();
+}
+MO.FGuiTableRankChart_onPaintBegin = function FGuiTableRankChart_onPaintBegin(event) {
+   var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
+   var graphic = event.graphic;
+   var rectangle = event.rectangle;
+   var left = rectangle.left;
+   var top = rectangle.top;
+   var width = rectangle.width;
+   var height = rectangle.height;
+   var data = o._data ;
+   var dataheigt = height/2;
+   graphic.drawRectangle(left, top, width, height, '#ffffff', 3);
+   if(!data){
+      return;
+   }
+   var units = data.days();
+   var count = units._count;
+   var maxValue =0;
+   var minValue =0;
+   var maxValueInvest =0;
+   var minValueInvest =0;
+   for(var i=0;i<count;i++){
+      var day = units.at(i);
+      maxValueInvest = Math.max(day.priorInvestmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.priorRedemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.priorNetinvestmentAmount(), minValueInvest);
+      maxValueInvest = Math.max(day.investmentAmount(), maxValueInvest);
+      maxValueInvest = Math.max(day.redemptionAmount(), maxValueInvest);
+      minValueInvest = Math.min(day.netinvestmentAmount(), minValueInvest);
+   }
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorInvestmentAmount', '#4b5e6f', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorRedemptionAmount', '#80a861', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_priorNetinvestmentAmount', '#947b91', 2);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_investmentAmount', '#51c0db', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_redemptionAmount', '#68f34e', 3);
+   o.drawLine(graphic, rectangle, dataheigt, minValue, maxValueInvest, '_netinvestmentAmount', '#9b1933', 3);
+}
+MO.FGuiTableRankChart_setData = function FGuiTableRankChart_setData(data) {
+   var o = this;
+   var data = o._data = data;
+}
+MO.FGuiTableRankChart_dispose = function FGuiTableRankChart_dispose() {
    var o = this;
    o.__base.FGuiControl.dispose.call(o);
 }

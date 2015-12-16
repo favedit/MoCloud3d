@@ -236,7 +236,7 @@ MO.FEaiChartCustomerSphereOperation_setup = function FEaiChartCustomerSphereOper
    image.addLoadListener(o, o.onImageLoad);
 }
 MO.FEaiChartCustomerSphereScene = function FEaiChartCustomerSphereScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                   = MO.EEaiScene.ChartCustomerSphere;
    o._optionMapCountry       = false;
    o._processor              = MO.Class.register(o, new MO.AGetter('_processor'));
@@ -292,6 +292,7 @@ MO.FEaiChartCustomerSphereScene_onSocketTouchReceived = function FEaiChartCustom
       var rotationMatrix = o._rotationMatrix.assign(matrix);
       rotationMatrix.invert();
       sourceTouch.calculate(rotationMatrix);
+      MO.Logger.debug(o, 'Touch down. ({1})', sourceTouch);
       var sourceTouchPoint = sourceTouch.points.first();
       if(sourceTouchPoint.originLength < (190 / size.height)){
          if(controlOperation.buttonVisible()){
@@ -336,6 +337,7 @@ MO.FEaiChartCustomerSphereScene_onSocketTouchReceived = function FEaiChartCustom
                   break;
             }
             socketSphere.send('area=' + selectId);
+            MO.Logger.debug(o, 'Select area. (id={1})', selectId);
             return;
          }
          controlOperation.showButton(false);
@@ -351,6 +353,7 @@ MO.FEaiChartCustomerSphereScene_onSocketTouchReceived = function FEaiChartCustom
       earthSphere.sendRotation();
    }else if(typeCode == 'U'){
       o._moving = false;
+      MO.Logger.debug(o, 'Touch up.');
    }
 }
 MO.FEaiChartCustomerSphereScene_onSocketSphereReceived = function FEaiChartCustomerSphereScene_onSocketSphereReceived(event) {

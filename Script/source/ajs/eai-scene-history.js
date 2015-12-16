@@ -1,5 +1,5 @@
 MO.FEaiChartHistoryScene = function FEaiChartHistoryScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                     = MO.EEaiScene.ChartHistory;
    o._ready                    = false;
    o._mapReady                 = false;

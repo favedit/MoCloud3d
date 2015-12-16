@@ -6,6 +6,9 @@ MO.EDataStatus = new function EDataStatus(){
    o.Delete = 'D';
    return o;
 }
+MO.Ui = new function MoUiSpace(){return this;}
+MO.Gui = new function MoGuiSpace(){return this;}
+MO.Dui = new function MoDuiSpace(){return this;}
 MO.FDataRow = function FDataRow(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    o._dataset    = MO.Class.register(o, new MO.AGetSet('_dataset'));
@@ -400,6 +403,7 @@ MO.FDataSource_loadConfig = function FDataSource_loadConfig(xconfig){
          var xnode = xnodes.at(i);
          if(xnode.isName('Dataset')){
             var datasetName = xnode.get('name');
+            MO.Assert.debugNotEmpty(datasetName);
             var dataset = o.selectDataset(datasetName);
             dataset.loadConfig(xnode);
          }

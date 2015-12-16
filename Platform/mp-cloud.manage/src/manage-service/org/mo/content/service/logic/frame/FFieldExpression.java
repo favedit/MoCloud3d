@@ -137,7 +137,7 @@ public class FFieldExpression
       _filterName = RString.mid(_dataExpression, "find(", ")");
       _fieldName = RString.right(_dataExpression, ").");
       // 获得接口
-      String className = "org.mo.cloud.logic." + _datasetName + ".IGc" + RString.firstUpper(RString.right(_datasetName, ".")) + "Console";
+      String className = "org.mo.content.access." + _datasetName + ".IGc" + RString.firstUpper(RString.right(_datasetName, ".")) + "Console";
       _console = RAop.find(className);
    }
 

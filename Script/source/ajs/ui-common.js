@@ -693,6 +693,7 @@ MO.APtyString_toString = function APtyString_toString(){
 MO.EUiAlign = new function EUiAlign(){
    var o = this;
    o.Left        = 'left';
+   o.LeftPadding = 'LeftPadding';
    o.Center      = 'center';
    o.Right       = 'right';
    o.Top         = 'up';
@@ -2271,7 +2272,7 @@ MO.MUiEditValue_setInfo = function MUiEditValue_setInfo(f){
    this.set(f.value);
 }
 MO.MUiMargin = function MUiMargin(o){
-   o = MO.RClass.inherits(this, o);
+   o = MO.Class.inherits(this, o);
    o._margin   = MO.RClass.register(o, [new MO.APtyPadding('_margin'), new MO.AGetter('_margin')]);
    o.construct = MO.MUiMargin_construct;
    o.setMargin = MO.MUiMargin_setMargin;
@@ -2290,7 +2291,7 @@ MO.MUiMargin_dispose = function MUiMargin_dispose(){
    o._margin = MO.Lang.Object.dispose(o._margin);
 }
 MO.MUiPadding = function MUiPadding(o){
-   o = MO.RClass.inherits(this, o);
+   o = MO.Class.inherits(this, o);
    o._padding   = MO.RClass.register(o, [new MO.APtyPadding('_padding'), new MO.AGetter('_padding')]);
    o.construct  = MO.MUiPadding_construct;
    o.setPadding = MO.MUiPadding_setPadding;
@@ -2458,9 +2459,6 @@ MO.MUiValue = function MUiValue(o){
    o.set = MO.Method.empty;
    return o;
 }
-MO.Ui = new function MoUiSpace(){return this;}
-MO.Gui = new function MoGuiSpace(){return this;}
-MO.Dui = new function MoDuiSpace(){return this;}
 MO.SUiDispatchEvent = function SUiDispatchEvent(owner, invokeName, clazz){
    var o = this;
    MO.SEvent.call(o);

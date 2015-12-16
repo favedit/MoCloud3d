@@ -1,5 +1,5 @@
 MO.FEaiChartCustomerScene = function FEaiChartCustomerScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code        = MO.EEaiScene.ChartCustomer;
    o._playing     = false;
    o._startDate   = null;
@@ -106,7 +106,7 @@ MO.FEaiChartCustomerScene_deactive = function FEaiChartCustomerScene_deactive(){
    o.__base.FEaiChartScene.deactive.call(o);
 }
 MO.FEaiChartIndustryScene = function FEaiChartIndustryScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code        = MO.EEaiScene.ChartIndustry;
    o._playing     = false;
    o._startDate   = null;
@@ -213,7 +213,7 @@ MO.FEaiChartIndustryScene_deactive = function FEaiChartIndustryScene_deactive(){
    o.__base.FEaiChartScene.deactive.call(o);
 }
 MO.FEaiChartInvestmentScene = function FEaiChartInvestmentScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code = MO.EEaiScene.ChartInvestment;
    o._playing = false;
    o._startDate = null;
@@ -405,7 +405,7 @@ MO.FEaiChartInvestmentScene_deactive = function FEaiChartInvestmentScene_deactiv
    o.__base.FEaiChartScene.deactive.call(o);
 }
 MO.FEaiChartLiveScene = function FEaiChartLiveScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                   = MO.EEaiScene.ChartLive;
    o._investment             = MO.Class.register(o, new MO.AGetter('_investment'));
    o._investmentCurrent      = 0;
@@ -835,15 +835,16 @@ MO.FEaiChartScene_dispose = function FEaiChartScene_dispose(){
    o.__base.FEaiScene.dispose.call(o);
 }
 MO.FEaiChartStage = function FEaiChartStage(o){
-   o = MO.RClass.inherits(this, o, MO.FE3dStage);
-   o._groundLayer    = MO.Class.register(o, new MO.AGetter('_groundLayer'));
-   o._mapLayer       = MO.Class.register(o, new MO.AGetter('_mapLayer'));
-   o._borderLayer    = MO.Class.register(o, new MO.AGetter('_borderLayer'));
-   o._cityRangeLayer = MO.Class.register(o, new MO.AGetter('_cityRangeLayer'));
-   o._cityLayer      = MO.Class.register(o, new MO.AGetter('_cityLayer'));
-   o._dataLayer      = MO.Class.register(o, new MO.AGetter('_dataLayer'));
-   o._spriteLayer    = MO.Class.register(o, new MO.AGetter('_spriteLayer'));
-   o.construct       = MO.FEaiChartStage_construct;
+   o = MO.Class.inherits(this, o, MO.FE3dStage);
+   o._groundLayer          = MO.Class.register(o, new MO.AGetter('_groundLayer'));
+   o._groundLayerEffect    = MO.Class.register(o, new MO.AGetter('_groundLayerEffect'));
+   o._mapLayer             = MO.Class.register(o, new MO.AGetter('_mapLayer'));
+   o._borderLayer          = MO.Class.register(o, new MO.AGetter('_borderLayer'));
+   o._cityRangeLayer       = MO.Class.register(o, new MO.AGetter('_cityRangeLayer'));
+   o._cityLayer            = MO.Class.register(o, new MO.AGetter('_cityLayer'));
+   o._dataLayer            = MO.Class.register(o, new MO.AGetter('_dataLayer'));
+   o._spriteLayer          = MO.Class.register(o, new MO.AGetter('_spriteLayer'));
+   o.construct             = MO.FEaiChartStage_construct;
    return o;
 }
 MO.FEaiChartStage_construct = function FEaiChartStage_construct(){
@@ -851,6 +852,9 @@ MO.FEaiChartStage_construct = function FEaiChartStage_construct(){
    o.__base.FE3dStage.construct.call(o);
    var layer = o._groundLayer = MO.Class.create(MO.FDisplayLayer);
    o.registerLayer('GroundLayer', layer);
+   var layer = o._groundLayerEffect = MO.Class.create(MO.FDisplayLayer);
+   layer.setOptionClearDepth(true);
+   o.registerLayer('GroundLayerEffect', layer);
    var layer = o._mapLayer = MO.Class.create(MO.FDisplayLayer);
    layer.setOptionClearDepth(true);
    o.registerLayer('MapLayer', layer);
@@ -870,7 +874,7 @@ MO.FEaiChartStage_construct = function FEaiChartStage_construct(){
    o.registerLayer('SpriteLayer', layer);
 }
 MO.FEaiChartTotalScene = function FEaiChartTotalScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._optionMapCountry = false;
    o._code             = MO.EEaiScene.ChartTotal;
    o._currentDate      = null;
@@ -1278,12 +1282,12 @@ MO.FEaiChartWorldScene_processResize = function FEaiChartWorldScene_processResiz
    }
 }
 MO.FEaiCompanyScene = function FEaiCompanyScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiScene);
+   o = MO.Class.inherits(this, o, MO.FEaiScene);
    o._code = MO.EEaiScene.Company;
    return o;
 }
 MO.FEaiCountryScene = function FEaiCountryScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiScene);
+   o = MO.Class.inherits(this, o, MO.FEaiScene);
    o._code            = MO.EEaiScene.Country;
    o._countryTemplate = null;
    o._countryLogoBar  = null;
@@ -1323,12 +1327,12 @@ MO.FEaiCountryScene_deactive = function FEaiCountryScene_deactive(){
    layer.removeRenderable(frame.renderable());
 }
 MO.FEaiGroupReportScene = function FEaiGroupReportScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiScene);
+   o = MO.Class.inherits(this, o, MO.FEaiScene);
    o._code = MO.EEaiScene.GroupReport;
    return o;
 }
 MO.FEaiGroupScene = function FEaiGroupScene(o){
-   o = MO.RClass.inherits(this, o, MO.FEaiScene);
+   o = MO.Class.inherits(this, o, MO.FEaiScene);
    o._code = MO.EEaiScene.Group;
    return o;
 }

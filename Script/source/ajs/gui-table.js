@@ -129,6 +129,7 @@ MO.FGuiGridCellCurrency_draw = function FGuiGridCellCurrency_draw(context){
    var width = rectangle.width;
    var height = rectangle.height;
    var column = o._column;
+   var optionDecimal = column.optionDecimal();
    var cellPadding = column.cellPadding();
    var value = o.value();
    var text = o.text();
@@ -136,43 +137,86 @@ MO.FGuiGridCellCurrency_draw = function FGuiGridCellCurrency_draw(context){
    var numberFont = o._numberFont;
    numberFont.assign(font);
    var contentWidth = width - cellPadding.right;
-   if(value >= 0){
-      if(textLength > 11){
-         var fontColor = null;
-         var highest = text.substring(0, text.length - 11);
-         var high = text.substring(textLength - 11, textLength - 7);
-         var low = text.substring(textLength - 7, textLength);
-         var highestWidth = graphic.textWidth(highest);
-         var highWidth = graphic.textWidth(high);
-         var lowWidth = graphic.textWidth(low);
-         numberFont.color = column.highestColor();
-         graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.highColor();
-         graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.normalColor();
-         graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
-      }else if(textLength > 7){
-         var fontColor = null;
-         if(textLength > 9){
-            fontColor = column.highColor();
+   if(optionDecimal){
+      if(value >= 0){
+         if(textLength > 11){
+            var fontColor = null;
+            var highest = text.substring(0, text.length - 11);
+            var high = text.substring(textLength - 11, textLength - 7);
+            var low = text.substring(textLength - 7, textLength);
+            var highestWidth = graphic.textWidth(highest);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = column.highestColor();
+            graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.highColor();
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else if(textLength > 7){
+            var fontColor = null;
+            if(textLength > 9){
+               fontColor = column.highColor();
+            }else{
+               fontColor = column.lowerColor();
+            }
+            var high = text.substring(0, textLength - 7);
+            var low = text.substring(textLength - 7, textLength);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = fontColor;
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
          }else{
-            fontColor = column.lowerColor();
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
          }
-         var high = text.substring(0, textLength - 7);
-         var low = text.substring(textLength - 7, textLength);
-         var highWidth = graphic.textWidth(high);
-         var lowWidth = graphic.textWidth(low);
-         numberFont.color = fontColor;
-         graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
-         numberFont.color = column.normalColor();
-         graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
-      }else{
-         numberFont.color = column.normalColor();
+      }else if(value < 0){
+         numberFont.color = column.negativeColor();
          graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
       }
-   }else if(value < 0){
-      numberFont.color = column.negativeColor();
-      graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+   }else{
+      var text = value + '';
+      var textLength = text.length;
+      if(value >= 0){
+         if(textLength > 8){
+            var fontColor = null;
+            var highest = text.substring(0, text.length - 8);
+            var high = text.substring(textLength - 8, textLength - 4);
+            var low = text.substring(textLength - 4, textLength);
+            var highestWidth = graphic.textWidth(highest);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = column.highestColor();
+            graphic.drawFontText(highest, numberFont, x, y, contentWidth - highWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.highColor();
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else if(textLength > 4){
+            var fontColor = null;
+            if(textLength > 6){
+               fontColor = column.highColor();
+            }else{
+               fontColor = column.lowerColor();
+            }
+            var high = text.substring(0, textLength - 4);
+            var low = text.substring(textLength - 4, textLength);
+            var highWidth = graphic.textWidth(high);
+            var lowWidth = graphic.textWidth(low);
+            numberFont.color = fontColor;
+            graphic.drawFontText(high, numberFont, x, y, contentWidth - lowWidth, height, MO.EUiAlign.Right);
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(low, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }else{
+            numberFont.color = column.normalColor();
+            graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+         }
+      }else if(value < 0){
+         numberFont.color = column.negativeColor();
+         graphic.drawFontText(text, numberFont, x, y, contentWidth, height, MO.EUiAlign.Right);
+      }
    }
 }
 MO.FGuiGridCellCurrency_dispose = function FGuiGridCellCurrency_dispose(){
@@ -211,8 +255,8 @@ MO.FGuiGridCellPicture = function FGuiGridCellPicture(o) {
    o._image = null;
    o.construct = MO.FGuiGridCellPicture_construct;
    o.testReady = MO.FGuiGridCellPicture_testReady;
-   o.setValue = MO.FGuiGridCellPicture_setValue;
-   o.draw = MO.FGuiGridCellPicture_draw;
+   o.setValue  = MO.FGuiGridCellPicture_setValue;
+   o.draw      = MO.FGuiGridCellPicture_draw;
    o.dispose = MO.FGuiGridCellPicture_dispose;
    return o;
 }
@@ -264,13 +308,76 @@ MO.FGuiGridCellPicture_setValue = function FGuiGridCellPicture_setValue(value) {
    var o = this;
    o.__base.FGuiGridCell.setValue.call(o, value);
    var url = o.text();
-   if (MO.Lang.String.isEmpty(url)) {
+   if(MO.Lang.String.isEmpty(url)){
       o._image = null;
-   } else {
-      o._image = MO.Console.find(MO.FImageConsole).load(url);
+   }else{
+      o._image = o._grid.loadResourceImage(url);
    }
 }
 MO.FGuiGridCellPicture_dispose = function FGuiGridCellPicture_dispose() {
+   var o = this;
+   o.__base.MUiGridCellPicture.dispose.call(o);
+   o.__base.FGuiGridCell.dispose.call(o);
+}
+MO.FGuiGridCellProgressBar = function FGuiGridCellProgressBar(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiGridCell, MO.MUiGridCellPicture);
+   o.construct = MO.FGuiGridCellProgressBar_construct;
+   o.testReady = MO.FGuiGridCellProgressBar_testReady;
+   o.draw      = MO.FGuiGridCellProgressBar_draw;
+   o.dispose   = MO.FGuiGridCellProgressBar_dispose;
+   return o;
+}
+MO.FGuiGridCellProgressBar_construct = function FGuiGridCellProgressBar_construct() {
+   var o = this;
+   o.__base.FGuiGridCell.construct.call(o);
+   o.__base.MUiGridCellPicture.construct.call(o);
+}
+MO.FGuiGridCellProgressBar_testReady = function FGuiGridCellProgressBar_testReady() {
+   var o = this;
+   var bgImage = o._column._bgImage;
+   var fillImage = o._column._fillImage;
+   if (bgImage && fillImage) {
+      return (bgImage.testReady() && fillImage.testReady());
+   }
+   return false;
+}
+MO.FGuiGridCellProgressBar_draw = function FGuiGridCellProgressBar_draw(context) {
+   var o = this;
+   var graphic = context.graphic;
+   var rectangle = context.rectangle;
+   var bgImage = o._column._bgImage;
+   var fillImage = o._column._fillImage;
+   var imageSize = bgImage.size();
+   var imageWidth = imageSize.width;
+   var imageHeight = imageSize.height;
+   var rectangleHeight = rectangle.height;
+   var align = o._column._align;
+   var imageX = 0;
+   var imageY = rectangle.top;
+   if (rectangleHeight >= imageHeight) {
+      imageY = (rectangleHeight / 2) - (imageHeight / 2) + imageY + 3;
+   } else {
+      imageY = imageY - (imageHeight - rectangleHeight);
+   }
+   if (align == MO.EUiAlign.Left) {
+      imageX = rectangle.left;
+   } else if (align == MO.EUiAlign.Center) {
+      imageX = (rectangle.width / 2) - (imageWidth / 2) + rectangle.left;
+   } else if (align == MO.EUiAlign.Right) {
+      imageX = (rectangle.width / 2) + (imageWidth / 2) + rectangle.left;
+   }
+   var drawScale = o._column._drawScale;
+   graphic.drawImage(bgImage, imageX, imageY, imageWidth * drawScale, imageHeight * drawScale);
+   var percent = o.value() / o._column.maxValue();
+   var clipWidth = imageWidth * drawScale * percent;
+   var clipHeight = imageHeight * drawScale;
+   graphic._handle.save();
+   graphic._handle.rect(imageX, imageY, clipWidth, clipHeight);
+   graphic._handle.clip();
+   graphic.drawImage(fillImage, imageX, imageY, imageWidth * drawScale, imageHeight * drawScale);
+   graphic._handle.restore();
+}
+MO.FGuiGridCellProgressBar_dispose = function FGuiGridCellProgressBar_dispose() {
    var o = this;
    o.__base.MUiGridCellPicture.dispose.call(o);
    o.__base.FGuiGridCell.dispose.call(o);
@@ -362,9 +469,10 @@ MO.FGuiGridColumnBigNumber_dispose = function FGuiGridColumnBigNumber_dispose(){
 }
 MO.FGuiGridColumnCurrency = function FGuiGridColumnCurrency(o){
    o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnCurrency);
-   o.construct    = MO.FGuiGridColumnCurrency_construct;
-   o.formatText   = MO.FGuiGridColumnCurrency_formatText;
-   o.dispose      = MO.FGuiGridColumnCurrency_dispose;
+   o._optionDecimal = MO.Class.register(o, new MO.AGetSet('_optionDecimal'), true);
+   o.construct      = MO.FGuiGridColumnCurrency_construct;
+   o.formatText     = MO.FGuiGridColumnCurrency_formatText;
+   o.dispose        = MO.FGuiGridColumnCurrency_dispose;
    return o;
 }
 MO.FGuiGridColumnCurrency_construct = function FGuiGridColumnCurrency_construct(){
@@ -421,6 +529,35 @@ MO.FGuiGridColumnPicture_dispose = function FGuiGridColumnPicture_dispose() {
    o.__base.MUiGridColumnText.dispose.call(o);
    o.__base.FGuiGridColumn.dispose.call(o);
 }
+MO.FGuiGridColumnProgressBar = function FGuiGridColumnProgressBar(o) {
+   o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnText);
+   o._align     = MO.Class.register(o, new MO.AGetSet('_align'));
+   o._drawScale = MO.Class.register(o, new MO.AGetSet('_drawScale'), 1.0);
+   o._bgImage   = MO.Class.register(o, new MO.AGetSet('_bgImage'));
+   o._fillImage = MO.Class.register(o, new MO.AGetSet('_fillImage'));
+   o._maxValue  = MO.Class.register(o, new MO.AGetSet('_maxValue'), 100);
+   o.construct  = MO.FGuiGridColumnProgressBar_construct;
+   o.setup      = MO.FGuiGridColumnProgressBar_setup;
+   o.dispose    = MO.FGuiGridColumnProgressBar_dispose;
+   return o;
+}
+MO.FGuiGridColumnProgressBar_construct = function FGuiGridColumnProgressBar_construct() {
+   var o = this;
+   o.__base.FGuiGridColumn.construct.call(o);
+   o.__base.MUiGridColumnText.construct.call(o);
+   o._cellClass = MO.FGuiGridCellProgressBar;
+}
+MO.FGuiGridColumnProgressBar_setup = function FGuiGridColumnProgressBar_setup(bgImageUrl, fillImageUrl) {
+   var o = this;
+   var imageConsole = MO.Console.find(MO.FImageConsole)
+   o._bgImage = imageConsole.load(bgImageUrl);
+   o._fillImage = imageConsole.load(fillImageUrl);
+}
+MO.FGuiGridColumnProgressBar_dispose = function FGuiGridColumnProgressBar_dispose() {
+   var o = this;
+   o.__base.MUiGridColumnText.dispose.call(o);
+   o.__base.FGuiGridColumn.dispose.call(o);
+}
 MO.FGuiGridColumnText = function FGuiGridColumnText(o){
    o = MO.Class.inherits(this, o, MO.FGuiGridColumn, MO.MUiGridColumnText);
    o.construct = MO.FGuiGridColumnText_construct;
@@ -440,18 +577,26 @@ MO.FGuiGridColumnText_dispose = function FGuiGridColumnText_dispose(){
 }
 MO.FGuiGridControl = function FGuiGridControl(o) {
    o = MO.Class.inherits(this, o, MO.FGuiControl, MO.MUiGridControl);
-   o._optionClip     = MO.Class.register(o, new MO.AGetSet('_optionClip'), true);
-   o._headPadding    = MO.Class.register(o, new MO.AGetter('_headPadding'));
-   o._rowScroll      = 0;
-   o._rowScrollSpeed = 1;
-   o._paintContext   = null;
-   o.onPaintBegin    = MO.FGuiGridControl_onPaintBegin;
-   o.construct       = MO.FGuiGridControl_construct;
-   o.dispose         = MO.FGuiGridControl_dispose;
+   o._optionClip          = MO.Class.register(o, new MO.AGetSet('_optionClip'), true);
+   o._headPadding         = MO.Class.register(o, new MO.AGetter('_headPadding'));
+   o._headBackgroundUri   = MO.Class.register(o, new MO.AGetSet('_headBackgroundUri'));
+   o._headBackgroundImage = null;
+   o._outerLineColor      = MO.Class.register(o, new MO.AGetSet('_outerLineColor'), '#FFFFFF');
+   o._outerLineThickness  = MO.Class.register(o, new MO.AGetSet('_outerLineThickness'), 0);
+   o._innerLineColor      = MO.Class.register(o, new MO.AGetSet('_innerLineColor'), '#FFFFFF');
+   o._innerLineThickness  = MO.Class.register(o, new MO.AGetSet('_innerLineThickness'), 0);
+   o._rowScroll           = 0;
+   o._rowScrollSpeed      = 1;
+   o._paintContext        = null;
+   o.onPaintBegin         = MO.FGuiGridControl_onPaintBegin;
+   o.construct            = MO.FGuiGridControl_construct;
+   o.setup                = MO.FGuiGridControl_setup;
+   o.dispose              = MO.FGuiGridControl_dispose;
    return o;
 }
 MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
    var o = this;
+   o.__base.FGuiControl.onPaintBegin.call(o, event);
    var dirty = false;
    var padding = o._padding;
    var context = o._paintContext;
@@ -467,7 +612,10 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
    var height = rectangle.height - padding.top - padding.bottom;
    var headPadding = o._headPadding;
    var drawX = left;
-   var drawY = top + headPadding.top;;
+   var drawY = top + headPadding.top;
+   if (o._outerLineThickness > 0) {
+      graphic.drawRectangle(left, top, width, height, o._outerLineColor, o._outerLineThickness);
+   }
    var gridWidth = width;
    var columnWidthTotal = 0;
    var columns = o._columns;
@@ -476,11 +624,14 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
       var column = columns.at(i);
       columnWidthTotal += column.width();
    }
+   var headTextTop = columnY + 0;
+   var headHeight = o._headHeight;
+   if (o._headBackgroundImage) {
+      graphic.drawImage(o._headBackgroundImage, drawX + headPadding.left, drawY, width - headPadding.left - headPadding.right, headHeight - headPadding.top, height - headPadding.bottom);
+   }
    if (o._displayHead) {
       var columnX = drawX;
       var columnY = drawY;
-      var headTextTop = columnY + 0;
-      var headHeight = o._headHeight;
       for (var i = 0; i < columnCount; i++) {
          var column = columns.at(i);
          if(!column.testReady()){
@@ -526,6 +677,22 @@ MO.FGuiGridControl_onPaintBegin = function FGuiGridControl_onPaintBegin(event) {
          break;
       }
    }
+   if (o._innerLineThickness > 0) {
+      var drawY = top + headPadding.top;
+      drawY += headHeight + headPadding.bottom;
+      graphic.drawLine(drawX, drawY, columnX, drawY, o._innerLineColor, o._innerLineThickness);
+      for (var i = 0; i < rowCount - 1; i++) {
+         drawY += rowHeight;
+         graphic.drawLine(drawX, drawY, columnX, drawY, o._innerLineColor, o._innerLineThickness);
+      }
+      var columnX = drawX;
+      for (var i = 0; i < columnCount - 1; i++) {
+         var column = columns.at(i);
+         var columnWidth = gridWidth * column.width() / columnWidthTotal;
+         columnX += columnWidth;
+         graphic.drawLine(columnX, top + headHeight + headPadding.top, columnX, bottom, o._innerLineColor, o._innerLineThickness);
+      }
+   }
    if(dirty){
       o.dirty();
    }
@@ -537,6 +704,13 @@ MO.FGuiGridControl_construct = function FGuiGridControl_construct() {
    o._rowClass = MO.FGuiGridRow;
    o._paintContext = new MO.SGuiGridPaintContext();
    o._headPadding = new MO.SPadding();
+}
+MO.FGuiGridControl_setup = function FGuiGridControl_setup() {
+   var o = this;
+   var headBackgroundUri = o._headBackgroundUri;
+   if (headBackgroundUri) {
+      o._headBackgroundImage = o.loadResourceImage(headBackgroundUri);
+   }
 }
 MO.FGuiGridControl_dispose = function FGuiGridControl_dispose() {
    var o = this;
@@ -574,22 +748,22 @@ MO.FGuiTable = function FGuiTable(o){
 MO.FGuiTable_oeUpdate = function FGuiTable_oeUpdate(event){
    var o = this;
    o.__base.FGuiGridControl.oeUpdate.call(o, event);
+   var rows = o._rows;
    if(event.isBefore()){
       if(o._rowScroll < 0){
-         var rows = o._rows;
          var scrollSpeed = Math.max(parseInt(-o._rowScroll / o._rowHeight), o._rowScrollSpeed);
          o._rowScroll += scrollSpeed;
          if(o._rowScroll >= 0){
-            var limitCount = o._rowLimitCount;
-            if(limitCount != 0){
-               if(rows.count() > limitCount){
-                  var row = rows.pop();
-                  o.freeRow(row);
-               }
-            }
             o._rowScroll = 0;
          }
          o.dirty();
+      }
+      var limitCount = o._rowLimitCount;
+      if (limitCount != 0) {
+         if (rows.count() > limitCount) {
+            var row = rows.pop();
+            o.freeRow(row);
+         }
       }
    }
 }
@@ -601,6 +775,7 @@ MO.FGuiTable_construct = function FGuiTable_construct(){
 }
 MO.FGuiTable_insertRow = function FGuiTable_insertRow(row){
    var o = this;
+   MO.Assert.debugNotNull(row);
    o._rows.unshift(row);
    o._rowScroll -= o._rowHeight;
    o.dirty();

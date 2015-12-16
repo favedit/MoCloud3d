@@ -17,6 +17,7 @@ MO.FEaiApplication_setup = function FEaiApplication_setup(hPanel){
       return false;
    }
    var effectConsole = MO.Console.find(MO.FG3dEffectConsole);
+   effectConsole.register('select.select.gui', MO.FGuiSelectAutomaticEffect);
    effectConsole.register('select.select.eai.world.face', MO.FG3dSelectAutomaticEffect);
    effectConsole.register('select.select.eai.map.face', MO.FG3dSelectAutomaticEffect);
    effectConsole.register('eai.select.automatic', MO.FEaiSelectAutomaticEffect);
@@ -57,6 +58,7 @@ MO.FEaiChartApplication = function FEaiChartApplication(o){
    o._chapterChart   = MO.Class.register(o, new MO.AGetter('_chapterChart'));
    o._dynamicInfo    = MO.Class.register(o, new MO.AGetter('_dynamicInfo'));
    o.onLoadGround    = MO.FEaiChartApplication_onLoadGround;
+   o.onLoadSign      = MO.FEaiChartApplication_onLoadSign;
    o.onLoadResource  = MO.FEaiChartApplication_onLoadResource;
    o.construct       = MO.FEaiChartApplication_construct;
    o.createChapter   = MO.FEaiChartApplication_createChapter;
@@ -70,18 +72,24 @@ MO.FEaiChartApplication_onLoadGround = function FEaiChartApplication_onLoadGroun
    chapter.selectSceneByCode(o._sceneCode);
    o.processResize();
 }
-MO.FEaiChartApplication_onLoadResource = function FEaiChartApplication_onLoadResource(event){
+MO.FEaiChartApplication_onLoadSign = function FEaiChartApplication_onLoadSign(event){
    var o = this;
+   var logicSystem = MO.Console.find(MO.FEaiLogicConsole).system();
+   logicSystem.onInfo(event);
    var canvas = o._desktop.canvas3d();
    if(o._backgroundUrl){
       var bitmap = o._groundBitmap = canvas.graphicContext().createObject(MO.FE3dBitmap);
-      bitmap._optionSelect = false;
+      bitmap.setOptionSelect(false);
       bitmap.loadUrl(o._backgroundUrl);
       bitmap.material().info().effectCode = 'fill';
       bitmap._renderable.addImageLoadListener(o, o.onLoadGround);
    }else{
       o.onLoadGround(event);
    }
+}
+MO.FEaiChartApplication_onLoadResource = function FEaiChartApplication_onLoadResource(event){
+   var o = this;
+   MO.Console.find(MO.FEaiLogicConsole).system().doInfo(o, o.onLoadSign);
 }
 MO.FEaiChartApplication_construct = function FEaiChartApplication_construct(){
    var o = this;
@@ -131,10 +139,11 @@ MO.FEaiChartApplication_dispose = function FEaiChartApplication_dispose(){
 MO.FEaiCockpitApplication = function FEaiCockpitApplication(o){
    o = MO.Class.inherits(this, o, MO.FEaiApplication);
    o._chapterCode    = MO.EEaiChapter.Cockpit;
-   o._backgroundUrl  = MO.Class.register(o, new MO.AGetSet('_backgroundUrl'), '{eai.resource}/background2.jpg');
+   o._backgroundUrl  = MO.Class.register(o, new MO.AGetSet('_backgroundUrl'), '{eai.resource}/cockpit/background.jpg');
    o._chapterCockpit = MO.Class.register(o, new MO.AGetter('_chapterCockpit'));
    o._dynamicInfo    = MO.Class.register(o, new MO.AGetter('_dynamicInfo'));
    o.onLoadGround    = MO.FEaiCockpitApplication_onLoadGround;
+   o.onLoadSign      = MO.FEaiCockpitApplication_onLoadSign;
    o.onLoadResource  = MO.FEaiCockpitApplication_onLoadResource;
    o.construct       = MO.FEaiCockpitApplication_construct;
    o.createChapter   = MO.FEaiCockpitApplication_createChapter;
@@ -148,18 +157,24 @@ MO.FEaiCockpitApplication_onLoadGround = function FEaiCockpitApplication_onLoadG
    chapter.selectSceneByCode(o._sceneCode);
    o.processResize();
 }
-MO.FEaiCockpitApplication_onLoadResource = function FEaiCockpitApplication_onLoadResource(event){
+MO.FEaiCockpitApplication_onLoadSign = function FEaiCockpitApplication_onLoadSign(event){
    var o = this;
+   var logicSystem = MO.Console.find(MO.FEaiLogicConsole).system();
+   logicSystem.onInfo(event);
    var canvas = o._desktop.canvas3d();
    if(o._backgroundUrl){
       var bitmap = o._groundBitmap = canvas.graphicContext().createObject(MO.FE3dBitmap);
-      bitmap._optionSelect = false;
+      bitmap.setOptionSelect(false);
       bitmap.loadUrl(o._backgroundUrl);
       bitmap.material().info().effectCode = 'fill';
       bitmap._renderable.addImageLoadListener(o, o.onLoadGround);
    }else{
       o.onLoadGround(event);
    }
+}
+MO.FEaiCockpitApplication_onLoadResource = function FEaiCockpitApplication_onLoadResource(event){
+   var o = this;
+   MO.Console.find(MO.FEaiLogicConsole).system().doInfo(o, o.onLoadSign);
 }
 MO.FEaiCockpitApplication_construct = function FEaiCockpitApplication_construct(){
    var o = this;

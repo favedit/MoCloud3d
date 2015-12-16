@@ -1,16 +1,18 @@
-MO.APersistence = function APersistence(name, dataCd, dataClass){
+MO.APersistence = function APersistence(name, dataCd, dataClass, innerDataCd){
    var o = this;
    MO.AAnnotation.call(o, name);
-   o._annotationCd = MO.EAnnotation.Persistence;
-   o._inherit      = true;
-   o._ordered      = true;
-   o._dataCd       = dataCd;
-   o._dataClass    = dataClass;
-   o.dataCd        = MO.APersistence_dataCd;
-   o.dataClass     = MO.APersistence_dataClass;
-   o.newStruct     = MO.APersistence_newStruct;
-   o.newInstance   = MO.APersistence_newInstance;
-   o.toString      = MO.APersistence_toString;
+   o._annotationCd  = MO.EAnnotation.Persistence;
+   o._inherit       = true;
+   o._ordered       = true;
+   o._dataCd        = dataCd;
+   o._dataClass     = dataClass;
+   o._innerDataCd   = innerDataCd;
+   o.dataCd         = MO.APersistence_dataCd;
+   o.dataClass      = MO.APersistence_dataClass;
+   o.innerDataCd    = MO.APersistence_innerDataCd;
+   o.newStruct      = MO.APersistence_newStruct;
+   o.newInstance    = MO.APersistence_newInstance;
+   o.toString       = MO.APersistence_toString;
    return o;
 }
 MO.APersistence_dataCd = function APersistence_dataCd(){
@@ -18,6 +20,9 @@ MO.APersistence_dataCd = function APersistence_dataCd(){
 }
 MO.APersistence_dataClass = function APersistence_dataClass(){
    return this._dataClass;
+}
+MO.APersistence_innerDataCd = function APersistence_innerDataCd() {
+   return this._innerDataCd;
 }
 MO.APersistence_newStruct = function APersistence_newStruct(){
    return new this._dataClass();
@@ -345,8 +350,17 @@ MO.MDataStream_readUint32 = function MDataStream_readUint32(){
 }
 MO.MDataStream_readUint64 = function MDataStream_readUint64(){
    var o = this;
-   var value = o._viewer.getUint64(o._position, o._endianCd);
-   o._position += 8;
+   var endianCd = o._endianCd;
+   var value1 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value2 = o._viewer.getUint32(o._position, endianCd);
+   o._position += 4;
+   var value = 0;
+   if(endianCd){
+      value = (value2 << 32) + value1;
+   }else{
+      value = (value1 << 32) + value2;
+   }
    return value;
 }
 MO.MDataStream_readFloat = function MDataStream_readFloat(){
@@ -1243,12 +1257,25 @@ MO.MPersistence_unserialize = function MPersistence_unserialize(input){
       var annotation = annotations.at(n);
       var dateCd = annotation.dataCd();
       var name = annotation.name();
+      var innerDateCd = annotation.innerDataCd();
       if(dateCd == MO.EDataType.Struct){
          var item = o[name];
          if(!item){
             item = o[name] = annotation.newStruct();
          }
-         item.unserialize(input);
+         item.unserialize(input, innerDateCd);
+      }else if(dateCd == MO.EDataType.Structs){
+         var items = o[name];
+         if(!items){
+            items = o[name] = new MO.TObjects();
+         }
+         items.clear();
+         var itemCount = input.readInt32();
+         for(var i = 0; i < itemCount; i++){
+            var item = annotation.newStruct();
+            item.unserialize(input, innerDateCd);
+            items.push(item);
+         }
       }else if(dateCd == MO.EDataType.Object){
          var item = o[name];
          if(!item){
@@ -1330,14 +1357,30 @@ MO.MPersistenceAble = function MPersistenceAble(o){
 }
 MO.MPersistenceAble_unserializeBuffer = function MPersistenceAble_unserializeBuffer(buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FDataView);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializeSignBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var bytes = new Uint8Array(buffer);
    MO.Lang.Byte.encodeBytes(bytes, 0, bytes.length, sign);
    var view = MO.Class.create(MO.FDataView);
@@ -1345,15 +1388,25 @@ MO.MPersistenceAble_unserializeSignBuffer = function MPersistenceAble_unserializ
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_unserializeEncryptedBuffer = function MPersistenceAble_unserializeEncryptedBuffer(sign, buffer, endianCd){
    var o = this;
+   MO.Assert.debugTrue(MO.Runtime.nvl(sign, 0) > 0);
+   MO.Assert.debugTrue(buffer.constructor == ArrayBuffer);
+   if(buffer == null){
+      return false;
+   }
+   if(buffer.byteLength == 0){
+      return false;
+   }
    var view = MO.Class.create(MO.FEncryptedView);
    view.setSign(sign);
    view.setEndianCd(endianCd);
    view.link(buffer);
    o.unserialize(view);
    view.dispose();
+   return true;
 }
 MO.MPersistenceAble_serializeBuffer = function MPersistenceAble_serializeBuffer(buffer, endianCd){
    var o = this;

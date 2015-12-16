@@ -15,26 +15,37 @@ MO.FG2dCanvasContext = function FG2dCanvasContext(o) {
    o.setScale             = MO.FG2dCanvasContext_setScale;
    o.setAlpha             = MO.FG2dCanvasContext_setAlpha;
    o.setFont              = MO.FG2dCanvasContext_setFont;
+   o.setShadow            = MO.FG2dCanvasContext_setShadow;
+   o.setLineJoin          = MO.FG2dCanvasContext_setLineJoin;
    o.store                = MO.FG2dCanvasContext_store;
    o.restore              = MO.FG2dCanvasContext_restore;
    o.prepare              = MO.FG2dCanvasContext_prepare;
    o.clear                = MO.FG2dCanvasContext_clear;
    o.clearRectangle       = MO.FG2dCanvasContext_clearRectangle;
+   o.clearShadow          = MO.FG2dCanvasContext_clearShadow;
    o.clip                 = MO.FG2dCanvasContext_clip;
    o.textWidth            = MO.FG2dCanvasContext_textWidth;
    o.createLinearGradient = MO.FG2dCanvasContext_createLinearGradient;
+   o.beginPath            = MO.FG2dCanvasContext_beginPath;
+   o.endPath              = MO.FG2dCanvasContext_endPath;
+   o.moveTo               = MO.FG2dCanvasContext_moveTo;
+   o.lineTo               = MO.FG2dCanvasContext_lineTo;
    o.drawLine             = MO.FG2dCanvasContext_drawLine;
    o.drawRectangle        = MO.FG2dCanvasContext_drawRectangle;
    o.drawTriangle         = MO.FG2dCanvasContext_drawTriangle;
    o.drawCircle           = MO.FG2dCanvasContext_drawCircle;
    o.drawText             = MO.FG2dCanvasContext_drawText;
    o.drawTextVertical     = MO.FG2dCanvasContext_drawTextVertical;
+   o.drawTextRectangle    = MO.FG2dCanvasContext_drawTextRectangle
    o.drawImage            = MO.FG2dCanvasContext_drawImage;
+   o.drawRectangleImage   = MO.FG2dCanvasContext_drawRectangleImage;
    o.drawGridImage        = MO.FG2dCanvasContext_drawGridImage;
    o.drawQuadrilateral    = MO.FG2dCanvasContext_drawQuadrilateral;
+   o.drawShape            = MO.FG2dCanvasContext_drawShape;
    o.drawBorderLine       = MO.FG2dCanvasContext_drawBorderLine;
    o.drawBorder           = MO.FG2dCanvasContext_drawBorder;
    o.fillRectangle        = MO.FG2dCanvasContext_fillRectangle;
+   o.fillShape            = MO.FG2dCanvasContext_fillShape;
    o.toBytes              = MO.FG2dCanvasContext_toBytes;
    o.saveFile             = MO.FG2dCanvasContext_saveFile;
    o.dispose              = MO.FG2dCanvasContext_dispose;
@@ -69,10 +80,11 @@ MO.FG2dCanvasContext_setGlobalScale = function FG2dCanvasContext_setGlobalScale(
 }
 MO.FG2dCanvasContext_setScale = function FG2dCanvasContext_setScale(width, height){
    var o = this;
-   if(!o._scale.equalsData(width, height)){
+   if((width == 1) && (height == 1)){
+      return;
+   }
       o._handle.scale(width, height);
       o._scale.set(width, height);
-   }
 }
 MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
    var o = this;
@@ -80,6 +92,18 @@ MO.FG2dCanvasContext_setAlpha = function FG2dCanvasContext_setAlpha(alpha){
 }
 MO.FG2dCanvasContext_setFont = function FG2dCanvasContext_setFont(font) {
    this._handle.font = font;
+}
+MO.FG2dCanvasContext_setShadow = function FG2dCanvasContext_setShadow(offsetX, offsetY, blur, color) {
+   this._handle.shadowOffsetX = offsetX;
+   this._handle.shadowOffsetY = offsetY;
+   this._handle.shadowBlur = blur;
+   this._handle.shadowColor = color;
+}
+MO.FG2dCanvasContext_clearShadow = function FG2dCanvasContext_clearShadow() {
+   this._handle.shadowOffsetX = "0";
+   this._handle.shadowOffsetY = "0";
+   this._handle.shadowBlur = "0";
+   this._handle.shadowColor = "0";
 }
 MO.FG2dCanvasContext_store = function FG2dCanvasContext_store(){
    this._handle.save();
@@ -127,6 +151,18 @@ MO.FG2dCanvasContext_createLinearGradient = function FG2dCanvasContext_createLin
    var handle = o._handle;
    return handle.createLinearGradient(x1, y1, x2, y2);
 }
+MO.FG2dCanvasContext_beginPath = function FG2dCanvasContext_beginPath(){
+   this._handle.beginPath();
+}
+MO.FG2dCanvasContext_endPath = function FG2dCanvasContext_endPath(){
+   this._handle.closePath();
+}
+MO.FG2dCanvasContext_moveTo = function FG2dCanvasContext_moveTo(x, y){
+   this._handle.moveTo(x, y);
+}
+MO.FG2dCanvasContext_lineTo = function FG2dCanvasContext_lineTo(x, y){
+   this._handle.lineTo(x, y);
+}
 MO.FG2dCanvasContext_drawLine = function FG2dCanvasContext_drawLine(x1, y1, x2, y2, color, lineWidth) {
    var o = this;
    var handle = o._handle;
@@ -151,6 +187,98 @@ MO.FG2dCanvasContext_drawText = function FG2dCanvasContext_drawText(text, x, y, 
    handle.fillStyle = color;
    handle.fillText(text, x, y);
 }
+MO.FG2dCanvasContext_drawTextRectangle = function FG2dCanvasContext_drawTextRectangle(text, x, y, width, height, lineWidth, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   var drawX = x;
+   var drawY = y;
+   var nCharWidth = handle.measureText("A").width;  //窄字符的宽度
+   var wCharWidth = handle.measureText("王").width; //宽字符的宽度
+   var beginDrawTextNumber = 0;
+   var drawTextNumber = 0;
+   var lineLengh = 0; //预测的字符长度
+   if (width == 0 || height == 0 || lineWidth == 0) {
+      return;
+   }
+   for (var i = 0; i < text.length; i++) {
+      var tmp = text.charAt(i);
+      drawTextNumber = i + 1 - beginDrawTextNumber;
+      if(text.charCodeAt(i) > 255 ) {
+         lineLengh += wCharWidth;
+      }else{
+         lineLengh += nCharWidth;
+      }
+      var currentChar = text.charAt(i);
+      var nextChar = text.charAt(i + 1);
+      if (currentChar == '\n' ) {            //linux换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 1;
+            lineLengh = 0;
+         }
+      }
+      if ( (currentChar == '\r') && (nextChar == '\n') ){ //windows换行处理
+         var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+         if (currentWidth < width) {
+            handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+            drawY += lineWidth;
+            beginDrawTextNumber = i + 2;
+            i++
+            lineLengh = 0;
+         }
+      }
+      if(lineLengh > width ){
+         while(true){
+            var flag = false;
+            var currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+            if(currentWidth == width){
+               flag = true;
+            }
+            if(currentWidth > width){  //预判的宽度大于实际宽度的情况 需要减少字符数量
+               if (drawTextNumber == 1) {//一个字符宽度大于给定矩形宽度的情况
+                  flag = true;
+               }else{
+                  drawTextNumber -= 1;
+                  currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+                  if (currentWidth <= width) {
+                     flag = true;
+                  }
+               }
+            }
+            if ( (flag == false) && (currentWidth < width) ) {//预判的宽度大于实际宽度的情况 需要增加字符数量
+               drawTextNumber += 1;
+               currentWidth = handle.measureText(text.substr(beginDrawTextNumber, drawTextNumber)).width;
+               if (currentWidth >= width) {
+                  flag = true;
+               }
+            }
+            if (flag == true) {//绘制字符
+               handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+               drawY += lineWidth;
+               i = beginDrawTextNumber + drawTextNumber - 1;
+               lineLengh = 0;
+               var nextChar = text.charAt(i + 1);
+               var nextNextChar = text.charAt(i + 2);
+               if (nextChar == '\n') {
+                  i += 1;
+               }
+               if ((nextChar == '\r') && (nextNextChar == '\n')) {
+                  i += 2;
+               }
+               beginDrawTextNumber = i + 1;
+               break;
+            }
+         }
+      }
+      if ((drawY - y + lineWidth) > height) {
+         return;
+      }
+   }
+   handle.fillText(text.substr(beginDrawTextNumber, drawTextNumber), drawX, drawY);
+}
 MO.FG2dCanvasContext_drawTextVertical = function FG2dCanvasContext_drawTextVertical(text, x, y, font) {
    var o = this;
    var handle = o._handle;
@@ -174,15 +302,18 @@ MO.FG2dCanvasContext_drawImage = function FG2dCanvasContext_drawImage(content, x
       }
       data = content.image();
       if(width == null){
-         width = data.size().width;
+         width = data.width;
       }
       if(height == null){
-         height = data.size().height;
+         height = data.height;
       }
    }else{
       throw new MO.TError(o, 'Unknown content type');
    }
    handle.drawImage(data, x, y, width, height);
+}
+MO.FG2dCanvasContext_drawRectangleImage = function FG2dCanvasContext_drawRectangleImage(content, rectangle){
+   this.drawImage(content, rectangle.left, rectangle.top, rectangle.width, rectangle.height);
 }
 MO.FG2dCanvasContext_drawGridImage = function FG2dCanvasContext_drawGridImage(content, x, y, width, height, padding) {
    var o = this;
@@ -262,14 +393,6 @@ MO.FG2dCanvasContext_drawBorder = function FG2dCanvasContext_drawBorder(rectangl
    o.drawBorderLine(right, top, right, bottom, border.right);
    o.drawBorderLine(left - 0.5, bottom, right + 0.5, bottom, border.bottom);
 }
-MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
-   var o = this;
-   var handle = o._handle;
-   handle.fillStyle = color;
-   handle.beginPath();
-   handle.fillRect(x, y, width, height);
-   handle.closePath();
-}
 MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrilateral(x1, y1, x2, y2, x3, y3, x4, y4, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -290,6 +413,13 @@ MO.FG2dCanvasContext_drawQuadrilateral = function FG2dCanvasContext_drawQuadrila
       handle.fill();
    }
 }
+MO.FG2dCanvasContext_drawShape = function FG2dCanvasContext_drawShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.strokeStyle = color;
+   handle.stroke();
+}
 MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, y1, x2, y2, x3, y3, lineWidth, strokeColor, fillColor) {
    var o = this;
    var handle = o._handle;
@@ -303,6 +433,26 @@ MO.FG2dCanvasContext_drawTriangle = function FG2dCanvasContext_drawTriangle(x1, 
    handle.closePath();
    handle.fill();
    handle.stroke();
+}
+MO.FG2dCanvasContext_fillRectangle = function FG2dCanvasContext_fillRectangle(x, y, width, height, color) {
+   var o = this;
+   var handle = o._handle;
+   handle.fillStyle = color;
+   handle.beginPath();
+   handle.fillRect(x, y, width, height);
+   handle.closePath();
+}
+MO.FG2dCanvasContext_setLineJoin = function FG2dCanvasContext_setLineJoin(style) {
+   var o = this;
+   var handle = o._handle;
+   handle.lineJoin = style;
+}
+MO.FG2dCanvasContext_fillShape = function FG2dCanvasContext_fillShape(lineWidth, color){
+   var o = this;
+   var handle = o._handle;
+   handle.lineWidth = lineWidth;
+   handle.fillStyle = color;
+   handle.fill();
 }
 MO.FG2dCanvasContext_drawCircle = function FG2dCanvasContext_drawCircle(x, y, radius, lineWidth, strokeColor, fillColor) {
    var o = this;

@@ -5,6 +5,8 @@ MO.FEaiChartSesameFinancialProcessor = function FEaiChartSesameFinancialProcesso
    o._endDate                 = MO.Class.register(o, new MO.AGetter('_endDate'));
    o._24HBeginDate            = MO.Class.register(o, new MO.AGetter('_24HBeginDate'));
    o._24HEndDate              = MO.Class.register(o, new MO.AGetter('_24HEndDate'));
+   o._dateTimeLag             = MO.Class.register(o, new MO.ASetter('_dateTimeLag'));
+   o._firstFetch              = true;
    o._invementDayCurrent      = MO.Class.register(o, new MO.AGetter('_invementDayCurrent'), 0);
    o._redemptionDayCurrent    = MO.Class.register(o, new MO.AGetter('_redemptionDayCurrent'), 0);
    o._netinvestmentDayCurrent = MO.Class.register(o, new MO.AGetter('_netinvestmentDayCurrent'), 0);
@@ -32,9 +34,6 @@ MO.FEaiChartSesameFinancialProcessor = function FEaiChartSesameFinancialProcesso
    o._listeners24HDataChanged = MO.Class.register(o, new MO.AListener('_listeners24HDataChanged', '24H' + MO.EEvent.DataChanged));
    o.onDynamicData            = MO.FEaiChartSesameFinancialProcessor_onDynamicData;
    o.on24HDataFetch           = MO.FEaiChartSesameFinancialProcessor_on24HDataFetch;
-   o.onJsonData               = MO.FEaiChartSesameFinancialProcessor_onJsonData;
-   o.onhehe                   = MO.FEaiChartSesameFinancialProcessor_onhehe;
-   o.onCurrentInvest          = MO.FEaiChartSesameFinancialProcessor_onCurrentInvest;
    o.construct                = MO.FEaiChartSesameFinancialProcessor_construct;
    o.allocUnit                = MO.FEaiChartSesameFinancialProcessor_allocUnit;
    o.allocShape               = MO.FEaiChartSesameFinancialProcessor_allocShape;
@@ -43,21 +42,7 @@ MO.FEaiChartSesameFinancialProcessor = function FEaiChartSesameFinancialProcesso
    o.focusEntity              = MO.FEaiChartSesameFinancialProcessor_focusEntity;
    o.process                  = MO.FEaiChartSesameFinancialProcessor_process;
    o.dispose                  = MO.FEaiChartSesameFinancialProcessor_dispose;
-   o._jsonSystem              = MO.Class.register(o, new MO.AGetter('_jsonSystem'));
-   o._jsonTimerData           = MO.Class.register(o, new MO.AGetter('_jsonTimerData'));
-   o._jsonTableData           = MO.Class.register(o, new MO.AGetter('_jsonTableData'));
    return o;
-}
-MO.FEaiChartSesameFinancialProcessor_onJsonData = function FEaiChartSesameFinancialProcessor_onJsonData(event) {
-   var o = this;
-   var data = event;
-   var content = event.content;
-}
-MO.FEaiChartSesameFinancialProcessor_onhehe = function FEaiChartSesameFinancialProcessor_onhehe(event){
-    var data = event.data;
-}
-MO.FEaiChartSesameFinancialProcessor_onCurrentInvest = function FEaiChartSesameFinancialProcessor_onCurrentInvest(event){
-   var data = event.data;
 }
 MO.FEaiChartSesameFinancialProcessor_on24HDataFetch = function FEaiChartSesameFinancialProcessor_on24HDataFetch(event) {
    var o = this;
@@ -113,9 +98,6 @@ MO.FEaiChartSesameFinancialProcessor_construct = function FEaiChartSesameFinanci
    o._unitPool = MO.Class.create(MO.FObjectPool);
    o._eventDataChanged = new MO.SEvent(o);
    o._event24HDataChanged = new MO.SEvent(o);
-   o._jsonSystem = MO.Class.create(MO.FEaiLogicJsonSystem);
-   o._jsonTableData = MO.Class.create(MO.FEaiLogicJsonTableData);
-   o._jsonTimerData = MO.Class.create(MO.FEaiLogicJsonTimerLineData);
 }
 MO.FEaiChartSesameFinancialProcessor_allocUnit = function FEaiChartSesameFinancialProcessor_allocUnit(){
    var o = this;
@@ -176,40 +158,49 @@ MO.FEaiChartSesameFinancialProcessor_focusEntity = function FEaiChartSesameFinan
    changedEvent.unit = unit;
    o.processDataChangedListener(changedEvent);
 }
-MO.FEaiChartSesameFinancialProcessor_process = function FEaiChartSesameFinancialProcessor_process(){
+MO.FEaiChartSesameFinancialProcessor_process = function FEaiChartSesameFinancialProcessor_process() {
    var o = this;
-   var system = o._jsonSystem;
-   if(!system.testReady()){
-   }
-   var systemDate = system.currentDate();
-   systemDate.truncMinute();
-   if(!o._dateSetup){
-      o._endDate.assign(systemDate);
-      o._endDate.addMinute(-o._intervalMinute);
-      o._dateSetup = true;
-   }
-   if(o._dataTicker.process()){
-      var JsonData = o._jsonTableData;
-      var JsonData = MO.Console.find(MO.FEaiLogicConsole).jsonTableData();
+   if (o._dataTicker.process()) {
+      var datetimeLag = o._dateTimeLag;
       var beginDate = o._beginDate;
       var endDate = o._endDate;
-      beginDate.assign(endDate);
-      endDate.assign(systemDate);
-      JsonData.doInvestment(o,o.onDynamicData,beginDate.format(),endDate.format());
+      beginDate.set(MO.Timer.current() + datetimeLag);
+      beginDate.truncMinute();
+      endDate.assign(beginDate);
+      beginDate.addMinute(-o._intervalMinute);
+      var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.live}');
+      var start = beginDate.format();
+      var end = endDate.format();
+      var tick = MO.Timer.current();
+      var key = "7733b6978b3f19ed";
+      var paramStr = start + end + tick + key;
+      var token = hex_md5(paramStr);
+      url += 'first=' + o._firstFetch + '&begin=' + start + '&end=' + end + '&tick=' + tick + '&token=' + token;
+      var connection = MO.Console.find(MO.FJsonConsole).send(url);
+      connection.addLoadListener(o, o.onDynamicData);
+      o._firstFetch = false;
       var beginDate24H = o._24HBeginDate;
-      beginDate24H.assign(systemDate);
+      beginDate24H.set(MO.Timer.current() + datetimeLag);
       beginDate24H.truncMinute(15);
       beginDate24H.addDay(-1);
       var endDate24H = o._24HEndDate;
-      endDate24H.assign(systemDate);
+      endDate24H.set(MO.Timer.current() + datetimeLag);
       endDate24H.truncMinute(15);
-      var JsonTimerData = o._jsonTimerData;
-      JsonTimerData.do24TimeData(o, o.on24HDataFetch, beginDate24H.format(), endDate24H.format());
+      var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.24h}');
+      var start = beginDate24H.format();
+      var end = endDate24H.format();
+      var tick = MO.Timer.current();
+      var key = "7733b6978b3f19ed";
+      var paramStr = start + end + tick + key;
+      var token = hex_md5(paramStr);
+      url += 'begin=' + start + '&end=' + end + '&tick=' + tick + '&token=' + token;
+      var connection = MO.Console.find(MO.FJsonConsole).send(url);
+      connection.addLoadListener(o, o.on24HDataFetch);
    }
    var currentTick = MO.Timer.current();
-   if(currentTick - o._tableTick > o._tableInterval){
+   if (currentTick - o._tableTick > o._tableInterval) {
       var units = o._units._items;
-      if(!units.length==0){
+      if (!units.length == 0) {
          var unit = units.shift();
          o.focusEntity(unit);
       }
@@ -232,7 +223,7 @@ MO.FEaiChartSesameFinancialProcessor_dispose = function FEaiChartSesameFinancial
    o.__base.FObject.dispose.call(o);
 }
 MO.FEaiChartSesameFinancialScene = function FEaiChartSesameFinancialScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                   = MO.EEaiScene.ChartCustomer;
    o._processor              = MO.Class.register(o, new MO.AGetter('_processor'));
    o._processorCurrent       = 0;
@@ -247,7 +238,11 @@ MO.FEaiChartSesameFinancialScene = function FEaiChartSesameFinancialScene(o) {
    o._statusStart            = false;
    o._statusLayerCount       = 100;
    o._statusLayerLevel       = 100;
+   o._serverDate             = null;
+   o._localDate              = null;
+   o._dateTimeLag            = 0;
    o.onOperationDown         = MO.FEaiChartSesameFinancialScene_onOperationDown;
+   o.onServerDateTimeFetched = MO.FEaiChartSesameFinancialScene_onServerDateTimeFetched;
    o.onInvestmentDataChanged = MO.FEaiChartSesameFinancialScene_onInvestmentDataChanged;
    o.on24HDataChanged        = MO.FEaiChartSesameFinancialScene_on24HDataChanged;
    o.onOperationVisibility   = MO.FEaiChartSesameFinancialScene_onOperationVisibility;
@@ -281,6 +276,13 @@ MO.FEaiChartSesameFinancialScene_onInvestmentDataChanged = function FEaiChartSes
    table.setRankUnits(event.rankUnits);
    table.pushUnit(unit);
    table.dirty();
+}
+MO.FEaiChartSesameFinancialScene_onServerDateTimeFetched = function FEaiChartSesameFinancialScene_onServerDateTimeFetched(event) {
+   var o = this;
+   o._serverDate.parseAuto(event.content.date);
+   o._localDate.setNow();
+   o._dateTimeLag = o._serverDate.get() - o._localDate.get();
+   o._processor.setDateTimeLag(o._dateTimeLag);
 }
 MO.FEaiChartSesameFinancialScene_onOperationVisibility = function FEaiChartSesameFinancialScene_onOperationVisibility(event) {
    var o = this;
@@ -361,7 +363,7 @@ MO.FEaiChartSesameFinancialScene_onProcess = function FEaiChartSesameFinancialSc
       if (o._nowTicker.process()) {
          var bar = o._logoBar;
          var date = o._nowDate;
-         date.setNow();
+         date.set(MO.Timer.current() + o._dateTimeLag);
          var dateControl = bar.findComponent('date');
          dateControl.setLabel(date.format('YYYY/MM/DD'));
          var timeControl = bar.findComponent('time');
@@ -379,6 +381,11 @@ MO.FEaiChartSesameFinancialScene_setup = function FEaiChartSesameFinancialScene_
    var o = this;
    o.__base.FEaiChartScene.setup.call(o);
    var dataLayer = o._activeStage.dataLayer();
+   o._serverDate = new MO.TDate();
+   o._localDate = new MO.TDate();
+   var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.time}');
+   var connection = MO.Console.find(MO.FJsonConsole).send(url);
+   connection.addLoadListener(o, o.onServerDateTimeFetched);
    var frame = o._logoBar = MO.Console.find(MO.FGuiFrameConsole).get(o, 'eai.chart.customer.LogoBar');
    o._guiManager.register(frame);
    var invement = o._processor = MO.Class.create(MO.FEaiChartSesameFinancialProcessor);
@@ -988,245 +995,4 @@ MO.FEaiLogicJsonInfoCustomerTrendUnit = function FEaiLogicJsonInfoCustomerTrendU
    o._investment    = MO.Class.register(o, [new MO.AGetSet('_investment'), new MO.APersistence('_investment', MO.EDataType.Double)]);
    o._customerCount = MO.Class.register(o, [new MO.AGetSet('_customerCount'), new MO.APersistence('_customerCount', MO.EDataType.Uint32)]);
    return o;
-}
-MO.FEaiLogicJsonSystem = function FEaiLogicJsonSystem(o) {
-   o = MO.Class.inherits(this, o, MO.FEaiLogic);
-   o._code          = 'system';
-   o._ready         = false;
-   o._info          = null;
-   o._token          = MO.Class.register(o, new MO.AGetter('_token'), 0);
-   o._currentDate   = null;
-   o._localDate     = null;
-   o._systemDate    = MO.Class.register(o, new MO.AGetter('_systemDate'));
-   o.onInfo         = MO.FEaiLogicJsonSystem_onInfo;
-   o.construct      = MO.FEaiLogicJsonSystem_construct;
-   o.doInfo         = MO.FEaiLogicJsonSystem_doInfo;
-   o.doDeviceAccess = MO.FEaiLogicJsonSystem_doDeviceAccess;
-   o.testReady      = MO.FEaiLogicJsonSystem_testReady;
-   o.currentDate    = MO.FEaiLogicJsonSystem_currentDate;
-   o.refresh        = MO.FEaiLogicJsonSystem_refresh;
-   o.dispose        = MO.FEaiLogicJsonSystem_dispose;
-   return o;
-}
-MO.FEaiLogicJsonSystem_onInfo = function FEaiLogicJsonSystem_onInfo(event){
-   var o = this;
-   var info = o._info;
-   info._data=event.data.data;
-   o._localDate.setNow();
-   o._systemDate.parse(info.date());
-   o._ready = true;
-}
-MO.FEaiLogicJsonSystem_construct = function FEaiLogicJsonSystem_construct(){
-   var o = this;
-   o.__base.FEaiLogic.construct.call(o);
-   o._info = MO.Class.create(MO.FEaiLogicSystemInfo);
-   o._currentDate = new MO.TDate();
-   o._localDate = new MO.TDate();
-   o._systemDate = new MO.TDate();
-}
-MO.FEaiLogicJsonSystem_doInfo = function FEaiLogicJsonSystem_doInfo(owner, callback){
-   var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.time}');
-   var connection = MO.Console.find(MO.FJsonConsole).send(url);
-   connection.addLoadListener(owner, callback);
-}
-MO.FEaiLogicJsonSystem_doDeviceAccess = function FEaiLogicJsonSystem_doDeviceAccess(){
-   var xroot = new MO.TXmlNode('Configuration');
-   var identityCode = MO.Window.Browser.agent();
-   var xbrowser = xroot.create('Browser')
-   MO.Window.Browser.saveConfig(xbrowser);
-   var application = MO.Desktop.application();
-   var desktop = application.desktop();
-   if(desktop){
-      var xdesktop = xbrowser.create('Desktop')
-      var canvas2d = desktop.canvas2d();
-      if(canvas2d){
-         var xcontext2d = xdesktop.create('Context2d')
-      }
-      var canvas3d = desktop.canvas3d();
-      if(canvas3d){
-         var context3d = canvas3d.graphicContext();
-         var parameter = context3d.parameter('VERSION');
-         if(parameter){
-            identityCode += '|' + parameter;
-         }
-         var parameter = context3d.parameter('SHADING_LANGUAGE_VERSION');
-         if(parameter){
-            identityCode += '|' + parameter;
-         }
-         var parameter = context3d.parameter('UNMASKED_RENDERER_WEBGL');
-         if(parameter){
-            identityCode += '|' + parameter;
-         }
-         var xcontext3d = xdesktop.create('Context3d')
-         context3d.saveConfig(xcontext3d);
-      }
-   }
-   xroot.set('identity_code', identityCode);
-   MO.Console.find(MO.FServiceConsole).send('cloud.info.device', 'access', xroot)
-}
-MO.FEaiLogicJsonSystem_testReady = function FEaiLogicJsonSystem_testReady(){
-   return this._ready;
-}
-MO.FEaiLogicJsonSystem_currentDate = function FEaiLogicJsonSystem_currentDate(){
-   var o = this;
-   var date = o._currentDate;
-   var span = o._systemDate.get() - o._localDate.get();
-   date.set(MO.Timer.current() + span);
-   return date;
-}
-MO.FEaiLogicJsonSystem_refresh = function FEaiLogicJsonSystem_refresh(){
-   var o = this;
-   return o.doInfo(o, o.onInfo);
-}
-MO.FEaiLogicJsonSystem_dispose = function FEaiLogicJsonSystem_dispose() {
-   var o = this;
-   o._info = MO.Lang.Object.dispose(o._info);
-   o._localDate = MO.Lang.Object.dispose(o._localDate);
-   o._systemDate = MO.Lang.Object.dispose(o._systemDate);
-   o.__base.FEaiLogic.consturct.call(o);
-}
-MO.FEaiLogicJsonTableData = function FEaiLogicJsonTableData(o){
-   o = MO.Class.inherits(this, o, MO.FEaiLogic);
-   o._code                = 'statistics';
-   o._tender              = MO.Class.register(o, new MO.AGetter('_tender'));
-   o._achievement         = MO.Class.register(o, new MO.AGetter('_achievement'));
-   o._customer            = MO.Class.register(o, new MO.AGetter('_customer'));
-   o._marketer            = MO.Class.register(o, new MO.AGetter('_marketer'));
-   o._department          = MO.Class.register(o, new MO.AGetter('_department'));
-   o.construct            = MO.FEaiLogicJsonTableData_construct;
-   o.doServerTime         = MO.FEaiLogicJsonTableData_doServerTime;
-   o.doTimeData           = MO.FEaiLogicJsonTableData_doTimeData;
-   o.doInvestment         = MO.FEaiLogicJsonTableData_doInvestment;
-   o.do24TimeData         = MO.FEaiLogicJsonTableData_do24TimeData;
-   o.dispose              = MO.FEaiLogicJsonTableData_dispose;
-   o.sendJsonSever        = MO.FEaiLogicJsonTableData_sendJsonService;
-   o._doFirst             = true;
-   return o;
-}
-MO.FEaiLogicJsonTableData_construct = function FEaiLogicJsonTableData_construct(){
-   var o = this;
-   o.__base.FEaiLogic.construct.call(o);
-}
-MO.FEaiLogicJsonTableData_doServerTime = function FEaiLogicJsonTableData_doServerTime(owner, callback){
-   var o = this;
-   var first = o._customerDynamicFirst;
-   var parameters = o.prepareParemeters();
-   var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.time}');
-   o.sendJsonSever(url, parameters, owner, callback);
-   o._customerDynamicFirst = false;
-}
-MO.FEaiLogicJsonTableData_doTimeData = function FEaiLogicJsonTableData_doTimeData(owner, callback){
-   var o = this;
-   var url = "http://182.92.6.158:8089/zm_external.wisdom.get.currentInvest?do=currentInvest";
-   var connection = MO.Console.find(MO.FJsonConsole).alloc();
-   connection.setAsynchronous(true);
-   connection._contentCd = MO.EHttpContent.Text;
-   connection.addLoadListener(owner, callback);
-   connection.send(url);
-}
-MO.FEaiLogicJsonTableData_sendJsonService = function FEaiLogic_sendJsonService(uri, parameters, owner, callback){
-   var o = this;
-   var url = uri;
-   var connection = MO.Console.find(MO.FHttpConsole).alloc();
-   connection._asynchronous = true;
-   connection.addLoadListener(owner, callback);
-   connection.send(url);
-}
-MO.FEaiLogicJsonTableData_do24TimeData = function FEaiLogicJsonTableData_do24TimeData(owner, callback, startTime, endTime) {
-   var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.24h}');
-   var start = startTime;
-   var end = endTime;
-   url += 'begin=' + start + '&end=' + end;
-   var connection1 = MO.Console.find(MO.FJsonConsole).send(url);
-   connection1.addLoadListener(owner, callback);
-}
-MO.FEaiLogicJsonTableData_doInvestment = function FEaiLogicJsonTableData_doInvestment(owner, callback, startTime, endTime) {
-   var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.live}');
-   var start = startTime;
-   var end = endTime;
-   var o = this;
-   url += 'first=' + o._doFirst + '&begin=' + start + '&end=' + end;
-   var connection1 = MO.Console.find(MO.FJsonConsole).send(url);
-   connection1.addLoadListener(owner, callback);
-   o._doFirst = false;
-}
-MO.FEaiLogicJsonTableData_dispose = function FEaiLogicJsonTableData_dispose(){
-   var o = this;
-   o.__base.FEaiLogic.dispose.call(o);
-}
-MO.FEaiLogicJsonTimerLineData = function FEaiLogicJsonTimerLineData(o){
-   o = MO.Class.inherits(this, o, MO.FEaiLogic);
-   o._code                = 'statistics';
-   o._tender              = MO.Class.register(o, new MO.AGetter('_tender'));
-   o._achievement         = MO.Class.register(o, new MO.AGetter('_achievement'));
-   o._customer            = MO.Class.register(o, new MO.AGetter('_customer'));
-   o._marketer            = MO.Class.register(o, new MO.AGetter('_marketer'));
-   o._department          = MO.Class.register(o, new MO.AGetter('_department'));
-   o.construct            = MO.FEaiLogicJsonTimerLineData_construct;
-   o.doServerTime         = MO.FEaiLogicJsonTimerLineData_doServerTime;
-   o.doTimeData           = MO.FEaiLogicJsonTimerLineData_doTimeData;
-   o.doInvestment         = MO.FEaiLogicJsonTimerLineData_doInvestment;
-   o.do24TimeData         = MO.FEaiLogicJsonTimerLineData_do24TimeData;
-   o.dispose              = MO.FEaiLogicJsonTimerLineData_dispose;
-   o.sendJsonSever       = MO.FEaiLogicJsonTimerLineData_sendJsonService;
-   o._doFirst = true;
-   return o;
-}
-MO.FEaiLogicJsonTimerLineData_construct = function FEaiLogicJsonTimerLineData_construct(){
-   var o = this;
-   o.__base.FEaiLogic.construct.call(o);
-}
-MO.FEaiLogicJsonTimerLineData_doServerTime = function FEaiLogicJsonTimerLineData_doServerTime(owner, callback){
-   var o = this;
-   var first = o._customerDynamicFirst;
-   var parameters = o.prepareParemeters();
-   var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.time}');
-   o.sendJsonSever(url, parameters, owner, callback);
-   o._customerDynamicFirst = false;
-}
-MO.FEaiLogicJsonTimerLineData_doTimeData = function FEaiLogicJsonTimerLineData_doTimeData(owner, callback){
-   var o = this;
-   var url = "http://182.92.6.158:8089/zm_external.wisdom.get.currentInvest?do=currentInvest";
-   var connection = MO.Console.find(MO.FJsonConsole).alloc();
-   connection.setAsynchronous(true);
-   connection._contentCd = MO.EHttpContent.Text;
-   connection.addLoadListener(owner, callback);
-   connection.send(url);
-}
-MO.FEaiLogicJsonTimerLineData_sendJsonService = function FEaiLogic_sendJsonService(uri, parameters, owner, callback){
-   var o = this;
-   var url = uri;
-   var connection = MO.Console.find(MO.FHttpConsole).alloc();
-   connection._asynchronous = true;
-   connection.addLoadListener(owner, callback);
-   connection.send(url);
-}
-MO.FEaiLogicJsonTimerLineData_do24TimeData = function FEaiLogicJsonTimerLineData_do24TimeData(owner, callback,startTime,endTime){
-      var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.24h}');
-      var start= startTime;
-      var end = endTime;
-      url +='begin='+ start + '&end='+end;
-      var connection1 = MO.Console.find(MO.FJsonConsole).send(url);
-      connection1.setAsynchronous(true);
-      connection1.addLoadListener(owner,callback);
-}
-MO.FEaiLogicJsonTimerLineData_doInvestment = function FEaiLogicJsonTimerLineData_doInvestment(owner, callback,startTime,endTime){
-      var url = MO.Console.find(MO.FEnvironmentConsole).parse('{zmjr.get.live}');
-      var start= startTime;
-      var end = endTime;
-      var o = this;
-      var firstbool = o._doFirst;
-      if(firstbool){
-      url += 'first='+firstbool+'&begin='+ start + '&end='+end;
-      firstbool=false;
-      }else{
-      url += 'first='+firstbool+'&begin='+ start + '&end='+end;
-      }
-      var connection1 = MO.Console.find(MO.FJsonConsole).send(url);
-      connection1.setAsynchronous(true);
-      connection1.addLoadListener(owner,callback);
-}
-MO.FEaiLogicJsonTimerLineData_dispose = function FEaiLogicJsonTimerLineData_dispose(){
-   var o = this;
-   o.__base.FEaiLogic.dispose.call(o);
 }

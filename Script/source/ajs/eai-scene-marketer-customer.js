@@ -1,6 +1,8 @@
 MO.FEaiChartMktCustomerProcessor = function FEaiChartMktCustomerProcessor(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MGraphicObject, MO.MListener);
    o._dateSetup               = false;
+   o._lastDate                = MO.Class.register(o, new MO.AGetter('_lastDate'));
+   o._lastRecordId            = 0;
    o._beginDate               = MO.Class.register(o, new MO.AGetter('_beginDate'));
    o._endDate                 = MO.Class.register(o, new MO.AGetter('_endDate'));
    o._24HBeginDate            = MO.Class.register(o, new MO.AGetter('_24HBeginDate'));
@@ -16,6 +18,7 @@ MO.FEaiChartMktCustomerProcessor = function FEaiChartMktCustomerProcessor(o){
    o._invementTotal           = MO.Class.register(o, new MO.AGetter('_invementTotal'), 0);
    o._dynamicInfo             = MO.Class.register(o, new MO.AGetter('_dynamicInfo'));
    o._intervalMinute          = 1;
+   o._abnormalMillisecond     = 600000;
    o._mapEntity               = MO.Class.register(o, new MO.AGetSet('_mapEntity'));
    o._display                 = MO.Class.register(o, new MO.AGetter('_display'));
    o._rankUnits               = MO.Class.register(o, new MO.AGetter('_rankUnits'));
@@ -51,19 +54,39 @@ MO.FEaiChartMktCustomerProcessor_on24HDataFetch = function FEaiChartMktCustomerP
 MO.FEaiChartMktCustomerProcessor_onDynamicData = function FEaiChartMktCustomerProcessor_onDynamicData(event){
    var o = this;
    var content = event.content;
+   var lastDate = o._lastDate;
    var dynamicInfo = o._dynamicInfo;
    dynamicInfo.unserializeSignBuffer(event.sign, event.content, true);
    var rankUnits = o._rankUnits;
    rankUnits.assign(dynamicInfo.rankUnits());
    var units = o._units;
-   units.append(dynamicInfo.units());
-   var unitCount = units.count();
-   if(unitCount){
+   var dynamicUnits = dynamicInfo.units();
+   var unitCount = dynamicUnits.count();
+   var dynamicUnitCount = 0;
+   for (var i = 0; i < unitCount; i++) {
+      var unit = dynamicUnits.get(i);
+      var recordId = unit.recordId()
+      if(recordId > o._lastRecordId){
+         units.push(unit);
+         dynamicUnitCount++;
+      };
+   };
+   if(dynamicUnitCount){
       o._tableInterval = 1000 * 60 * o._intervalMinute / unitCount;
+      var lastUnit = units.last();
+      lastDate.parseAuto(lastUnit.recordDate());
+      o._lastRecordId = lastUnit.recordId();
    }else{
       o._tableInterval = 1000 * 60 * o._intervalMinute;
    }
+   var lastDateValue = lastDate.get();
+   var endDateValue = o._endDate.get();
+   if (lastDateValue - endDateValue > o._abnormalMillisecond){
+      lastDate.assign(o._endDate);
+      lastDate.add(-o._abnormalMillisecond);
+   };
    o._tableTick = 0;
+   MO.Logger.info(o, 'Load dynamic data. (unit_count={1}, dynamic_unit_count={2})', unitCount, dynamicUnitCount);
    var changeEvent = o._eventDataChanged;
    changeEvent.rankUnits = rankUnits;
    changeEvent.unit = null;
@@ -73,13 +96,14 @@ MO.FEaiChartMktCustomerProcessor_construct = function FEaiChartMktCustomerProces
    var o = this;
    o.__base.FObject.construct.call(o);
    o._beginDate = new MO.TDate();
+   o._lastDate = new MO.TDate();
    o._endDate = new MO.TDate();
    o._24HBeginDate = new MO.TDate();
    o._24HEndDate = new MO.TDate();
    o._units = new MO.TObjects();
    o._tableTicker = new MO.TTicker(1000 * o._tableInterval);
    o._autios = new Object();
-   o._dataTicker = new MO.TTicker(1000 * 60 * o._intervalMinute);
+   o._dataTicker = new MO.TTicker(1000 * 40 * o._intervalMinute);
    o._dynamicInfo = MO.Class.create(MO.FEaiLogicInfoCustomerDynamic);
    o._rankUnits = new MO.TObjects();
    o._unitPool = MO.Class.create(MO.FObjectPool);
@@ -156,13 +180,17 @@ MO.FEaiChartMktCustomerProcessor_process = function FEaiChartMktCustomerProcesso
    if(!o._dateSetup){
       o._endDate.assign(systemDate);
       o._endDate.addMinute(-o._intervalMinute);
+      o._lastDate.assign(o._endDate);
+      o._lastDate.truncDay(1);
       o._dateSetup = true;
    }
    if(o._dataTicker.process()){
       var statistics = MO.Console.find(MO.FEaiLogicConsole).statistics();
       var beginDate = o._beginDate;
       var endDate = o._endDate;
-      beginDate.assign(endDate);
+      var lastDate = o._lastDate;
+      beginDate.assign(lastDate);
+      beginDate.truncMinute(1);
       endDate.assign(systemDate);
       statistics.marketer().doCustomerDynamic(o, o.onDynamicData, beginDate.format(), endDate.format());
       beginDate.assign(endDate);
@@ -201,7 +229,7 @@ MO.FEaiChartMktCustomerProcessor_dispose = function FEaiChartMktCustomerProcesso
    o.__base.FObject.dispose.call(o);
 }
 MO.FEaiChartMktCustomerScene = function FEaiChartMktCustomerScene(o) {
-   o = MO.RClass.inherits(this, o, MO.FEaiChartScene);
+   o = MO.Class.inherits(this, o, MO.FEaiChartScene);
    o._code                   = MO.EEaiScene.ChartCustomer;
    o._processor              = MO.Class.register(o, new MO.AGetter('_processor'));
    o._processorCurrent       = 0;
