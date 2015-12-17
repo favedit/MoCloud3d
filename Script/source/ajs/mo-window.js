@@ -535,7 +535,6 @@ MO.RBrowser.prototype.construct = function RBrowser_construct(){
       }
    }
    if(window.Worker){
-      capability.optionProcess = true;
    }
    if(window.localStorage){
       capability.optionStorage = true;

@@ -86,10 +86,10 @@ MO.FE3sModel_unserialize = function FE3sModel_unserialize(input){
    // 读取骨骼集合
    var skeletonCount = input.readInt16();
    if(skeletonCount > 0){
-      var s = o._skeletons = new MO.TObjects();
+      var skeletons = o._skeletons = new MO.TObjects();
       for(var i = 0; i < skeletonCount; i++){
          var skeleton = modelConsole.unserialSkeleton(input)
-         s.push(skeleton);
+         skeletons.push(skeleton);
       }
    }
    //..........................................................
@@ -113,6 +113,7 @@ MO.FE3sModel_unserialize = function FE3sModel_unserialize(input){
          var renderable = renderables.get(i);
          var meshGuid = renderable.meshGuid();
          var mesh = meshes.get(meshGuid);
+         MO.Assert.debugNotNull(mesh);
          renderable.setMesh(mesh);
       }
    }

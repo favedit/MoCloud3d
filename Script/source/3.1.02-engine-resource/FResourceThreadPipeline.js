@@ -78,7 +78,8 @@ MO.FResourceThreadPipeline_worker = function FResourceThreadPipeline_worker(){
    var worker = o._worker;
    if(!worker){
       var uri = MO.RBrowser.contentPath('/ajs/lzma_worker.js');
-      worker = o._worker = new LZMA_WORKER(uri);
+      //worker = o._worker = new LZMA_WORKER(uri);
+      worker = o._worker = new LZMA(uri);
    }
    return worker;
 }

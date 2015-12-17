@@ -465,7 +465,7 @@ MO.FE3dModel_loadRenderable = function FE3dModel_loadRenderable(renderable){
    var o = this;
    o._renderable = renderable;
    var resource = renderable.resource();
-   o.selectTechnique(o, FE3dGeneralTechnique);
+   o.selectTechnique(o, MO.FE3dGeneralTechnique);
    o.loadResource(resource);
    o._display.load(renderable);
    o._dataReady = true;
@@ -558,17 +558,17 @@ MO.FE3dModelDisplay = function FE3dModelDisplay(o){
 MO.FE3dModelDisplay_construct = function FE3dModelDisplay_construct(){
    var o = this;
    o.__base.FE3dDisplay.construct.call(o);
-   o._material = MO.Class.create(FE3dMaterial);
+   o._material = MO.Class.create(MO.FE3dMaterial);
 }
 MO.FE3dModelDisplay_load = function FE3dModelDisplay_load(renderable){
    var o = this;
    var material = o._material;
-   var instanceConsole = RConsole.find(FE3dInstanceConsole);
+   var instanceConsole = MO.Console.find(MO.FE3dInstanceConsole);
    var modelResource = renderable.resource();
    var resource = o._resource = modelResource.display();
    o._matrix.assign(resource.matrix());
    material.loadResource(resource.material());
-   var geometryRenderables = renderable.geometrys();
+   var geometryRenderables = renderable.meshes();
    if(geometryRenderables){
       var geometryCount = geometryRenderables.count();
       var shapes = o._shapes = new MO.TObjects();

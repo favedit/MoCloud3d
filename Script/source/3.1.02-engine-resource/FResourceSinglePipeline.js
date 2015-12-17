@@ -102,7 +102,8 @@ MO.FResourceSinglePipeline_decompress = function FResourceSinglePipeline_decompr
       throw new MO.TError(o, 'Unknown data type.');
    }
    // 解压缩处理
-   LZMAD.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
+   //LZMAD.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
+   LZMA.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
 }
 
 //==========================================================

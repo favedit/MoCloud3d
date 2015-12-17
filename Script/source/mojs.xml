@@ -407,8 +407,8 @@
       </FileMerger>
       <!-- MoPlatform -->
       <FileMerger target='/ajs/mp.js'>
+         <File source='/ajs/lzma_worker.js'/>
          <File source='/ajs/mo.js'/>
-         <File source='/ajs/eai.js'/>
          <File source='/ajs/context_cn.js'/>
       </FileMerger>
    </FileMergerCollection>

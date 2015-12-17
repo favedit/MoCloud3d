@@ -109,7 +109,7 @@ MO.FResourceDataConsole_construct = function FResourceDataConsole_construct(){
    // 是否支持多线程
    var capability = MO.Window.Browser.capability();
    if(!capability.optionProcess){
-      var pipeline = o._pipeline = MO.Class.create(FResourceSinglePipeline);
+      var pipeline = o._pipeline = MO.Class.create(MO.FResourceSinglePipeline);
       pipeline.setConsole(o);
    }
    // 创建线程

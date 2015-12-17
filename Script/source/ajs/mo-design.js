@@ -644,10 +644,6 @@ with(MO){
    MO.FDsCatalog_onNodeClick = function FDsCatalog_onNodeClick(event){
       var o = this;
       var node = event.node;
-      var linker = node.dataPropertyGet('linker');
-      if(linker){
-         o.selectObject(linker);
-      }
    }
    MO.FDsCatalog_onNodeViewClick = function FDsCatalog_onNodeViewClick(event){
       var o = this;
@@ -1847,92 +1843,95 @@ with(MO){
       return result;
    }
 }
-with(MO){
-   MO.FDrAbsResourceConsole = function FDrAbsResourceConsole(o){
-      o = MO.Class.inherits(this, o, FConsole);
-      o._scopeCd       = EScope.Local;
-      o._serviceCode   = null;
-      o._classUnit     = null;
-      o._resources     = null;
-      o.construct      = FDrAbsResourceConsole_construct;
-      o.makeServiceUrl = FDrAbsResourceConsole_makeServiceUrl;
-      o.loadResource   = FDrAbsResourceConsole_loadResource;
-      o.doList         = FDrAbsResourceConsole_doList;
-      o.doQuery        = FDrAbsResourceConsole_doQuery;
-      o.doCreate       = FDrAbsResourceConsole_doCreate;
-      o.doUpdate       = FDrAbsResourceConsole_doUpdate;
-      o.doDelete       = FDrAbsResourceConsole_doDelete;
-      return o;
+MO.FDrAbsResourceConsole = function FDrAbsResourceConsole(o){
+   o = MO.Class.inherits(this, o, MO.FConsole);
+   o._scopeCd       = MO.EScope.Local;
+   o._serviceCode   = null;
+   o._classUnit     = null;
+   o._resources     = null;
+   o.construct      = MO.FDrAbsResourceConsole_construct;
+   o.makeServiceUrl = MO.FDrAbsResourceConsole_makeServiceUrl;
+   o.loadResource   = MO.FDrAbsResourceConsole_loadResource;
+   o.doList         = MO.FDrAbsResourceConsole_doList;
+   o.doQuery        = MO.FDrAbsResourceConsole_doQuery;
+   o.doCreate       = MO.FDrAbsResourceConsole_doCreate;
+   o.doUpdate       = MO.FDrAbsResourceConsole_doUpdate;
+   o.doDelete       = MO.FDrAbsResourceConsole_doDelete;
+   return o;
+}
+MO.FDrAbsResourceConsole_construct = function FDrAbsResourceConsole_construct(){
+   var o = this;
+   o.__base.FConsole.construct.call(o);
+   o._resources = new MO.TDictionary();
+}
+MO.FDrAbsResourceConsole_makeServiceUrl = function FDrAbsResourceConsole_makeServiceUrl(action){
+   var o = this;
+   var url = MO.Window.Browser.hostPath('/' + o._serviceCode + '.ws?action=' + action);
+   if(MO.Runtime.isDebug()){
+      url += '&date=' + MO.Lang.Date.format();
    }
-   MO.FDrAbsResourceConsole_construct = function FDrAbsResourceConsole_construct(){
-      var o = this;
-      o.__base.FConsole.construct.call(o);
-      o._resources = new TDictionary();
+   return url;
+}
+MO.FDrAbsResourceConsole_loadResource = function FDrAbsResourceConsole_loadResource(xconfig){
+   var o = this;
+   var guid = xconfig.get('guid');
+   var resource = o._resources.get(guid);
+   if(!resource){
+      resource = MO.Class.create(o._classUnit);
+      o._resources.set(guid, resource);
    }
-   MO.FDrAbsResourceConsole_makeServiceUrl = function FDrAbsResourceConsole_makeServiceUrl(action){
-      var o = this;
-      var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=' + action);
-      if(MO.Runtime.isDebug()){
-         url += '&date=' + RDate.format();
-      }
-      return url;
+   resource.loadConfig(xconfig);
+   return resource;
+}
+MO.FDrAbsResourceConsole_doList = function FDrAbsResourceConsole_doList(search, order, pageSize, page){
+   var o = this;
+   var url = '/' + o._serviceCode + '.ws?action=list';
+   if(!MO.Lang.String.isEmpty(search)){
+      url += '&search=' + search;
    }
-   MO.FDrAbsResourceConsole_loadResource = function FDrAbsResourceConsole_loadResource(xconfig){
-      var o = this;
-      var guid = xconfig.get('guid');
-      var resource = o._resources.get(guid);
-      if(!resource){
-         resource = MO.Class.create(o._classUnit);
-         o._resources.set(guid, resource);
-      }
-      resource.loadConfig(xconfig);
-      return resource;
+   if(!MO.Lang.String.isEmpty(order)){
+      url += '&order=' + order;
    }
-   MO.FDrAbsResourceConsole_doList = function FDrAbsResourceConsole_doList(search, order, pageSize, page){
-      var o = this;
-      var url = '/' + o._serviceCode + '.ws?action=list';
-      if(!MO.Lang.String.isEmpty(search)){
-         url += '&search=' + search;
-      }
-      if(!MO.Lang.String.isEmpty(order)){
-         url += '&order=' + order;
-      }
-      if(pageSize >= 0){
-         url += '&page_size=' + pageSize;
-      }
-      if(page >= 0){
-         url += '&page=' + page;
-      }
-      return MO.Console.find(FXmlConsole).sendAsync(url);
+   if(pageSize >= 0){
+      url += '&page_size=' + pageSize;
    }
-   MO.FDrAbsResourceConsole_doQuery = function FDrAbsResourceConsole_doQuery(guid){
-      var o = this;
-      var url = '/' + o._serviceCode + '.ws?action=query&guid=' + guid;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
+   if(page >= 0){
+      url += '&page=' + page;
    }
-   MO.FDrAbsResourceConsole_doCreate = function FDrAbsResourceConsole_doCreate(resource){
-      var o = this;
-      var xdocument = new TXmlDocument();
-      var xroot = xdocument.root();
-      xroot.set('action', 'create');
-      var xdata = xroot.create(resource.classCode());
-      resource.saveConfig(xdata);
-      return MO.Console.find(FXmlConsole).sendAsync('/' + o._serviceCode + '.ws', xdocument);
-   }
-   MO.FDrAbsResourceConsole_doUpdate = function FDrAbsResourceConsole_doUpdate(resource){
-      var o = this;
-      var xdocument = new TXmlDocument();
-      var xroot = xdocument.root();
-      xroot.set('action', 'update');
-      var xdata = xroot.create(resource.classCode());
-      resource.saveConfig(xdata);
-      return MO.Console.find(FXmlConsole).sendAsync('/' + o._serviceCode + '.ws', xdocument);
-   }
-   MO.FDrAbsResourceConsole_doDelete = function FDrAbsResourceConsole_doDelete(guid){
-      var o = this;
-      var url = '/' + o._serviceCode + '.ws?action=delete&guid=' + guid;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
+   var connection = MO.Console.find(MO.FXmlConsole).sendAsync(url);
+   return connection;
+}
+MO.FDrAbsResourceConsole_doQuery = function FDrAbsResourceConsole_doQuery(guid){
+   var o = this;
+   var url = '/' + o._serviceCode + '.ws?action=query&guid=' + guid;
+   var connection = MO.Console.find(MO.FXmlConsole).sendAsync(url);
+   return connection;
+}
+MO.FDrAbsResourceConsole_doCreate = function FDrAbsResourceConsole_doCreate(resource){
+   var o = this;
+   var xdocument = new MO.TXmlDocument();
+   var xroot = xdocument.root();
+   xroot.set('action', 'create');
+   var xdata = xroot.create(resource.classCode());
+   resource.saveConfig(xdata);
+   var connection = MO.Console.find(MO.FXmlConsole).sendAsync('/' + o._serviceCode + '.ws', xdocument);
+   return connection;
+}
+MO.FDrAbsResourceConsole_doUpdate = function FDrAbsResourceConsole_doUpdate(resource){
+   var o = this;
+   var xdocument = new MO.TXmlDocument();
+   var xroot = xdocument.root();
+   xroot.set('action', 'update');
+   var xdata = xroot.create(resource.classCode());
+   resource.saveConfig(xdata);
+   var connection = MO.Console.find(MO.FXmlConsole).sendAsync('/' + o._serviceCode + '.ws', xdocument);
+   return connection;
+}
+MO.FDrAbsResourceConsole_doDelete = function FDrAbsResourceConsole_doDelete(guid){
+   var o = this;
+   var url = '/' + o._serviceCode + '.ws?action=delete&guid=' + guid;
+   var connection = MO.Console.find(MO.FXmlConsole).sendAsync(url);
+   return connection;
 }
 with(MO){
    MO.FDrBitmap = function FDrBitmap(o){
@@ -1973,35 +1972,33 @@ with(MO){
       xconfig.set('size_height', o._sizeHeight);
    }
 }
-with(MO){
-   MO.FDrBitmapConsole = function FDrBitmapConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode = 'cloud.resource.bitmap';
-      o._classUnit   = FDrBitmap;
-      o.query        = FDrBitmapConsole_query;
-      o.update       = FDrBitmapConsole_update;
-      return o;
-   }
-   MO.FDrBitmapConsole_query = function FDrBitmapConsole_query(guid){
-      var o = this;
-      var uri = '/' + o._serviceCode + '.ws?action=query&guid=' + guid;
-      var url = RBrowser.hostPath(uri);
-      var xroot = MO.Console.find(FXmlConsole).send(url);
-      var nodeCount = xroot.nodeCount();
-      for(var n = 0; n < nodeCount; n++){
-         var xbitmap = xroot.node(n);
-         if(xbitmap.isName('Bitmap')){
-            o.loadResource(xbitmap);
-         }
+MO.FDrBitmapConsole = function FDrBitmapConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode = 'cloud.resource.bitmap';
+   o._classUnit   = MO.FDrBitmap;
+   o.query        = MO.FDrBitmapConsole_query;
+   o.update       = MO.FDrBitmapConsole_update;
+   return o;
+}
+MO.FDrBitmapConsole_query = function FDrBitmapConsole_query(guid){
+   var o = this;
+   var uri = '/' + o._serviceCode + '.ws?action=query&guid=' + guid;
+   var url = MO.Window.Browser.hostPath(uri);
+   var xroot = MO.Console.find(MO.FXmlConsole).sendSync(url);
+   var nodeCount = xroot.nodeCount();
+   for(var n = 0; n < nodeCount; n++){
+      var xbitmap = xroot.node(n);
+      if(xbitmap.isName('Bitmap')){
+         o.loadResource(xbitmap);
       }
-      return o._resources.get(guid);
    }
-   MO.FDrBitmapConsole_update = function FDrBitmapConsole_update(xconfig){
-      var o = this;
-      var uri = '/' + o._serviceCode + '.ws?action=update';
-      var url = RBrowser.hostPath(uri);
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
+   return o._resources.get(guid);
+}
+MO.FDrBitmapConsole_update = function FDrBitmapConsole_update(xconfig){
+   var o = this;
+   var uri = '/' + o._serviceCode + '.ws?action=update';
+   var url = MO.Window.Browser.hostPath(uri);
+   return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
 }
 with(MO){
    MO.FDrMaterial = function FDrMaterial(o){

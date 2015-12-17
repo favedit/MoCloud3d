@@ -722,7 +722,7 @@ MO.FResourceDataConsole_construct = function FResourceDataConsole_construct(){
    o._pipelinePool  = MO.Class.create(MO.FObjectPool);
    var capability = MO.Window.Browser.capability();
    if(!capability.optionProcess){
-      var pipeline = o._pipeline = MO.Class.create(FResourceSinglePipeline);
+      var pipeline = o._pipeline = MO.Class.create(MO.FResourceSinglePipeline);
       pipeline.setConsole(o);
    }
    var thread = o._thread = MO.Class.create(MO.FThread);
@@ -852,7 +852,7 @@ MO.FResourceSinglePipeline_decompress = function FResourceSinglePipeline_decompr
    }else{
       throw new MO.TError(o, 'Unknown data type.');
    }
-   LZMAD.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
+   LZMA.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
 }
 MO.FResourceSinglePipeline_dispose = function FResourceSinglePipeline_dispose(){
    var o = this;
@@ -955,7 +955,7 @@ MO.FResourceThreadPipeline_worker = function FResourceThreadPipeline_worker(){
    var worker = o._worker;
    if(!worker){
       var uri = MO.RBrowser.contentPath('/ajs/lzma_worker.js');
-      worker = o._worker = new LZMA_WORKER(uri);
+      worker = o._worker = new LZMA(uri);
    }
    return worker;
 }

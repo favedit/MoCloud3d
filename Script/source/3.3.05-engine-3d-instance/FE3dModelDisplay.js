@@ -30,7 +30,7 @@ MO.FE3dModelDisplay_construct = function FE3dModelDisplay_construct(){
    var o = this;
    o.__base.FE3dDisplay.construct.call(o);
    // 设置属性
-   o._material = MO.Class.create(FE3dMaterial);
+   o._material = MO.Class.create(MO.FE3dMaterial);
 }
 
 //==========================================================
@@ -42,14 +42,14 @@ MO.FE3dModelDisplay_construct = function FE3dModelDisplay_construct(){
 MO.FE3dModelDisplay_load = function FE3dModelDisplay_load(renderable){
    var o = this;
    var material = o._material;
-   var instanceConsole = RConsole.find(FE3dInstanceConsole);
+   var instanceConsole = MO.Console.find(MO.FE3dInstanceConsole);
    // 设置资源
    var modelResource = renderable.resource();
    var resource = o._resource = modelResource.display();
    o._matrix.assign(resource.matrix());
    material.loadResource(resource.material());
    // 创建网格集合
-   var geometryRenderables = renderable.geometrys();
+   var geometryRenderables = renderable.meshes();
    if(geometryRenderables){
       var geometryCount = geometryRenderables.count();
       var shapes = o._shapes = new MO.TObjects();

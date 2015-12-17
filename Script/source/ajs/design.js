@@ -644,10 +644,6 @@ with(MO){
    MO.FDsCatalog_onNodeClick = function FDsCatalog_onNodeClick(event){
       var o = this;
       var node = event.node;
-      var linker = node.dataPropertyGet('linker');
-      if(linker){
-         o.selectObject(linker);
-      }
    }
    MO.FDsCatalog_onNodeViewClick = function FDsCatalog_onNodeViewClick(event){
       var o = this;

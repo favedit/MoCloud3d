@@ -58,7 +58,7 @@ MO.FE3dModel_loadRenderable = function FE3dModel_loadRenderable(renderable){
    o._renderable = renderable;
    var resource = renderable.resource();
    // 选择技术
-   o.selectTechnique(o, FE3dGeneralTechnique);
+   o.selectTechnique(o, MO.FE3dGeneralTechnique);
    // 加载资源
    o.loadResource(resource);
    // 创建渲染对象

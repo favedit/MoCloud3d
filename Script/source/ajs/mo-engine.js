@@ -2100,7 +2100,7 @@ MO.FResourceDataConsole_construct = function FResourceDataConsole_construct(){
    o._pipelinePool  = MO.Class.create(MO.FObjectPool);
    var capability = MO.Window.Browser.capability();
    if(!capability.optionProcess){
-      var pipeline = o._pipeline = MO.Class.create(FResourceSinglePipeline);
+      var pipeline = o._pipeline = MO.Class.create(MO.FResourceSinglePipeline);
       pipeline.setConsole(o);
    }
    var thread = o._thread = MO.Class.create(MO.FThread);
@@ -2230,7 +2230,7 @@ MO.FResourceSinglePipeline_decompress = function FResourceSinglePipeline_decompr
    }else{
       throw new MO.TError(o, 'Unknown data type.');
    }
-   LZMAD.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
+   LZMA.decompress(processData, function(buffer){o.onComplete(buffer);}, null);
 }
 MO.FResourceSinglePipeline_dispose = function FResourceSinglePipeline_dispose(){
    var o = this;
@@ -2333,7 +2333,7 @@ MO.FResourceThreadPipeline_worker = function FResourceThreadPipeline_worker(){
    var worker = o._worker;
    if(!worker){
       var uri = MO.RBrowser.contentPath('/ajs/lzma_worker.js');
-      worker = o._worker = new LZMA_WORKER(uri);
+      worker = o._worker = new LZMA(uri);
    }
    return worker;
 }
@@ -4545,10 +4545,10 @@ MO.FE3sModel_unserialize = function FE3sModel_unserialize(input){
    }
    var skeletonCount = input.readInt16();
    if(skeletonCount > 0){
-      var s = o._skeletons = new MO.TObjects();
+      var skeletons = o._skeletons = new MO.TObjects();
       for(var i = 0; i < skeletonCount; i++){
          var skeleton = modelConsole.unserialSkeleton(input)
-         s.push(skeleton);
+         skeletons.push(skeleton);
       }
    }
    var animationCount = input.readInt16();
@@ -4568,6 +4568,7 @@ MO.FE3sModel_unserialize = function FE3sModel_unserialize(input){
          var renderable = renderables.get(i);
          var meshGuid = renderable.meshGuid();
          var mesh = meshes.get(meshGuid);
+         MO.Assert.debugNotNull(mesh);
          renderable.setMesh(mesh);
       }
    }
@@ -9371,7 +9372,7 @@ MO.FE3dModel_loadRenderable = function FE3dModel_loadRenderable(renderable){
    var o = this;
    o._renderable = renderable;
    var resource = renderable.resource();
-   o.selectTechnique(o, FE3dGeneralTechnique);
+   o.selectTechnique(o, MO.FE3dGeneralTechnique);
    o.loadResource(resource);
    o._display.load(renderable);
    o._dataReady = true;
@@ -9464,17 +9465,17 @@ MO.FE3dModelDisplay = function FE3dModelDisplay(o){
 MO.FE3dModelDisplay_construct = function FE3dModelDisplay_construct(){
    var o = this;
    o.__base.FE3dDisplay.construct.call(o);
-   o._material = MO.Class.create(FE3dMaterial);
+   o._material = MO.Class.create(MO.FE3dMaterial);
 }
 MO.FE3dModelDisplay_load = function FE3dModelDisplay_load(renderable){
    var o = this;
    var material = o._material;
-   var instanceConsole = RConsole.find(FE3dInstanceConsole);
+   var instanceConsole = MO.Console.find(MO.FE3dInstanceConsole);
    var modelResource = renderable.resource();
    var resource = o._resource = modelResource.display();
    o._matrix.assign(resource.matrix());
    material.loadResource(resource.material());
-   var geometryRenderables = renderable.geometrys();
+   var geometryRenderables = renderable.meshes();
    if(geometryRenderables){
       var geometryCount = geometryRenderables.count();
       var shapes = o._shapes = new MO.TObjects();
