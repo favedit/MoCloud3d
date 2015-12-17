@@ -4,7 +4,6 @@ import java.io.File;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.FFatalError;
@@ -21,6 +20,7 @@ import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.mesh.IGcResModelMeshConsole;
 import org.mo.content.core.resource.model.ICntModelConsole;
 import org.mo.content.core.resource.model.ICntModelMeshConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.model.IResModelMeshConsole;
 import org.mo.content.mime.obj.FObjFile;
 import org.mo.content.mime.phy.FPlyFile;
@@ -74,20 +74,16 @@ public class FModelServlet
 
    //============================================================
    // <T>逻辑处理。</T>
-   // <P>catalog:分类</P>
-   // <P>date:日期</P>
-   // <P>code:代码</P>
-   // <P>version:版本</P>
-   // <P>type:类型，没有的话，存储为 bin</P>
-   // <P>size:大小</P>
-   // <P>存储位置：\{catalog}\{date:yyyymmdd}\{code}\{version}.{type}</P>
    //
-   // @param context 环境
-   // @param request 请求
-   // @param response 应答
+   // @param context 网络环境
+   // @param session 会话信息
+   // @param logicContext 逻辑环境
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
    @Override
    public void process(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
                        IWebServletRequest request,
                        IWebServletResponse response){
@@ -120,15 +116,15 @@ public class FModelServlet
    // <T>逻辑处理。</T>
    //
    // @param context 网络环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
    @Override
    public void importData(IWebContext context,
+                          IGcSession session,
                           ILogicContext logicContext,
-                          FGcSessionInfo session,
                           IWebServletRequest request,
                           IWebServletResponse response){
       // 检查参数
@@ -177,7 +173,7 @@ public class FModelServlet
          // 生成临时文件
          tempFile = File.createTempFile("rs3_msh_", ".bin");
          file.saveToFile(tempFile.getAbsolutePath());
-         // 加载PHY模型文件 
+         // 加载PHY模型文件
          if("ply".equals(extension)){
             FPlyFile plyFile = new FPlyFile();
             plyFile.loadFile(tempFile.getAbsolutePath(), "utf-8");
@@ -192,7 +188,7 @@ public class FModelServlet
             // 导入模型
             _modelConsole.updateResourcePly(logicContext, session, modelInfo, plyFile);
          }
-         // 加载OBJ模型文件 
+         // 加载OBJ模型文件
          else if("obj".equals(extension)){
             FObjFile objFile = new FObjFile();
             objFile.loadFile(tempFile.getAbsolutePath(), "utf-8");
@@ -207,7 +203,7 @@ public class FModelServlet
             // 导入模型
             _modelConsole.updateResourceObj(logicContext, session, modelInfo, objFile);
          }
-         // 加载STL模型文件 
+         // 加载STL模型文件
          else if("stl".equals(extension)){
             FStlFile stlFile = new FStlFile();
             stlFile.loadFile(tempFile.getAbsolutePath(), "utf-8");

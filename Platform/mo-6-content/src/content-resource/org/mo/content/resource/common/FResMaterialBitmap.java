@@ -35,7 +35,7 @@ public class FResMaterialBitmap
    // <T>构造资源模型。</T>
    //============================================================
    public FResMaterialBitmap(){
-      _typeName = "MaterialBitmap";
+      _type = "MaterialBitmap";
       _guid = RUuid.makeUniqueId();
    }
 
@@ -73,16 +73,6 @@ public class FResMaterialBitmap
    //============================================================
    public void setMaterialBitmapPack(FResMaterialBitmapPack materialBitmapPack){
       _materialBitmapPack = materialBitmapPack;
-   }
-
-   //============================================================
-   // <T>获得全代码。</T>
-   //
-   // @return 全代码
-   //============================================================
-   @Override
-   public String fullCode(){
-      return _textureCode + "|" + _bitmapCode;
    }
 
    //============================================================
@@ -208,6 +198,7 @@ public class FResMaterialBitmap
    //
    // @param xconfig 配置信息
    //============================================================
+   @Override
    public void importConfig(FXmlNode xconfig){
       _code = xconfig.get("type");
       _textureCode = xconfig.get("texture");

@@ -18,7 +18,7 @@ public class FResSceneAnimation
    // <T>构造场景显示。</T>
    //============================================================
    public FResSceneAnimation(){
-      _typeName = "SceneAnimation";
+      _type = "SceneAnimation";
    }
 
    //============================================================

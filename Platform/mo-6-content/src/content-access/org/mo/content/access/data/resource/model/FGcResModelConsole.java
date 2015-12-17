@@ -9,6 +9,7 @@ import org.mo.cloud.data.data.FDataResourceModelLogic;
 import org.mo.cloud.data.data.FDataResourceModelMeshLogic;
 import org.mo.cloud.data.data.FDataResourceModelSkeletonLogic;
 import org.mo.cloud.define.enums.core.EGcResource;
+import org.mo.com.data.FSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.resource.FGcResourceInfo;
@@ -93,34 +94,27 @@ public class FGcResModelConsole
    }
 
    //============================================================
-   // <T>根据代码查找模型单元。</T>
+   // <T>根据用户和代码查找模型单元。</T>
    //
    // @param logicContext 逻辑环境
+   // @param userId 用户编号
+   // @param projectId 项目编号
    // @param code 代码
    // @return 处理结果
    //============================================================
    @Override
    public FGcResModelInfo findByCode(ILogicContext logicContext,
+                                     long userId,
+                                     long projectId,
                                      String code){
-      String searchSql = FDataResourceModelLogic.CODE + "='" + code + "'";
-      FGcResModelInfo modelInfo = search(logicContext, searchSql);
-      return modelInfo;
-   }
-
-   //============================================================
-   // <T>根据用户和代码查找模型单元。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param userId 用户编号
-   // @param code 代码
-   // @return 处理结果
-   //============================================================
-   @Override
-   public FGcResModelInfo findByUserCode(ILogicContext logicContext,
-                                         long userId,
-                                         String code){
-      String searchSql = "(" + FDataResourceModelLogic.USER_ID + "=" + userId + ") AND (" + FDataResourceModelLogic.CODE + "='" + code + "')";
-      FGcResModelInfo modelInfo = search(logicContext, searchSql);
+      // 生成条件
+      FSql whereSql = new FSql("(" + FDataResourceModelLogic.USER_ID + "=" + userId + ")");
+      if(projectId > 0){
+         whereSql.append(" AND (" + FDataResourceModelLogic.PROJECT_ID + "=" + projectId + ")");
+      }
+      whereSql.append(" AND (" + FDataResourceModelLogic.CODE + "='" + code + "')");
+      // 查询信息
+      FGcResModelInfo modelInfo = search(logicContext, whereSql);
       return modelInfo;
    }
 
@@ -156,21 +150,33 @@ public class FGcResModelConsole
    }
 
    //============================================================
+   // <T>更新记录后处理</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param modelInfo 数据单元
+   // @return 处理结果
+   //============================================================
+   @Override
+   protected EResult onUpdateAfter(ILogicContext logicContext,
+                                   FGcResModelInfo modelInfo){
+      String guid = modelInfo.guid();
+      // 删除临时数据
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.ResourceModel, guid);
+      // 返回结果
+      return EResult.Success;
+   }
+
+   //============================================================
    // <T>删除记录前处理</T>
    //
    // @param logicContext 逻辑环境
-   // @param unit 数据单元
+   // @param modelInfo 数据单元
    // @return 处理结果
    //============================================================
    @Override
    protected EResult onDeleteBefore(ILogicContext logicContext,
                                     FGcResModelInfo modelInfo){
       long modelId = modelInfo.ouid();
-      long resourceId = modelInfo.resourceId();
-      // 删除缓冲数据
-      FGcResourceInfo resourceInfo = _dataResourceConsole.get(logicContext, resourceId);
-      String resourceGuid = resourceInfo.guid();
-      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceModel, resourceGuid);
       // 删除动画集合
       String animationWhereSql = FDataResourceModelAnimationLogic.MODEL_ID + "=" + modelId;
       FLogicDataset<FGcResModelAnimationInfo> animationDataset = _dataModelAnimationConsole.fetch(logicContext, animationWhereSql);
@@ -203,15 +209,18 @@ public class FGcResModelConsole
    // <T>删除记录后处理</T>
    //
    // @param logicContext 逻辑环境
-   // @param unit 数据单元
+   // @param modelInfo 数据单元
    // @return 处理结果
    //============================================================
    @Override
    protected EResult onDeleteAfter(ILogicContext logicContext,
-                                   FGcResModelInfo unit){
+                                   FGcResModelInfo modelInfo){
+      String guid = modelInfo.guid();
       // 删除关联资源
-      long resourceId = unit.resourceId();
+      long resourceId = modelInfo.resourceId();
       _dataResourceConsole.doDelete(logicContext, resourceId);
+      // 删除临时数据
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.ResourceModel, guid);
       // 返回结果
       return EResult.Success;
    }

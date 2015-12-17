@@ -266,9 +266,7 @@ public class FResTexture
       // 设置属性
       _guid = xconfig.get("guid");
       _code = xconfig.get("code");
-      _fullCode = xconfig.get("name");
       _label = xconfig.get("label");
-      _keywords = xconfig.get("full_label");
       // 处理所有节点
       FXmlNode xbitmaps = xconfig.findNode("BitmapCollection");
       if(xbitmaps != null){
@@ -292,9 +290,7 @@ public class FResTexture
       // 设置属性
       xconfig.set("guid", _guid);
       xconfig.set("code", _code);
-      xconfig.set("name", _fullCode);
       xconfig.set("label", _label);
-      xconfig.set("keywords", _keywords);
       // 处理所有节点
       if(!_bitmaps.isEmpty()){
          FXmlNode xbitmaps = xconfig.createNode("BitmapCollection");
@@ -324,13 +320,12 @@ public class FResTexture
    //
    // @param xconfig 配置节点
    //============================================================
+   @Override
    public void importConfig(FXmlNode xconfig){
       FXmlNode xtexture = xconfig.findNode("Texture");
       // 设置属性
       _code = xtexture.get("code");
-      _fullCode = xtexture.get("name");
       _label = xtexture.get("label");
-      _keywords = xtexture.get("full_label");
       // 处理所有节点
       for(FXmlNode xnode : xtexture){
          if(xnode.isName("Bitmap")){

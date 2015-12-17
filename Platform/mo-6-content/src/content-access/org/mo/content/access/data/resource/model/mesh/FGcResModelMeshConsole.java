@@ -1,8 +1,11 @@
 package org.mo.content.access.data.resource.model.mesh;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.cloud.data.data.FDataResourceModelMeshLogic;
-import org.mo.cloud.data.data.FDataResourceModelMeshStreamLogic;
+import org.mo.com.data.FSql;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.IGcResourceConsole;
@@ -18,13 +21,13 @@ public class FGcResModelMeshConsole
       implements
          IGcResModelMeshConsole
 {
+   // 存储管理接口
+   @ALink
+   protected IGcStorageMongoConsole _storageConsole;
+
    // 资源管理器
    @ALink
    protected IGcResourceConsole _resourceConsole;
-
-   // 数据流管理器
-   @ALink
-   protected IGcResModelMeshStreamConsole _modelMeshStreamConsole;
 
    //============================================================
    // <T>构造3D资源网格控制台。</T>
@@ -37,46 +40,23 @@ public class FGcResModelMeshConsole
    // <T>根据代码查找网格单元。</T>
    //
    // @param logicContext 逻辑环境
+   // @param userId 用户编号
+   // @param projectId 项目编号
    // @param code 代码
    // @return 网格信息
    //============================================================
    @Override
    public FGcResModelMeshInfo findByCode(ILogicContext logicContext,
+                                         long userId,
+                                         long projectId,
                                          String code){
-      String whereSql = FDataResourceModelMeshLogic.CODE + "='" + code + "'";
-      FGcResModelMeshInfo mesh = search(logicContext, whereSql);
-      return mesh;
-   }
-
-   //============================================================
-   // <T>根据全代码查找网格单元。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param fullCode 全代码
-   // @return 网格信息
-   //============================================================
-   @Override
-   public FGcResModelMeshInfo findByFullCode(ILogicContext logicContext,
-                                             String code){
-      String whereSql = FDataResourceModelMeshLogic.FULL_CODE + "='" + code + "'";
-      FGcResModelMeshInfo mesh = search(logicContext, whereSql);
-      return mesh;
-   }
-
-   //============================================================
-   // <T>根据用户编号和代码查找网格信息。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param userId 用户编号
-   // @param code 项目代码
-   // @return 网格信息
-   //============================================================
-   @Override
-   public FGcResModelMeshInfo findByUserCode(ILogicContext logicContext,
-                                             long userId,
-                                             String code){
-      String whereSql = "(" + FDataResourceModelMeshLogic.USER_ID + "=" + userId + ")";
-      whereSql += " AND (" + FDataResourceModelMeshLogic.CODE + "='" + RSql.formatValue(code) + "')";
+      // 生成条件
+      FSql whereSql = new FSql("(" + FDataResourceModelMeshLogic.USER_ID + "=" + userId + ")");
+      if(projectId > 0){
+         whereSql.append(" AND (" + FDataResourceModelMeshLogic.PROJECT_ID + "=" + projectId + ")");
+      }
+      whereSql.append(" AND (" + FDataResourceModelMeshLogic.CODE + "='" + code + "')");
+      // 查询信息
       FGcResModelMeshInfo meshInfo = search(logicContext, whereSql);
       return meshInfo;
    }
@@ -86,18 +66,25 @@ public class FGcResModelMeshConsole
    //
    // @param logicContext 逻辑环境
    // @param userId 用户编号
+   // @param projectId 项目编号
    // @param modelId 模型编号
    // @param code 项目代码
    // @return 网格信息
    //============================================================
    @Override
-   public FGcResModelMeshInfo findByUserModelCode(ILogicContext logicContext,
-                                                  long userId,
-                                                  long modelId,
-                                                  String code){
-      String whereSql = "(" + FDataResourceModelMeshLogic.USER_ID + "=" + userId + ")";
-      whereSql += " AND (" + FDataResourceModelMeshLogic.MODEL_ID + "='" + modelId + "')";
-      whereSql += " AND (" + FDataResourceModelMeshLogic.CODE + "='" + RSql.formatValue(code) + "')";
+   public FGcResModelMeshInfo findByModelCode(ILogicContext logicContext,
+                                              long userId,
+                                              long projectId,
+                                              long modelId,
+                                              String code){
+      // 生成条件
+      FSql whereSql = new FSql("(" + FDataResourceModelMeshLogic.USER_ID + "=" + userId + ")");
+      if(projectId > 0){
+         whereSql.append(" AND (" + FDataResourceModelMeshLogic.PROJECT_ID + "=" + projectId + ")");
+      }
+      whereSql.append(" AND (" + FDataResourceModelMeshLogic.MODEL_ID + "=" + modelId + ")");
+      whereSql.append(" AND (" + FDataResourceModelMeshLogic.CODE + "='" + code + "')");
+      // 查询信息
       FGcResModelMeshInfo meshInfo = search(logicContext, whereSql);
       return meshInfo;
    }
@@ -160,25 +147,35 @@ public class FGcResModelMeshConsole
    }
 
    //============================================================
-   // <T>删除记录前处理</T>
+   // <T>更新记录后处理</T>
    //
    // @param logicContext 逻辑环境
    // @param unit 数据单元
    // @return 处理结果
    //============================================================
    @Override
-   public EResult onDeleteBefore(ILogicContext logicContext,
-                                 FGcResModelMeshInfo unit){
-      long meshId = unit.ouid();
-      // 删除网格数据流集合
-      FDataResourceModelMeshStreamLogic modelMeshStreamLogic = logicContext.findLogic(FDataResourceModelMeshStreamLogic.class);
-      String whereSql = FDataResourceModelMeshStreamLogic.MESH_ID + "=" + meshId;
-      FLogicDataset<FGcResModelMeshStreamInfo> modelMeshStreamDataset = modelMeshStreamLogic.fetchClass(FGcResModelMeshStreamInfo.class, whereSql);
-      if(modelMeshStreamDataset != null){
-         for(FGcResModelMeshStreamInfo modelMeshStream : modelMeshStreamDataset){
-            _modelMeshStreamConsole.doDelete(logicContext, modelMeshStream);
-         }
-      }
+   public EResult onUpdateAfter(ILogicContext logicContext,
+                                FGcResModelMeshInfo unit){
+      // 废弃临时数据
+      String guid = unit.guid();
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.ResourceModelMesh, guid);
+      // 返回结果
+      return EResult.Success;
+   }
+
+   //============================================================
+   // <T>删除记录后处理</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param unit 数据单元
+   // @return 处理结果
+   //============================================================
+   @Override
+   public EResult onDeleteAfter(ILogicContext logicContext,
+                                FGcResModelMeshInfo unit){
+      // 废弃临时数据
+      String guid = unit.guid();
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.ResourceModelMesh, guid);
       // 返回结果
       return EResult.Success;
    }

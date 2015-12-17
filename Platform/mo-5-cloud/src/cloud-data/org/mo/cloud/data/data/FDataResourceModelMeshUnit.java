@@ -65,12 +65,6 @@ public class FDataResourceModelMeshUnit
    // 字段排序索引的定义。
    protected int _sortIndex;
 
-   // 存储字段全代码的定义。
-   private String __fullCode;
-
-   // 字段全代码的定义。
-   protected String _fullCode;
-
    // 存储字段代码的定义。
    private String __code;
 
@@ -82,12 +76,6 @@ public class FDataResourceModelMeshUnit
 
    // 字段名称的定义。
    protected String _label;
-
-   // 存储字段关键字的定义。
-   private String __keywords;
-
-   // 字段关键字的定义。
-   protected String _keywords;
 
    // 存储字段轮廓最小点的定义。
    private String __outlineMin;
@@ -366,33 +354,6 @@ public class FDataResourceModelMeshUnit
    }
 
    //============================================================
-   // <T>判断全代码的数据是否改变。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public boolean isFullCodeChanged(){
-      return !RString.equals(__fullCode, _fullCode);
-   }
-
-   //============================================================
-   // <T>获得全代码的数据内容。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public String fullCode(){
-      return _fullCode;
-   }
-
-   //============================================================
-   // <T>设置全代码的数据内容。</T>
-   //
-   // @param value 数据内容
-   //============================================================
-   public void setFullCode(String value){
-      _fullCode = value;
-   }
-
-   //============================================================
    // <T>判断代码的数据是否改变。</T>
    //
    // @return 数据内容
@@ -444,33 +405,6 @@ public class FDataResourceModelMeshUnit
    //============================================================
    public void setLabel(String value){
       _label = value;
-   }
-
-   //============================================================
-   // <T>判断关键字的数据是否改变。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public boolean isKeywordsChanged(){
-      return !RString.equals(__keywords, _keywords);
-   }
-
-   //============================================================
-   // <T>获得关键字的数据内容。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public String keywords(){
-      return _keywords;
-   }
-
-   //============================================================
-   // <T>设置关键字的数据内容。</T>
-   //
-   // @param value 数据内容
-   //============================================================
-   public void setKeywords(String value){
-      _keywords = value;
    }
 
    //============================================================
@@ -712,14 +646,10 @@ public class FDataResourceModelMeshUnit
             return Long.toString(_modelId);
          case "sort_index":
             return RInteger.toString(_sortIndex);
-         case "full_code":
-            return _fullCode;
          case "code":
             return _code;
          case "label":
             return _label;
-         case "keywords":
-            return _keywords;
          case "outline_min":
             return _outlineMin;
          case "outline_max":
@@ -771,17 +701,11 @@ public class FDataResourceModelMeshUnit
          case "sort_index":
             _sortIndex = RInteger.parse(value);
             break;
-         case "full_code":
-            _fullCode = value;
-            break;
          case "code":
             _code = value;
             break;
          case "label":
             _label = value;
-            break;
-         case "keywords":
-            _keywords = value;
             break;
          case "outline_min":
             _outlineMin = value;
@@ -856,10 +780,6 @@ public class FDataResourceModelMeshUnit
                __sortIndex = RInteger.parse(value);
                _sortIndex = __sortIndex;
                break;
-            case "full_code":
-               __fullCode = value;
-               _fullCode = __fullCode;
-               break;
             case "code":
                __code = value;
                _code = __code;
@@ -867,10 +787,6 @@ public class FDataResourceModelMeshUnit
             case "label":
                __label = value;
                _label = __label;
-               break;
-            case "keywords":
-               __keywords = value;
-               _keywords = __keywords;
                break;
             case "outline_min":
                __outlineMin = value;
@@ -923,10 +839,8 @@ public class FDataResourceModelMeshUnit
       row.set("projectId", _projectId);
       row.set("modelId", _modelId);
       row.set("sortIndex", _sortIndex);
-      row.set("fullCode", _fullCode);
       row.set("code", _code);
       row.set("label", _label);
-      row.set("keywords", _keywords);
       row.set("outlineMin", _outlineMin);
       row.set("outlineMax", _outlineMax);
       row.set("content", _content);
@@ -952,10 +866,8 @@ public class FDataResourceModelMeshUnit
       map.put("projectId", RLong.toString(_projectId));
       map.put("modelId", RLong.toString(_modelId));
       map.put("sortIndex", RInteger.toString(_sortIndex));
-      map.put("fullCode", _fullCode);
       map.put("code", _code);
       map.put("label", _label);
-      map.put("keywords", _keywords);
       map.put("outlineMin", _outlineMin);
       map.put("outlineMax", _outlineMax);
       map.put("content", _content);
@@ -981,10 +893,8 @@ public class FDataResourceModelMeshUnit
       _projectId = input.readInt64();
       _modelId = input.readInt64();
       _sortIndex = input.readInt32();
-      _fullCode = input.readString();
       _code = input.readString();
       _label = input.readString();
-      _keywords = input.readString();
       _outlineMin = input.readString();
       _outlineMax = input.readString();
       _content = input.readString();
@@ -1010,10 +920,8 @@ public class FDataResourceModelMeshUnit
       output.writeInt64(_projectId);
       output.writeInt64(_modelId);
       output.writeInt32(_sortIndex);
-      output.writeString(_fullCode);
       output.writeString(_code);
       output.writeString(_label);
-      output.writeString(_keywords);
       output.writeString(_outlineMin);
       output.writeString(_outlineMax);
       output.writeString(_content);
@@ -1041,10 +949,8 @@ public class FDataResourceModelMeshUnit
       unit.setProjectId(_projectId);
       unit.setModelId(_modelId);
       unit.setSortIndex(_sortIndex);
-      unit.setFullCode(_fullCode);
       unit.setCode(_code);
       unit.setLabel(_label);
-      unit.setKeywords(_keywords);
       unit.setOutlineMin(_outlineMin);
       unit.setOutlineMax(_outlineMax);
       unit.setContent(_content);

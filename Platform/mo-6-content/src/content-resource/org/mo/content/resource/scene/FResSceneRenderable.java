@@ -15,7 +15,7 @@ public class FResSceneRenderable
    // <T>构造场景渲染。</T>
    //============================================================
    public FResSceneRenderable(){
-      _typeName = "SceneRenderable";
+      _type = "SceneRenderable";
    }
 
    //============================================================

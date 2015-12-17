@@ -33,7 +33,7 @@ public class FResModel
    // <T>构造资源模型。</T>
    //============================================================
    public FResModel(){
-      _typeName = "Model";
+      _type = "Model";
    }
 
    //============================================================
@@ -230,7 +230,6 @@ public class FResModel
       // 读取属性
       _ouid = unit.ouid();
       _guid = unit.guid();
-      _fullCode = unit.fullCode();
       _code = unit.code();
       _label = unit.label();
    }
@@ -242,10 +241,8 @@ public class FResModel
    //============================================================
    public void saveUnit(FDataResourceModelUnit unit){
       // 存储属性
-      unit.setFullCode(fullCode());
       unit.setCode(_code);
       unit.setLabel(_label);
-      unit.setKeywords(_keywords);
       // 存储配置
       FXmlNode xconfig = new FXmlNode("Model");
       saveConfig(xconfig);
@@ -263,8 +260,6 @@ public class FResModel
       }
       if(hasMesh()){
          for(FResModelMesh mesh : _meshs){
-            // 构建处理
-            mesh.build();
             // 建立渲染信息
             FResModelRenderable renderable = new FResModelRenderable();
             renderable.setMeshGuid(mesh.guid());
@@ -281,9 +276,9 @@ public class FResModel
    @Override
    public void importData(IDataInput input){
       super.importData(input);
-      _fullCode = input.readString();
+      input.readString(); // _fullCode
       _label = input.readString();
-      _keywords = input.readString();
+      input.readString(); //_keywords
       // 读取网格集合
       int meshCount = input.readInt32();
       for(int n = 0; n < meshCount; n++){
@@ -293,8 +288,6 @@ public class FResModel
          mesh.importData(input);
          pushMesh(mesh);
       }
-      // 构建处理
-      build();
    }
 
    //============================================================

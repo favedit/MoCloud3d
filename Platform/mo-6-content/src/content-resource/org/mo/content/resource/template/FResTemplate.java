@@ -21,7 +21,7 @@ public class FResTemplate
    // <T>构造资源模型。</T>
    //============================================================
    public FResTemplate(){
-      _typeName = "Template";
+      _type = "Template";
    }
 
    //============================================================
@@ -46,7 +46,6 @@ public class FResTemplate
    //============================================================
    public void saveUnit(FGcResTemplateInfo unit){
       // 存储属性
-      unit.setFullCode(fullCode());
       unit.setCode(_code);
       unit.setLabel(_label);
       unit.setContent(toXml());
@@ -57,12 +56,11 @@ public class FResTemplate
    //
    // @param xconfig 配置节点
    //============================================================
+   @Override
    public void importConfig(FXmlNode xconfig){
       FXmlNode xtemplate = xconfig.findNode("Template");
       _code = xtemplate.get("code");
-      _fullCode = xtemplate.get("full_code");
       _label = xtemplate.get("label");
-      _keywords = xtemplate.get("keywords");
       // 处理所有节点
       for(FXmlNode xnode : xtemplate){
          if(xnode.isName("ThemeCollection")){

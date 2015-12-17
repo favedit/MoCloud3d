@@ -18,8 +18,8 @@ function _load(){
    MO.Window.Browser.setContentPath('/script');
    // 设置环境
    MO.Console.find(MO.FE3sVendorConsole).setup('net');
-   MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.ServiceHost, '115.28.82.149');
-   MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
+   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.ServiceHost, '115.28.82.149');
+   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
    // 加载工作区
    var application = MO.Desktop.initialize(MO.FDuiWorkspaceApplication);
    var workspace = application.selectWorkspace(MO.FDsPrivateWorkspace);

@@ -275,10 +275,12 @@ public class FMongodbConnection
             DBObject fragmentSearch = new BasicDBObject("guid", fragmentGuid);
             DBObject fragmentFind = fragmentCollection.findOne(fragmentSearch);
             if(fragmentFind != null){
-               fragmentCollection.remove(fragmentFind);
+               fragmentCollection.update(fragmentSearch, fragmentItem);
+               //fragmentCollection.remove(fragmentFind);
+            }else{
+               // 新建处理
+               fragmentCollection.insert(fragmentItem);
             }
-            // 新建处理
-            fragmentCollection.insert(fragmentItem);
             remain -= _byteLimit;
          }
          item.put("block", blockCount);
@@ -291,10 +293,12 @@ public class FMongodbConnection
       DBObject search = new BasicDBObject("guid", guid);
       DBObject find = collection.findOne(search);
       if(find != null){
-         collection.remove(find);
+         collection.update(search, item);
+         //collection.remove(find);
+      }else{
+         // 新建处理
+         collection.insert(item);
       }
-      // 新建处理
-      collection.insert(item);
       return true;
    }
 

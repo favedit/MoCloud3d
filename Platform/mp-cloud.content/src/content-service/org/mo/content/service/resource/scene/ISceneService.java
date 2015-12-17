@@ -1,7 +1,7 @@
 package org.mo.content.service.resource.scene;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
+import org.mo.content.core.web.IGcSession;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.core.face.AWebLogin;
 import org.mo.web.protocol.context.IWebContext;
@@ -25,7 +25,7 @@ public interface ISceneService
    //============================================================
    EResult list(IWebContext context,
                 ILogicContext logicContext,
-                FGcSessionInfo session,
+                IGcSession session,
                 IWebInput input,
                 IWebOutput output);
 
@@ -40,7 +40,7 @@ public interface ISceneService
    //============================================================
    EResult query(IWebContext context,
                  ILogicContext logicContext,
-                 FGcSessionInfo session,
+                 IGcSession session,
                  IWebInput input,
                  IWebOutput output);
 
@@ -55,7 +55,7 @@ public interface ISceneService
    //============================================================
    EResult create(IWebContext context,
                   ILogicContext logicContext,
-                  FGcSessionInfo session,
+                  IGcSession session,
                   IWebInput input,
                   IWebOutput output);
 
@@ -70,7 +70,7 @@ public interface ISceneService
    //============================================================
    EResult createCamera(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output);
 
@@ -85,7 +85,7 @@ public interface ISceneService
    //============================================================
    EResult createLayer(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output);
 
@@ -100,7 +100,7 @@ public interface ISceneService
    //============================================================
    EResult createSprite(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output);
 
@@ -115,7 +115,7 @@ public interface ISceneService
    //============================================================
    EResult createMovie(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output);
 
@@ -130,7 +130,7 @@ public interface ISceneService
    //============================================================
    EResult copyNode(IWebContext context,
                     ILogicContext logicContext,
-                    FGcSessionInfo session,
+                    IGcSession session,
                     IWebInput input,
                     IWebOutput output);
 
@@ -145,7 +145,7 @@ public interface ISceneService
    //============================================================
    EResult upate(IWebContext context,
                  ILogicContext logicContext,
-                 FGcSessionInfo session,
+                 IGcSession session,
                  IWebInput input,
                  IWebOutput output);
 
@@ -160,7 +160,7 @@ public interface ISceneService
    //============================================================
    EResult updateContent(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output);
 
@@ -175,7 +175,7 @@ public interface ISceneService
    //============================================================
    EResult delete(IWebContext context,
                   ILogicContext logicContext,
-                  FGcSessionInfo session,
+                  IGcSession session,
                   IWebInput input,
                   IWebOutput output);
 
@@ -190,7 +190,7 @@ public interface ISceneService
    //============================================================
    EResult deleteNode(IWebContext context,
                       ILogicContext logicContext,
-                      FGcSessionInfo session,
+                      IGcSession session,
                       IWebInput input,
                       IWebOutput output);
 }

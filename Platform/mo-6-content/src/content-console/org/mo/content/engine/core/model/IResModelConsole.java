@@ -1,9 +1,9 @@
 package org.mo.content.engine.core.model;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.IGcResModelConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.mime.obj.FObjFile;
 import org.mo.content.mime.phy.FPlyFile;
 import org.mo.content.mime.stl.FStlFile;
@@ -46,7 +46,7 @@ public interface IResModelConsole
    // @return 模型信息
    //============================================================
    FGcResModelInfo insertResource(ILogicContext logicContext,
-                                  FGcSessionInfo session,
+                                  IGcSession session,
                                   FResModel model);
 
    //============================================================
@@ -59,7 +59,7 @@ public interface IResModelConsole
    // @return 模型信息
    //============================================================
    EResult updateResource(ILogicContext logicContext,
-                          FGcSessionInfo session,
+                          IGcSession session,
                           FGcResModelInfo modelInfo,
                           FResModel model);
 
@@ -73,7 +73,7 @@ public interface IResModelConsole
    // @return 处理结果
    //============================================================
    EResult updateResourcePly(ILogicContext logicContext,
-                             FGcSessionInfo session,
+                             IGcSession session,
                              FGcResModelInfo modelInfo,
                              FPlyFile file);
 
@@ -87,7 +87,7 @@ public interface IResModelConsole
    // @return 处理结果
    //============================================================
    EResult updateResourceObj(ILogicContext logicContext,
-                             FGcSessionInfo session,
+                             IGcSession session,
                              FGcResModelInfo modelInfo,
                              FObjFile file);
 
@@ -101,7 +101,7 @@ public interface IResModelConsole
    // @return 处理结果
    //============================================================
    EResult updateResourceStl(ILogicContext logicContext,
-                             FGcSessionInfo session,
+                             IGcSession session,
                              FGcResModelInfo modelInfo,
                              FStlFile file);
 
@@ -114,7 +114,7 @@ public interface IResModelConsole
    // @return 处理结果
    //============================================================
    EResult importModel(ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        String fileName);
 
    //============================================================
@@ -126,7 +126,7 @@ public interface IResModelConsole
    // @return 处理结果
    //============================================================
    EResult importSkeleton(ILogicContext logicContext,
-                          FGcSessionInfo session,
+                          IGcSession session,
                           String fileName);
 
    //============================================================
@@ -138,6 +138,6 @@ public interface IResModelConsole
    // @return 处理结果
    //============================================================
    EResult importAnimation(ILogicContext logicContext,
-                           FGcSessionInfo session,
+                           IGcSession session,
                            String fileName);
 }

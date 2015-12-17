@@ -1,6 +1,6 @@
 package org.mo.content.common;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
+import org.mo.content.core.web.FGcSession;
 
 public class RRs3Configuration
 {
@@ -11,8 +11,8 @@ public class RRs3Configuration
    //============================================================
    // <T>生成一个会话。</T>
    //============================================================
-   public static FGcSessionInfo makeSession(){
-      FGcSessionInfo session = new FGcSessionInfo();
+   public static FGcSession makeSession(){
+      FGcSession session = new FGcSession();
       session.setUserId(1);
       return session;
    }

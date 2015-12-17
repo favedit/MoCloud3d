@@ -11,13 +11,13 @@ public class FResModelRenderable
       extends FResRenderable
 {
    // 网格唯一编号
-   private String _meshGuid;
+   protected String _meshGuid;
 
    //============================================================
    // <T>构造资源模型渲染对象。</T>
    //============================================================
    public FResModelRenderable(){
-      _typeName = "ModelRenderable";
+      _type = "ModelRenderable";
    }
 
    //============================================================

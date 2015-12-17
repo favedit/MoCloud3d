@@ -5,7 +5,6 @@ import java.io.File;
 import org.mo.cloud.core.storage.EGcStorage;
 import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.FGcStorageContent;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteStream;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.EResult;
@@ -18,6 +17,7 @@ import org.mo.content.access.data.resource.scene.FGcResSceneConsole;
 import org.mo.content.access.data.resource.scene.FGcResSceneInfo;
 import org.mo.content.access.data.resource.template.FGcResTemplateInfo;
 import org.mo.content.access.data.resource.template.FGcResTemplateMaterialInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.material.IResMaterialConsole;
 import org.mo.content.engine.core.template.IResTemplateConsole;
 import org.mo.content.engine.core.template.IResTemplateMaterialConsole;
@@ -100,7 +100,7 @@ public class FResSceneConsole
    public byte[] makeSceneData(ILogicContext logicContext,
                                String guid){
       // 查找数据
-      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceScene, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.ResourceScene, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -117,7 +117,7 @@ public class FResSceneConsole
       }
       //............................................................
       // 存储数据
-      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceScene, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.ResourceScene, guid);
       storage.setCode(scene.code());
       storage.setData(data);
       _storageConsole.store(EGcStorage.Cache, storage);
@@ -200,7 +200,7 @@ public class FResSceneConsole
       //............................................................
       // 废弃临时数据
       FGcResourceInfo resource = _dataResourceConsole.get(logicContext, resourceId);
-      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceScene, resource.guid());
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.ResourceScene, resource.guid());
       _dataResourceConsole.doUpdate(logicContext, resource);
       // 返回场景信息
       return sceneInfo;
@@ -216,7 +216,7 @@ public class FResSceneConsole
    //============================================================
    @Override
    public EResult importResource(ILogicContext logicContext,
-                                 FGcSessionInfo session,
+                                 IGcSession session,
                                  String filePath){
       // 获得名称
       long userId = session.userId();
@@ -272,10 +272,8 @@ public class FResSceneConsole
       }
       sceneInfo.setUserId(userId);
       sceneInfo.setProjectId(session.projectId());
-      sceneInfo.setFullCode(scene.fullCode());
       sceneInfo.setCode(code);
       sceneInfo.setLabel(scene.label());
-      sceneInfo.setKeywords(scene.keywords());
       if(findSceneInfo == null){
          doInsert(logicContext, sceneInfo);
          scene.setGuid(sceneInfo.guid());

@@ -1,7 +1,6 @@
 package org.mo.content.service.resource.mesh;
 
 import org.mo.cloud.data.data.FDataSolutionProjectLogic;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -11,6 +10,7 @@ import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
 import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
 import org.mo.content.core.resource.model.ICntModelMeshConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
@@ -48,7 +48,7 @@ public class FMeshService
    @Override
    public EResult list(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output){
       FXmlNode xinput = input.config();
@@ -95,7 +95,7 @@ public class FMeshService
    @Override
    public EResult query(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 检查参数
@@ -133,7 +133,7 @@ public class FMeshService
    @Override
    public EResult create(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -147,7 +147,7 @@ public class FMeshService
          throw new FFatalError("Label is empty.");
       }
       // 查找数据
-      FGcResModelMeshInfo findMesh = _meshConsole.findByUserCode(logicContext, session.userId(), code);
+      FGcResModelMeshInfo findMesh = _meshConsole.findByCode(logicContext, session.userId(), session.projectId(), code);
       if(findMesh != null){
          throw new FFatalError("Resource3d mesh code is duplicate. (user_id={1}, code={2})", session.userId(), code);
       }
@@ -172,7 +172,7 @@ public class FMeshService
    @Override
    public EResult upate(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 获得参数
@@ -221,7 +221,7 @@ public class FMeshService
    @Override
    public EResult delete(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数

@@ -19,7 +19,7 @@ public class FResTechnique
    // <T>构造场景技术。</T>
    //============================================================
    public FResTechnique(){
-      _typeName = "Technique";
+      _type = "Technique";
    }
 
    //============================================================

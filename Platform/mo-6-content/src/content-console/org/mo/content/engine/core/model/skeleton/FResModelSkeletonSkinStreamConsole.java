@@ -69,7 +69,6 @@ public class FResModelSkeletonSkinStreamConsole
       // 获得信息
       String guid = streamInfo.guid();
       // 设置数据
-      streamInfo.setFullCode(stream.fullCode());
       streamInfo.setCode(stream.code());
       streamInfo.setElementDataCd(stream.elementDataCd());
       streamInfo.setElementCount(stream.elementCount());

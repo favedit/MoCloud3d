@@ -1,6 +1,9 @@
 package org.mo.content.resource.common;
 
+import org.mo.com.io.FByteStream;
+import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
+import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.RString;
 import org.mo.com.lang.RUuid;
@@ -12,8 +15,8 @@ import org.mo.com.xml.FXmlNode;
 public class FResObject
       extends FObject
 {
-   // 类型名称
-   protected String _typeName;
+   // 类型
+   protected String _type;
 
    // 编号
    protected long _ouid;
@@ -24,14 +27,8 @@ public class FResObject
    // 代码
    protected String _code;
 
-   // 全代码
-   protected String _fullCode;
-
    // 标签
    protected String _label;
-
-   // 关键字集合
-   protected String _keywords;
 
    //============================================================
    // <T>构造资源对象。</T>
@@ -44,8 +41,8 @@ public class FResObject
    //
    // @return 类型名称
    //============================================================
-   public String typeName(){
-      return _typeName;
+   public String type(){
+      return _type;
    }
 
    //============================================================
@@ -72,18 +69,6 @@ public class FResObject
    // @return 唯一编号
    //============================================================
    public String guid(){
-      return _guid;
-   }
-
-   //============================================================
-   // <T>生成唯一编号。</T>
-   //
-   // @return 唯一编号
-   //============================================================
-   public String makeGuid(){
-      if(RString.isEmpty(_guid)){
-         _guid = RUuid.makeUniqueId();
-      }
       return _guid;
    }
 
@@ -115,24 +100,6 @@ public class FResObject
    }
 
    //============================================================
-   // <T>获得全代码。</T>
-   //
-   // @return 全代码
-   //============================================================
-   public String fullCode(){
-      return _fullCode;
-   }
-
-   //============================================================
-   // <T>设置全代码。</T>
-   //
-   // @param fullCode 全代码
-   //============================================================
-   public void setFullCode(String fullCode){
-      _fullCode = fullCode;
-   }
-
-   //============================================================
    // <T>获得标签。</T>
    //
    // @return 标签
@@ -151,33 +118,25 @@ public class FResObject
    }
 
    //============================================================
-   // <T>获得关键字。</T>
-   //
-   // @return 关键字
-   //============================================================
-   public String keywords(){
-      return _keywords;
-   }
-
-   //============================================================
-   // <T>设置关键字。</T>
-   //
-   // @param keywords 关键字
-   //============================================================
-   public void setKeywords(String keywords){
-      _keywords = keywords;
-   }
-
-   //============================================================
    // <T>接收资源数据。</T>
    //
    // @param resource 资源
    //============================================================
    public void assignInfo(FResObject resrouce){
       _code = resrouce._code;
-      _fullCode = resrouce._fullCode;
       _label = resrouce._label;
-      _keywords = resrouce._keywords;
+   }
+
+   //============================================================
+   // <T>生成唯一编号。</T>
+   //
+   // @return 唯一编号
+   //============================================================
+   public String makeGuid(){
+      if(RString.isEmpty(_guid)){
+         _guid = RUuid.makeUniqueId();
+      }
+      return _guid;
    }
 
    //============================================================
@@ -186,10 +145,37 @@ public class FResObject
    // @param output 输出流
    //============================================================
    public void serialize(IDataOutput output){
-      output.writeString(_typeName);
+      output.writeString(_type);
       output.writeString(_guid);
       output.writeString(_code);
       output.writeString(_label);
+   }
+
+   //============================================================
+   // <T>序列化数据到输出流。</T>
+   //
+   // @param output 输出流
+   //============================================================
+   public void storageSerialize(IDataOutput output){
+      output.writeString(_type);
+      output.writeString(makeGuid());
+      output.writeString(_code);
+      output.writeString(_label);
+   }
+
+   //============================================================
+   // <T>从输入流反序列化数据。</T>
+   //
+   // @param input 输入流
+   //============================================================
+   public void storageUnserialize(IDataInput input){
+      String type = input.readString();
+      if(!_type.equals(type)){
+         throw new FFatalError("Unserialize failure. (inner_type={1}, type={2})", _type, type);
+      }
+      _guid = input.readString();
+      _code = input.readString();
+      _label = input.readString();
    }
 
    //============================================================
@@ -233,12 +219,41 @@ public class FResObject
    //============================================================
    public void saveConfig(FXmlNode xconfig){
       // 设置名称
-      if(!RString.isEmpty(_typeName)){
-         xconfig.setName(_typeName);
-      }
-      // 存储属性
+      xconfig.setName(_type);
       xconfig.set("guid", makeGuid());
       xconfig.set("code", _code);
       xconfig.set("label", _label);
+   }
+
+   //============================================================
+   // <T>获得字节数据。</T>
+   //
+   // @return 字节数据
+   //============================================================
+   public byte[] toBytes(){
+      FByteStream stream = new FByteStream();
+      serialize(stream);
+      return stream.toArray();
+   }
+
+   //============================================================
+   // <T>获得字节数据。</T>
+   //
+   // @return 字节数据
+   //============================================================
+   public byte[] toStorageBytes(){
+      FByteStream stream = new FByteStream();
+      storageSerialize(stream);
+      return stream.toArray();
+   }
+
+   //============================================================
+   // <T>设置存储字节数据。</T>
+   //
+   // @param data 字节数据
+   //============================================================
+   public void setStorageBytes(byte[] data){
+      FByteStream stream = new FByteStream(data);
+      storageUnserialize(stream);
    }
 }

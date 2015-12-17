@@ -323,9 +323,6 @@ public class FResSpace
    @Override
    public void loadConfig(FXmlNode xconfig){
       super.loadConfig(xconfig);
-      // 读取属性
-      _fullCode = xconfig.get("full_code", _fullCode);
-      _keywords = xconfig.get("keywords", _keywords);
       // 读取节点集合
       for(FXmlNode xnode : xconfig){
          if(xnode.isName("Technique")){
@@ -367,9 +364,6 @@ public class FResSpace
    @Override
    public void saveConfig(FXmlNode xconfig){
       super.saveConfig(xconfig);
-      // 存储属性
-      xconfig.set("full_code", _fullCode);
-      xconfig.set("keywords", _keywords);
       // 存储技术
       _technique.saveConfig(xconfig.createNode("Technique"));
       // 存储区域

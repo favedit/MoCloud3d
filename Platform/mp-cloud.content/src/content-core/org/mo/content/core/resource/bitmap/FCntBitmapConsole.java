@@ -67,7 +67,7 @@ public class FCntBitmapConsole
       _storageConsole.store(EGcStorage.Content, storage);
       //............................................................
       // 删除缓冲数据
-      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheBitmapPreview, guid);
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.BitmapPreview, guid);
       return EResult.Success;
    }
 

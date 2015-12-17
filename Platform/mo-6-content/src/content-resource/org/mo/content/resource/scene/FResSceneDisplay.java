@@ -31,7 +31,7 @@ public class FResSceneDisplay
    // <T>构造场景显示。</T>
    //============================================================
    public FResSceneDisplay(){
-      _typeName = "SceneDisplay";
+      _type = "SceneDisplay";
    }
 
    //============================================================

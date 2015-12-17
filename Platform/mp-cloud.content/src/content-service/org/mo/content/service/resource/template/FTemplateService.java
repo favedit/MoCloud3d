@@ -1,7 +1,6 @@
 package org.mo.content.service.resource.template;
 
 import org.mo.cloud.data.data.FDataSolutionProjectLogic;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -18,6 +17,7 @@ import org.mo.content.core.resource.material.ICntMaterialConsole;
 import org.mo.content.core.resource.model.ICntModelConsole;
 import org.mo.content.core.resource.model.ICntModelMeshConsole;
 import org.mo.content.core.resource.template.ICntTemplateConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.template.IResTemplateMaterialConsole;
 import org.mo.content.resource.common.FResMaterial;
 import org.mo.content.resource.common.FResShape;
@@ -76,7 +76,7 @@ public class FTemplateService
    @Override
    public EResult list(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output){
       FXmlNode xinput = input.config();
@@ -123,7 +123,7 @@ public class FTemplateService
    @Override
    public EResult query(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 检查参数
@@ -161,7 +161,7 @@ public class FTemplateService
    @Override
    public EResult create(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -209,7 +209,7 @@ public class FTemplateService
    @Override
    public EResult createMaterial(IWebContext context,
                                  ILogicContext logicContext,
-                                 FGcSessionInfo session,
+                                 IGcSession session,
                                  IWebInput input,
                                  IWebOutput output){
       long userId = session.userId();
@@ -283,10 +283,11 @@ public class FTemplateService
    @Override
    public EResult createDisplay(IWebContext context,
                                 ILogicContext logicContext,
-                                FGcSessionInfo session,
+                                IGcSession session,
                                 IWebInput input,
                                 IWebOutput output){
       long userId = session.userId();
+      long projectId = session.projectId();
       // 获得参数
       FXmlNode xdisplay = input.config().findNode("Display");
       if(xdisplay == null){
@@ -315,7 +316,7 @@ public class FTemplateService
       if(!RString.isEmpty(modelGuid)){
          modelInfo = _modelConsole.findByGuid(logicContext, modelGuid);
       }else{
-         modelInfo = _modelConsole.findByUserCode(logicContext, userId, modelCode);
+         modelInfo = _modelConsole.findByCode(logicContext, userId, projectId, modelCode);
       }
       if(modelInfo == null){
          throw new FFatalError("Model is not exists. (guid={1}, code={2})", modelGuid, modelCode);
@@ -360,7 +361,7 @@ public class FTemplateService
    @Override
    public EResult upate(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 获得参数
@@ -409,7 +410,7 @@ public class FTemplateService
    @Override
    public EResult updateContent(IWebContext context,
                                 ILogicContext logicContext,
-                                FGcSessionInfo session,
+                                IGcSession session,
                                 IWebInput input,
                                 IWebOutput output){
       // 检查输入
@@ -443,7 +444,7 @@ public class FTemplateService
    @Override
    public EResult delete(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数

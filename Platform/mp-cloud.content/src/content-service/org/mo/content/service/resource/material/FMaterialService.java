@@ -1,7 +1,6 @@
 package org.mo.content.service.resource.material;
 
 import org.mo.cloud.data.data.FDataResourceMaterialBitmapLogic;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -14,6 +13,7 @@ import org.mo.content.access.data.resource.material.FGcResMaterialBitmapInfo;
 import org.mo.content.access.data.resource.material.FGcResMaterialInfo;
 import org.mo.content.access.data.resource.material.IGcResMaterialBitmapConsole;
 import org.mo.content.access.data.resource.material.IGcResMaterialConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.common.FResMaterial;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
@@ -64,7 +64,7 @@ public class FMaterialService
    @Override
    public EResult list(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output){
       //      // 获得参数
@@ -106,7 +106,7 @@ public class FMaterialService
    @Override
    public EResult listBitmap(IWebContext context,
                              ILogicContext logicContext,
-                             FGcSessionInfo session,
+                             IGcSession session,
                              IWebInput input,
                              IWebOutput output){
       // 检查参数
@@ -159,7 +159,7 @@ public class FMaterialService
    @Override
    public EResult query(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 检查参数
@@ -197,7 +197,7 @@ public class FMaterialService
    @Override
    public EResult create(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -245,7 +245,7 @@ public class FMaterialService
    @Override
    public EResult upate(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       //      // 获得参数
@@ -294,7 +294,7 @@ public class FMaterialService
    @Override
    public EResult delete(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       //      // 获得参数
@@ -329,7 +329,7 @@ public class FMaterialService
    @Override
    public EResult deleteBitmap(IWebContext context,
                                ILogicContext logicContext,
-                               FGcSessionInfo session,
+                               IGcSession session,
                                IWebInput input,
                                IWebOutput output){
       // 获得参数

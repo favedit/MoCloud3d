@@ -75,7 +75,7 @@ public class FCntMaterialConsole
                                  String guid){
       //............................................................
       // 查找数据
-      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheMaterialPreview, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.MaterialPreview, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -84,7 +84,7 @@ public class FCntMaterialConsole
       byte[] data = makePreview(logicContext, guid);
       // 存储数据
       if(data != null){
-         FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheMaterialPreview, guid);
+         FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.MaterialPreview, guid);
          storage.setData(data);
          _storageConsole.store(EGcStorage.Cache, storage);
       }
@@ -202,7 +202,7 @@ public class FCntMaterialConsole
       String flag = guid + "|" + code;
       //............................................................
       // 查找数据
-      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceMaterialBitmapPack, flag);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.ResourceMaterialBitmapPack, flag);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -210,7 +210,7 @@ public class FCntMaterialConsole
       // 生成模型
       byte[] data = makeBitmap(logicContext, guid, code);
       // 存储数据
-      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceMaterialBitmapPack, flag);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.ResourceMaterialBitmapPack, flag);
       storage.setCode(flag);
       storage.setData(data);
       _storageConsole.store(EGcStorage.Cache, storage);

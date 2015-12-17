@@ -172,7 +172,6 @@ public class FResMesh
       _ouid = unit.ouid();
       _guid = unit.guid();
       _code = unit.code();
-      _fullCode = unit.fullCode();
       _label = unit.label();
       // 读取轮廓
       _outline.min.parse(unit.outlineMin());
@@ -187,7 +186,6 @@ public class FResMesh
    public void saveUnit(FDataResourceModelMeshUnit unit){
       // 存储属性
       unit.setCode(_code);
-      unit.setFullCode(_fullCode);
       unit.setLabel(_label);
       // 存储轮廓
       unit.setOutlineMin(_outline.min.toString());
@@ -221,6 +219,7 @@ public class FResMesh
    //
    // @param input 输入流
    //============================================================
+   @Override
    public void importData(IDataInput input){
       // 读取属性
       _code = input.readString();

@@ -1,6 +1,5 @@
 package org.mo.content.service.resource.model;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -8,6 +7,7 @@ import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
 import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.core.resource.model.ICntModelConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.model.FResModel;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
@@ -44,7 +44,7 @@ public class FModelService
    @Override
    public EResult list(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output){
       //      FXmlNode xoutput = output.config();
@@ -71,7 +71,7 @@ public class FModelService
    @Override
    public EResult query(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       //      String code = context.parameter("code");
@@ -101,7 +101,7 @@ public class FModelService
    @Override
    public EResult create(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       //      // 获得参数
@@ -140,7 +140,7 @@ public class FModelService
    @Override
    public EResult upate(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 获得参数
@@ -189,7 +189,7 @@ public class FModelService
    @Override
    public EResult updateContent(IWebContext context,
                                 ILogicContext logicContext,
-                                FGcSessionInfo session,
+                                IGcSession session,
                                 IWebInput input,
                                 IWebOutput output){
       // 检查输入
@@ -223,7 +223,7 @@ public class FModelService
    @Override
    public EResult delete(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数

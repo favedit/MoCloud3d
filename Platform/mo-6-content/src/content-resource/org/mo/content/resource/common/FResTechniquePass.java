@@ -18,7 +18,7 @@ public class FResTechniquePass
    // <T>构造场景技术过程。</T>
    //============================================================
    public FResTechniquePass(){
-      _typeName = "TechniquePass";
+      _type = "TechniquePass";
    }
 
    //============================================================

@@ -1,6 +1,5 @@
 package org.mo.content.service.resource.bitmap;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -8,6 +7,7 @@ import org.mo.com.lang.RString;
 import org.mo.com.xml.FXmlNode;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.content.core.resource.bitmap.ICntBitmapConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
@@ -36,15 +36,15 @@ public class FBitmapService
    // <T>获取数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult imageList(IWebContext context,
+                            IGcSession session,
                             ILogicContext logicContext,
-                            FGcSessionInfo session,
                             IWebInput input,
                             IWebOutput output){
       //      FXmlNode xinput = input.config();
@@ -83,15 +83,15 @@ public class FBitmapService
    // <T>查询数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult query(IWebContext context,
+                        IGcSession session,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
                         IWebInput input,
                         IWebOutput output){
       // 检查参数
@@ -123,15 +123,15 @@ public class FBitmapService
    // <T>新建数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult create(IWebContext context,
+                         IGcSession session,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -162,15 +162,15 @@ public class FBitmapService
    // <T>修改数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult update(IWebContext context,
+                         IGcSession session,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -214,15 +214,15 @@ public class FBitmapService
    // <T>删除数据处理。</T>
    //
    // @param context 网络环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param input 网络输入
    // @param output 网络输出
    //============================================================
    @Override
    public EResult delete(IWebContext context,
+                         IGcSession session,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
                          IWebInput input,
                          IWebOutput output){
       //      // 获得参数

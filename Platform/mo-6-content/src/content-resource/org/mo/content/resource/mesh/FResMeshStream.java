@@ -34,14 +34,4 @@ public class FResMeshStream
    public void setMesh(FResMesh mesh){
       _mesh = mesh;
    }
-
-   //============================================================
-   // <T>获得代码。</T>
-   //
-   // @return 代码
-   //============================================================
-   @Override
-   public String fullCode(){
-      return _mesh.fullCode() + "|" + _code;
-   }
 }

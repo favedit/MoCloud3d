@@ -5,7 +5,6 @@ import org.mo.com.io.FByteStream;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FFatalError;
-import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshStreamInfo;
 
 //============================================================
 // <T>资源模型数据流。</T>
@@ -35,16 +34,7 @@ public class FResStream
    // <T>构造资源模型数据流。</T>
    //============================================================
    public FResStream(){
-   }
-
-   //============================================================
-   // <T>获得全代码。</T>
-   //
-   // @return 全代码
-   //============================================================
-   @Override
-   public String fullCode(){
-      return _code;
+      _type = "Stream";
    }
 
    //============================================================
@@ -475,13 +465,32 @@ public class FResStream
    }
 
    //============================================================
+   // <T>序列化数据到输出流。</T>
+   //
+   // @param output 输出流
+   //============================================================
+   @Override
+   public void storageSerialize(IDataOutput output){
+      super.storageSerialize(output);
+      // 写入属性
+      output.writeInt8((byte)_elementDataCd);
+      output.writeInt8((byte)_elementCount);
+      output.writeInt16((short)_dataStride);
+      output.writeInt32(_dataCount);
+      // 写入数据
+      int size = _dataStride * _dataCount;
+      output.write(_data, 0, size);
+   }
+
+   //============================================================
    // <T>从输入流反序列化数据。</T>
    //
    // @param input 输入流
    //============================================================
-   public void unserialize(IDataInput input){
+   @Override
+   public void storageUnserialize(IDataInput input){
+      super.storageUnserialize(input);
       // 读取属性
-      _code = input.readString();
       _elementDataCd = input.readInt8();
       _elementCount = input.readInt8();
       _dataStride = input.readInt16();
@@ -490,22 +499,6 @@ public class FResStream
       int size = _dataStride * _dataCount;
       _data = new byte[size];
       input.read(_data, 0, size);
-   }
-
-   //============================================================
-   // <T>将配置信息存入数据单元中。</T>
-   //
-   // @param unit 数据单元
-   //============================================================
-   public void saveUnit(FGcResModelMeshStreamInfo unit){
-      unit.setFullCode(fullCode());
-      unit.setCode(_code);
-      unit.setSortIndex(_index);
-      unit.setElementDataCd(_elementDataCd);
-      unit.setElementCount(_elementCount);
-      unit.setDataStride(_dataStride);
-      unit.setDataCount(_dataCount);
-      unit.setDataLength(dataLength());
    }
 
    //============================================================

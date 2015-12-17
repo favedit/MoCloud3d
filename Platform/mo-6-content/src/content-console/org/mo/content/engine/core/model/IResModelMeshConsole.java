@@ -1,9 +1,9 @@
 package org.mo.content.engine.core.model;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
 import org.mo.content.access.data.resource.model.mesh.IGcResModelMeshConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.model.FResModelMesh;
 import org.mo.data.logic.ILogicContext;
 
@@ -14,67 +14,25 @@ public interface IResModelMeshConsole
       extends
          IGcResModelMeshConsole
 {
-   //   //============================================================
-   //   // <T>根据代码查找网格单元。</T>
-   //   //
-   //   // @param logicContext 逻辑环境
-   //   // @param guid 唯一编号
-   //   // @return 网格单元
-   //   //============================================================
-   //   FDataResource3dMeshUnit findByGuid(ILogicContext logicContext,
-   //                                      String guid);
+   //============================================================
+   // <T>生成模型网格对象。</T>
    //
-   //   //============================================================
-   //   // <T>根据代码查找网格单元。</T>
-   //   //
-   //   // @param logicContext 逻辑环境
-   //   // @param code 代码
-   //   // @return 网格单元
-   //   //============================================================
-   //   FDataResource3dMeshUnit findByCode(ILogicContext logicContext,
-   //                                      String code);
-   //
-   //   //============================================================
-   //   // <T>更新网格。</T>
-   //   //
-   //   // @param logicContext 逻辑环境
-   //   // @param mesh 网格
-   //   // @return 网格单元
-   //   //============================================================
-   //   FDataResource3dMeshUnit updateMesh(ILogicContext logicContext,
-   //                                      FRs3Mesh mesh);
-   //
-   //   //============================================================
-   //   // <T>生成资源网格。</T>
-   //   //
-   //   // @param logicContext 逻辑环境
-   //   // @param guid 唯一编号
-   //   // @return 资源网格
-   //   //============================================================
-   //   FRs3Mesh makeMesh(ILogicContext logicContext,
-   //                     String guid);
-   //
-   //   //============================================================
-   //   // <T>生成资源网格数据。</T>
-   //   //
-   //   // @param logicContext 逻辑环境
-   //   // @param guid 唯一编号
-   //   // @return 资源网格数据
-   //   //============================================================
-   //   byte[] makeMeshData(ILogicContext logicContext,
-   //                       String guid);
-   //
+   // @param logicContext 逻辑环境
+   // @param meshInfo 网格信息
+   // @return 模型网格对象
+   //============================================================
+   FResModelMesh makeResource(ILogicContext logicContext,
+                              FGcResModelMeshInfo meshInfo);
 
+   //============================================================
+   // <T>生成模型网格对象。</T>
    //
-   //   //============================================================
-   //   // <T>新建网格。</T>
-   //   //
-   //   // @param logicContext 逻辑环境
-   //   // @param mesh 网格
-   //   // @return 网格单元
-   //   //============================================================
-   //   FDataResource3dMeshUnit insert(ILogicContext logicContext,
-   //                                  FRs3ModelMesh mesh);
+   // @param logicContext 逻辑环境
+   // @param guid 唯一编码
+   // @return 模型网格对象
+   //============================================================
+   FResModelMesh makeResource(ILogicContext logicContext,
+                              String guid);
 
    //============================================================
    // <T>新建资源处理。</T>
@@ -86,7 +44,7 @@ public interface IResModelMeshConsole
    // @return 网格信息
    //============================================================
    FGcResModelMeshInfo insertResource(ILogicContext logicContext,
-                                      FGcSessionInfo session,
+                                      IGcSession session,
                                       FGcResModelInfo modelInfo,
                                       FResModelMesh mesh);
 
@@ -101,7 +59,7 @@ public interface IResModelMeshConsole
    // @return 网格信息
    //============================================================
    FGcResModelMeshInfo updateResource(ILogicContext logicContext,
-                                      FGcSessionInfo session,
+                                      IGcSession session,
                                       FGcResModelInfo modelInfo,
                                       FGcResModelMeshInfo meshInfo,
                                       FResModelMesh mesh);
@@ -116,7 +74,7 @@ public interface IResModelMeshConsole
    // @return 网格信息
    //============================================================
    FGcResModelMeshInfo importResource(ILogicContext logicContext,
-                                      FGcSessionInfo session,
+                                      IGcSession session,
                                       FGcResModelInfo modelInfo,
                                       FResModelMesh mesh);
 }

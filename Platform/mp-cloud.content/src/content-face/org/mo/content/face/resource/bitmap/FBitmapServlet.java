@@ -2,7 +2,6 @@ package org.mo.content.face.resource.bitmap;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.FFatalError;
@@ -16,6 +15,7 @@ import org.mo.content.access.data.resource.FGcResourceCatalogInfo;
 import org.mo.content.access.data.resource.IGcResourceCatalogConsole;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.content.core.resource.bitmap.ICntBitmapConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.core.servlet.common.IWebServletRequest;
@@ -122,16 +122,16 @@ public class FBitmapServlet
    //============================================================
    // <T>获得预览数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
    @Override
    public void view(IWebContext context,
+                    IGcSession session,
                     ILogicContext logicContext,
-                    FGcSessionInfo session,
                     IWebServletRequest request,
                     IWebServletResponse response){
       // 检查参数
@@ -162,16 +162,16 @@ public class FBitmapServlet
    //============================================================
    // <T>获得预览数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
    @Override
    public void preview(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
                        IWebServletRequest request,
                        IWebServletResponse response){
       // 检查参数
@@ -202,16 +202,16 @@ public class FBitmapServlet
    //============================================================
    // <T>导入数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
    @Override
    public void importData(IWebContext context,
+                          IGcSession session,
                           ILogicContext logicContext,
-                          FGcSessionInfo session,
                           IWebServletRequest request,
                           IWebServletResponse response){
       // 检查参数
@@ -234,7 +234,7 @@ public class FBitmapServlet
       }
       String extension = RFile.extension(fileName);
       long userId = session.userId();
-      long projectId = session.projectId();
+      //long projectId = session.projectId();
       // 获得节点编号
       long catalogId = 0;
       if(!RString.isEmpty(nodeGuid)){
@@ -258,7 +258,7 @@ public class FBitmapServlet
          // 创建图片
          FGcResBitmapInfo bitmap = _bitmapConsole.doPrepare(logicContext);
          bitmap.setUserId(userId);
-         bitmap.setProjectId(projectId);
+         //bitmap.setProjectId(projectId);
          bitmap.setCatalogId(catalogId);
          bitmap.setCode(code);
          bitmap.setLabel(label);
@@ -285,16 +285,16 @@ public class FBitmapServlet
    //============================================================
    // <T>更新数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
    @Override
    public void updateData(IWebContext context,
+                          IGcSession session,
                           ILogicContext logicContext,
-                          FGcSessionInfo session,
                           IWebServletRequest request,
                           IWebServletResponse response){
       // 检查参数

@@ -3,7 +3,6 @@ package org.mo.content.engine.core.template;
 import org.mo.cloud.core.storage.EGcStorage;
 import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.FGcStorageContent;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -21,6 +20,7 @@ import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
 import org.mo.content.access.data.resource.template.FGcResTemplateConsole;
 import org.mo.content.access.data.resource.template.FGcResTemplateInfo;
 import org.mo.content.access.data.resource.template.FGcResTemplateMaterialInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.bitmap.IResBitmapConsole;
 import org.mo.content.engine.core.material.IResMaterialBitmapConsole;
 import org.mo.content.engine.core.material.IResMaterialConsole;
@@ -155,7 +155,7 @@ public class FResTemplateConsole
    public byte[] makeTemplateData(ILogicContext logicContext,
                                   String guid){
       // 查找数据
-      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceTemplate, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.ResourceTemplate, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -172,7 +172,7 @@ public class FResTemplateConsole
       }
       //............................................................
       // 存储数据
-      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceTemplate, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.ResourceTemplate, guid);
       storage.setCode(template.code());
       storage.setData(data);
       _storageConsole.store(EGcStorage.Cache, storage);
@@ -221,7 +221,7 @@ public class FResTemplateConsole
       //............................................................
       // 废弃临时数据
       FGcResourceInfo resource = _dataResourceConsole.get(logicContext, resourceId);
-      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceTemplate, resource.guid());
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.ResourceTemplate, resource.guid());
       _dataResourceConsole.doUpdate(logicContext, resource);
       // 返回网格单元
       return templateInfo;
@@ -237,7 +237,7 @@ public class FResTemplateConsole
    //============================================================
    @Override
    public EResult importResource(ILogicContext logicContext,
-                                 FGcSessionInfo session,
+                                 IGcSession session,
                                  String fileName){
       _logger.debug(this, "importResource", "Import template resource. (file={1})", fileName);
       long userId = session.userId();
@@ -261,10 +261,8 @@ public class FResTemplateConsole
       templateInfo = doPrepare(logicContext);
       templateInfo.setUserId(userId);
       templateInfo.setProjectId(projectId);
-      templateInfo.setFullCode(template.fullCode());
       templateInfo.setCode(templateCode);
       templateInfo.setLabel(template.label());
-      templateInfo.setKeywords(template.keywords());
       doInsert(logicContext, templateInfo);
       template.setGuid(templateInfo.guid());
       //............................................................
@@ -278,7 +276,7 @@ public class FResTemplateConsole
             _materialConsole.doInsert(logicContext, materialInfo);
             if(material.hasBitmap()){
                for(FResMaterialBitmap materialBitmap : material.bitmaps()){
-                  String fullCode = materialBitmap.fullCode();
+                  String fullCode = materialBitmap.code();
                   FGcResBitmapInfo bitmapInfo = _bitmapConsole.findByCode(logicContext, userId, projectId, fullCode);
                   materialBitmap.setBitmapGuid(bitmapInfo.guid());
                   // 新建材质位图
@@ -314,12 +312,12 @@ public class FResTemplateConsole
                      FResShape shape = (FResShape)renderable;
                      // 查找模型
                      String modelCode = shape.modelCode();
-                     FGcResModelInfo modelInfo = _modelConsole.findByUserCode(logicContext, userId, modelCode);
+                     FGcResModelInfo modelInfo = _modelConsole.findByCode(logicContext, userId, projectId, modelCode);
                      long modelId = modelInfo.ouid();
                      shape.setModelGuid(modelInfo.guid());
                      // 查找网格
                      String meshCode = shape.meshCode();
-                     FGcResModelMeshInfo meshInfo = _modelMeshConsole.findByUserModelCode(logicContext, userId, modelId, meshCode);
+                     FGcResModelMeshInfo meshInfo = _modelMeshConsole.findByModelCode(logicContext, userId, projectId, modelId, meshCode);
                      shape.setCode(meshCode);
                      shape.setLabel(meshInfo.label());
                      shape.setMeshGuid(meshInfo.guid());

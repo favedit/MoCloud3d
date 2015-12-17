@@ -167,7 +167,7 @@ public class FGcResBitmapConsole
                                     FGcResBitmapInfo bitmapInfo){
       // 删除位图数据
       String guid = bitmapInfo.guid();
-      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheBitmapPreview, guid);
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.BitmapPreview, guid);
       _storageConsole.delete(EGcStorage.Content, EGcStorageCatalog.ResourceBitmap, guid);
       // 返回结果
       return EResult.Success;

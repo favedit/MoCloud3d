@@ -10,6 +10,6 @@ public class FResMaterialRefer
    // <T>构造资源材质引用。</T>
    //============================================================
    public FResMaterialRefer(){
-      _typeName = "MaterialRefer";
+      _type = "MaterialRefer";
    }
 }

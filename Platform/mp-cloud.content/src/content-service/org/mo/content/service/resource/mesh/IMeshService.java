@@ -1,7 +1,7 @@
 package org.mo.content.service.resource.mesh;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
+import org.mo.content.core.web.IGcSession;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.core.face.AWebLogin;
 import org.mo.web.protocol.context.IWebContext;
@@ -25,7 +25,7 @@ public interface IMeshService
    //============================================================
    EResult list(IWebContext context,
                 ILogicContext logicContext,
-                FGcSessionInfo session,
+                IGcSession session,
                 IWebInput input,
                 IWebOutput output);
 
@@ -40,7 +40,7 @@ public interface IMeshService
    //============================================================
    EResult query(IWebContext context,
                  ILogicContext logicContext,
-                 FGcSessionInfo session,
+                 IGcSession session,
                  IWebInput input,
                  IWebOutput output);
 
@@ -55,7 +55,7 @@ public interface IMeshService
    //============================================================
    EResult create(IWebContext context,
                   ILogicContext logicContext,
-                  FGcSessionInfo session,
+                  IGcSession session,
                   IWebInput input,
                   IWebOutput output);
 
@@ -70,7 +70,7 @@ public interface IMeshService
    //============================================================
    EResult upate(IWebContext context,
                  ILogicContext logicContext,
-                 FGcSessionInfo session,
+                 IGcSession session,
                  IWebInput input,
                  IWebOutput output);
 
@@ -85,7 +85,7 @@ public interface IMeshService
    //============================================================
    EResult delete(IWebContext context,
                   ILogicContext logicContext,
-                  FGcSessionInfo session,
+                  IGcSession session,
                   IWebInput input,
                   IWebOutput output);
 }

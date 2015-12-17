@@ -26,7 +26,7 @@ public class FResScene
    // <T>构造场景。</T>
    //============================================================
    public FResScene(){
-      _typeName = "Scene";
+      _type = "Scene";
    }
 
    //============================================================
@@ -105,9 +105,7 @@ public class FResScene
       // 存储属性
       xconfig.set("guid", _guid);
       xconfig.set("code", _code);
-      xconfig.set("full_code", _fullCode);
       xconfig.set("label", _label);
-      xconfig.set("keywords", _keywords);
       // 存储技术
       _technique.saveConfig(xconfig.createNode("Technique"));
       // 存储区域
@@ -146,9 +144,7 @@ public class FResScene
    public void saveUnit(FGcResSceneInfo unit){
       // 存储属性
       unit.setCode(_code);
-      unit.setFullCode(_fullCode);
       unit.setLabel(_label);
-      unit.setKeywords(_keywords);
       // 存储配置
       FXmlNode xconfig = new FXmlNode("Scene");
       saveConfig(xconfig);
@@ -202,9 +198,9 @@ public class FResScene
    public void importData(IDataInput input){
       // 读取属性
       _code = input.readString();
-      _fullCode = input.readString();
+      input.readString(); // fullCode
       _label = input.readString();
-      _keywords = input.readString();
+      input.readString(); // keywords
       input.readString(); // themeCode
       // 导入技术
       _technique.importData(input);

@@ -23,7 +23,7 @@ public class FResProjection
    // <T>构造场景层。</T>
    //============================================================
    public FResProjection(){
-      _typeName = "Projection";
+      _type = "Projection";
    }
 
    //============================================================

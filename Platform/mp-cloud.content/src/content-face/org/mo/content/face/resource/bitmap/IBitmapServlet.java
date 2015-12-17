@@ -1,6 +1,6 @@
 package org.mo.content.face.resource.bitmap;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.core.face.AWebLogin;
 import org.mo.web.core.servlet.common.IWebServletRequest;
@@ -16,60 +16,60 @@ public interface IBitmapServlet
    //============================================================
    // <T>获得数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
-   public void view(IWebContext context,
-                    ILogicContext logicContext,
-                    FGcSessionInfo session,
-                    IWebServletRequest request,
-                    IWebServletResponse response);
+   void view(IWebContext context,
+             IGcSession session,
+             ILogicContext logicContext,
+             IWebServletRequest request,
+             IWebServletResponse response);
 
    //============================================================
    // <T>获得预览数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
-   public void preview(IWebContext context,
-                       ILogicContext logicContext,
-                       FGcSessionInfo session,
-                       IWebServletRequest request,
-                       IWebServletResponse response);
+   void preview(IWebContext context,
+                IGcSession session,
+                ILogicContext logicContext,
+                IWebServletRequest request,
+                IWebServletResponse response);
 
    //============================================================
    // <T>导入数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
-   public void importData(IWebContext context,
-                          ILogicContext logicContext,
-                          FGcSessionInfo session,
-                          IWebServletRequest request,
-                          IWebServletResponse response);
+   void importData(IWebContext context,
+                   IGcSession session,
+                   ILogicContext logicContext,
+                   IWebServletRequest request,
+                   IWebServletResponse response);
 
    //============================================================
    // <T>更新数据处理。</T>
    //
-   // @param context 环境
+   // @param context 网页环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 请求内容
+   // @param response 应答内容
    //============================================================
-   public void updateData(IWebContext context,
-                          ILogicContext logicContext,
-                          FGcSessionInfo session,
-                          IWebServletRequest request,
-                          IWebServletResponse response);
+   void updateData(IWebContext context,
+                   IGcSession session,
+                   ILogicContext logicContext,
+                   IWebServletRequest request,
+                   IWebServletResponse response);
 }

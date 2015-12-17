@@ -1,9 +1,9 @@
 package org.mo.content.engine.core.bitmap;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
 import org.mo.content.access.data.resource.bitmap.IGcResBitmapConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.data.logic.ILogicContext;
 import org.mo.eng.image.FImage;
 
@@ -55,6 +55,6 @@ public interface IResBitmapConsole
    // @return 处理结果
    //============================================================
    EResult importResource(ILogicContext logicContext,
-                          FGcSessionInfo session,
+                          IGcSession session,
                           String path);
 }

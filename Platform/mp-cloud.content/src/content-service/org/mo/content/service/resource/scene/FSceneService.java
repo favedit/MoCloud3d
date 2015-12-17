@@ -1,7 +1,6 @@
 package org.mo.content.service.resource.scene;
 
 import org.mo.cloud.data.data.FDataResourceSceneLogic;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -14,6 +13,7 @@ import org.mo.content.access.data.solution.FGcProjectInfo;
 import org.mo.content.core.resource.scene.ICntSceneConsole;
 import org.mo.content.core.resource.template.ICntTemplateConsole;
 import org.mo.content.core.solution.project.ICntProjectConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.common.FResComponent;
 import org.mo.content.resource.common.FResDisplay;
 import org.mo.content.resource.common.FResDisplayContainer;
@@ -69,7 +69,7 @@ public class FSceneService
    @Override
    public EResult list(IWebContext context,
                        ILogicContext logicContext,
-                       FGcSessionInfo session,
+                       IGcSession session,
                        IWebInput input,
                        IWebOutput output){
       // 检查参数
@@ -113,7 +113,7 @@ public class FSceneService
    @Override
    public EResult query(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       //      String guid = context.parameter("guid");
@@ -149,7 +149,7 @@ public class FSceneService
    @Override
    public EResult create(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -209,7 +209,7 @@ public class FSceneService
    @Override
    public EResult createCamera(IWebContext context,
                                ILogicContext logicContext,
-                               FGcSessionInfo session,
+                               IGcSession session,
                                IWebInput input,
                                IWebOutput output){
       return EResult.Success;
@@ -227,7 +227,7 @@ public class FSceneService
    @Override
    public EResult createLayer(IWebContext context,
                               ILogicContext logicContext,
-                              FGcSessionInfo session,
+                              IGcSession session,
                               IWebInput input,
                               IWebOutput output){
       long userId = session.userId();
@@ -282,7 +282,7 @@ public class FSceneService
    @Override
    public EResult createSprite(IWebContext context,
                                ILogicContext logicContext,
-                               FGcSessionInfo session,
+                               IGcSession session,
                                IWebInput input,
                                IWebOutput output){
       long userId = session.userId();
@@ -363,7 +363,7 @@ public class FSceneService
    @Override
    public EResult createMovie(IWebContext context,
                               ILogicContext logicContext,
-                              FGcSessionInfo session,
+                              IGcSession session,
                               IWebInput input,
                               IWebOutput output){
       // 获得参数
@@ -425,7 +425,7 @@ public class FSceneService
    @Override
    public EResult copyNode(IWebContext context,
                            ILogicContext logicContext,
-                           FGcSessionInfo session,
+                           IGcSession session,
                            IWebInput input,
                            IWebOutput output){
       // 获得参数
@@ -482,7 +482,7 @@ public class FSceneService
    @Override
    public EResult upate(IWebContext context,
                         ILogicContext logicContext,
-                        FGcSessionInfo session,
+                        IGcSession session,
                         IWebInput input,
                         IWebOutput output){
       // 获得参数
@@ -531,7 +531,7 @@ public class FSceneService
    @Override
    public EResult updateContent(IWebContext context,
                                 ILogicContext logicContext,
-                                FGcSessionInfo session,
+                                IGcSession session,
                                 IWebInput input,
                                 IWebOutput output){
       // 检查输入
@@ -561,7 +561,7 @@ public class FSceneService
    @Override
    public EResult delete(IWebContext context,
                          ILogicContext logicContext,
-                         FGcSessionInfo session,
+                         IGcSession session,
                          IWebInput input,
                          IWebOutput output){
       // 获得参数
@@ -596,7 +596,7 @@ public class FSceneService
    @Override
    public EResult deleteNode(IWebContext context,
                              ILogicContext logicContext,
-                             FGcSessionInfo session,
+                             IGcSession session,
                              IWebInput input,
                              IWebOutput output){
       // 获得参数

@@ -9,41 +9,41 @@ public class EGcStorageCatalog
    public final static String TempUpload = "temp.upload";
 
    // 资源位图预览数据
-   public final static String CacheBitmapPreview = "cache.bitmap.preview";
-
-   // 资源材质预览数据
-   public final static String CacheMaterialPreview = "cache.material.preview";
-
-   // 资源材质位图打包
-   public final static String CacheResourceMaterialBitmapPack = "cache.resourcee.material.bitmap.pack";
-
-   // 资源材质
-   public final static String CacheResourceMaterial = "cache.resource.material";
-
-   // 资源网格
-   public final static String CacheResourceMesh = "cache.resource.mesh";
-
-   // 资源模型
-   public final static String CacheResourceModel = "cache.resource.model";
-
-   // 资源模板
-   public final static String CacheResourceTemplate = "cache.resource.template";
-
-   // 资源场景
-   public final static String CacheResourceScene = "cache.resource.scene";
+   public final static String BitmapPreview = "bitmap.preview";
 
    // 资源预览数据
-   public final static String ResourcePreview = "content.resource.preview";
+   public final static String ResourcePreview = "resource.preview";
 
    // 资源位图数据
-   public final static String ResourceBitmap = "content.resource.bitmap";
+   public final static String ResourceBitmap = "resource.bitmap";
+
+   // 资源材质预览数据
+   public final static String MaterialPreview = "material.preview";
+
+   // 资源材质
+   public final static String ResourceMaterial = "resource.material";
+
+   // 资源材质位图打包
+   public final static String ResourceMaterialBitmapPack = "resourcee.material.bitmap.pack";
+
+   // 资源模型
+   public final static String ResourceModel = "resource.model";
+
+   // 资源模型网格
+   public final static String ResourceModelMesh = "resource.model.mesh";
 
    // 资源模型网格数据
-   public final static String ResourceModelMeshStream = "content.resource.model.mesh.stream";
+   public final static String ResourceModelMeshStream = "resource.model.mesh.stream";
 
    // 资源模型骨骼蒙皮数据流数据
-   public final static String ResourceModelSkeletonSkinStream = "content.resource.model.skeleton.skin.stream";
+   public final static String ResourceModelSkeletonSkinStream = "resource.model.skeleton.skin.stream";
 
    // 资源模型动画轨迹数据
-   public final static String ResourceModelAnimationTrack = "content.resource.model.animation.track";
+   public final static String ResourceModelAnimationTrack = "resource.model.animation.track";
+
+   // 资源模板
+   public final static String ResourceTemplate = "resource.template";
+
+   // 资源场景
+   public final static String ResourceScene = "resource.scene";
 }

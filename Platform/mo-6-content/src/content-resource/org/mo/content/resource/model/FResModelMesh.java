@@ -4,6 +4,7 @@ import org.mo.cloud.data.data.FDataResourceModelMeshUnit;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.content.resource.common.FResGeometry;
+import org.mo.content.resource.common.FResStream;
 
 //============================================================
 // <T>资源模型网格。</T>
@@ -18,7 +19,7 @@ public class FResModelMesh
    // <T>构造资源模型网格。</T>
    //============================================================
    public FResModelMesh(){
-      _typeName = "ModelMesh";
+      _type = "ModelMesh";
    }
 
    //============================================================
@@ -37,19 +38,6 @@ public class FResModelMesh
    //============================================================
    public void setModel(FResModel model){
       _model = model;
-   }
-
-   //============================================================
-   // <T>获得全代码。</T>
-   //
-   // @return 全代码
-   //============================================================
-   @Override
-   public String fullCode(){
-      if(_model != null){
-         return _model.code() + "|" + _code;
-      }
-      return _code;
    }
 
    //============================================================
@@ -82,7 +70,6 @@ public class FResModelMesh
    // @param unit 数据单元
    //============================================================
    public void saveUnit(FDataResourceModelMeshUnit unit){
-      unit.setFullCode(fullCode());
       unit.setCode(_code);
       unit.setLabel(_label);
       unit.setSortIndex(_index);
@@ -97,17 +84,18 @@ public class FResModelMesh
    //============================================================
    public void importData(IDataInput input){
       // 读取属性
-      _code = input.readString();
+      _code = _model.code() + "|" + input.readString();
       // 读取轮廓
       _outline.unserialize(input);
       // 读取数据流集合
       int count = input.readInt32();
       for(int n = 0; n < count; n++){
-         FResModelStream stream = new FResModelStream();
-         stream.setMesh(this);
+         FResStream stream = new FResStream();
          stream.setIndex(n);
          stream.importData(input);
          pushStream(stream);
       }
+      // 构建处理
+      build();
    }
 }

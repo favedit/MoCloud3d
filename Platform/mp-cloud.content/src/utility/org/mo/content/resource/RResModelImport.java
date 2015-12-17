@@ -2,11 +2,11 @@ package org.mo.content.resource;
 
 import java.io.File;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.FStrings;
 import org.mo.com.logging.RLogger;
 import org.mo.content.common.RRs3Configuration;
+import org.mo.content.core.web.FGcSession;
 import org.mo.content.engine.core.model.IResModelConsole;
 import org.mo.core.aop.RAop;
 import org.mo.data.logic.FLogicContext;
@@ -19,8 +19,7 @@ public class RResModelImport
    // <T>导入处理。</T>
    //============================================================
    public static void importProcess() throws Exception{
-      //String path = RRs3Configuration.RootPath + "/MoResource/Export/model/";
-      String path = RRs3Configuration.RootPath + "/MoExport/model/";
+      String path = RRs3Configuration.RootPath + "/Resource/Export/model/";
       // 设置数据
       FStrings filePaths = new FStrings();
       for(String fileName : RFile.listFiles(path)){
@@ -31,7 +30,7 @@ public class RResModelImport
          }
       }
       // 创建会话
-      FGcSessionInfo session = RRs3Configuration.makeSession();
+      FGcSession session = RRs3Configuration.makeSession();
       // 导入处理
       IDatabaseConsole dbConsole = RAop.find(IDatabaseConsole.class);
       try(ILogicContext logicContext = new FLogicContext(dbConsole)){
@@ -40,10 +39,10 @@ public class RResModelImport
             String fullName = path + fileName;
             modelConsole.importModel(logicContext, session, fullName + ".msh");
             if(RFile.exists(fullName + ".skt")){
-               modelConsole.importSkeleton(logicContext, session, fullName + ".skt");
+               //modelConsole.importSkeleton(logicContext, session, fullName + ".skt");
             }
             if(RFile.exists(fullName + ".anm")){
-               modelConsole.importAnimation(logicContext, session, fullName + ".anm");
+               //modelConsole.importAnimation(logicContext, session, fullName + ".anm");
             }
          }
       }
@@ -53,9 +52,9 @@ public class RResModelImport
    // <T>主函数。</T>
    //============================================================
    public static void main(String[] args) throws Exception{
-      String configPath = RRs3Configuration.RootPath + "/MoCloud";
+      String configPath = RRs3Configuration.RootPath + "/Platform";
       RAop.configConsole().defineCollection().attributes().set("application", configPath);
-      RAop.initialize(configPath + "/mp-cloud-content/src/config/" + RRs3Configuration.Config);
+      RAop.initialize(configPath + "/mp-cloud.content/src/config/" + RRs3Configuration.Config);
       try{
          importProcess();
       }catch(Exception e){

@@ -3,6 +3,7 @@ package org.mo.content.resource.common;
 import org.mo.cloud.define.enums.common.EGcData;
 import org.mo.com.geom.SFloatOutline3;
 import org.mo.com.io.FByteStream;
+import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FObjects;
 import org.mo.com.xml.FXmlNode;
@@ -135,6 +136,44 @@ public class FResGeometry
       for(int i = 0; i < streamCount; i++){
          FResStream stream = _streams.get(i);
          stream.serialize(output);
+      }
+   }
+
+   //============================================================
+   // <T>序列化数据到输出流。</T>
+   //
+   // @param output 输出流
+   //============================================================
+   @Override
+   public void storageSerialize(IDataOutput output){
+      super.storageSerialize(output);
+      // 输出轮廓
+      _outline.serialize(output);
+      // 输出数据流集合
+      int streamCount = _streams.count();
+      output.writeInt32(streamCount);
+      for(int i = 0; i < streamCount; i++){
+         FResStream stream = _streams.get(i);
+         stream.storageSerialize(output);
+      }
+   }
+
+   //============================================================
+   // <T>从输入流反序列化数据。</T>
+   //
+   // @param input 输入流
+   //============================================================
+   @Override
+   public void storageUnserialize(IDataInput input){
+      super.storageUnserialize(input);
+      // 输入轮廓
+      _outline.unserialize(input);
+      // 读取数据流集合
+      int streamCount = input.readInt32();
+      for(int i = 0; i < streamCount; i++){
+         FResStream stream = new FResStream();
+         stream.storageUnserialize(input);
+         pushStream(stream);
       }
    }
 

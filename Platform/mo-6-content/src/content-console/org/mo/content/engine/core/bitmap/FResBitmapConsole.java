@@ -3,7 +3,6 @@ package org.mo.content.engine.core.bitmap;
 import org.mo.cloud.core.storage.EGcStorage;
 import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.FGcStorageContent;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -13,6 +12,7 @@ import org.mo.com.net.EMime;
 import org.mo.com.xml.FXmlDocument;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapConsole;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.texture.FResTexture;
 import org.mo.content.resource.texture.FResTextureBitmap;
 import org.mo.data.logic.ILogicContext;
@@ -82,7 +82,7 @@ public class FResBitmapConsole
                                  String guid){
       //............................................................
       // 查找数据
-      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheBitmapPreview, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.BitmapPreview, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -90,7 +90,7 @@ public class FResBitmapConsole
       // 生成模型
       byte[] data = makePreview(logicContext, guid);
       // 存储数据
-      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheBitmapPreview, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.BitmapPreview, guid);
       storage.setData(data);
       _storageConsole.store(EGcStorage.Cache, storage);
       // 返回数据
@@ -141,7 +141,7 @@ public class FResBitmapConsole
    //============================================================
    @Override
    public EResult importResource(ILogicContext logicContext,
-                                 FGcSessionInfo session,
+                                 IGcSession session,
                                  String path){
       long userId = session.userId();
       long projectId = session.projectId();
@@ -155,7 +155,6 @@ public class FResBitmapConsole
       texture.importConfig(xdocument.root());
       String textureCode = texture.code();
       String textureLabel = texture.label();
-      String textureKeywords = texture.keywords();
       //............................................................
       for(FResTextureBitmap bitmap : texture.bitmaps()){
          // 检查文件
@@ -176,7 +175,6 @@ public class FResBitmapConsole
             bitmapInfo.setCode(code);
          }
          bitmapInfo.setLabel(textureLabel);
-         bitmapInfo.setKeywords(textureKeywords);
          bitmapInfo.setFormatCode(bitmapCode);
          bitmapInfo.setMimeCode(EMime.Jpg.mime());
          if(exists){

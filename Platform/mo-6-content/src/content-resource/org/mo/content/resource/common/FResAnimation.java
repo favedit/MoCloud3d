@@ -54,7 +54,7 @@ public class FResAnimation
    // <T>构造资源精灵。</T>
    //============================================================
    public FResAnimation(){
-      _typeName = "Animation";
+      _type = "Animation";
    }
 
    //============================================================

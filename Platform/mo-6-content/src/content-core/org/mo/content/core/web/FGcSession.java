@@ -41,6 +41,9 @@ public class FGcSession
    // GPS维度
    protected double _locationLatitude;
 
+   // 项目编号
+   protected long _projectId;
+
    // 用户信息
    protected FGcUserInfo _userInfo;
 
@@ -172,6 +175,25 @@ public class FGcSession
    //============================================================
    public void setLocationLatitude(double locationLatitude){
       _locationLatitude = locationLatitude;
+   }
+
+   //============================================================
+   // <T>获得项目编号。</T>
+   //
+   // @return 项目编号
+   //============================================================
+   @Override
+   public long projectId(){
+      return _projectId;
+   }
+
+   //============================================================
+   // <T>设置项目编号。</T>
+   //
+   // @param projectId 项目编号
+   //============================================================
+   public void setProjectId(long projectId){
+      _projectId = projectId;
    }
 
    //============================================================

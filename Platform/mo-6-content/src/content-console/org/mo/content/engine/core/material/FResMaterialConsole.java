@@ -133,7 +133,7 @@ public class FResMaterialConsole
    public byte[] makeResourceData(ILogicContext logicContext,
                                   String guid){
       // 查找数据
-      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceMaterial, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.ResourceMaterial, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -150,7 +150,7 @@ public class FResMaterialConsole
       }
       //............................................................
       // 存储数据
-      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceMaterial, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.ResourceMaterial, guid);
       storage.setCode(resource.code());
       storage.setData(data);
       _storageConsole.store(EGcStorage.Cache, storage);

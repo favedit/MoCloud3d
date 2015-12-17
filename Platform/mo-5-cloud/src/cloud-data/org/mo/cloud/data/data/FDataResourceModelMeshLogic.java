@@ -49,17 +49,11 @@ public class FDataResourceModelMeshLogic
    // 字段排序索引的定义。
    public final static SLogicFieldInfo SORT_INDEX = new SLogicFieldInfo("SORT_INDEX");
 
-   // 字段全代码的定义。
-   public final static SLogicFieldInfo FULL_CODE = new SLogicFieldInfo("FULL_CODE");
-
    // 字段代码的定义。
    public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
 
    // 字段名称的定义。
    public final static SLogicFieldInfo LABEL = new SLogicFieldInfo("LABEL");
-
-   // 字段关键字的定义。
-   public final static SLogicFieldInfo KEYWORDS = new SLogicFieldInfo("KEYWORDS");
 
    // 字段轮廓最小点的定义。
    public final static SLogicFieldInfo OUTLINE_MIN = new SLogicFieldInfo("OUTLINE_MIN");
@@ -86,7 +80,7 @@ public class FDataResourceModelMeshLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`SORT_INDEX`,`FULL_CODE`,`CODE`,`LABEL`,`KEYWORDS`,`OUTLINE_MIN`,`OUTLINE_MAX`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`SORT_INDEX`,`CODE`,`LABEL`,`OUTLINE_MIN`,`OUTLINE_MAX`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源模型网格表逻辑单元。</T>
@@ -370,10 +364,8 @@ public class FDataResourceModelMeshLogic
       cmd.append(",`PROJECT_ID`");
       cmd.append(",`MODEL_ID`");
       cmd.append(",`SORT_INDEX`");
-      cmd.append(",`FULL_CODE`");
       cmd.append(",`CODE`");
       cmd.append(",`LABEL`");
-      cmd.append(",`KEYWORDS`");
       cmd.append(",`OUTLINE_MIN`");
       cmd.append(",`OUTLINE_MAX`");
       cmd.append(",`CONTENT`");
@@ -420,15 +412,6 @@ public class FDataResourceModelMeshLogic
       cmd.append(',');
       cmd.append(unit.sortIndex());
       cmd.append(',');
-      String fullCode = unit.fullCode();
-      if(RString.isEmpty(fullCode)){
-         cmd.append("NULL");
-      }else{
-         cmd.append('\'');
-         cmd.append(RSql.formatValue(fullCode));
-         cmd.append('\'');
-      }
-      cmd.append(',');
       String code = unit.code();
       if(RString.isEmpty(code)){
          cmd.append("NULL");
@@ -444,15 +427,6 @@ public class FDataResourceModelMeshLogic
       }else{
          cmd.append('\'');
          cmd.append(RSql.formatValue(label));
-         cmd.append('\'');
-      }
-      cmd.append(',');
-      String keywords = unit.keywords();
-      if(RString.isEmpty(keywords)){
-         cmd.append("NULL");
-      }else{
-         cmd.append('\'');
-         cmd.append(RSql.formatValue(keywords));
          cmd.append('\'');
       }
       cmd.append(',');
@@ -596,17 +570,6 @@ public class FDataResourceModelMeshLogic
          cmd.append(",`SORT_INDEX`=");
          cmd.append(unit.sortIndex());
       }
-      if(unit.isFullCodeChanged()){
-         cmd.append(",`FULL_CODE`=");
-         String fullCode = unit.fullCode();
-         if(RString.isEmpty(fullCode)){
-            cmd.append("NULL");
-         }else{
-            cmd.append('\'');
-            cmd.append(RSql.formatValue(fullCode));
-            cmd.append('\'');
-         }
-      }
       if(unit.isCodeChanged()){
          cmd.append(",`CODE`=");
          String code = unit.code();
@@ -626,17 +589,6 @@ public class FDataResourceModelMeshLogic
          }else{
             cmd.append('\'');
             cmd.append(RSql.formatValue(label));
-            cmd.append('\'');
-         }
-      }
-      if(unit.isKeywordsChanged()){
-         cmd.append(",`KEYWORDS`=");
-         String keywords = unit.keywords();
-         if(RString.isEmpty(keywords)){
-            cmd.append("NULL");
-         }else{
-            cmd.append('\'');
-            cmd.append(RSql.formatValue(keywords));
             cmd.append('\'');
          }
       }

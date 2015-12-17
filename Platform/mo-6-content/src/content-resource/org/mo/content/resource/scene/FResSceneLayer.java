@@ -15,7 +15,7 @@ public class FResSceneLayer
    // <T>构造场景层。</T>
    //============================================================
    public FResSceneLayer(){
-      _typeName = "SceneLayer";
+      _type = "SceneLayer";
    }
 
    //============================================================

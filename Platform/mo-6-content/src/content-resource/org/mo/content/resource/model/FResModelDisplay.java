@@ -19,7 +19,7 @@ public class FResModelDisplay
    // <T>构造场景渲染。</T>
    //============================================================
    public FResModelDisplay(){
-      _typeName = "ModelDisplay";
+      _type = "ModelDisplay";
    }
 
    //============================================================

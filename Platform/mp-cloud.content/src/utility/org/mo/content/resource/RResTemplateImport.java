@@ -2,11 +2,11 @@ package org.mo.content.resource;
 
 import java.io.File;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.FStrings;
 import org.mo.com.logging.RLogger;
 import org.mo.content.common.RRs3Configuration;
+import org.mo.content.core.web.FGcSession;
 import org.mo.content.engine.core.template.IResTemplateConsole;
 import org.mo.core.aop.RAop;
 import org.mo.data.logic.FLogicContext;
@@ -30,7 +30,7 @@ public class RResTemplateImport
          }
       }
       // 创建会话
-      FGcSessionInfo session = RRs3Configuration.makeSession();
+      FGcSession session = RRs3Configuration.makeSession();
       // 导入处理
       IDatabaseConsole dbConsole = RAop.find(IDatabaseConsole.class);
       try(ILogicContext logicContext = new FLogicContext(dbConsole)){

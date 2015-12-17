@@ -159,7 +159,7 @@ public class FResMaterial
    // <T>构造资源模型。</T>
    //============================================================
    public FResMaterial(){
-      _typeName = "Material";
+      _type = "Material";
       makeGuid();
    }
 
@@ -179,17 +179,6 @@ public class FResMaterial
    //============================================================
    public void setParentGuid(String guid){
       _parentGuid = guid;
-   }
-
-   //============================================================
-   // <T>获得全代码。</T>
-   //
-   // @return 全代码
-   //============================================================
-   @Override
-   public String fullCode(){
-      //return _theme.code() + "|" + _code;
-      return _code;
    }
 
    //============================================================
