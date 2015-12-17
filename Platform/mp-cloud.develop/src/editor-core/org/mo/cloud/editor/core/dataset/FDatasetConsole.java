@@ -200,7 +200,8 @@ public class FDatasetConsole
          }else{
             groupName = RString.left(dataName, ".");
             groupPath = _sourceJavaDataPath + groupName;
-            packageName = "com.cyou.gccloud.data." + groupName.toLowerCase();
+            //packageName = "com.cyou.gccloud.data." + groupName.toLowerCase();
+            packageName = "org.mo.cloud.data." + groupName.toLowerCase();
          }
          FXmlNode config = buildConfig(dataName);
          String className = "F" + RDatabaseFormat.toJavaClassName(dataName.replace('.', '_'));
@@ -245,7 +246,8 @@ public class FDatasetConsole
          }else{
             groupName = RString.left(dataName, ".");
             groupPath = _sourceJavaDataPath + groupName;
-            packageName = "com.cyou.gccloud.data." + groupName.toLowerCase();
+            //packageName = "com.cyou.gccloud.data." + groupName.toLowerCase();
+            packageName = "org.mo.cloud.data." + groupName.toLowerCase();
          }
          FXmlNode config = buildConfig(dataName);
          String className = "F" + RDatabaseFormat.toJavaClassName(dataName.replace('.', '_'));

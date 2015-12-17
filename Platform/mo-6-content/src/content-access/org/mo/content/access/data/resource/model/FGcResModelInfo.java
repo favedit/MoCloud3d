@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.model;
 
-import com.cyou.gccloud.data.data.FDataResourceModelUnit;
+import org.mo.cloud.data.data.FDataResourceModelUnit;
 
 //============================================================
 // <T>资源位图信息。</T>

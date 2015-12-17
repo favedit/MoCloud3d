@@ -1,10 +1,9 @@
 package org.mo.content.access.data.system.application.version;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataSystemVersionLogic;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataSystemVersionLogic;
 
 //============================================================
 // <T>版本信息控制台。</T>

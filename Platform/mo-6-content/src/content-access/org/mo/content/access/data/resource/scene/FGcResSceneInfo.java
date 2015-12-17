@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.scene;
 
-import com.cyou.gccloud.data.data.FDataResourceSceneUnit;
+import org.mo.cloud.data.data.FDataResourceSceneUnit;
 
 //============================================================
 // <T>3D资源场景。</T>

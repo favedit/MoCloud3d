@@ -1,6 +1,6 @@
 package org.mo.content.access.data.common.area;
 
-import com.cyou.gccloud.data.data.FDataCommonAreaUnit;
+import org.mo.cloud.data.data.FDataCommonAreaUnit;
 
 //============================================================
 // <T>地区信息。</T>

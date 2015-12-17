@@ -1,12 +1,11 @@
 package org.mo.content.access.data.resource;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataResourceCatalogLogic;
 import org.mo.com.data.ISqlConnection;
 import org.mo.com.lang.EResult;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceCatalogLogic;
 
 //============================================================
 // <T>资源目录控制台。</T>

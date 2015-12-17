@@ -1,13 +1,12 @@
 package org.mo.content.access.data.resource.model.skeleton;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataResourceModelSkeletonLogic;
+import org.mo.cloud.data.data.FDataResourceModelSkeletonSkinLogic;
 import org.mo.com.lang.EResult;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonSkinLogic;
 
 //============================================================
 // <T>资源模型骨骼控制台。</T>

@@ -1,6 +1,6 @@
 package org.mo.content.access.data.solution;
 
-import com.cyou.gccloud.data.data.FDataSolutionProjectUnit;
+import org.mo.cloud.data.data.FDataSolutionProjectUnit;
 
 //============================================================
 // <T>项目信息。</T>

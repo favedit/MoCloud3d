@@ -2,6 +2,7 @@ package org.mo.cloud.core.queue;
 
 //http://www.blogjava.net/xajava/archive/2012/10/24/390165.html
 import java.util.Enumeration;
+
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.Destination;
@@ -14,6 +15,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
+
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 

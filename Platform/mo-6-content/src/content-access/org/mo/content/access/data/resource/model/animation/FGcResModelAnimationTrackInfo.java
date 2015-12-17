@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.model.animation;
 
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationTrackUnit;
+import org.mo.cloud.data.data.FDataResourceModelAnimationTrackUnit;
 
 //============================================================
 // <T>资源模型动画轨迹信息。</T>

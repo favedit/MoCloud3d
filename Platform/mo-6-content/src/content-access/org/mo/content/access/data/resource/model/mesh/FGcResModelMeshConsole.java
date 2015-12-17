@@ -1,15 +1,14 @@
 package org.mo.content.access.data.resource.model.mesh;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataResourceModelMeshLogic;
+import org.mo.cloud.data.data.FDataResourceModelMeshStreamLogic;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.IGcResourceConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelMeshLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelMeshStreamLogic;
 
 //============================================================
 // <T>3D资源网格控制台。</T>

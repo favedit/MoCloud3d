@@ -1,13 +1,12 @@
 package org.mo.content.access.data.system.application;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataSystemApplicationLogic;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.system.application.version.FEaiVersionInfo;
 import org.mo.content.access.data.system.application.version.IEaiVersionConsole;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataSystemApplicationLogic;
 
 //============================================================
 // <T>应用信息控制台。</T>

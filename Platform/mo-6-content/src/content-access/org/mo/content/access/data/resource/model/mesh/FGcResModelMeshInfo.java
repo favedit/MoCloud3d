@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.model.mesh;
 
-import com.cyou.gccloud.data.data.FDataResourceModelMeshUnit;
+import org.mo.cloud.data.data.FDataResourceModelMeshUnit;
 
 //============================================================
 // <T>3D资源网格。</T>

@@ -1,6 +1,7 @@
 package org.mo.content.access.data.person.user;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataPersonUserLogic;
 import org.mo.com.data.FSql;
 import org.mo.com.lang.RString;
 import org.mo.content.access.data.control.role.FEaiControlModuleInfo;
@@ -8,8 +9,6 @@ import org.mo.content.access.data.control.role.IEaiControlRoleConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataPersonUserLogic;
 
 //============================================================
 // <T>用户信息控制台。</T>

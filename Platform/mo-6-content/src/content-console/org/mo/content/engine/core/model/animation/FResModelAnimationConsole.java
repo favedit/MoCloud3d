@@ -1,5 +1,6 @@
 package org.mo.content.engine.core.model.animation;
 
+import org.mo.cloud.data.data.FDataResourceModelAnimationTrackLogic;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationConsole;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackInfo;
@@ -10,8 +11,6 @@ import org.mo.content.resource.common.FResTrack;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationTrackLogic;
 
 //============================================================
 // <T>资源模型动画控制台。</T>

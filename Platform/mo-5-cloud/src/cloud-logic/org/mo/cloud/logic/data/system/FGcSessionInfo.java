@@ -1,6 +1,6 @@
 package org.mo.cloud.logic.data.system;
 
-import com.cyou.gccloud.data.cache.FCacheSystemSessionUnit;
+import org.mo.cloud.data.cache.FCacheSystemSessionUnit;
 
 //============================================================
 // <T>用户信息。</T>

@@ -1,7 +1,11 @@
 package org.mo.content.engine.core.model;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
+import org.mo.cloud.data.data.FDataResourceModelAnimationLogic;
+import org.mo.cloud.data.data.FDataResourceModelSkeletonLogic;
+import org.mo.cloud.data.data.FDataResourceModelUnit;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
@@ -36,10 +40,6 @@ import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
 import org.mo.mime.compress.ECompressMode;
 import org.mo.mime.compress.FCompressStream;
-
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelUnit;
 
 //============================================================
 // <T>资源模型控制台。</T>
@@ -141,7 +141,7 @@ public class FResModelConsole
    public byte[] makeModelData(ILogicContext logicContext,
                                String guid){
       // 查找数据
-      SGcMongoStorage findStorage = _storageConsole.find(EGcStorageMongoCatalog.CacheResourceModel, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceModel, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -163,10 +163,10 @@ public class FResModelConsole
       }
       //............................................................
       // 存储数据
-      SGcMongoStorage storage = new SGcMongoStorage(EGcStorageMongoCatalog.CacheResourceModel, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceModel, guid);
       storage.setCode(model.code());
       storage.setData(data);
-      _storageConsole.store(storage);
+      _storageConsole.store(EGcStorage.Cache, storage);
       // 返回数据
       return data;
    }
@@ -251,7 +251,7 @@ public class FResModelConsole
       doUpdate(logicContext, modelInfo);
       //............................................................
       // 废弃临时数据
-      _storageConsole.delete(EGcStorageMongoCatalog.CacheResourceModel, modelGuid);
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceModel, modelGuid);
       //............................................................
       return EResult.Success;
    }

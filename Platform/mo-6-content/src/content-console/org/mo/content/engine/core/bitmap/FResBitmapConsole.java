@@ -1,13 +1,15 @@
 package org.mo.content.engine.core.bitmap;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
+import org.mo.com.net.EMime;
 import org.mo.com.xml.FXmlDocument;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapConsole;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
@@ -38,7 +40,7 @@ public class FResBitmapConsole
    public byte[] makeViewData(ILogicContext logicContext,
                               String guid){
       // 获得数据
-      SGcMongoStorage storage = _storageConsole.find(EGcStorageMongoCatalog.ResourceBitmap, guid);
+      FGcStorageContent storage = _storageConsole.find(EGcStorage.Content, EGcStorageCatalog.ResourceBitmap, guid);
       return storage.data();
    }
 
@@ -52,7 +54,7 @@ public class FResBitmapConsole
    public byte[] makePreview(ILogicContext context,
                              String guid){
       // 获得数据
-      SGcMongoStorage storage = _storageConsole.find(EGcStorageMongoCatalog.ResourceBitmap, guid);
+      FGcStorageContent storage = _storageConsole.find(EGcStorage.Content, EGcStorageCatalog.ResourceBitmap, guid);
       byte[] imageData = storage.data();
       // 生成预览图
       byte[] data = null;
@@ -80,7 +82,7 @@ public class FResBitmapConsole
                                  String guid){
       //............................................................
       // 查找数据
-      SGcMongoStorage findStorage = _storageConsole.find(EGcStorageMongoCatalog.CacheBitmapPreview, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheBitmapPreview, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -88,9 +90,9 @@ public class FResBitmapConsole
       // 生成模型
       byte[] data = makePreview(logicContext, guid);
       // 存储数据
-      SGcMongoStorage storage = new SGcMongoStorage(EGcStorageMongoCatalog.CacheBitmapPreview, guid, "bin");
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheBitmapPreview, guid);
       storage.setData(data);
-      _storageConsole.store(storage);
+      _storageConsole.store(EGcStorage.Cache, storage);
       // 返回数据
       return data;
    }
@@ -109,14 +111,23 @@ public class FResBitmapConsole
                                  FImage bitmap){
       // 获得信息
       String guid = bitmapInfo.guid();
+      String code = bitmapInfo.code();
+      String label = bitmapInfo.label();
+      byte[] data = bitmap.toBytes("jpeg");
       // 设置数据
       bitmapInfo.setSizeWidth(bitmap.width());
       bitmapInfo.setSizeHeight(bitmap.height());
-      doUpdate(logicContext, bitmapInfo);
       // 存储数据
-      SGcMongoStorage resource = new SGcMongoStorage(EGcStorageMongoCatalog.ResourceBitmap, guid);
-      resource.setData(bitmap.toBytes("jpeg"));
-      _storageConsole.store(resource);
+      FGcStorageContent content = new FGcStorageContent(EGcStorageCatalog.ResourceBitmap, guid);
+      content.setCode(code);
+      content.setLabel(label);
+      content.setMime(EMime.Jpg.mime());
+      content.setData(data);
+      _storageConsole.store(EGcStorage.Content, content);
+      // 存储内容
+      bitmapInfo.setDataSize(content.size());
+      bitmapInfo.setDataHash(content.hash());
+      doUpdate(logicContext, bitmapInfo);
       return EResult.Success;
    }
 
@@ -133,6 +144,7 @@ public class FResBitmapConsole
                                  FGcSessionInfo session,
                                  String path){
       long userId = session.userId();
+      long projectId = session.projectId();
       path = RFile.format(path);
       //............................................................
       // 导入配置信息
@@ -153,38 +165,31 @@ public class FResBitmapConsole
          if(!RFile.exists(bitmapFile)){
             throw new FFatalError("Bitmap file is not exists. (file_name={1})", bitmapFile);
          }
-         String fullCode = textureCode + "|" + bitmapCode;
+         String code = textureCode + "|" + bitmapCode;
          // 新建位图
-         FGcResBitmapInfo bitmapInfo = findByUserFullCode(logicContext, userId, fullCode);
+         FGcResBitmapInfo bitmapInfo = findByCode(logicContext, userId, projectId, code);
          boolean exists = (bitmapInfo != null);
          if(!exists){
             bitmapInfo = doPrepare(logicContext);
             bitmapInfo.setUserId(userId);
-            bitmapInfo.setProjectId(session.projectId());
-            bitmapInfo.setFullCode(textureCode + "|" + bitmapCode);
+            bitmapInfo.setProjectId(projectId);
+            bitmapInfo.setCode(code);
          }
-         bitmapInfo.setCode(bitmapCode);
          bitmapInfo.setLabel(textureLabel);
          bitmapInfo.setKeywords(textureKeywords);
-         bitmapInfo.setFormatCode(fileExtension);
+         bitmapInfo.setFormatCode(bitmapCode);
+         bitmapInfo.setMimeCode(EMime.Jpg.mime());
          if(exists){
             doUpdate(logicContext, bitmapInfo);
          }else{
             doInsert(logicContext, bitmapInfo);
          }
          // 上传位图数据
-         FImage image = new FImage();
-         try{
+         try(FImage image = new FImage()){
             image.loadFile(bitmapFile);
-            this.updateResource(logicContext, bitmapInfo, image);
-         }catch(Exception e){
-            throw new FFatalError(e);
-         }finally{
-            try{
-               image.close();
-            }catch(Exception e){
-               throw new FFatalError(e);
-            }
+            updateResource(logicContext, bitmapInfo, image);
+         }catch(Exception exception){
+            throw new FFatalError(exception);
          }
       }
       _logger.debug(this, "importResource", "Import bitmap success. (path={1})", path);

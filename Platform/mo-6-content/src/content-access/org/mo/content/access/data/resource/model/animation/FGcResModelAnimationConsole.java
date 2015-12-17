@@ -2,14 +2,13 @@ package org.mo.content.access.data.resource.model.animation;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
+import org.mo.cloud.data.data.FDataResourceModelAnimationActionLogic;
+import org.mo.cloud.data.data.FDataResourceModelAnimationLogic;
+import org.mo.cloud.data.data.FDataResourceModelAnimationTrackLogic;
 import org.mo.com.lang.EResult;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationActionLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationTrackLogic;
 
 //============================================================
 // <T>资源模型动画控制台。</T>

@@ -1,7 +1,6 @@
 package org.mo.content.core.resource;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RString;
@@ -37,7 +36,7 @@ public class FCntResourceConsole
          throw new FFatalError("Guid is empty.");
       }
       // 获得数据
-      SGcMongoStorage findStorage = _storageConsole.find(EGcStorageMongoCatalog.ResourcePreview, guid);
+      FGcMongoContent findStorage = _storageConsole.find(EGcStorageCatalog.ResourcePreview, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -64,7 +63,7 @@ public class FCntResourceConsole
          throw new FFatalError("Data is empty.");
       }
       // 上传数据
-      SGcMongoStorage storage = new SGcMongoStorage(EGcStorageMongoCatalog.ResourcePreview, guid, "jpg");
+      FGcMongoContent storage = new FGcMongoContent(EGcStorageCatalog.ResourcePreview, guid, "jpg");
       storage.setData(data);
       _storageConsole.store(storage);
       return EResult.Success;

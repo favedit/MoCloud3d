@@ -1,5 +1,7 @@
 package org.mo.content.dbexport;
 
+import org.mo.cloud.data.data.FDataResourceMaterialLogic;
+import org.mo.cloud.data.data.FDataResourceMaterialUnit;
 import org.mo.com.logging.RLogger;
 import org.mo.content.access.data.resource.FGcResourceInfo;
 import org.mo.content.access.data.resource.IGcResourceConsole;
@@ -9,9 +11,6 @@ import org.mo.data.logic.FLogicContext;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
 import org.mo.eng.data.IDatabaseConsole;
-
-import com.cyou.gccloud.data.data.FDataResourceMaterialLogic;
-import com.cyou.gccloud.data.data.FDataResourceMaterialUnit;
 
 public class RDbUpdateMaterialData
 {

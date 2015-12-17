@@ -65,12 +65,14 @@ public interface IMongodbConnection
    //============================================================
    // <T>查找一个存储内容。</T>
    //
+   // @param clazz 类对象
    // @param catalog 目录
    // @param guid 唯一编号
    // @return 存储内容
    //============================================================
-   FNosqlContent findContent(String catalog,
-                             String guid);
+   <T extends FNosqlContent> T findContent(Class<T> clazz,
+                                           String catalog,
+                                           String guid);
 
    //============================================================
    // <T>保存一个存储内容。</T>

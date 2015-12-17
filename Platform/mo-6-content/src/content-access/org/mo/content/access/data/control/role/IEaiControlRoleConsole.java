@@ -1,10 +1,9 @@
 package org.mo.content.access.data.control.role;
 
 import org.mo.cloud.core.database.IAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataControlRoleUnit;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataControlRoleUnit;
 
 //============================================================
 // <T>数据控制角色控制台接口。</T>

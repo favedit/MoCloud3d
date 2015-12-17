@@ -1,6 +1,7 @@
 package org.mo.content.face.person;
 
 import org.mo.cloud.core.web.FGcWebSession;
+import org.mo.cloud.define.enums.core.EGcAccountFrom;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.person.FGcUserInfo;
@@ -12,8 +13,6 @@ import org.mo.web.core.container.AContainer;
 import org.mo.web.core.session.IWebSession;
 import org.mo.web.core.session.IWebSessionConsole;
 import org.mo.web.protocol.context.IWebContext;
-
-import com.cyou.gccloud.define.enums.core.EGcAccountFrom;
 
 //============================================================
 // <T>人员账号逻辑。</T>

@@ -6,7 +6,7 @@
 //
 // @version 1.0.1
 //============================================================
-package com.cyou.gccloud.service.define.enums;
+package org.mo.cloud.service.define.enums;
 
 import org.mo.com.xml.*;
 

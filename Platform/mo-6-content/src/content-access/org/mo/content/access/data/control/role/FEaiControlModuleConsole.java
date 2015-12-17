@@ -1,8 +1,7 @@
 package org.mo.content.access.data.control.role;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.data.FDataControlModuleLogic;
+import org.mo.cloud.data.data.FDataControlModuleLogic;
 
 //============================================================
 // <T>数据控件角色控制台。</T>

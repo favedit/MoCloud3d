@@ -2,6 +2,9 @@ package org.mo.content.access.data.resource.scene;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
+import org.mo.cloud.data.data.FDataResourceSceneLogic;
+import org.mo.cloud.data.data.FDataResourceTemplateLogic;
+import org.mo.cloud.define.enums.core.EGcResource;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -9,10 +12,6 @@ import org.mo.content.access.data.resource.FGcResourceInfo;
 import org.mo.content.access.data.resource.IGcResourceConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceSceneLogic;
-import com.cyou.gccloud.data.data.FDataResourceTemplateLogic;
-import com.cyou.gccloud.define.enums.core.EGcResource;
 
 //============================================================
 // <T>资源场景控制台。</T>

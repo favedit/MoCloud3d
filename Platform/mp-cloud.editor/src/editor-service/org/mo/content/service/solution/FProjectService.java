@@ -1,5 +1,8 @@
 package org.mo.content.service.solution;
 
+import org.mo.cloud.data.data.FDataResourceSceneLogic;
+import org.mo.cloud.data.data.FDataSolutionProjectLogic;
+import org.mo.cloud.data.data.FDataSolutionProjectUnit;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
@@ -18,10 +21,6 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
-
-import com.cyou.gccloud.data.data.FDataResourceSceneLogic;
-import com.cyou.gccloud.data.data.FDataSolutionProjectLogic;
-import com.cyou.gccloud.data.data.FDataSolutionProjectUnit;
 
 //============================================================
 // <T>资源3D服务。</T>

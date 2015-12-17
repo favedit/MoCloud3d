@@ -1,5 +1,6 @@
 package org.mo.cloud.core.storage.mongo;
 
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.com.lang.EResult;
 
 //============================================================
@@ -10,38 +11,46 @@ public interface IGcStorageMongoConsole
    //============================================================
    // <T>保存一个存储信息。</T>
    //
+   // @param databaseName 库名称
    // @param catalog 集合分类
    // @param guid 唯一编号
    // @return 处理结果
    //============================================================
-   SGcMongoStorage find(String catalog,
-                        String guid);
+   FGcStorageContent find(String databaseName,
+                          String catalog,
+                          String guid);
 
    //============================================================
    // <T>保存一个存储信息。</T>
    //
+   // @param databaseName 库名称
    // @param storage 存储信息
    // @return 处理结果
    //============================================================
-   boolean store(SGcMongoStorage storage);
+   boolean store(String databaseName,
+                 FGcStorageContent content);
 
    //============================================================
    // <T>删除一个存储信息。</T>
    //
+   // @param databaseName 库名称
    // @param catalog 集合分类
    // @param guid 唯一编号
    // @return 处理结果
    //============================================================
-   boolean delete(String catalog,
+   boolean delete(String databaseName,
+                  String catalog,
                   String guid);
 
    //============================================================
    // <T>删除一个存储集合。</T>
    //
+   // @param databaseName 库名称
    // @param catalog 集合分类
    // @return 处理结果
    //============================================================
-   boolean drop(String catalog);
+   boolean drop(String databaseName,
+                String catalog);
 
    //============================================================
    // <T>导出一个存储内容为文件。</T>

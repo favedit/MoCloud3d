@@ -7,10 +7,10 @@
 // @version 1.0.1
 // @auto 代码器管理的代码，如需修改请在手动修改标出的地方修改。
 //============================================================
-package com.cyou.gccloud.define.entity;
+package org.mo.cloud.define.entity;
 
 import org.mo.com.xml.*;
-import com.cyou.gccloud.common.*;
+import org.mo.cloud.common.*;
 
 //============================================================
 // <T><jt:item source='$entity.label'/>实体。</T>

@@ -1,8 +1,7 @@
 package org.mo.content.access.data.common.province;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.data.FDataCommonProvinceLogic;
+import org.mo.cloud.data.data.FDataCommonProvinceLogic;
 
 //============================================================
 // <T>省份信息控制台。</T>

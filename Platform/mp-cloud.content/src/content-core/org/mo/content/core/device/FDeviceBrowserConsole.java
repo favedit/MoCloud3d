@@ -1,10 +1,9 @@
 package org.mo.content.core.device;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataInfoDeviceBrowserLogic;
 import org.mo.com.lang.EResult;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataInfoDeviceBrowserLogic;
 
 //============================================================
 // <T>设备控制台。</T>

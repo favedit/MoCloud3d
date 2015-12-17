@@ -1,6 +1,6 @@
 package org.mo.content.access.data.system.application;
 
-import com.cyou.gccloud.data.data.FDataSystemApplicationUnit;
+import org.mo.cloud.data.data.FDataSystemApplicationUnit;
 
 //============================================================
 // <T>应用信息。</T>

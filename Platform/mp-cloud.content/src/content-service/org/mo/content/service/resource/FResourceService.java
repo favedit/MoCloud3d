@@ -1,5 +1,8 @@
 package org.mo.content.service.resource;
 
+import org.mo.cloud.data.data.FDataResourceResourceLogic;
+import org.mo.cloud.define.enums.core.EGcResource;
+import org.mo.cloud.define.enums.core.EGcResourceShare;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -23,10 +26,6 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
-
-import com.cyou.gccloud.data.data.FDataResourceResourceLogic;
-import com.cyou.gccloud.define.enums.core.EGcResource;
-import com.cyou.gccloud.define.enums.core.EGcResourceShare;
 
 //============================================================
 // <T>资源3D服务。</T>

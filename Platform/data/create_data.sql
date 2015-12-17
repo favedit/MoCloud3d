@@ -965,29 +965,6 @@ ALTER TABLE DT_SOL_PROJECT ADD CONSTRAINT DT_SOL_PRJ_FK_USR
       FOREIGN KEY (`USER_ID`) REFERENCES DT_PSN_USER(`OUID`); 
 
 -- ------------------------------------------------------------
--- Create table [Data.Resource.Type]
--- ------------------------------------------------------------
-DROP TABLE IF EXISTS `DT_RES_TYPE`;
-CREATE TABLE `DT_RES_TYPE` 
-( 
-   `OUID`                          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-   `OVLD`                          TINYINT NOT NULL DEFAULT TRUE, 
-   `GUID`                          VARCHAR(40) NOT NULL, 
-   `CODE`                          VARCHAR(80), 
-   `LABEL`                         VARCHAR(200), 
-   `ICON_URL`                      VARCHAR(200), 
-   `DESCRIPTION`                   VARCHAR(2000), 
-   `NOTE`                          VARCHAR(2000), 
-   `CREATE_USER_ID`                BIGINT, 
-   `CREATE_DATE`                   DATETIME, 
-   `UPDATE_USER_ID`                BIGINT, 
-   `UPDATE_DATE`                   DATETIME 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
-
-ALTER TABLE DT_RES_TYPE 
-   ADD CONSTRAINT DT_RES_TYP_UK_GID UNIQUE ( GUID ); 
-
--- ------------------------------------------------------------
 -- Create table [Data.Resource.Catalog]
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `DT_RES_CATALOG`;
@@ -999,9 +976,7 @@ CREATE TABLE `DT_RES_CATALOG`
    `USER_ID`                       BIGINT, 
    `PROJECT_ID`                    BIGINT, 
    `PARENT_ID`                     BIGINT, 
-   `FULL_CODE`                     VARCHAR(2000), 
    `CODE`                          VARCHAR(80), 
-   `FULL_LABEL`                    VARCHAR(2000), 
    `LABEL`                         VARCHAR(200), 
    `KEYWORDS`                      VARCHAR(2000), 
    `ICON_URL`                      VARCHAR(200), 
@@ -1033,14 +1008,16 @@ CREATE TABLE `DT_RES_RESOURCE`
    `GUID`                          VARCHAR(40) NOT NULL, 
    `USER_ID`                       BIGINT, 
    `PROJECT_ID`                    BIGINT, 
-   `TYPE_ID`                       BIGINT, 
    `CATALOG_ID`                    BIGINT, 
    `RESOURCE_CD`                   INTEGER, 
-   `CODE`                          VARCHAR(80), 
+   `CODE`                          VARCHAR(200), 
    `LABEL`                         VARCHAR(200), 
+   `KEYWORDS`                      VARCHAR(400), 
    `SHARE_CD`                      INTEGER, 
-   `ICON_URL`                      VARCHAR(200), 
    `HAS_PREVIEW`                   TINYINT, 
+   `ICON_URL`                      VARCHAR(200), 
+   `DATA_LENGTH`                   INTEGER, 
+   `DATA_HASH`                     VARCHAR(40), 
    `DESCRIPTION`                   VARCHAR(2000), 
    `NOTE`                          VARCHAR(2000), 
    `CREATE_USER_ID`                BIGINT, 
@@ -1058,9 +1035,6 @@ ALTER TABLE DT_RES_RESOURCE ADD CONSTRAINT DT_RES_RES_FK_USR
 ALTER TABLE DT_RES_RESOURCE ADD CONSTRAINT DT_RES_RES_FK_PRJ 
       FOREIGN KEY (`PROJECT_ID`) REFERENCES DT_SOL_PROJECT(`OUID`); 
 
-ALTER TABLE DT_RES_RESOURCE ADD CONSTRAINT DT_RES_RES_FK_TYP 
-      FOREIGN KEY (`TYPE_ID`) REFERENCES DT_RES_TYPE(`OUID`); 
-
 ALTER TABLE DT_RES_RESOURCE ADD CONSTRAINT DT_RES_RES_FK_CTG 
       FOREIGN KEY (`CATALOG_ID`) REFERENCES DT_RES_CATALOG(`OUID`); 
 
@@ -1076,11 +1050,10 @@ CREATE TABLE `DT_RES_BITMAP`
    `USER_ID`                       BIGINT, 
    `PROJECT_ID`                    BIGINT, 
    `RESOURCE_ID`                   BIGINT, 
-   `FULL_CODE`                     VARCHAR(200), 
-   `CODE`                          VARCHAR(80), 
+   `CODE`                          VARCHAR(200), 
    `LABEL`                         VARCHAR(200), 
-   `KEYWORDS`                      VARCHAR(2000), 
-   `FORMAT_CODE`                   VARCHAR(80), 
+   `FORMAT_CODE`                   VARCHAR(40), 
+   `MIME_CODE`                     VARCHAR(40), 
    `SIZE_WIDTH`                    INTEGER, 
    `SIZE_HEIGHT`                   INTEGER, 
    `NOTE`                          VARCHAR(2000), 

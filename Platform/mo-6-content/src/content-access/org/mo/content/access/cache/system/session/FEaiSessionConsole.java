@@ -1,6 +1,7 @@
 package org.mo.content.access.cache.system.session;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.cache.FCacheSystemSessionLogic;
 import org.mo.com.lang.EResult;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
@@ -9,8 +10,6 @@ import org.mo.content.access.data.control.role.IEaiControlRoleConsole;
 import org.mo.content.access.data.person.user.FEaiUserInfo;
 import org.mo.content.access.data.person.user.IEaiUserConsole;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.cache.FCacheSystemSessionLogic;
 
 //============================================================
 // <T>会话信息控制台。</T>

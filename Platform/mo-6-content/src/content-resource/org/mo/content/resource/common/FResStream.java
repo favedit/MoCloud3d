@@ -1,12 +1,11 @@
 package org.mo.content.resource.common;
 
+import org.mo.cloud.define.enums.common.EGcData;
 import org.mo.com.io.FByteStream;
 import org.mo.com.io.IDataInput;
 import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshStreamInfo;
-
-import com.cyou.gccloud.define.enums.common.EGcData;
 
 //============================================================
 // <T>资源模型数据流。</T>

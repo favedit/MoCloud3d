@@ -1,7 +1,8 @@
 package org.mo.content.engine.core.material;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.bitmap.FGcResBitmapInfo;
@@ -132,7 +133,7 @@ public class FResMaterialConsole
    public byte[] makeResourceData(ILogicContext logicContext,
                                   String guid){
       // 查找数据
-      SGcMongoStorage findStorage = _storageConsole.find(EGcStorageMongoCatalog.CacheResourceMaterial, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceMaterial, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -149,10 +150,10 @@ public class FResMaterialConsole
       }
       //............................................................
       // 存储数据
-      SGcMongoStorage storage = new SGcMongoStorage(EGcStorageMongoCatalog.CacheResourceMaterial, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceMaterial, guid);
       storage.setCode(resource.code());
       storage.setData(data);
-      _storageConsole.store(storage);
+      _storageConsole.store(EGcStorage.Cache, storage);
       // 返回数据
       return data;
    }

@@ -1,13 +1,13 @@
 package org.mo.content.access.data.resource;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
+import org.mo.cloud.data.data.FDataResourceResourceLogic;
 import org.mo.com.lang.EResult;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceResourceLogic;
 
 //============================================================
 // <T>资源信息控制台。</T>
@@ -40,7 +40,7 @@ public class FGcResourceConsole
                                  FGcResourceInfo resourceInfo){
       // 删除关联数据
       String guid = resourceInfo.guid();
-      _storageConsole.delete(EGcStorageMongoCatalog.ResourcePreview, guid);
+      _storageConsole.delete(EGcStorage.Content, EGcStorageCatalog.ResourcePreview, guid);
       // 返回结果
       return EResult.Success;
    }

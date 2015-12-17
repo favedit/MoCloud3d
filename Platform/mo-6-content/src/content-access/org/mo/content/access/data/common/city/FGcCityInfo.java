@@ -1,6 +1,6 @@
 package org.mo.content.access.data.common.city;
 
-import com.cyou.gccloud.data.data.FDataCommonCityUnit;
+import org.mo.cloud.data.data.FDataCommonCityUnit;
 
 //============================================================
 // <T>城市信息。</T>

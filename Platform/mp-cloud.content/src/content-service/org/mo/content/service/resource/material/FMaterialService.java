@@ -1,5 +1,6 @@
 package org.mo.content.service.resource.material;
 
+import org.mo.cloud.data.data.FDataResourceMaterialBitmapLogic;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -20,8 +21,6 @@ import org.mo.data.logic.ILogicContext;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
-
-import com.cyou.gccloud.data.data.FDataResourceMaterialBitmapLogic;
 
 //============================================================
 // <T>资源3D网格服务。</T>

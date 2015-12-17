@@ -24,10 +24,10 @@ public interface ISpaceAction
    // @return 页面
    //============================================================
    @AWebLogin
-   String construct(IWebContext context,
-                    IWebSession sessionContext,
-                    ILogicContext logicContext,
-                    @AContainer(name = "page") FSpacePage page);
+          String construct(IWebContext context,
+                           IWebSession sessionContext,
+                           ILogicContext logicContext,
+                           @AContainer(name = "page") FSpacePage page);
 
    //============================================================
    // <T>运行页面处理。</T>

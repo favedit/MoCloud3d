@@ -11,8 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/mo-3-logic"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/mo-4-web"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/mo-lib-lzma"/>
-	<classpathentry kind="lib" path="lib/json-lib-2.4-jdk15.jar"/>
-	<classpathentry kind="lib" path="lib/mongo-2.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/activemq-all-5.12.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

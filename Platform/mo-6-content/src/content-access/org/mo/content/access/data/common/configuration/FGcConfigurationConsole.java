@@ -1,6 +1,7 @@
 package org.mo.content.access.data.common.configuration;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataCommonConfigurationLogic;
 import org.mo.com.data.FSql;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RDouble;
@@ -8,8 +9,6 @@ import org.mo.com.lang.RFloat;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RLong;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataCommonConfigurationLogic;
 
 //============================================================
 // <T>配置信息控制台。</T>

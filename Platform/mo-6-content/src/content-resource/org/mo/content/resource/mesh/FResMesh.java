@@ -1,5 +1,7 @@
 package org.mo.content.resource.mesh;
 
+import org.mo.cloud.data.data.FDataResourceModelMeshUnit;
+import org.mo.cloud.define.enums.common.EGcData;
 import org.mo.com.geom.SFloatOutline3;
 import org.mo.com.io.FByteStream;
 import org.mo.com.io.IDataInput;
@@ -13,9 +15,6 @@ import org.mo.content.geom.mesh.SGeomFace;
 import org.mo.content.geom.mesh.SGeomVertex;
 import org.mo.content.resource.common.FResSpace;
 import org.mo.content.resource.common.FResStream;
-
-import com.cyou.gccloud.data.data.FDataResourceModelMeshUnit;
-import com.cyou.gccloud.define.enums.common.EGcData;
 
 //============================================================
 // <T>资源模型网格。</T>

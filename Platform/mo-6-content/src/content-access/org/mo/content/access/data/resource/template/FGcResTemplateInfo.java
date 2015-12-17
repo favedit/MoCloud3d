@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.template;
 
-import com.cyou.gccloud.data.data.FDataResourceTemplateUnit;
+import org.mo.cloud.data.data.FDataResourceTemplateUnit;
 
 //============================================================
 // <T>资源模板。</T>

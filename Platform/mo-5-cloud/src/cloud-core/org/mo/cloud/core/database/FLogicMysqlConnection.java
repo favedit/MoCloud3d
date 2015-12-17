@@ -1,6 +1,7 @@
 package org.mo.cloud.core.database;
 
 import java.sql.Connection;
+
 import org.mo.core.aop.RAop;
 import org.mo.data.driver.FSqlMysqlConnection;
 import org.mo.data.logic.cache.FLogicCacheChannel;

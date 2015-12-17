@@ -1,9 +1,8 @@
 package org.mo.content.access.logger.person.user;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.logger.FLoggerPersonUserModuleLogic;
-import com.cyou.gccloud.data.logger.FLoggerPersonUserModuleUnit;
+import org.mo.cloud.data.logger.FLoggerPersonUserModuleLogic;
+import org.mo.cloud.data.logger.FLoggerPersonUserModuleUnit;
 
 //============================================================
 // <T>日志人员用户访问控制台。</T>

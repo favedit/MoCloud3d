@@ -1,9 +1,8 @@
 package org.mo.content.access.data.person.user;
 
 import org.mo.cloud.core.database.IAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataPersonUserEntryUnit;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataPersonUserEntryUnit;
 
 //============================================================
 // <T>人员入口控制台接口。</T>

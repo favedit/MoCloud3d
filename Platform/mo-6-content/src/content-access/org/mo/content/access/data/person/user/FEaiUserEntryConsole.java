@@ -1,13 +1,12 @@
 package org.mo.content.access.data.person.user;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataPersonUserEntryLogic;
+import org.mo.cloud.data.data.FDataPersonUserEntryUnit;
 import org.mo.com.data.FSql;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.FFatalError;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataPersonUserEntryLogic;
-import com.cyou.gccloud.data.data.FDataPersonUserEntryUnit;
 
 //============================================================
 // <T>人员账号入口控制台。</T>

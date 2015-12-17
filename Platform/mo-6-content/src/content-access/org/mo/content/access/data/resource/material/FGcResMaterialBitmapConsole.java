@@ -1,10 +1,9 @@
 package org.mo.content.access.data.resource.material;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataResourceMaterialBitmapLogic;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceMaterialBitmapLogic;
 
 //============================================================
 // <T>资源材质信息控制台。</T>

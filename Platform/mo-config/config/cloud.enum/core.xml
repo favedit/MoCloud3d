@@ -117,6 +117,11 @@
     <Item _uuid="9a9b2640-638d-4989-bfc1-2df12a550886" name="Publish" label="发布" is_valid="Y" note="M#" />
     <Item _uuid="bea57374-ab48-40eb-babb-108c4452e578" name="CheckFail" label="审核未通过" is_valid="Y" note="M#" />
   </Enum>
+  <Enum _uuid="dd71bfbb-e65e-43f9-8d4a-dcf108adeb41" name="GcResourceShare" label="资源共享" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
+    <Item _uuid="2452dd81-08e1-4672-a01e-0642d1d0ec8a" name="Unknown" label="未知" is_valid="Y" note="M#" />
+    <Item _uuid="1bf64122-ef15-41b5-be68-b9f10401d969" name="Private" label="个人" is_valid="Y" note="M#" />
+    <Item _uuid="b234c65b-d195-4540-b9fc-706d1c45b704" name="Public" label="公开" is_valid="Y" note="M#" />
+  </Enum>
   <Enum _uuid="312e8ce2-ba81-49e4-9551-d67ff94dcf65" name="GcVersionForce" label="版本更新规则" is_valid="Y" note="M#" is_server_cpp="N" is_server_java="Y" is_client_cpp="N" is_client_as="N" is_client_cs="N" is_client_java="Y" is_count="N" enum_data_type_cd="Uint32" is_set="N" set_data_type_cd="Uint32" is_code="N">
     <Item _uuid="e8dc910b-862f-442e-9ec3-dccb45fd95b9" name="Unknown" label="未知" is_valid="Y" note="M#" />
     <Item _uuid="1066ae7d-7af3-4af9-9c56-fc30fe8d8554" name="Optional" label="可选" is_valid="Y" note="M#" />

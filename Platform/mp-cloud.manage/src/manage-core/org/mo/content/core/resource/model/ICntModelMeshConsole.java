@@ -37,7 +37,7 @@ public interface ICntModelMeshConsole
    // @return 网格信息
    //============================================================
    FGcResModelMeshInfo createMesh(ILogicContext logicContext,
-                             FGcResModelMeshInfo mesh);
+                                  FGcResModelMeshInfo mesh);
 
    //============================================================
    // <T>删除网格信息。</T>

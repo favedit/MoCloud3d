@@ -1,7 +1,8 @@
 package org.mo.content.engine.core.template;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
@@ -154,7 +155,7 @@ public class FResTemplateConsole
    public byte[] makeTemplateData(ILogicContext logicContext,
                                   String guid){
       // 查找数据
-      SGcMongoStorage findStorage = _storageConsole.find(EGcStorageMongoCatalog.CacheResourceTemplate, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceTemplate, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -171,10 +172,10 @@ public class FResTemplateConsole
       }
       //............................................................
       // 存储数据
-      SGcMongoStorage storage = new SGcMongoStorage(EGcStorageMongoCatalog.CacheResourceTemplate, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceTemplate, guid);
       storage.setCode(template.code());
       storage.setData(data);
-      _storageConsole.store(storage);
+      _storageConsole.store(EGcStorage.Cache, storage);
       // 返回数据
       return data;
    }
@@ -220,7 +221,7 @@ public class FResTemplateConsole
       //............................................................
       // 废弃临时数据
       FGcResourceInfo resource = _dataResourceConsole.get(logicContext, resourceId);
-      _storageConsole.delete(EGcStorageMongoCatalog.CacheResourceTemplate, resource.guid());
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceTemplate, resource.guid());
       _dataResourceConsole.doUpdate(logicContext, resource);
       // 返回网格单元
       return templateInfo;
@@ -278,7 +279,7 @@ public class FResTemplateConsole
             if(material.hasBitmap()){
                for(FResMaterialBitmap materialBitmap : material.bitmaps()){
                   String fullCode = materialBitmap.fullCode();
-                  FGcResBitmapInfo bitmapInfo = _bitmapConsole.findByUserFullCode(logicContext, userId, fullCode);
+                  FGcResBitmapInfo bitmapInfo = _bitmapConsole.findByCode(logicContext, userId, projectId, fullCode);
                   materialBitmap.setBitmapGuid(bitmapInfo.guid());
                   // 新建材质位图
                   FGcResMaterialBitmapInfo materialBitmapInfo = _materialBitmapConsole.doPrepare(logicContext);

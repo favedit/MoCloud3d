@@ -1,8 +1,8 @@
 package org.mo.content.access.data.solution;
 
-import com.cyou.gccloud.data.data.FDataSolutionProjectLogic;
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
 import org.mo.cloud.core.message.IGcMessageConsole;
+import org.mo.cloud.data.data.FDataSolutionProjectLogic;
 import org.mo.com.data.RSql;
 import org.mo.core.aop.face.ALink;
 import org.mo.core.bind.IBindConsole;

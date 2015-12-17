@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.material;
 
-import com.cyou.gccloud.data.data.FDataResourceMaterialUnit;
+import org.mo.cloud.data.data.FDataResourceMaterialUnit;
 
 //============================================================
 // <T>资源材质信息。</T>

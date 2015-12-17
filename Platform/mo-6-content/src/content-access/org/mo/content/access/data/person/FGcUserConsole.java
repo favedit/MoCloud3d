@@ -1,7 +1,7 @@
 package org.mo.content.access.data.person;
 
-import com.cyou.gccloud.data.data.FDataPersonUserLogic;
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataPersonUserLogic;
 import org.mo.com.data.RSql;
 import org.mo.data.logic.ILogicContext;
 

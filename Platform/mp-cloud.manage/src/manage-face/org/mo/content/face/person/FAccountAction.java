@@ -1,7 +1,7 @@
 package org.mo.content.face.person;
 
-import com.cyou.gccloud.define.enums.core.EGcAccountFrom;
 import org.mo.cloud.core.web.FGcWebSession;
+import org.mo.cloud.define.enums.core.EGcAccountFrom;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.person.FGcUserInfo;

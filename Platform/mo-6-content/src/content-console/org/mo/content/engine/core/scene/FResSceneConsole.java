@@ -2,8 +2,9 @@ package org.mo.content.engine.core.scene;
 
 import java.io.File;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteStream;
 import org.mo.com.io.RFile;
@@ -99,7 +100,7 @@ public class FResSceneConsole
    public byte[] makeSceneData(ILogicContext logicContext,
                                String guid){
       // 查找数据
-      SGcMongoStorage findStorage = _storageConsole.find(EGcStorageMongoCatalog.CacheResourceScene, guid);
+      FGcStorageContent findStorage = _storageConsole.find(EGcStorage.Cache, EGcStorageCatalog.CacheResourceScene, guid);
       if(findStorage != null){
          return findStorage.data();
       }
@@ -116,10 +117,10 @@ public class FResSceneConsole
       }
       //............................................................
       // 存储数据
-      SGcMongoStorage storage = new SGcMongoStorage(EGcStorageMongoCatalog.CacheResourceScene, guid);
+      FGcStorageContent storage = new FGcStorageContent(EGcStorageCatalog.CacheResourceScene, guid);
       storage.setCode(scene.code());
       storage.setData(data);
-      _storageConsole.store(storage);
+      _storageConsole.store(EGcStorage.Cache, storage);
       // 返回数据
       return data;
    }
@@ -199,7 +200,7 @@ public class FResSceneConsole
       //............................................................
       // 废弃临时数据
       FGcResourceInfo resource = _dataResourceConsole.get(logicContext, resourceId);
-      _storageConsole.delete(EGcStorageMongoCatalog.CacheResourceScene, resource.guid());
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceScene, resource.guid());
       _dataResourceConsole.doUpdate(logicContext, resource);
       // 返回场景信息
       return sceneInfo;

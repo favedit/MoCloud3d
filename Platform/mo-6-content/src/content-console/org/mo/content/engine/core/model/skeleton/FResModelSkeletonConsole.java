@@ -1,5 +1,6 @@
 package org.mo.content.engine.core.model.skeleton;
 
+import org.mo.cloud.data.data.FDataResourceModelSkeletonSkinLogic;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
 import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonConsole;
@@ -13,8 +14,6 @@ import org.mo.content.resource.common.FResStream;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonSkinLogic;
 
 //============================================================
 // <T>资源模型骨骼控制台。</T>

@@ -4,7 +4,9 @@ import org.mo.com.encoding.RMd5;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RByte;
+import org.mo.com.lang.RDateTime;
 import org.mo.com.lang.RString;
+import org.mo.com.lang.reflect.RClass;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
 import org.mo.com.net.EMime;
@@ -50,6 +52,8 @@ public class FMongodbConnection
    // @param port 端口
    // @return 文件名称
    //============================================================
+   @SuppressWarnings("deprecation")
+   @Override
    public void connect(String host,
                        int port,
                        String databaseName){
@@ -135,12 +139,15 @@ public class FMongodbConnection
    //============================================================
    // <T>查找一个存储内容。</T>
    //
+   // @param clazz 类对象
    // @param catalog 目录
    // @param guid 唯一编号
    // @return 存储内容
    //============================================================
-   public FNosqlContent findContent(String catalog,
-                                    String guid){
+   @Override
+   public <T extends FNosqlContent> T findContent(Class<T> clazz,
+                                                  String catalog,
+                                                  String guid){
       // 检查参数
       if(RString.isEmpty(catalog)){
          throw new FFatalError("Parameter catalog is empty.");
@@ -159,6 +166,9 @@ public class FMongodbConnection
          return null;
       }
       String code = (String)item.get("code");
+      String name = (String)item.get("name");
+      String label = (String)item.get("label");
+      String date = (String)item.get("date");
       String mime = (String)item.get("mime");
       int size = (int)item.get("size");
       int blockCount = (int)item.get("block");
@@ -180,9 +190,12 @@ public class FMongodbConnection
          data = (byte[])item.get("data");
       }
       // 返回内容
-      FNosqlContent content = new FNosqlContent();
+      T content = RClass.newInstance(clazz);
       content.setGuid(guid);
       content.setCode(code);
+      content.setName(name);
+      content.setLabel(label);
+      content.setDate(date);
       content.setMime(mime);
       content.setHash(hash);
       content.setData(data);
@@ -195,6 +208,7 @@ public class FMongodbConnection
    // @param content 存储内容
    // @return 处理结果
    //============================================================
+   @Override
    public boolean storeContent(FNosqlContent content){
       // 检查分类
       String catalog = content.catalog();
@@ -207,15 +221,21 @@ public class FMongodbConnection
          throw new FFatalError("Store content guid is empty.");
       }
       String code = content.code();
+      String name = content.name();
+      String label = content.label();
       // 检查类型
+      String date = RString.nvl(content.date(), RDateTime.format());
       String mime = RString.nvl(content.mime(), EMime.Bin.mime());
       // 检查数据
       byte[] data = content.data();
       if(data == null){
          throw new FFatalError("Store content data is empty.");
       }
-      int size = content.size();
+      int size = data.length;
+      content.setSize(size);
+      // 计算校验内容
       String hash = RMd5.encode(data);
+      content.setHash(hash);
       //............................................................
       // 压缩数据
       //FLzmaFile file = new FLzmaFile(data);
@@ -227,6 +247,9 @@ public class FMongodbConnection
       DBObject item = new BasicDBObject();
       item.put("guid", guid);
       item.put("code", code);
+      item.put("name", name);
+      item.put("label", label);
+      item.put("date", date);
       item.put("mime", mime);
       item.put("size", size);
       item.put("hash", hash);
@@ -282,6 +305,7 @@ public class FMongodbConnection
    // @param guid 唯一编号
    // @return 处理结果
    //============================================================
+   @Override
    public boolean deleteContent(String catalog,
                                 String guid){
       // 检查参数

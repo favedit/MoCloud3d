@@ -1,8 +1,7 @@
 package org.mo.content.access.data.common.country;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.data.FDataCommonCountryLogic;
+import org.mo.cloud.data.data.FDataCommonCountryLogic;
 
 //============================================================
 // <T>国家信息控制台。</T>

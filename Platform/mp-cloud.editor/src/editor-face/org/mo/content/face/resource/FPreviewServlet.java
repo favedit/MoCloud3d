@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.mo.cloud.define.enums.core.EGcResource;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
@@ -29,8 +30,6 @@ import org.mo.eng.image.FImage;
 import org.mo.web.core.servlet.common.IWebServletRequest;
 import org.mo.web.core.servlet.common.IWebServletResponse;
 import org.mo.web.protocol.context.IWebContext;
-
-import com.cyou.gccloud.define.enums.core.EGcResource;
 
 //============================================================
 // <T>上传处理。</T>

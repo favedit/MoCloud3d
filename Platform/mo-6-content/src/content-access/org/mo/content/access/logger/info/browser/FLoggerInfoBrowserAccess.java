@@ -1,6 +1,6 @@
 package org.mo.content.access.logger.info.browser;
 
-import com.cyou.gccloud.data.logger.FLoggerInfoBrowserAccessUnit;
+import org.mo.cloud.data.logger.FLoggerInfoBrowserAccessUnit;
 
 //============================================================
 // <T>用户访问信息。</T>

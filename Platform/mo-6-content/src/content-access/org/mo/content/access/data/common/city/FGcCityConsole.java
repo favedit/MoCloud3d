@@ -1,8 +1,7 @@
 package org.mo.content.access.data.common.city;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.data.FDataCommonCityLogic;
+import org.mo.cloud.data.data.FDataCommonCityLogic;
 
 //============================================================
 // <T>城市信息控制台。</T>

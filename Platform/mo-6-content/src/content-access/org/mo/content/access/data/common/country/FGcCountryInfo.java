@@ -1,6 +1,6 @@
 package org.mo.content.access.data.common.country;
 
-import com.cyou.gccloud.data.data.FDataCommonCountryUnit;
+import org.mo.cloud.data.data.FDataCommonCountryUnit;
 
 //============================================================
 // <T>国家信息。</T>

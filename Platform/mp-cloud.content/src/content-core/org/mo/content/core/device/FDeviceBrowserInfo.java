@@ -1,6 +1,6 @@
 package org.mo.content.core.device;
 
-import com.cyou.gccloud.data.data.FDataInfoDeviceBrowserUnit;
+import org.mo.cloud.data.data.FDataInfoDeviceBrowserUnit;
 
 //============================================================
 // <T>设备信息。</T>

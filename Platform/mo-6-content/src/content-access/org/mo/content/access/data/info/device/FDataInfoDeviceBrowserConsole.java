@@ -1,10 +1,9 @@
 package org.mo.content.access.data.info.device;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataInfoDeviceBrowserLogic;
 import org.mo.com.data.RSql;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataInfoDeviceBrowserLogic;
 
 //============================================================
 // <T>数据信息设备浏览器信息控制台。</T>

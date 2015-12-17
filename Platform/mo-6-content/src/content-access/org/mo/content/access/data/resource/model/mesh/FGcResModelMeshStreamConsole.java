@@ -1,16 +1,16 @@
 package org.mo.content.access.data.resource.model.mesh;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
+import org.mo.cloud.data.data.FDataResourceModelMeshStreamLogic;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FString;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelMeshStreamLogic;
 
 //============================================================
 // <T>3D资源网格数据流控制台。</T>
@@ -132,7 +132,7 @@ public class FGcResModelMeshStreamConsole
                                  FGcResModelMeshStreamInfo streamInfo){
       // 删除关联数据
       String guid = streamInfo.guid();
-      _storageConsole.delete(EGcStorageMongoCatalog.ResourceModelMeshStream, guid);
+      _storageConsole.delete(EGcStorage.Content, EGcStorageCatalog.ResourceModelMeshStream, guid);
       // 返回结果
       return EResult.Success;
    }

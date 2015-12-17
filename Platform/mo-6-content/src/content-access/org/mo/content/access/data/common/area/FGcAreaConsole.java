@@ -1,8 +1,7 @@
 package org.mo.content.access.data.common.area;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.data.FDataCommonAreaLogic;
+import org.mo.cloud.data.data.FDataCommonAreaLogic;
 
 //============================================================
 // <T>地区信息控制台。</T>

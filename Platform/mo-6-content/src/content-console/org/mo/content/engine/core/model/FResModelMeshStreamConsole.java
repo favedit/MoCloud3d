@@ -1,7 +1,8 @@
 package org.mo.content.engine.core.model;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
@@ -37,7 +38,7 @@ public class FResModelMeshStreamConsole
       stream.setDataStride(streamInfo.dataStride());
       stream.setDataCount(streamInfo.dataCount());
       // 读取数据
-      SGcMongoStorage resource = _storageConsole.find(EGcStorageMongoCatalog.ResourceModelMeshStream, guid);
+      FGcStorageContent resource = _storageConsole.find(EGcStorage.Content, EGcStorageCatalog.ResourceModelMeshStream, guid);
       stream.setData(resource.data());
       return stream;
    }
@@ -89,9 +90,9 @@ public class FResModelMeshStreamConsole
       //............................................................
       // 存储数据
       String guid = streamInfo.guid();
-      SGcMongoStorage resource = new SGcMongoStorage(EGcStorageMongoCatalog.ResourceModelMeshStream, guid);
+      FGcStorageContent resource = new FGcStorageContent(EGcStorageCatalog.ResourceModelMeshStream, guid);
       resource.setData(stream.data());
-      _storageConsole.store(resource);
+      _storageConsole.store(EGcStorage.Content, resource);
       //............................................................
       // 返回内容
       return streamInfo;
@@ -121,9 +122,9 @@ public class FResModelMeshStreamConsole
       //............................................................
       // 存储数据
       String guid = streamInfo.guid();
-      SGcMongoStorage resource = new SGcMongoStorage(EGcStorageMongoCatalog.ResourceModelMeshStream, guid);
+      FGcStorageContent resource = new FGcStorageContent(EGcStorageCatalog.ResourceModelMeshStream, guid);
       resource.setData(stream.data());
-      _storageConsole.store(resource);
+      _storageConsole.store(EGcStorage.Content, resource);
       //............................................................
       // 返回内容
       return streamInfo;

@@ -1,6 +1,6 @@
 package org.mo.content.access.data.resource.model.skeleton;
 
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonUnit;
+import org.mo.cloud.data.data.FDataResourceModelSkeletonUnit;
 
 //============================================================
 // <T>资源模型骨骼信息。</T>

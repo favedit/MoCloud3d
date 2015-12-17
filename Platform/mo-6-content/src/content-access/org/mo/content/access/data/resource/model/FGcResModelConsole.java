@@ -1,8 +1,14 @@
 package org.mo.content.access.data.resource.model;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
+import org.mo.cloud.data.data.FDataResourceModelAnimationLogic;
+import org.mo.cloud.data.data.FDataResourceModelLogic;
+import org.mo.cloud.data.data.FDataResourceModelMeshLogic;
+import org.mo.cloud.data.data.FDataResourceModelSkeletonLogic;
+import org.mo.cloud.define.enums.core.EGcResource;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.resource.FGcResourceInfo;
@@ -16,12 +22,6 @@ import org.mo.content.access.data.resource.model.skeleton.IGcResModelSkeletonCon
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceModelAnimationLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelMeshLogic;
-import com.cyou.gccloud.data.data.FDataResourceModelSkeletonLogic;
-import com.cyou.gccloud.define.enums.core.EGcResource;
 
 //============================================================
 // <T>资源位图信息控制台。</T>
@@ -170,7 +170,7 @@ public class FGcResModelConsole
       // 删除缓冲数据
       FGcResourceInfo resourceInfo = _dataResourceConsole.get(logicContext, resourceId);
       String resourceGuid = resourceInfo.guid();
-      _storageConsole.delete(EGcStorageMongoCatalog.CacheResourceModel, resourceGuid);
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceModel, resourceGuid);
       // 删除动画集合
       String animationWhereSql = FDataResourceModelAnimationLogic.MODEL_ID + "=" + modelId;
       FLogicDataset<FGcResModelAnimationInfo> animationDataset = _dataModelAnimationConsole.fetch(logicContext, animationWhereSql);

@@ -2,14 +2,13 @@ package org.mo.content.access.data.resource.template;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
+import org.mo.cloud.data.data.FDataResourceTemplateMaterialLogic;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.IGcResourceConsole;
 import org.mo.content.access.data.resource.material.IGcResMaterialConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataResourceTemplateMaterialLogic;
 
 //============================================================
 // <T>资源模板材质控制台。</T>

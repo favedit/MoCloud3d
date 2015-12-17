@@ -1,18 +1,17 @@
 package org.mo.content.access.data.control.role;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataControlRoleLogic;
+import org.mo.cloud.data.data.FDataControlRoleModuleLogic;
+import org.mo.cloud.data.data.FDataControlRoleModuleUnit;
+import org.mo.cloud.data.data.FDataControlRoleUnit;
+import org.mo.cloud.define.enums.core.EGcControlRoleModuleValid;
 import org.mo.com.data.FSql;
 import org.mo.com.lang.FStrings;
 import org.mo.com.lang.RString;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.FLogicDataset;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataControlRoleLogic;
-import com.cyou.gccloud.data.data.FDataControlRoleModuleLogic;
-import com.cyou.gccloud.data.data.FDataControlRoleModuleUnit;
-import com.cyou.gccloud.data.data.FDataControlRoleUnit;
-import com.cyou.gccloud.define.enums.core.EGcControlRoleModuleValid;
 
 //============================================================
 // <T>数据控制角色控制台。</T>

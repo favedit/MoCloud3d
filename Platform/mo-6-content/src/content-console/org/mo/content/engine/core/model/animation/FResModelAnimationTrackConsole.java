@@ -1,7 +1,8 @@
 package org.mo.content.engine.core.model.animation;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
-import org.mo.cloud.core.storage.mongo.SGcMongoStorage;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
+import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackConsole;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackInfo;
@@ -32,7 +33,7 @@ public class FResModelAnimationTrackConsole
       FResTrack track = new FResTrack();
       track.loadUnit(trackInfo);
       // 读取数据
-      SGcMongoStorage resource = _storageConsole.find(EGcStorageMongoCatalog.ResourceModelAnimationTrack, guid);
+      FGcStorageContent resource = _storageConsole.find(EGcStorage.Content, EGcStorageCatalog.ResourceModelAnimationTrack, guid);
       track.loadData(resource.data());
       return track;
    }
@@ -70,9 +71,9 @@ public class FResModelAnimationTrackConsole
       trackInfo.setFrameTotal(track.frameTick() * track.frameCount());
       doUpdate(logicContext, trackInfo);
       // 存储数据
-      SGcMongoStorage resource = new SGcMongoStorage(EGcStorageMongoCatalog.ResourceModelAnimationTrack, guid);
+      FGcStorageContent resource = new FGcStorageContent(EGcStorageCatalog.ResourceModelAnimationTrack, guid);
       resource.setData(track.saveData());
-      _storageConsole.store(resource);
+      _storageConsole.store(EGcStorage.Content, resource);
       // 返回结果
       return EResult.Success;
    }

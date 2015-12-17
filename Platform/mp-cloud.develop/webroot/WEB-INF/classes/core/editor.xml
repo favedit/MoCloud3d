@@ -22,7 +22,7 @@
       <Property name='pathServer'>${cloud.export.server}</Property>
       <Property name='pathClient'>${cloud.export.client}/mo-4-message/2-enum/mo/ms/enum</Property>
       <Property name='pathTool'>${cloud.export.tools}/2 - Core/MoMessage/Enum</Property>
-      <Property name='pathPlatform'>${cloud.export.platform}/cloud-define/com/cyou/gccloud/define/enums</Property>
+      <Property name='pathPlatform'>${cloud.export.platform}/cloud-define/org/mo/cloud/define/enums</Property>
       <Property name='pathPlatformAndroid'>${cloud.export.platform.android}/com/mobile17173/gamecollege/enums</Property>
       <Property name='pathPlatformIos'>${cloud.export.platform.ios}</Property>
       <Property name='templatePath'>${cloud.export.template}</Property>
@@ -76,7 +76,7 @@
       <Property name='pathServer'>${cloud.export.server}</Property>
       <Property name='pathClient'>${cloud.export.client}/mo-4-message/3-entity/mo/ms/entity</Property>
       <Property name='pathTool'>${cloud.export.tools}/2 - Core/MoMessage/Entity</Property>
-      <Property name='pathPlatform'>${cloud.export.platform}/cloud-define/com/cyou/gccloud/define/entity</Property>
+      <Property name='pathPlatform'>${cloud.export.platform}/cloud-define/org/mo/cloud/define/entity</Property>
       <Property name='cacheTimeout'>60000</Property>
       <Initialize name='initializeMonitor'/>
       <Initialize name='initializeConfig'/>
@@ -196,7 +196,7 @@
       <Property name='workpath'>${cloud.space}/cloud.dataset</Property>
       <Property name='sourceServerPath'>${cloud.export.server}/</Property>
       <Property name='sourceJavaDomainPath'>${application}/mo-3-logic/src/data-java/org/mo/data/face/</Property>
-      <Property name='sourceJavaDataPath'>${cloud.export.platform}/cloud-data/com/cyou/gccloud/data/</Property>
+      <Property name='sourceJavaDataPath'>${cloud.export.platform}/cloud-data/org/mo/cloud/data/</Property>
       <Property name='cacheTimeout'>60000</Property>
       <Initialize name='initializeMonitor'/>
       <Initialize name='initializeConfig'/>

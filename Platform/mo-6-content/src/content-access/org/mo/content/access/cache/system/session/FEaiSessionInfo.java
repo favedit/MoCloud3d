@@ -1,6 +1,6 @@
 package org.mo.content.access.cache.system.session;
 
-import com.cyou.gccloud.data.cache.FCacheSystemSessionUnit;
+import org.mo.cloud.data.cache.FCacheSystemSessionUnit;
 
 //============================================================
 // <T>会话信息。</T>

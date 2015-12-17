@@ -1,5 +1,6 @@
 package org.mo.content.service.person;
 
+import org.mo.cloud.define.enums.core.EGcAccountFrom;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FObject;
 import org.mo.com.xml.FXmlNode;
@@ -11,8 +12,6 @@ import org.mo.web.core.action.common.FWebCookie;
 import org.mo.web.protocol.context.IWebContext;
 import org.mo.web.protocol.context.IWebInput;
 import org.mo.web.protocol.context.IWebOutput;
-
-import com.cyou.gccloud.define.enums.core.EGcAccountFrom;
 
 //============================================================
 // <T>人员账号服务接口。</T>

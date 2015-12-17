@@ -1,6 +1,6 @@
 package org.mo.cloud.core.logger;
 
-import com.cyou.gccloud.define.enums.common.EGcLogger;
+import org.mo.cloud.define.enums.common.EGcLogger;
 import org.mo.com.logging.ELoggerLevel;
 import org.mo.com.xml.FXmlNode;
 

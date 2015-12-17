@@ -1,6 +1,7 @@
 package org.mo.content.engine.core.model;
 
-import org.mo.cloud.core.storage.mongo.EGcStorageMongoCatalog;
+import org.mo.cloud.core.storage.EGcStorage;
+import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.FFatalError;
@@ -114,7 +115,7 @@ public class FResModelMeshConsole
       doUpdate(logicContext, meshInfo);
       //............................................................
       // 废弃临时数据
-      _storageConsole.delete(EGcStorageMongoCatalog.CacheResourceMesh, meshGuid);
+      _storageConsole.delete(EGcStorage.Cache, EGcStorageCatalog.CacheResourceMesh, meshGuid);
       //............................................................
       // 返回网格单元
       return meshInfo;

@@ -1,6 +1,6 @@
 package org.mo.content.access.data.control.role;
 
-import com.cyou.gccloud.data.data.FDataControlModuleUnit;
+import org.mo.cloud.data.data.FDataControlModuleUnit;
 
 //============================================================
 // <T>数据控制模块信息。</T>

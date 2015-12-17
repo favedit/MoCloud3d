@@ -1,6 +1,6 @@
 package org.mo.content.access.data.common.configuration;
 
-import com.cyou.gccloud.data.data.FDataCommonConfigurationUnit;
+import org.mo.cloud.data.data.FDataCommonConfigurationUnit;
 
 //============================================================
 // <T>配置信息。</T>

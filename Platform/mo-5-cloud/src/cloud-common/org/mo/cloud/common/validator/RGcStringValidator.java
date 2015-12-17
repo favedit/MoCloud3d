@@ -2,6 +2,7 @@ package org.mo.cloud.common.validator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.mo.com.lang.RBoolean;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RString;

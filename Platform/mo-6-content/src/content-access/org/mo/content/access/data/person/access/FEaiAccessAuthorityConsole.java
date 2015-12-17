@@ -1,6 +1,11 @@
 package org.mo.content.access.data.person.access;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
+import org.mo.cloud.data.data.FDataPersonAccessAuthorityLogic;
+import org.mo.cloud.data.data.FDataPersonUserEntryUnit;
+import org.mo.cloud.define.enums.core.EGcAuthorityAccess;
+import org.mo.cloud.define.enums.core.EGcAuthorityResult;
+import org.mo.cloud.define.enums.core.EGcAuthorityType;
 import org.mo.com.data.FSql;
 import org.mo.com.encoding.RSha1;
 import org.mo.com.lang.FFatalError;
@@ -12,12 +17,6 @@ import org.mo.content.access.data.person.user.IEaiUserEntryConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.core.aop.face.AProperty;
 import org.mo.data.logic.ILogicContext;
-
-import com.cyou.gccloud.data.data.FDataPersonAccessAuthorityLogic;
-import com.cyou.gccloud.data.data.FDataPersonUserEntryUnit;
-import com.cyou.gccloud.define.enums.core.EGcAuthorityAccess;
-import com.cyou.gccloud.define.enums.core.EGcAuthorityResult;
-import com.cyou.gccloud.define.enums.core.EGcAuthorityType;
 
 //============================================================
 // <T>数据人员访问授权信息控制台。</T>

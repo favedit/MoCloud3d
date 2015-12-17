@@ -76,9 +76,9 @@ public class FGcWebSession
    //
    // @return 用户信息
    //============================================================
-//   public FGcUserInfo userInfo(){
-//      return _userInfo;
-//   }
+   //   public FGcUserInfo userInfo(){
+   //      return _userInfo;
+   //   }
 
    //============================================================
    // <T>加载会话数据。</T>

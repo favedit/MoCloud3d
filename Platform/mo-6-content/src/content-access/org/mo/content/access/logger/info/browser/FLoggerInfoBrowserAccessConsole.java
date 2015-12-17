@@ -1,8 +1,7 @@
 package org.mo.content.access.logger.info.browser;
 
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
-
-import com.cyou.gccloud.data.logger.FLoggerInfoBrowserAccessLogic;
+import org.mo.cloud.data.logger.FLoggerInfoBrowserAccessLogic;
 
 //============================================================
 // <T>日志信息浏览器访问控制台。</T>

@@ -1,5 +1,6 @@
 package org.mo.content.mime.phy;
 
+import org.mo.cloud.define.enums.common.EGcData;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.FObjects;
@@ -9,8 +10,6 @@ import org.mo.content.geom.mesh.SGeomVertex;
 import org.mo.content.resource.common.FResGeometry;
 import org.mo.content.resource.common.FResStream;
 import org.mo.content.resource.mesh.FResMesh;
-
-import com.cyou.gccloud.define.enums.common.EGcData;
 
 //============================================================
 // <T>PLY网格。</T>
