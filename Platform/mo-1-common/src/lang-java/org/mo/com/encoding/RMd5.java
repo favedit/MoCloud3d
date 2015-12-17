@@ -1,6 +1,7 @@
 package org.mo.com.encoding;
 
 import java.security.MessageDigest;
+
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RByte;
 
@@ -26,6 +27,24 @@ public class RMd5
          MessageDigest provider = MessageDigest.getInstance(CODE);
          // 转换数组为字符串
          return RByte.toHexString(provider.digest(source.getBytes()));
+      }catch(Exception e){
+         throw new FFatalError(e);
+      }
+   }
+
+   //============================================================
+   // <T>加密一个字符串，返回加密后的16进制的字符串。</T>
+   //
+   // @param source 要加密的字符串
+   // @return 16进制的字符串
+   //============================================================
+   public static String encode(byte[] source){
+      try{
+         // 创建服务实例
+         MessageDigest provider = MessageDigest.getInstance(CODE);
+         // 转换数组为字符串
+         byte[] data = provider.digest(source);
+         return RByte.toHexString(data);
       }catch(Exception e){
          throw new FFatalError(e);
       }

@@ -1,10 +1,5 @@
 package org.mo.cloud.core.storage.mongo;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 import org.mo.com.console.FConsole;
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.RFile;
@@ -14,6 +9,14 @@ import org.mo.com.lang.RString;
 import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
 import org.mo.core.aop.face.AProperty;
+import org.mo.data.nosql.mongodb.FMongodbConnection;
+import org.mo.data.nosql.mongodb.IMongodbConnection;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 
 //============================================================
 // <T>存储控制台。</T>
@@ -51,6 +54,9 @@ public class FGcStorageMongoConsole
 
    // 数据库
    protected DB _database;
+
+   // 数据库
+   protected IMongodbConnection _mongodbConnection;
 
    //============================================================
    // <T>保存一个存储信息。</T>
@@ -311,8 +317,11 @@ public class FGcStorageMongoConsole
       try{
          _connection = new Mongo(_storageHost, _storagePort);
          _database = _connection.getDB(_storageName);
-      }catch(Exception e){
-         throw new FFatalError(e);
+         // 创建链接
+         _mongodbConnection = new FMongodbConnection();
+         _mongodbConnection.connect(_storageHost, _storagePort, _storageName);
+      }catch(Exception exception){
+         throw new FFatalError(exception);
       }
    }
 }
