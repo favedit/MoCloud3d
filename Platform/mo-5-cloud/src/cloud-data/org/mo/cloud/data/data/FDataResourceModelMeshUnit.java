@@ -72,6 +72,12 @@ public class FDataResourceModelMeshUnit
    protected String _code;
 
    // 存储字段名称的定义。
+   private String __name;
+
+   // 字段名称的定义。
+   protected String _name;
+
+   // 存储字段名称的定义。
    private String __label;
 
    // 字段名称的定义。
@@ -385,6 +391,33 @@ public class FDataResourceModelMeshUnit
    //
    // @return 数据内容
    //============================================================
+   public boolean isNameChanged(){
+      return !RString.equals(__name, _name);
+   }
+
+   //============================================================
+   // <T>获得名称的数据内容。</T>
+   //
+   // @return 数据内容
+   //============================================================
+   public String name(){
+      return _name;
+   }
+
+   //============================================================
+   // <T>设置名称的数据内容。</T>
+   //
+   // @param value 数据内容
+   //============================================================
+   public void setName(String value){
+      _name = value;
+   }
+
+   //============================================================
+   // <T>判断名称的数据是否改变。</T>
+   //
+   // @return 数据内容
+   //============================================================
    public boolean isLabelChanged(){
       return !RString.equals(__label, _label);
    }
@@ -648,6 +681,8 @@ public class FDataResourceModelMeshUnit
             return RInteger.toString(_sortIndex);
          case "code":
             return _code;
+         case "name":
+            return _name;
          case "label":
             return _label;
          case "outline_min":
@@ -703,6 +738,9 @@ public class FDataResourceModelMeshUnit
             break;
          case "code":
             _code = value;
+            break;
+         case "name":
+            _name = value;
             break;
          case "label":
             _label = value;
@@ -784,6 +822,10 @@ public class FDataResourceModelMeshUnit
                __code = value;
                _code = __code;
                break;
+            case "name":
+               __name = value;
+               _name = __name;
+               break;
             case "label":
                __label = value;
                _label = __label;
@@ -840,6 +882,7 @@ public class FDataResourceModelMeshUnit
       row.set("modelId", _modelId);
       row.set("sortIndex", _sortIndex);
       row.set("code", _code);
+      row.set("name", _name);
       row.set("label", _label);
       row.set("outlineMin", _outlineMin);
       row.set("outlineMax", _outlineMax);
@@ -867,6 +910,7 @@ public class FDataResourceModelMeshUnit
       map.put("modelId", RLong.toString(_modelId));
       map.put("sortIndex", RInteger.toString(_sortIndex));
       map.put("code", _code);
+      map.put("name", _name);
       map.put("label", _label);
       map.put("outlineMin", _outlineMin);
       map.put("outlineMax", _outlineMax);
@@ -894,6 +938,7 @@ public class FDataResourceModelMeshUnit
       _modelId = input.readInt64();
       _sortIndex = input.readInt32();
       _code = input.readString();
+      _name = input.readString();
       _label = input.readString();
       _outlineMin = input.readString();
       _outlineMax = input.readString();
@@ -921,6 +966,7 @@ public class FDataResourceModelMeshUnit
       output.writeInt64(_modelId);
       output.writeInt32(_sortIndex);
       output.writeString(_code);
+      output.writeString(_name);
       output.writeString(_label);
       output.writeString(_outlineMin);
       output.writeString(_outlineMax);
@@ -950,6 +996,7 @@ public class FDataResourceModelMeshUnit
       unit.setModelId(_modelId);
       unit.setSortIndex(_sortIndex);
       unit.setCode(_code);
+      unit.setName(_name);
       unit.setLabel(_label);
       unit.setOutlineMin(_outlineMin);
       unit.setOutlineMax(_outlineMax);

@@ -286,6 +286,7 @@ public class FSceneService
                                IWebInput input,
                                IWebOutput output){
       long userId = session.userId();
+      long projectId = session.projectId();
       // 获得参数
       FXmlNode xsprite = input.config().findNode("Sprite");
       if(xsprite == null){
@@ -319,7 +320,7 @@ public class FSceneService
       if(!RString.isEmpty(templateGuid)){
          templateInfo = _templateConsole.findByGuid(logicContext, templateGuid);
       }else{
-         templateInfo = _templateConsole.findByUserCode(logicContext, userId, templateCode);
+         templateInfo = _templateConsole.findByCode(logicContext, userId, projectId, templateCode);
       }
       if(templateInfo == null){
          throw new FFatalError("Template is not exists. (code={1})", templateCode);

@@ -16,11 +16,11 @@ public interface IGcResTemplateMaterialConsole
    // @param logicContext 逻辑环境
    // @param userId 用户编号
    // @param templateId 模板编号
-   // @param code 代码
+   // @param materialCode 材质代码
    // @return 模板信息
    //============================================================
    FGcResTemplateMaterialInfo findByCode(ILogicContext logicContext,
                                          long userId,
                                          long templateId,
-                                         String code);
+                                         String materialCode);
 }

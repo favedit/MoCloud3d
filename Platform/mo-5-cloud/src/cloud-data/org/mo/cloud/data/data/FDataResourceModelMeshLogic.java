@@ -53,6 +53,9 @@ public class FDataResourceModelMeshLogic
    public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
 
    // 字段名称的定义。
+   public final static SLogicFieldInfo NAME = new SLogicFieldInfo("NAME");
+
+   // 字段名称的定义。
    public final static SLogicFieldInfo LABEL = new SLogicFieldInfo("LABEL");
 
    // 字段轮廓最小点的定义。
@@ -80,7 +83,7 @@ public class FDataResourceModelMeshLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`SORT_INDEX`,`CODE`,`LABEL`,`OUTLINE_MIN`,`OUTLINE_MAX`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`SORT_INDEX`,`CODE`,`NAME`,`LABEL`,`OUTLINE_MIN`,`OUTLINE_MAX`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源模型网格表逻辑单元。</T>
@@ -365,6 +368,7 @@ public class FDataResourceModelMeshLogic
       cmd.append(",`MODEL_ID`");
       cmd.append(",`SORT_INDEX`");
       cmd.append(",`CODE`");
+      cmd.append(",`NAME`");
       cmd.append(",`LABEL`");
       cmd.append(",`OUTLINE_MIN`");
       cmd.append(",`OUTLINE_MAX`");
@@ -418,6 +422,15 @@ public class FDataResourceModelMeshLogic
       }else{
          cmd.append('\'');
          cmd.append(RSql.formatValue(code));
+         cmd.append('\'');
+      }
+      cmd.append(',');
+      String name = unit.name();
+      if(RString.isEmpty(name)){
+         cmd.append("NULL");
+      }else{
+         cmd.append('\'');
+         cmd.append(RSql.formatValue(name));
          cmd.append('\'');
       }
       cmd.append(',');
@@ -578,6 +591,17 @@ public class FDataResourceModelMeshLogic
          }else{
             cmd.append('\'');
             cmd.append(RSql.formatValue(code));
+            cmd.append('\'');
+         }
+      }
+      if(unit.isNameChanged()){
+         cmd.append(",`NAME`=");
+         String name = unit.name();
+         if(RString.isEmpty(name)){
+            cmd.append("NULL");
+         }else{
+            cmd.append('\'');
+            cmd.append(RSql.formatValue(name));
             cmd.append('\'');
          }
       }

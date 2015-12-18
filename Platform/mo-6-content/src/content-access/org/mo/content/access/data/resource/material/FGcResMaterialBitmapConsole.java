@@ -21,19 +21,19 @@ public class FGcResMaterialBitmapConsole
    }
 
    //============================================================
-   // <T>根据材质和代码查找位图信息。</T>
+   // <T>根据材质和格式代码查找位图信息。</T>
    //
    // @param logicContext 逻辑环境
    // @param materialId 材质编号
-   // @param code 代码
+   // @param formatCode 格式代码
    // @return 位图信息
    //============================================================
    @Override
-   public FGcResMaterialBitmapInfo findByMaterialCode(ILogicContext logicContext,
-                                                      long materialId,
-                                                      String code){
+   public FGcResMaterialBitmapInfo findByFormatCode(ILogicContext logicContext,
+                                                    long materialId,
+                                                    String formatCode){
       String whereSql = "(" + FDataResourceMaterialBitmapLogic.MATERIAL_ID + "=" + materialId + ")";
-      whereSql += " AND (" + FDataResourceMaterialBitmapLogic.CODE + "='" + code + "')";
+      whereSql += " AND (" + FDataResourceMaterialBitmapLogic.FORMAT_CODE + "='" + formatCode + "')";
       FGcResMaterialBitmapInfo bitmapInfo = search(logicContext, whereSql);
       return bitmapInfo;
    }
@@ -49,7 +49,7 @@ public class FGcResMaterialBitmapConsole
    public FLogicDataset<FGcResMaterialBitmapInfo> fetchByMaterialId(ILogicContext logicContext,
                                                                     long materialId){
       String whereSql = FDataResourceMaterialBitmapLogic.MATERIAL_ID + "='" + materialId + "'";
-      String orderSql = FDataResourceMaterialBitmapLogic.CODE + " ASC";
+      String orderSql = FDataResourceMaterialBitmapLogic.SLOT + " ASC, " + FDataResourceMaterialBitmapLogic.FORMAT_CODE + " ASC";
       FLogicDataset<FGcResMaterialBitmapInfo> dataset = fetch(logicContext, whereSql, orderSql);
       return dataset;
    }

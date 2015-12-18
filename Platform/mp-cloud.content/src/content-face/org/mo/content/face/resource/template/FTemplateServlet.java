@@ -3,7 +3,6 @@ package org.mo.content.face.resource.template;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FObject;
 import org.mo.com.lang.RString;
@@ -11,6 +10,7 @@ import org.mo.com.logging.ILogger;
 import org.mo.com.logging.RLogger;
 import org.mo.com.net.EMime;
 import org.mo.content.access.data.resource.template.FGcResTemplateInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.template.IResTemplateConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
@@ -44,15 +44,19 @@ public class FTemplateServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @Override
    public void process(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
                        IWebServletRequest request,
                        IWebServletResponse response){
+      long userId = session.userId();
+      long projectId = session.projectId();
       // 获得参数
       String guid = context.parameter("guid");
       String code = context.parameter("code");
@@ -62,7 +66,7 @@ public class FTemplateServlet
       }
       // 获得唯一编号
       if(RString.isEmpty(guid)){
-         FGcResTemplateInfo templateInfo = _templateConsole.findByCode(logicContext, code);
+         FGcResTemplateInfo templateInfo = _templateConsole.findByCode(logicContext, userId, projectId, code);
          guid = templateInfo.guid();
       }
       //............................................................
@@ -89,19 +93,18 @@ public class FTemplateServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @Override
    public void query(IWebContext context,
+                     IGcSession session,
                      ILogicContext logicContext,
-                     FGcSessionInfo session,
                      IWebServletRequest request,
                      IWebServletResponse response){
       // 获得参数
-      long userId = session.userId();
       String guid = context.parameter("guid");
       String code = context.parameter("code");
       // 检查编号和代码，必须存在一个
@@ -109,8 +112,10 @@ public class FTemplateServlet
          throw new FFatalError("Template guid and code is empty.");
       }
       // 获得唯一编号
+      long userId = session.userId();
+      long projectId = session.projectId();
       if(RString.isEmpty(guid)){
-         FGcResTemplateInfo templateInfo = _templateConsole.findByUserCode(logicContext, userId, code);
+         FGcResTemplateInfo templateInfo = _templateConsole.findByCode(logicContext, userId, projectId, code);
          guid = templateInfo.guid();
       }
       //............................................................

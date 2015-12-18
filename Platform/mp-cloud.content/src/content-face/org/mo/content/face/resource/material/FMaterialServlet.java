@@ -3,7 +3,6 @@ package org.mo.content.face.resource.material;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.FFatalError;
@@ -18,6 +17,7 @@ import org.mo.content.access.data.resource.material.FGcResMaterialBitmapInfo;
 import org.mo.content.access.data.resource.material.FGcResMaterialInfo;
 import org.mo.content.core.resource.bitmap.ICntBitmapConsole;
 import org.mo.content.core.resource.material.ICntMaterialConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.material.IResMaterialBitmapConsole;
 import org.mo.core.aop.face.ALink;
 import org.mo.data.logic.ILogicContext;
@@ -60,12 +60,14 @@ public class FMaterialServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @Override
    public void process(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
                        IWebServletRequest request,
                        IWebServletResponse response){
@@ -129,15 +131,15 @@ public class FMaterialServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @Override
    public void query(IWebContext context,
+                     IGcSession session,
                      ILogicContext logicContext,
-                     FGcSessionInfo session,
                      IWebServletRequest request,
                      IWebServletResponse response){
       // 检查代码
@@ -200,15 +202,15 @@ public class FMaterialServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @Override
    public void data(IWebContext context,
+                    IGcSession session,
                     ILogicContext logicContext,
-                    FGcSessionInfo session,
                     IWebServletRequest request,
                     IWebServletResponse response){
       // 检查代码
@@ -240,16 +242,16 @@ public class FMaterialServlet
    //============================================================
    // <T>导入数据处理。</T>
    //
-   // @param context 环境
+   // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 页面请求
+   // @param response 页面应答
    //============================================================
    @Override
    public void importData(IWebContext context,
+                          IGcSession session,
                           ILogicContext logicContext,
-                          FGcSessionInfo session,
                           IWebServletRequest request,
                           IWebServletResponse response){
       // 检查参数
@@ -317,8 +319,7 @@ public class FMaterialServlet
          materialBitmapInfo.setUserId(userId);
          materialBitmapInfo.setMaterialId(materialId);
          materialBitmapInfo.setBitmapId(bitmapId);
-         materialBitmapInfo.setFullCode(code);
-         materialBitmapInfo.setCode(code);
+         materialBitmapInfo.setFormatCode(code);
          _materialBitmapConsole.doInsert(logicContext, materialBitmapInfo);
       }catch(Exception e){
          throw new FFatalError(e);
@@ -340,16 +341,16 @@ public class FMaterialServlet
    //============================================================
    // <T>替换数据处理。</T>
    //
-   // @param context 环境
+   // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 页面请求
+   // @param response 页面应答
    //============================================================
    @Override
    public void replaceData(IWebContext context,
+                           IGcSession session,
                            ILogicContext logicContext,
-                           FGcSessionInfo session,
                            IWebServletRequest request,
                            IWebServletResponse response){
       // 检查参数
@@ -402,7 +403,7 @@ public class FMaterialServlet
          bitmapInfo.setSize(0, 0);
          _bitmapConsole.updateData(logicContext, bitmapInfo, file);
          // 设置关联信息
-         materialBitmapInfo.setCode(code);
+         materialBitmapInfo.setFormatCode(code);
          _materialBitmapConsole.doUpdate(logicContext, materialBitmapInfo);
       }catch(Exception e){
          throw new FFatalError(e);

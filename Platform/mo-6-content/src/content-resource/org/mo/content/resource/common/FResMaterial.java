@@ -839,7 +839,6 @@ public class FResMaterial
    // @param unit 数据单元
    //============================================================
    public void saveUnit(FDataResourceMaterialUnit unit){
-      unit.setFullCode(_code);
       unit.setCode(_code);
       unit.setLabel(_label);
       unit.setContent(toXml());

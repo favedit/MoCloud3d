@@ -220,6 +220,7 @@ public class FResSceneConsole
                                  String filePath){
       // 获得名称
       long userId = session.userId();
+      long projectId = session.projectId();
       String code = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
       //............................................................
       // 获得首个配置文件
@@ -241,7 +242,7 @@ public class FResSceneConsole
          if(display instanceof FResSceneDisplay){
             FResSceneDisplay sceneDisplay = (FResSceneDisplay)display;
             String displayCode = sceneDisplay.code();
-            FGcResTemplateInfo templateInfo = _templateConsole.findByUserCode(logicContext, userId, displayCode);
+            FGcResTemplateInfo templateInfo = _templateConsole.findByCode(logicContext, userId, projectId, displayCode);
             if(templateInfo == null){
                throw new FFatalError("Template info is not exists. (code={1})", displayCode);
             }

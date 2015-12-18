@@ -180,7 +180,7 @@ public class FResMaterialBitmap
       // 加载属性
       _ouid = unit.ouid();
       _guid = unit.guid();
-      _code = unit.code();
+      //_code = unit.code();
    }
 
    //============================================================
@@ -189,8 +189,7 @@ public class FResMaterialBitmap
    // @param unit 数据单元
    //============================================================
    public void saveUnit(FDataResourceMaterialBitmapUnit unit){
-      unit.setFullCode(_code);
-      unit.setCode(_code);
+      //unit.setCode(_code);
    }
 
    //============================================================

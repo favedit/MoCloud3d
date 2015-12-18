@@ -46,9 +46,6 @@ public class FDataResourceTemplateLogic
    // 字段资源编号的定义。
    public final static SLogicFieldInfo RESOURCE_ID = new SLogicFieldInfo("RESOURCE_ID");
 
-   // 字段全代码的定义。
-   public final static SLogicFieldInfo FULL_CODE = new SLogicFieldInfo("FULL_CODE");
-
    // 字段代码的定义。
    public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
 
@@ -77,7 +74,7 @@ public class FDataResourceTemplateLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`RESOURCE_ID`,`FULL_CODE`,`CODE`,`LABEL`,`KEYWORDS`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`RESOURCE_ID`,`CODE`,`LABEL`,`KEYWORDS`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源模板表逻辑单元。</T>
@@ -360,7 +357,6 @@ public class FDataResourceTemplateLogic
       cmd.append(",`USER_ID`");
       cmd.append(",`PROJECT_ID`");
       cmd.append(",`RESOURCE_ID`");
-      cmd.append(",`FULL_CODE`");
       cmd.append(",`CODE`");
       cmd.append(",`LABEL`");
       cmd.append(",`KEYWORDS`");
@@ -404,15 +400,6 @@ public class FDataResourceTemplateLogic
          cmd.append("NULL");
       }else{
          cmd.append(resourceId);
-      }
-      cmd.append(',');
-      String fullCode = unit.fullCode();
-      if(RString.isEmpty(fullCode)){
-         cmd.append("NULL");
-      }else{
-         cmd.append('\'');
-         cmd.append(RSql.formatValue(fullCode));
-         cmd.append('\'');
       }
       cmd.append(',');
       String code = unit.code();
@@ -558,17 +545,6 @@ public class FDataResourceTemplateLogic
             cmd.append("NULL");
          }else{
             cmd.append(resourceId);
-         }
-      }
-      if(unit.isFullCodeChanged()){
-         cmd.append(",`FULL_CODE`=");
-         String fullCode = unit.fullCode();
-         if(RString.isEmpty(fullCode)){
-            cmd.append("NULL");
-         }else{
-            cmd.append('\'');
-            cmd.append(RSql.formatValue(fullCode));
-            cmd.append('\'');
          }
       }
       if(unit.isCodeChanged()){

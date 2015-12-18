@@ -1,6 +1,5 @@
 package org.mo.content.resource;
 
-import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.com.logging.RLogger;
 import org.mo.content.common.RRs3Configuration;
 import org.mo.core.aop.RAop;
@@ -11,7 +10,7 @@ public class RMongoDrop
    // <T>导入处理。</T>
    //============================================================
    public static void process() throws Exception{
-      IGcStorageMongoConsole console = RAop.find(IGcStorageMongoConsole.class);
+      //IGcStorageMongoConsole console = RAop.find(IGcStorageMongoConsole.class);
       // 删除缓冲
       //      console.drop(EGcStorageCatalog.CacheBitmapPreview);
       //      console.drop(EGcStorageCatalog.CacheMaterialPreview);

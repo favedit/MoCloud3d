@@ -49,8 +49,8 @@ public class FDataResourceTemplateMaterialLogic
    // 字段材质编号的定义。
    public final static SLogicFieldInfo MATERIAL_ID = new SLogicFieldInfo("MATERIAL_ID");
 
-   // 字段代码的定义。
-   public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
+   // 字段材质代码的定义。
+   public final static SLogicFieldInfo MATERIAL_CODE = new SLogicFieldInfo("MATERIAL_CODE");
 
    // 字段备注的定义。
    public final static SLogicFieldInfo NOTE = new SLogicFieldInfo("NOTE");
@@ -68,7 +68,7 @@ public class FDataResourceTemplateMaterialLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`TEMPLATE_ID`,`MATERIAL_ID`,`CODE`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`TEMPLATE_ID`,`MATERIAL_ID`,`MATERIAL_CODE`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源模板材质表逻辑单元。</T>
@@ -352,7 +352,7 @@ public class FDataResourceTemplateMaterialLogic
       cmd.append(",`PROJECT_ID`");
       cmd.append(",`TEMPLATE_ID`");
       cmd.append(",`MATERIAL_ID`");
-      cmd.append(",`CODE`");
+      cmd.append(",`MATERIAL_CODE`");
       cmd.append(",`NOTE`");
       cmd.append(",`CREATE_USER_ID`");
       cmd.append(",`CREATE_DATE`");
@@ -401,12 +401,12 @@ public class FDataResourceTemplateMaterialLogic
          cmd.append(materialId);
       }
       cmd.append(',');
-      String code = unit.code();
-      if(RString.isEmpty(code)){
+      String materialCode = unit.materialCode();
+      if(RString.isEmpty(materialCode)){
          cmd.append("NULL");
       }else{
          cmd.append('\'');
-         cmd.append(RSql.formatValue(code));
+         cmd.append(RSql.formatValue(materialCode));
          cmd.append('\'');
       }
       cmd.append(',');
@@ -528,14 +528,14 @@ public class FDataResourceTemplateMaterialLogic
             cmd.append(materialId);
          }
       }
-      if(unit.isCodeChanged()){
-         cmd.append(",`CODE`=");
-         String code = unit.code();
-         if(RString.isEmpty(code)){
+      if(unit.isMaterialCodeChanged()){
+         cmd.append(",`MATERIAL_CODE`=");
+         String materialCode = unit.materialCode();
+         if(RString.isEmpty(materialCode)){
             cmd.append("NULL");
          }else{
             cmd.append('\'');
-            cmd.append(RSql.formatValue(code));
+            cmd.append(RSql.formatValue(materialCode));
             cmd.append('\'');
          }
       }

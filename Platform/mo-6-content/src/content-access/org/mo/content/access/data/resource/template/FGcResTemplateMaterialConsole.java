@@ -3,7 +3,7 @@ package org.mo.content.access.data.resource.template;
 import org.mo.cloud.core.database.FAbstractLogicUnitConsole;
 import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.cloud.data.data.FDataResourceTemplateMaterialLogic;
-import org.mo.com.data.RSql;
+import org.mo.com.data.FSql;
 import org.mo.com.lang.EResult;
 import org.mo.content.access.data.resource.IGcResourceConsole;
 import org.mo.content.access.data.resource.material.IGcResMaterialConsole;
@@ -43,17 +43,20 @@ public class FGcResTemplateMaterialConsole
    // @param logicContext 逻辑环境
    // @param userId 用户编号
    // @param templateId 模板编号
-   // @param code 代码
+   // @param materialCode 材质代码
    // @return 模板信息
    //============================================================
    @Override
    public FGcResTemplateMaterialInfo findByCode(ILogicContext logicContext,
                                                 long userId,
                                                 long templateId,
-                                                String code){
-      String whereSql = "(" + FDataResourceTemplateMaterialLogic.USER_ID + "=" + userId + ")";
-      whereSql += " AND (" + FDataResourceTemplateMaterialLogic.TEMPLATE_ID + "=" + templateId + ")";
-      whereSql += " AND (" + FDataResourceTemplateMaterialLogic.CODE + "='" + RSql.formatValue(code) + "')";
+                                                String materialCode){
+      FSql whereSql = new FSql("(" + FDataResourceTemplateMaterialLogic.USER_ID + "={user_id})");
+      whereSql.append(" AND (" + FDataResourceTemplateMaterialLogic.TEMPLATE_ID + "={template_id})");
+      whereSql.append(" AND (" + FDataResourceTemplateMaterialLogic.MATERIAL_CODE + "={material_code})");
+      whereSql.bindLong("user_id", userId);
+      whereSql.bindLong("template_id", templateId);
+      whereSql.bindString("material_code", materialCode);
       FGcResTemplateMaterialInfo templateMaterialInfo = search(logicContext, whereSql);
       return templateMaterialInfo;
    }

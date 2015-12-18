@@ -27,6 +27,9 @@ public class FResObject
    // 代码
    protected String _code;
 
+   // 名称
+   protected String _name;
+
    // 标签
    protected String _label;
 
@@ -97,6 +100,24 @@ public class FResObject
    //============================================================
    public void setCode(String code){
       _code = code;
+   }
+
+   //============================================================
+   // <T>获得名称。</T>
+   //
+   // @return 名称
+   //============================================================
+   public String name(){
+      return _name;
+   }
+
+   //============================================================
+   // <T>设置名称。</T>
+   //
+   // @param name 名称
+   //============================================================
+   public void setName(String name){
+      _name = name;
    }
 
    //============================================================

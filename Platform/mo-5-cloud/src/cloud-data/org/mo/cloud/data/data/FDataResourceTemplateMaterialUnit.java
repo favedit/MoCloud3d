@@ -64,11 +64,11 @@ public class FDataResourceTemplateMaterialUnit
    // 字段材质编号的定义。
    protected long _materialId;
 
-   // 存储字段代码的定义。
-   private String __code;
+   // 存储字段材质代码的定义。
+   private String __materialCode;
 
-   // 字段代码的定义。
-   protected String _code;
+   // 字段材质代码的定义。
+   protected String _materialCode;
 
    // 存储字段备注的定义。
    private String __note;
@@ -340,30 +340,30 @@ public class FDataResourceTemplateMaterialUnit
    }
 
    //============================================================
-   // <T>判断代码的数据是否改变。</T>
+   // <T>判断材质代码的数据是否改变。</T>
    //
    // @return 数据内容
    //============================================================
-   public boolean isCodeChanged(){
-      return !RString.equals(__code, _code);
+   public boolean isMaterialCodeChanged(){
+      return !RString.equals(__materialCode, _materialCode);
    }
 
    //============================================================
-   // <T>获得代码的数据内容。</T>
+   // <T>获得材质代码的数据内容。</T>
    //
    // @return 数据内容
    //============================================================
-   public String code(){
-      return _code;
+   public String materialCode(){
+      return _materialCode;
    }
 
    //============================================================
-   // <T>设置代码的数据内容。</T>
+   // <T>设置材质代码的数据内容。</T>
    //
    // @param value 数据内容
    //============================================================
-   public void setCode(String value){
-      _code = value;
+   public void setMaterialCode(String value){
+      _materialCode = value;
    }
 
    //============================================================
@@ -524,8 +524,8 @@ public class FDataResourceTemplateMaterialUnit
             return Long.toString(_templateId);
          case "material_id":
             return Long.toString(_materialId);
-         case "code":
-            return _code;
+         case "material_code":
+            return _materialCode;
          case "note":
             return _note;
          case "create_user_id":
@@ -571,8 +571,8 @@ public class FDataResourceTemplateMaterialUnit
          case "material_id":
             _materialId = RLong.parse(value);
             break;
-         case "code":
-            _code = value;
+         case "material_code":
+            _materialCode = value;
             break;
          case "note":
             _note = value;
@@ -638,9 +638,9 @@ public class FDataResourceTemplateMaterialUnit
                __materialId = RLong.parse(value);
                _materialId = __materialId;
                break;
-            case "code":
-               __code = value;
-               _code = __code;
+            case "material_code":
+               __materialCode = value;
+               _materialCode = __materialCode;
                break;
             case "note":
                __note = value;
@@ -681,7 +681,7 @@ public class FDataResourceTemplateMaterialUnit
       row.set("projectId", _projectId);
       row.set("templateId", _templateId);
       row.set("materialId", _materialId);
-      row.set("code", _code);
+      row.set("materialCode", _materialCode);
       row.set("note", _note);
       row.set("createUserId", _createUserId);
       row.set("createDate", _createDate);
@@ -704,7 +704,7 @@ public class FDataResourceTemplateMaterialUnit
       map.put("projectId", RLong.toString(_projectId));
       map.put("templateId", RLong.toString(_templateId));
       map.put("materialId", RLong.toString(_materialId));
-      map.put("code", _code);
+      map.put("materialCode", _materialCode);
       map.put("note", _note);
       map.put("createUserId", RLong.toString(_createUserId));
       map.put("createDate", _createDate.format("YYYY-MM-DD HH24:MI:SS"));
@@ -727,7 +727,7 @@ public class FDataResourceTemplateMaterialUnit
       _projectId = input.readInt64();
       _templateId = input.readInt64();
       _materialId = input.readInt64();
-      _code = input.readString();
+      _materialCode = input.readString();
       _note = input.readString();
       _createUserId = input.readInt64();
       _createDate.set(input.readInt64());
@@ -750,7 +750,7 @@ public class FDataResourceTemplateMaterialUnit
       output.writeInt64(_projectId);
       output.writeInt64(_templateId);
       output.writeInt64(_materialId);
-      output.writeString(_code);
+      output.writeString(_materialCode);
       output.writeString(_note);
       output.writeInt64(_createUserId);
       output.writeInt64(_createDate.get());
@@ -775,7 +775,7 @@ public class FDataResourceTemplateMaterialUnit
       unit.setProjectId(_projectId);
       unit.setTemplateId(_templateId);
       unit.setMaterialId(_materialId);
-      unit.setCode(_code);
+      unit.setMaterialCode(_materialCode);
       unit.setNote(_note);
       unit.setCreateUserId(_createUserId);
       unit.createDate().assign(_createDate);

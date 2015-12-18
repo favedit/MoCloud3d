@@ -107,6 +107,34 @@ public class FGcResModelMeshConsole
    }
 
    //============================================================
+   // <T>根据模型编号和名称查找网格信息。</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param userId 用户编号
+   // @param projectId 项目编号
+   // @param modelId 模型编号
+   // @param name 名称
+   // @return 网格信息
+   //============================================================
+   @Override
+   public FGcResModelMeshInfo findByName(ILogicContext logicContext,
+                                         long userId,
+                                         long projectId,
+                                         long modelId,
+                                         String name){
+      // 生成条件
+      FSql whereSql = new FSql("(" + FDataResourceModelMeshLogic.USER_ID + "=" + userId + ")");
+      if(projectId > 0){
+         whereSql.append(" AND (" + FDataResourceModelMeshLogic.PROJECT_ID + "=" + projectId + ")");
+      }
+      whereSql.append(" AND (" + FDataResourceModelMeshLogic.MODEL_ID + "='" + modelId + "')");
+      whereSql.append(" AND (" + FDataResourceModelMeshLogic.NAME + "='" + name + "')");
+      // 查询信息
+      FGcResModelMeshInfo meshInfo = search(logicContext, whereSql);
+      return meshInfo;
+   }
+
+   //============================================================
    // <T>根据模型编号查找所有网格集合。</T>
    //
    // @param logicContext 逻辑环境

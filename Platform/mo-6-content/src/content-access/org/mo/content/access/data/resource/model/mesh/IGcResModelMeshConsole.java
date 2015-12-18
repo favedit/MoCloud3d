@@ -54,6 +54,22 @@ public interface IGcResModelMeshConsole
                                        String code);
 
    //============================================================
+   // <T>根据模型编号和名称查找网格信息。</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param userId 用户编号
+   // @param projectId 项目编号
+   // @param modelId 模型编号
+   // @param name 名称
+   // @return 网格信息
+   //============================================================
+   FGcResModelMeshInfo findByName(ILogicContext logicContext,
+                                  long userId,
+                                  long projectId,
+                                  long modelId,
+                                  String name);
+
+   //============================================================
    // <T>根据模型编号查找所有网格集合。</T>
    //
    // @param logicContext 逻辑环境

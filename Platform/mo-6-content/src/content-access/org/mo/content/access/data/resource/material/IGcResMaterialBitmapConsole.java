@@ -12,16 +12,16 @@ public interface IGcResMaterialBitmapConsole
          IAbstractLogicUnitConsole<FGcResMaterialBitmapInfo>
 {
    //============================================================
-   // <T>根据材质和代码查找位图信息。</T>
+   // <T>根据材质和格式代码查找位图信息。</T>
    //
    // @param logicContext 逻辑环境
    // @param materialId 材质编号
-   // @param code 代码
+   // @param formatCode 格式代码
    // @return 位图信息
    //============================================================
-   FGcResMaterialBitmapInfo findByMaterialCode(ILogicContext logicContext,
-                                               long materialId,
-                                               String code);
+   FGcResMaterialBitmapInfo findByFormatCode(ILogicContext logicContext,
+                                             long materialId,
+                                             String formatCode);
 
    //============================================================
    // <T>根据材质编号查找位图信息集合。</T>

@@ -59,6 +59,7 @@ public class FResModelMesh
       _ouid = unit.ouid();
       _guid = unit.guid();
       _code = unit.code();
+      _name = unit.name();
       _label = unit.label();
       _outline.min.parse(unit.outlineMin());
       _outline.max.parse(unit.outlineMax());
@@ -71,6 +72,7 @@ public class FResModelMesh
    //============================================================
    public void saveUnit(FDataResourceModelMeshUnit unit){
       unit.setCode(_code);
+      unit.setName(_name);
       unit.setLabel(_label);
       unit.setSortIndex(_index);
       unit.setOutlineMin(_outline.min.toString());
@@ -84,7 +86,8 @@ public class FResModelMesh
    //============================================================
    public void importData(IDataInput input){
       // 读取属性
-      _code = _model.code() + "|" + input.readString();
+      _name = input.readString();
+      _code = _model.code() + "|" + _name;
       // 读取轮廓
       _outline.unserialize(input);
       // 读取数据流集合

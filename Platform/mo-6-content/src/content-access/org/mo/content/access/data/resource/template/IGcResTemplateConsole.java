@@ -31,28 +31,6 @@ public interface IGcResTemplateConsole
                                          String resourceGuid);
 
    //============================================================
-   // <T>根据代码查找模板信息。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param code 代码
-   // @return 模板信息
-   //============================================================
-   FGcResTemplateInfo findByCode(ILogicContext logicContext,
-                                 String code);
-
-   //============================================================
-   // <T>根据用户编号和项目编号和代码查找模板信息。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param userId 用户编号
-   // @param code 代码
-   // @return 模板信息
-   //============================================================
-   FGcResTemplateInfo findByUserCode(ILogicContext logicContext,
-                                     long userId,
-                                     String code);
-
-   //============================================================
    // <T>根据用户编号和项目编号和代码查找模板信息。</T>
    //
    // @param logicContext 逻辑环境
@@ -61,8 +39,8 @@ public interface IGcResTemplateConsole
    // @param code 代码
    // @return 模板信息
    //============================================================
-   FGcResTemplateInfo findByUserCode(ILogicContext logicContext,
-                                     long userId,
-                                     long projectId,
-                                     String code);
+   FGcResTemplateInfo findByCode(ILogicContext logicContext,
+                                 long userId,
+                                 long projectId,
+                                 String code);
 }

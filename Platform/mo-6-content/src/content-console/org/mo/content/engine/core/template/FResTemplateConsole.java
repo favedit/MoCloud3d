@@ -252,7 +252,7 @@ public class FResTemplateConsole
       String templateCode = template.code();
       //............................................................
       // 删除旧数据
-      FGcResTemplateInfo templateInfo = findByUserCode(logicContext, userId, templateCode);
+      FGcResTemplateInfo templateInfo = findByCode(logicContext, userId, projectId, templateCode);
       if(templateInfo != null){
          doDelete(logicContext, templateInfo);
       }
@@ -275,15 +275,22 @@ public class FResTemplateConsole
             materialInfo.setProjectId(projectId);
             _materialConsole.doInsert(logicContext, materialInfo);
             if(material.hasBitmap()){
+               int slot = 0;
                for(FResMaterialBitmap materialBitmap : material.bitmaps()){
-                  String fullCode = materialBitmap.code();
-                  FGcResBitmapInfo bitmapInfo = _bitmapConsole.findByCode(logicContext, userId, projectId, fullCode);
+                  String textureCode = materialBitmap.textureCode();
+                  String bitemapCode = textureCode + "|" + materialBitmap.code();
+                  FGcResBitmapInfo bitmapInfo = _bitmapConsole.findByCode(logicContext, userId, projectId, bitemapCode);
+                  if(bitmapInfo == null){
+                     throw new FFatalError("Bitmap is not exists. (projectId={1}, code={2})", projectId, bitemapCode);
+                  }
                   materialBitmap.setBitmapGuid(bitmapInfo.guid());
                   // 新建材质位图
                   FGcResMaterialBitmapInfo materialBitmapInfo = _materialBitmapConsole.doPrepare(logicContext);
                   materialBitmapInfo.setUserId(userId);
                   materialBitmapInfo.setProjectId(projectId);
                   materialBitmapInfo.setMaterialId(materialInfo.ouid());
+                  materialBitmapInfo.setSlot(slot++);
+                  materialBitmapInfo.setFormatCode(bitmapInfo.formatCode());
                   materialBitmapInfo.setBitmapId(bitmapInfo.ouid());
                   materialBitmap.saveUnit(materialBitmapInfo);
                   _materialBitmapConsole.doInsert(logicContext, materialBitmapInfo);
@@ -298,7 +305,7 @@ public class FResTemplateConsole
             templateMaterialInfo.setProjectId(projectId);
             templateMaterialInfo.setTemplateId(templateInfo.ouid());
             templateMaterialInfo.setMaterialId(materialInfo.ouid());
-            templateMaterialInfo.setCode(materialInfo.code());
+            templateMaterialInfo.setMaterialCode(materialInfo.code());
             _templateMaterialConsole.doInsert(logicContext, templateMaterialInfo);
          }
       }
@@ -317,7 +324,10 @@ public class FResTemplateConsole
                      shape.setModelGuid(modelInfo.guid());
                      // 查找网格
                      String meshCode = shape.meshCode();
-                     FGcResModelMeshInfo meshInfo = _modelMeshConsole.findByModelCode(logicContext, userId, projectId, modelId, meshCode);
+                     FGcResModelMeshInfo meshInfo = _modelMeshConsole.findByName(logicContext, userId, projectId, modelId, meshCode);
+                     if(meshInfo == null){
+                        throw new FFatalError("Mesh is not exists. (model_id={1}, mesh_code={2})", modelId, meshCode);
+                     }
                      shape.setCode(meshCode);
                      shape.setLabel(meshInfo.label());
                      shape.setMeshGuid(meshInfo.guid());

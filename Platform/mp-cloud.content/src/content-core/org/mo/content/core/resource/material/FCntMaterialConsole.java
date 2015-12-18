@@ -43,7 +43,7 @@ public class FCntMaterialConsole
       long materialId = materialInfo.ouid();
       // 查找位图信息
       long bitmapId = 0;
-      FGcResMaterialBitmapInfo materialDiffuseInfo = _materialBitmapConsole.findByMaterialCode(logicContext, materialId, "diffuse");
+      FGcResMaterialBitmapInfo materialDiffuseInfo = _materialBitmapConsole.findByFormatCode(logicContext, materialId, "diffuse");
       if(materialDiffuseInfo != null){
          bitmapId = materialDiffuseInfo.bitmapId();
       }else{
@@ -124,7 +124,7 @@ public class FCntMaterialConsole
          for(int n = 0; n < count; n++){
             String item = items[n];
             if(!RString.isEmpty(item)){
-               FGcResMaterialBitmapInfo materialBitmapInfo = _materialBitmapConsole.findByMaterialCode(logicContext, materialId, item);
+               FGcResMaterialBitmapInfo materialBitmapInfo = _materialBitmapConsole.findByFormatCode(logicContext, materialId, item);
                if(materialBitmapInfo == null){
                   throw new FFatalError("Material bitmap is not exists. (code={1})", code);
                }
@@ -149,7 +149,7 @@ public class FCntMaterialConsole
             throw new FFatalError(e);
          }
       }else{
-         FGcResMaterialBitmapInfo materialBitmapInfo = _materialBitmapConsole.findByMaterialCode(logicContext, materialId, code);
+         FGcResMaterialBitmapInfo materialBitmapInfo = _materialBitmapConsole.findByFormatCode(logicContext, materialId, code);
          if(materialBitmapInfo == null){
             throw new FFatalError("Texture bitmap is not exists. (code={1})", code);
          }

@@ -54,7 +54,7 @@ public class FResMaterialConsole
          FGcResBitmapInfo bitmapInfo = _bitmapConsole.find(logicContext, materialBitmapInfo.bitmapId());
          FResMaterialBitmap bitmap = new FResMaterialBitmap();
          bitmap.setGuid(materialBitmapInfo.guid());
-         bitmap.setCode(materialBitmapInfo.code());
+         bitmap.setCode(materialBitmapInfo.formatCode());
          bitmap.setLabel(bitmapInfo.label());
          bitmap.setBitmapGuid(bitmapInfo.guid());
          material.pushBitmap(bitmap);

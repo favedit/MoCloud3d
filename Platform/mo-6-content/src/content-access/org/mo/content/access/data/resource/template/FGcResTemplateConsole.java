@@ -5,6 +5,7 @@ import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.cloud.data.data.FDataResourceTemplateLogic;
 import org.mo.cloud.data.data.FDataResourceTemplateMaterialLogic;
 import org.mo.cloud.define.enums.core.EGcResource;
+import org.mo.com.data.FSql;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -76,39 +77,6 @@ public class FGcResTemplateConsole
    }
 
    //============================================================
-   // <T>根据代码查找模板信息。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param code 代码
-   // @return 模板信息
-   //============================================================
-   @Override
-   public FGcResTemplateInfo findByCode(ILogicContext logicContext,
-                                        String code){
-      String whereSql = FDataResourceTemplateLogic.CODE + "='" + RSql.formatValue(code) + "'";
-      FGcResTemplateInfo template = search(logicContext, whereSql);
-      return template;
-   }
-
-   //============================================================
-   // <T>根据用户编号和项目编号和代码查找模板信息。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param userId 用户编号
-   // @param code 代码
-   // @return 模板信息
-   //============================================================
-   @Override
-   public FGcResTemplateInfo findByUserCode(ILogicContext logicContext,
-                                            long userId,
-                                            String code){
-      String whereSql = "(" + FDataResourceTemplateLogic.USER_ID + "=" + userId + ")";
-      whereSql += " AND (" + FDataResourceTemplateLogic.CODE + "='" + RSql.formatValue(code) + "')";
-      FGcResTemplateInfo template = search(logicContext, whereSql);
-      return template;
-   }
-
-   //============================================================
    // <T>根据用户编号和项目编号和代码查找模板信息。</T>
    //
    // @param logicContext 逻辑环境
@@ -118,13 +86,17 @@ public class FGcResTemplateConsole
    // @return 模板信息
    //============================================================
    @Override
-   public FGcResTemplateInfo findByUserCode(ILogicContext logicContext,
-                                            long userId,
-                                            long projectId,
-                                            String code){
-      String whereSql = "(" + FDataResourceTemplateLogic.USER_ID + "=" + userId + ")";
-      whereSql += " AND (" + FDataResourceTemplateLogic.PROJECT_ID + "=" + projectId + ")";
-      whereSql += " AND (" + FDataResourceTemplateLogic.CODE + "='" + RSql.formatValue(code) + "')";
+   public FGcResTemplateInfo findByCode(ILogicContext logicContext,
+                                        long userId,
+                                        long projectId,
+                                        String code){
+      // 生成条件
+      FSql whereSql = new FSql("(" + FDataResourceTemplateLogic.USER_ID + "=" + userId + ")");
+      if(projectId > 0){
+         whereSql.append(" AND (" + FDataResourceTemplateLogic.PROJECT_ID + "=" + projectId + ")");
+      }
+      whereSql.append(" AND (" + FDataResourceTemplateLogic.CODE + "='" + RSql.formatValue(code) + "')");
+      // 查询数据
       FGcResTemplateInfo template = search(logicContext, whereSql);
       return template;
    }

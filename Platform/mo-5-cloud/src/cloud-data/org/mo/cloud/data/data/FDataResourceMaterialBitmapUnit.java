@@ -8,6 +8,7 @@ import org.mo.com.io.IDataOutput;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.IStringPair;
 import org.mo.com.lang.RBoolean;
+import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RLong;
 import org.mo.com.lang.RString;
 import org.mo.com.lang.reflect.RClass;
@@ -58,17 +59,17 @@ public class FDataResourceMaterialBitmapUnit
    // 字段材质编号的定义。
    protected long _materialId;
 
-   // 存储字段全代码的定义。
-   private String __fullCode;
+   // 存储字段插槽的定义。
+   private int __slot;
 
-   // 字段全代码的定义。
-   protected String _fullCode;
+   // 字段插槽的定义。
+   protected int _slot;
 
-   // 存储字段代码的定义。
-   private String __code;
+   // 存储字段格式代码的定义。
+   private String __formatCode;
 
-   // 字段代码的定义。
-   protected String _code;
+   // 字段格式代码的定义。
+   protected String _formatCode;
 
    // 存储字段位图编号的定义。
    private long __bitmapId;
@@ -308,57 +309,57 @@ public class FDataResourceMaterialBitmapUnit
    }
 
    //============================================================
-   // <T>判断全代码的数据是否改变。</T>
+   // <T>判断插槽的数据是否改变。</T>
    //
    // @return 数据内容
    //============================================================
-   public boolean isFullCodeChanged(){
-      return !RString.equals(__fullCode, _fullCode);
+   public boolean isSlotChanged(){
+      return __slot != _slot;
    }
 
    //============================================================
-   // <T>获得全代码的数据内容。</T>
+   // <T>获得插槽的数据内容。</T>
    //
    // @return 数据内容
    //============================================================
-   public String fullCode(){
-      return _fullCode;
+   public int slot(){
+      return _slot;
    }
 
    //============================================================
-   // <T>设置全代码的数据内容。</T>
+   // <T>设置插槽的数据内容。</T>
    //
    // @param value 数据内容
    //============================================================
-   public void setFullCode(String value){
-      _fullCode = value;
+   public void setSlot(int value){
+      _slot = value;
    }
 
    //============================================================
-   // <T>判断代码的数据是否改变。</T>
+   // <T>判断格式代码的数据是否改变。</T>
    //
    // @return 数据内容
    //============================================================
-   public boolean isCodeChanged(){
-      return !RString.equals(__code, _code);
+   public boolean isFormatCodeChanged(){
+      return !RString.equals(__formatCode, _formatCode);
    }
 
    //============================================================
-   // <T>获得代码的数据内容。</T>
+   // <T>获得格式代码的数据内容。</T>
    //
    // @return 数据内容
    //============================================================
-   public String code(){
-      return _code;
+   public String formatCode(){
+      return _formatCode;
    }
 
    //============================================================
-   // <T>设置代码的数据内容。</T>
+   // <T>设置格式代码的数据内容。</T>
    //
    // @param value 数据内容
    //============================================================
-   public void setCode(String value){
-      _code = value;
+   public void setFormatCode(String value){
+      _formatCode = value;
    }
 
    //============================================================
@@ -555,10 +556,10 @@ public class FDataResourceMaterialBitmapUnit
             return Long.toString(_projectId);
          case "material_id":
             return Long.toString(_materialId);
-         case "full_code":
-            return _fullCode;
-         case "code":
-            return _code;
+         case "slot":
+            return RInteger.toString(_slot);
+         case "format_code":
+            return _formatCode;
          case "bitmap_id":
             return Long.toString(_bitmapId);
          case "note":
@@ -603,11 +604,11 @@ public class FDataResourceMaterialBitmapUnit
          case "material_id":
             _materialId = RLong.parse(value);
             break;
-         case "full_code":
-            _fullCode = value;
+         case "slot":
+            _slot = RInteger.parse(value);
             break;
-         case "code":
-            _code = value;
+         case "format_code":
+            _formatCode = value;
             break;
          case "bitmap_id":
             _bitmapId = RLong.parse(value);
@@ -672,13 +673,13 @@ public class FDataResourceMaterialBitmapUnit
                __materialId = RLong.parse(value);
                _materialId = __materialId;
                break;
-            case "full_code":
-               __fullCode = value;
-               _fullCode = __fullCode;
+            case "slot":
+               __slot = RInteger.parse(value);
+               _slot = __slot;
                break;
-            case "code":
-               __code = value;
-               _code = __code;
+            case "format_code":
+               __formatCode = value;
+               _formatCode = __formatCode;
                break;
             case "bitmap_id":
                __bitmapId = RLong.parse(value);
@@ -722,8 +723,8 @@ public class FDataResourceMaterialBitmapUnit
       row.set("userId", _userId);
       row.set("projectId", _projectId);
       row.set("materialId", _materialId);
-      row.set("fullCode", _fullCode);
-      row.set("code", _code);
+      row.set("slot", _slot);
+      row.set("formatCode", _formatCode);
       row.set("bitmapId", _bitmapId);
       row.set("note", _note);
       row.set("createUserId", _createUserId);
@@ -746,8 +747,8 @@ public class FDataResourceMaterialBitmapUnit
       map.put("userId", RLong.toString(_userId));
       map.put("projectId", RLong.toString(_projectId));
       map.put("materialId", RLong.toString(_materialId));
-      map.put("fullCode", _fullCode);
-      map.put("code", _code);
+      map.put("slot", RInteger.toString(_slot));
+      map.put("formatCode", _formatCode);
       map.put("bitmapId", RLong.toString(_bitmapId));
       map.put("note", _note);
       map.put("createUserId", RLong.toString(_createUserId));
@@ -770,8 +771,8 @@ public class FDataResourceMaterialBitmapUnit
       _userId = input.readInt64();
       _projectId = input.readInt64();
       _materialId = input.readInt64();
-      _fullCode = input.readString();
-      _code = input.readString();
+      _slot = input.readInt32();
+      _formatCode = input.readString();
       _bitmapId = input.readInt64();
       _note = input.readString();
       _createUserId = input.readInt64();
@@ -794,8 +795,8 @@ public class FDataResourceMaterialBitmapUnit
       output.writeInt64(_userId);
       output.writeInt64(_projectId);
       output.writeInt64(_materialId);
-      output.writeString(_fullCode);
-      output.writeString(_code);
+      output.writeInt32(_slot);
+      output.writeString(_formatCode);
       output.writeInt64(_bitmapId);
       output.writeString(_note);
       output.writeInt64(_createUserId);
@@ -820,8 +821,8 @@ public class FDataResourceMaterialBitmapUnit
       unit.setUserId(_userId);
       unit.setProjectId(_projectId);
       unit.setMaterialId(_materialId);
-      unit.setFullCode(_fullCode);
-      unit.setCode(_code);
+      unit.setSlot(_slot);
+      unit.setFormatCode(_formatCode);
       unit.setBitmapId(_bitmapId);
       unit.setNote(_note);
       unit.setCreateUserId(_createUserId);

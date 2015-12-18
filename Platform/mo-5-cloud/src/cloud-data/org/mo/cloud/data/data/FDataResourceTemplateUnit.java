@@ -58,12 +58,6 @@ public class FDataResourceTemplateUnit
    // 字段资源编号的定义。
    protected long _resourceId;
 
-   // 存储字段全代码的定义。
-   private String __fullCode;
-
-   // 字段全代码的定义。
-   protected String _fullCode;
-
    // 存储字段代码的定义。
    private String __code;
 
@@ -317,33 +311,6 @@ public class FDataResourceTemplateUnit
    //============================================================
    public void setResourceId(long value){
       _resourceId = value;
-   }
-
-   //============================================================
-   // <T>判断全代码的数据是否改变。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public boolean isFullCodeChanged(){
-      return !RString.equals(__fullCode, _fullCode);
-   }
-
-   //============================================================
-   // <T>获得全代码的数据内容。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public String fullCode(){
-      return _fullCode;
-   }
-
-   //============================================================
-   // <T>设置全代码的数据内容。</T>
-   //
-   // @param value 数据内容
-   //============================================================
-   public void setFullCode(String value){
-      _fullCode = value;
    }
 
    //============================================================
@@ -610,8 +577,6 @@ public class FDataResourceTemplateUnit
             return Long.toString(_projectId);
          case "resource_id":
             return Long.toString(_resourceId);
-         case "full_code":
-            return _fullCode;
          case "code":
             return _code;
          case "label":
@@ -661,9 +626,6 @@ public class FDataResourceTemplateUnit
             break;
          case "resource_id":
             _resourceId = RLong.parse(value);
-            break;
-         case "full_code":
-            _fullCode = value;
             break;
          case "code":
             _code = value;
@@ -737,10 +699,6 @@ public class FDataResourceTemplateUnit
                __resourceId = RLong.parse(value);
                _resourceId = __resourceId;
                break;
-            case "full_code":
-               __fullCode = value;
-               _fullCode = __fullCode;
-               break;
             case "code":
                __code = value;
                _code = __code;
@@ -795,7 +753,6 @@ public class FDataResourceTemplateUnit
       row.set("userId", _userId);
       row.set("projectId", _projectId);
       row.set("resourceId", _resourceId);
-      row.set("fullCode", _fullCode);
       row.set("code", _code);
       row.set("label", _label);
       row.set("keywords", _keywords);
@@ -821,7 +778,6 @@ public class FDataResourceTemplateUnit
       map.put("userId", RLong.toString(_userId));
       map.put("projectId", RLong.toString(_projectId));
       map.put("resourceId", RLong.toString(_resourceId));
-      map.put("fullCode", _fullCode);
       map.put("code", _code);
       map.put("label", _label);
       map.put("keywords", _keywords);
@@ -847,7 +803,6 @@ public class FDataResourceTemplateUnit
       _userId = input.readInt64();
       _projectId = input.readInt64();
       _resourceId = input.readInt64();
-      _fullCode = input.readString();
       _code = input.readString();
       _label = input.readString();
       _keywords = input.readString();
@@ -873,7 +828,6 @@ public class FDataResourceTemplateUnit
       output.writeInt64(_userId);
       output.writeInt64(_projectId);
       output.writeInt64(_resourceId);
-      output.writeString(_fullCode);
       output.writeString(_code);
       output.writeString(_label);
       output.writeString(_keywords);
@@ -901,7 +855,6 @@ public class FDataResourceTemplateUnit
       unit.setUserId(_userId);
       unit.setProjectId(_projectId);
       unit.setResourceId(_resourceId);
-      unit.setFullCode(_fullCode);
       unit.setCode(_code);
       unit.setLabel(_label);
       unit.setKeywords(_keywords);

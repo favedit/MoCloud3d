@@ -122,7 +122,7 @@ public class FMaterialService
       // 生成查询脚本
       String whereSql = "(" + FDataResourceMaterialBitmapLogic.USER_ID + "=" + session.userId() + ")";
       whereSql += " AND (" + FDataResourceMaterialBitmapLogic.MATERIAL_ID + "=" + materialId + ")";
-      String orderSql = FDataResourceMaterialBitmapLogic.CODE + " ASC";
+      String orderSql = FDataResourceMaterialBitmapLogic.FORMAT_CODE + " ASC";
       // 查询数据
       FLogicDataset<FGcResMaterialBitmapInfo> dataset = _materialBitmapConsole.fetch(logicContext, whereSql, orderSql);
       // 设置输出节点

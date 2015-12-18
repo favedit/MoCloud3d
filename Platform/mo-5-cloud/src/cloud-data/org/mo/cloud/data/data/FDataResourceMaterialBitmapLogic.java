@@ -46,11 +46,11 @@ public class FDataResourceMaterialBitmapLogic
    // 字段材质编号的定义。
    public final static SLogicFieldInfo MATERIAL_ID = new SLogicFieldInfo("MATERIAL_ID");
 
-   // 字段全代码的定义。
-   public final static SLogicFieldInfo FULL_CODE = new SLogicFieldInfo("FULL_CODE");
+   // 字段插槽的定义。
+   public final static SLogicFieldInfo SLOT = new SLogicFieldInfo("SLOT");
 
-   // 字段代码的定义。
-   public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
+   // 字段格式代码的定义。
+   public final static SLogicFieldInfo FORMAT_CODE = new SLogicFieldInfo("FORMAT_CODE");
 
    // 字段位图编号的定义。
    public final static SLogicFieldInfo BITMAP_ID = new SLogicFieldInfo("BITMAP_ID");
@@ -71,7 +71,7 @@ public class FDataResourceMaterialBitmapLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MATERIAL_ID`,`FULL_CODE`,`CODE`,`BITMAP_ID`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MATERIAL_ID`,`SLOT`,`FORMAT_CODE`,`BITMAP_ID`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源材质位图表逻辑单元。</T>
@@ -354,8 +354,8 @@ public class FDataResourceMaterialBitmapLogic
       cmd.append(",`USER_ID`");
       cmd.append(",`PROJECT_ID`");
       cmd.append(",`MATERIAL_ID`");
-      cmd.append(",`FULL_CODE`");
-      cmd.append(",`CODE`");
+      cmd.append(",`SLOT`");
+      cmd.append(",`FORMAT_CODE`");
       cmd.append(",`BITMAP_ID`");
       cmd.append(",`NOTE`");
       cmd.append(",`CREATE_USER_ID`");
@@ -398,21 +398,14 @@ public class FDataResourceMaterialBitmapLogic
          cmd.append(materialId);
       }
       cmd.append(',');
-      String fullCode = unit.fullCode();
-      if(RString.isEmpty(fullCode)){
-         cmd.append("NULL");
-      }else{
-         cmd.append('\'');
-         cmd.append(RSql.formatValue(fullCode));
-         cmd.append('\'');
-      }
+      cmd.append(unit.slot());
       cmd.append(',');
-      String code = unit.code();
-      if(RString.isEmpty(code)){
+      String formatCode = unit.formatCode();
+      if(RString.isEmpty(formatCode)){
          cmd.append("NULL");
       }else{
          cmd.append('\'');
-         cmd.append(RSql.formatValue(code));
+         cmd.append(RSql.formatValue(formatCode));
          cmd.append('\'');
       }
       cmd.append(',');
@@ -532,25 +525,18 @@ public class FDataResourceMaterialBitmapLogic
             cmd.append(materialId);
          }
       }
-      if(unit.isFullCodeChanged()){
-         cmd.append(",`FULL_CODE`=");
-         String fullCode = unit.fullCode();
-         if(RString.isEmpty(fullCode)){
-            cmd.append("NULL");
-         }else{
-            cmd.append('\'');
-            cmd.append(RSql.formatValue(fullCode));
-            cmd.append('\'');
-         }
+      if(unit.isSlotChanged()){
+         cmd.append(",`SLOT`=");
+         cmd.append(unit.slot());
       }
-      if(unit.isCodeChanged()){
-         cmd.append(",`CODE`=");
-         String code = unit.code();
-         if(RString.isEmpty(code)){
+      if(unit.isFormatCodeChanged()){
+         cmd.append(",`FORMAT_CODE`=");
+         String formatCode = unit.formatCode();
+         if(RString.isEmpty(formatCode)){
             cmd.append("NULL");
          }else{
             cmd.append('\'');
-            cmd.append(RSql.formatValue(code));
+            cmd.append(RSql.formatValue(formatCode));
             cmd.append('\'');
          }
       }

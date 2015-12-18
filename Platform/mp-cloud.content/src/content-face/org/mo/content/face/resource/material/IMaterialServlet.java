@@ -1,6 +1,6 @@
 package org.mo.content.face.resource.material;
 
-import org.mo.cloud.logic.data.system.FGcSessionInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.data.logic.ILogicContext;
 import org.mo.web.core.face.AWebLogin;
 import org.mo.web.core.servlet.common.IWebServletRequest;
@@ -16,11 +16,13 @@ public interface IMaterialServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    public void process(IWebContext context,
+                       IGcSession session,
                        ILogicContext logicContext,
                        IWebServletRequest request,
                        IWebServletResponse response);
@@ -29,15 +31,15 @@ public interface IMaterialServlet
    // <T>逻辑处理。</T>
    //
    // @param context 页面环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @AWebLogin
    public void query(IWebContext context,
+                     IGcSession session,
                      ILogicContext logicContext,
-                     FGcSessionInfo session,
                      IWebServletRequest request,
                      IWebServletResponse response);
 
@@ -45,47 +47,47 @@ public interface IMaterialServlet
    // <T>获得数据处理。</T>
    //
    // @param context 页面环境
-   // @param logicContext 逻辑环境
    // @param session 会话信息
+   // @param logicContext 逻辑环境
    // @param request 页面请求
    // @param response 页面应答
    //============================================================
    @AWebLogin
    public void data(IWebContext context,
+                    IGcSession session,
                     ILogicContext logicContext,
-                    FGcSessionInfo session,
                     IWebServletRequest request,
                     IWebServletResponse response);
 
    //============================================================
    // <T>导入数据处理。</T>
    //
-   // @param context 环境
+   // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 页面请求
+   // @param response 页面应答
    //============================================================
    @AWebLogin
    public void importData(IWebContext context,
+                          IGcSession session,
                           ILogicContext logicContext,
-                          FGcSessionInfo session,
                           IWebServletRequest request,
                           IWebServletResponse response);
 
    //============================================================
    // <T>替换数据处理。</T>
    //
-   // @param context 环境
+   // @param context 页面环境
+   // @param session 会话信息
    // @param logicContext 逻辑环境
-   // @param session 会话
-   // @param request 请求
-   // @param response 应答
+   // @param request 页面请求
+   // @param response 页面应答
    //============================================================
    @AWebLogin
    public void replaceData(IWebContext context,
+                           IGcSession session,
                            ILogicContext logicContext,
-                           FGcSessionInfo session,
                            IWebServletRequest request,
                            IWebServletResponse response);
 }

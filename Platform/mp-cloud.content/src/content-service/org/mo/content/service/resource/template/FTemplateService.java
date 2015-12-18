@@ -179,8 +179,9 @@ public class FTemplateService
       }
       // 获得会话信息
       long userId = session.userId();
+      long projectId = session.projectId();
       // 查找数据
-      FGcResTemplateInfo findTemplateInfo = _templateConsole.findByUserCode(logicContext, userId, code);
+      FGcResTemplateInfo findTemplateInfo = _templateConsole.findByCode(logicContext, userId, projectId, code);
       if(findTemplateInfo != null){
          throw new FFatalError("Resource template code is duplicate. (user_id={1}, code={2})", userId, code);
       }
@@ -263,7 +264,7 @@ public class FTemplateService
       FGcResTemplateMaterialInfo templateMaterialInfo = _templateMaterialConsole.doPrepare(logicContext);
       templateMaterialInfo.setTemplateId(templateId);
       templateMaterialInfo.setMaterialId(materialId);
-      templateMaterialInfo.setCode(code);
+      templateMaterialInfo.setMaterialCode(code);
       _templateMaterialConsole.doInsert(logicContext, templateMaterialInfo);
       //............................................................
       // 更新处理
