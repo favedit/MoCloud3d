@@ -111,17 +111,17 @@ MO.FDuiPageControl_onBuild = function FDuiPageControl_onBuild(event){
    //RBuilder.appendEmpty(hc);
    o._hFirst = MO.Window.Builder.appendTableCell(o._hLine);
    var hbc = o._hFirstBottom = MO.Window.Builder.appendTableCell(o._hBottom);
-   hbc.className = o.styleName('Bottom', FDuiPageSheet);
+   hbc.className = o.styleName('Bottom', MO.FDuiPageSheet);
    // 建立分隔区
    //var hc = MO.Window.Builder.appendTableRowCell(h);
    //hc.height = 2;
    // 建立标题区右边第一列
    var hc = o._hLastTop = MO.Window.Builder.appendTableCell(o._hTop);
-   //hc.className = o.styleName('Top', FDuiPageSheet);
+   //hc.className = o.styleName('Top', MO.FDuiPageSheet);
    //RBuilder.appendEmpty(hc);
    o._hLast = MO.Window.Builder.appendTableCell(o._hLine);
    var hc = o._hLastBottom = MO.Window.Builder.appendTableCell(o._hBottom);
-   hc.className = o.styleName('Bottom', FDuiPageSheet);
+   hc.className = o.styleName('Bottom', MO.FDuiPageSheet);
 }
 
 //==========================================================
@@ -176,7 +176,7 @@ MO.FDuiPageControl_construct = function FDuiPageControl_construct(){
 MO.FDuiPageControl_appendChild = function FDuiPageControl_appendChild(control){
    var o = this;
    // 追加子页面
-   if(MO.Class.isClass(control, FDuiPageSheet)){
+   if(MO.Class.isClass(control, MO.FDuiPageSheet)){
       var ci = o._hLast.cellIndex;
       // 追加标题顶边线
       var hc = control._hTopL = MO.Window.Builder.appendTableCell(o._hTop, null, ci);

@@ -172,42 +172,40 @@ with(MO){
       o.__base.FDrResource.saveConfig.call(o, xconfig);
    }
 }
-with(MO){
-   MO.FDrMaterialConsole = function FDrMaterialConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode = 'cloud.resource.material';
-      o._classUnit   = FDrMaterial;
-      o.query        = FDrMaterialConsole_query;
-      o.update       = FDrMaterialConsole_update;
-      o.deleteBitmap = FDrMaterialConsole_deleteBitmap;
-      return o;
-   }
-   MO.FDrMaterialConsole_query = function FDrMaterialConsole_query(guid){
-      var o = this;
-      var uri = '/' + o._serviceCode + '.ws?action=query&guid=' + guid;
-      var url = RBrowser.hostPath(uri);
-      var xroot = MO.Console.find(FXmlConsole).send(url);
-      var nodeCount = xroot.nodeCount();
-      for(var n = 0; n < nodeCount; n++){
-         var xbitmap = xroot.node(n);
-         if(xbitmap.isName('Material')){
-            o.loadResource(xbitmap);
-         }
+MO.FDrMaterialConsole = function FDrMaterialConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode = 'cloud.resource.material';
+   o._classUnit   = MO.FDrMaterial;
+   o.query        = MO.FDrMaterialConsole_query;
+   o.update       = MO.FDrMaterialConsole_update;
+   o.deleteBitmap = MO.FDrMaterialConsole_deleteBitmap;
+   return o;
+}
+MO.FDrMaterialConsole_query = function FDrMaterialConsole_query(guid){
+   var o = this;
+   var uri = '/' + o._serviceCode + '.ws?action=query&guid=' + guid;
+   var url = MO.Window.Browser.hostPath(uri);
+   var xroot = MO.Console.find(MO.FXmlConsole).sendSync(url);
+   var nodeCount = xroot.nodeCount();
+   for(var n = 0; n < nodeCount; n++){
+      var xbitmap = xroot.node(n);
+      if(xbitmap.isName('Material')){
+         o.loadResource(xbitmap);
       }
-      return o._resources.get(guid);
    }
-   MO.FDrMaterialConsole_update = function FDrMaterialConsole_update(xconfig){
-      var o = this;
-      var uri = '/' + o._serviceCode + '.ws?action=update';
-      var url = RBrowser.hostPath(uri);
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrMaterialConsole_deleteBitmap = function FDrMaterialConsole_deleteBitmap(guid){
-      var o = this;
-      var uri = '/' + o._serviceCode + '.ws?action=deleteBitmap&guid=' + guid;
-      var url = RBrowser.hostPath(uri);
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
+   return o._resources.get(guid);
+}
+MO.FDrMaterialConsole_update = function FDrMaterialConsole_update(xconfig){
+   var o = this;
+   var uri = '/' + o._serviceCode + '.ws?action=update';
+   var url = MO.Window.Browser.hostPath(uri);
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrMaterialConsole_deleteBitmap = function FDrMaterialConsole_deleteBitmap(guid){
+   var o = this;
+   var uri = '/' + o._serviceCode + '.ws?action=deleteBitmap&guid=' + guid;
+   var url = MO.Window.Browser.hostPath(uri);
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
 }
 with(MO){
    MO.FDrMesh = function FDrMesh(o){

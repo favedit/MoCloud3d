@@ -2678,7 +2678,7 @@ MO.FE3dTemplate_processLoad = function FE3dTemplate_processLoad(){
       }
    }
    o._ready = true;
-   var event = MO.Memory.alloc(SEvent);
+   var event = MO.Memory.alloc(MO.SEvent);
    event.sender = o;
    event.template = o;
    o.processLoadListener(event);

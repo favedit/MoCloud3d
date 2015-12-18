@@ -1366,7 +1366,7 @@ MO.MUiDataProperties = function MUiDataProperties(o){
    o.dataPropertySet = MO.MUiDataProperties_dataPropertySet;
    return o;
 }
-MO.MUiDataProperties_dataProperties = function MUiDataProperties_dataProperties(n, c){
+MO.MUiDataProperties_dataProperties = function MUiDataProperties_dataProperties(){
    var o = this;
    var properties = o._dataProperties;
    if(properties == null){
@@ -1377,10 +1377,12 @@ MO.MUiDataProperties_dataProperties = function MUiDataProperties_dataProperties(
 MO.MUiDataProperties_dataPropertyGet = function MUiDataProperties_dataPropertyGet(name){
    var o = this;
    var properties = o._dataProperties;
-   return properties ? properties.get(n) : null;
+   return properties ? properties.get(name) : null;
 }
 MO.MUiDataProperties_dataPropertySet = function MUiDataProperties_dataPropertySet(name, value){
-   this.dataProperties().set(name, value);
+   var o = this;
+   var properties = o.dataProperties();
+   properties.set(name, value);
 }
 MO.MUiDataset = function MUiDataset(o){
    o = MO.Class.inherits(this, o);

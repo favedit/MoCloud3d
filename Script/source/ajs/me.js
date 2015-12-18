@@ -23705,8 +23705,8 @@ MO.FDisplayLayer_construct = function FDisplayLayer_construct(){
    o._visibleRenderables = new MO.TObjects();
 }
 MO.FDisplayLayer_selectTechnique = function FDisplayLayer_selectTechnique(context, name){
-   var technique = MO.Console.find(MO.FG3dTechniqueConsole).find(context, name);
-   this.selectTechnique(technique);
+   var o = this;
+   o._technique = MO.Console.find(MO.FG3dTechniqueConsole).find(context, name);
 }
 MO.FDisplayLayer_filterRenderables = function FDisplayLayer_filterRenderables(p){
    var o = this;
@@ -34398,7 +34398,7 @@ MO.FE3dTemplate_processLoad = function FE3dTemplate_processLoad(){
       }
    }
    o._ready = true;
-   var event = MO.Memory.alloc(SEvent);
+   var event = MO.Memory.alloc(MO.SEvent);
    event.sender = o;
    event.template = o;
    o.processLoadListener(event);
@@ -35797,7 +35797,7 @@ MO.FE3dBoundaryShape3d_dispose = function FE3dBoundaryShape3d_dispose(){
 }
 MO.FE3dBoundBox = function FE3dBoundBox(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
-   o._outline              = MO.Class.create(o, new MO.AGetter('_outline'));
+   o._outline              = MO.Class.register(o, new MO.AGetter('_outline'));
    o._rate                 = 0.2;
    o._vertexPositionBuffer = null;
    o._vertexColorBuffer    = null;
@@ -40789,7 +40789,7 @@ MO.MUiDataProperties = function MUiDataProperties(o){
    o.dataPropertySet = MO.MUiDataProperties_dataPropertySet;
    return o;
 }
-MO.MUiDataProperties_dataProperties = function MUiDataProperties_dataProperties(n, c){
+MO.MUiDataProperties_dataProperties = function MUiDataProperties_dataProperties(){
    var o = this;
    var properties = o._dataProperties;
    if(properties == null){
@@ -40800,10 +40800,12 @@ MO.MUiDataProperties_dataProperties = function MUiDataProperties_dataProperties(
 MO.MUiDataProperties_dataPropertyGet = function MUiDataProperties_dataPropertyGet(name){
    var o = this;
    var properties = o._dataProperties;
-   return properties ? properties.get(n) : null;
+   return properties ? properties.get(name) : null;
 }
 MO.MUiDataProperties_dataPropertySet = function MUiDataProperties_dataPropertySet(name, value){
-   this.dataProperties().set(name, value);
+   var o = this;
+   var properties = o.dataProperties();
+   properties.set(name, value);
 }
 MO.MUiDataset = function MUiDataset(o){
    o = MO.Class.inherits(this, o);

@@ -15902,11 +15902,11 @@ MO.FDuiPageControl_onBuild = function FDuiPageControl_onBuild(event){
    hc.width = 12;
    o._hFirst = MO.Window.Builder.appendTableCell(o._hLine);
    var hbc = o._hFirstBottom = MO.Window.Builder.appendTableCell(o._hBottom);
-   hbc.className = o.styleName('Bottom', FDuiPageSheet);
+   hbc.className = o.styleName('Bottom', MO.FDuiPageSheet);
    var hc = o._hLastTop = MO.Window.Builder.appendTableCell(o._hTop);
    o._hLast = MO.Window.Builder.appendTableCell(o._hLine);
    var hc = o._hLastBottom = MO.Window.Builder.appendTableCell(o._hBottom);
-   hc.className = o.styleName('Bottom', FDuiPageSheet);
+   hc.className = o.styleName('Bottom', MO.FDuiPageSheet);
 }
 MO.FDuiPageControl_oeRefresh = function FDuiPageControl_oeRefresh(event){
    var o = this;
@@ -15932,7 +15932,7 @@ MO.FDuiPageControl_construct = function FDuiPageControl_construct(){
 }
 MO.FDuiPageControl_appendChild = function FDuiPageControl_appendChild(control){
    var o = this;
-   if(MO.Class.isClass(control, FDuiPageSheet)){
+   if(MO.Class.isClass(control, MO.FDuiPageSheet)){
       var ci = o._hLast.cellIndex;
       var hc = control._hTopL = MO.Window.Builder.appendTableCell(o._hTop, null, ci);
       hc.width = 1;

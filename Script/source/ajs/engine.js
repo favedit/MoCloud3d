@@ -892,8 +892,8 @@ MO.FDisplayLayer_construct = function FDisplayLayer_construct(){
    o._visibleRenderables = new MO.TObjects();
 }
 MO.FDisplayLayer_selectTechnique = function FDisplayLayer_selectTechnique(context, name){
-   var technique = MO.Console.find(MO.FG3dTechniqueConsole).find(context, name);
-   this.selectTechnique(technique);
+   var o = this;
+   o._technique = MO.Console.find(MO.FG3dTechniqueConsole).find(context, name);
 }
 MO.FDisplayLayer_filterRenderables = function FDisplayLayer_filterRenderables(p){
    var o = this;

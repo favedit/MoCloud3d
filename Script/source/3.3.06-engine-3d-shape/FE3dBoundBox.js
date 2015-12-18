@@ -28,7 +28,7 @@ MO.FE3dBoundBox = function FE3dBoundBox(o){
    o = MO.Class.inherits(this, o, MO.FE3dRenderable);
    //..........................................................
    // @attribute
-   o._outline              = MO.Class.create(o, new MO.AGetter('_outline'));
+   o._outline              = MO.Class.register(o, new MO.AGetter('_outline'));
    o._rate                 = 0.2;
    // @attribute
    o._vertexPositionBuffer = null;

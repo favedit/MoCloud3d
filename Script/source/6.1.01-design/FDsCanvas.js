@@ -137,22 +137,22 @@ MO.FDsCanvas_onMouseCapture = function FDsCanvas_onMouseCapture(event){
    // 鼠标处理
    var toolbar = o._frameSet._canvasToolBar;
    switch(toolbar._canvasModeCd){
-      case EDsCanvasMode.Drop:
+      case MO.EDsCanvasMode.Drop:
          var rotation = camera.rotation();
          var captureRotation = o._captureRotation;
          rotation.x = captureRotation.x - cy * o._cameraMouseRotation;
          rotation.y = captureRotation.y - cx * o._cameraMouseRotation;
          break;
-      case EDsCanvasMode.Select:
+      case MO.EDsCanvasMode.Select:
          break;
       case EDsCanvasMode.Translate:
          //m.tx = cm.tx + cx / 360 * 3.14;
          //m.ty = cm.ty + cy / 360 * 3.14;
          break;
-      case EDsCanvasMode.Rotation:
+      case MO.EDsCanvasMode.Rotation:
          //m.ry = cm.ry + cx * RMath.DEGREE_RATE;
          break;
-      case EDsCanvasMode.Scale:
+      case MO.EDsCanvasMode.Scale:
          //m.sx = cm.sx + cx / 100;
          //m.sy = cm.sy + cx / 100;
          //m.sz = cm.sz + cx / 100;
@@ -170,7 +170,7 @@ MO.FDsCanvas_onMouseCapture = function FDsCanvas_onMouseCapture(event){
 MO.FDsCanvas_onMouseCaptureStop = function FDsCanvas_onMouseCaptureStop(event){
    var o = this;
    // 设置鼠标
-   MO.RHtml.cursorSet(o._hPanel, EUiCursor.Auto);
+   MO.Window.Html.cursorSet(o._hPanel, MO.EUiCursor.Auto);
 }
 
 //==========================================================
