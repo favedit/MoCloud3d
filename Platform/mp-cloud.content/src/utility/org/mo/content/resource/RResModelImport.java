@@ -39,10 +39,10 @@ public class RResModelImport
             String fullName = path + fileName;
             modelConsole.importModel(logicContext, session, fullName + ".msh");
             if(RFile.exists(fullName + ".skt")){
-               //modelConsole.importSkeleton(logicContext, session, fullName + ".skt");
+               modelConsole.importSkeleton(logicContext, session, fullName + ".skt");
             }
             if(RFile.exists(fullName + ".anm")){
-               //modelConsole.importAnimation(logicContext, session, fullName + ".anm");
+               modelConsole.importAnimation(logicContext, session, fullName + ".anm");
             }
          }
       }

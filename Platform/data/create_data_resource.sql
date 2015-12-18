@@ -266,7 +266,6 @@ CREATE TABLE `DT_RES_MODEL_SKELETON`
    `USER_ID`                       BIGINT, 
    `PROJECT_ID`                    BIGINT, 
    `MODEL_ID`                      BIGINT, 
-   `FULL_CODE`                     VARCHAR(200), 
    `CODE`                          VARCHAR(80), 
    `LABEL`                         VARCHAR(200), 
    `CONTENT`                       TEXT, 
@@ -300,7 +299,6 @@ CREATE TABLE `DT_RES_MODEL_SKELETON_SKIN`
    `MODEL_ID`                      BIGINT, 
    `MESH_ID`                       BIGINT, 
    `SKELETON_ID`                   BIGINT NOT NULL, 
-   `FULL_CODE`                     VARCHAR(200), 
    `CODE`                          VARCHAR(80), 
    `LABEL`                         VARCHAR(200), 
    `CONTENT`                       TEXT, 
@@ -330,57 +328,6 @@ ALTER TABLE DT_RES_MODEL_SKELETON_SKIN ADD CONSTRAINT DT_RES_MOD_SKT_SKN_FK_SKT
       FOREIGN KEY (`SKELETON_ID`) REFERENCES DT_RES_MODEL_SKELETON(`OUID`); 
 
 -- ------------------------------------------------------------
--- Create table [Data.Resource.Model.Skeleton.Skin.Stream]
--- ------------------------------------------------------------
-DROP TABLE IF EXISTS `DT_RES_MODEL_SKELETON_SKIN_STREAM`;
-CREATE TABLE `DT_RES_MODEL_SKELETON_SKIN_STREAM` 
-( 
-   `OUID`                          BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-   `OVLD`                          TINYINT NOT NULL DEFAULT TRUE, 
-   `GUID`                          VARCHAR(40) NOT NULL, 
-   `USER_ID`                       BIGINT, 
-   `PROJECT_ID`                    BIGINT, 
-   `MODEL_ID`                      BIGINT, 
-   `MESH_ID`                       BIGINT, 
-   `SKELETON_ID`                   BIGINT, 
-   `SKIN_ID`                       BIGINT, 
-   `SORT_INDEX`                    INTEGER, 
-   `FULL_CODE`                     VARCHAR(200), 
-   `CODE`                          VARCHAR(80), 
-   `ELEMENT_DATA_CD`               INTEGER, 
-   `ELEMENT_COUNT`                 INTEGER, 
-   `DATA_STRIDE`                   INTEGER, 
-   `DATA_COUNT`                    INTEGER, 
-   `DATA_LENGTH`                   INTEGER, 
-   `NOTE`                          VARCHAR(2000), 
-   `CREATE_USER_ID`                BIGINT, 
-   `CREATE_DATE`                   DATETIME, 
-   `UPDATE_USER_ID`                BIGINT, 
-   `UPDATE_DATE`                   DATETIME 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8; 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM 
-   ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_UK_GID UNIQUE ( GUID ); 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_FK_USR 
-      FOREIGN KEY (`USER_ID`) REFERENCES DT_PSN_USER(`OUID`); 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_FK_PRJ 
-      FOREIGN KEY (`PROJECT_ID`) REFERENCES DT_SOL_PROJECT(`OUID`); 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_FK_MOD 
-      FOREIGN KEY (`MODEL_ID`) REFERENCES DT_RES_MODEL(`OUID`); 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_FK_MSH 
-      FOREIGN KEY (`MESH_ID`) REFERENCES DT_RES_MODEL_MESH(`OUID`); 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_FK_SKT 
-      FOREIGN KEY (`SKELETON_ID`) REFERENCES DT_RES_MODEL_SKELETON(`OUID`); 
-
-ALTER TABLE DT_RES_MODEL_SKELETON_SKIN_STREAM ADD CONSTRAINT DT_RES_MOD_SKT_SKN_STM_FK_SKN 
-      FOREIGN KEY (`SKIN_ID`) REFERENCES DT_RES_MODEL_SKELETON_SKIN(`OUID`); 
-
--- ------------------------------------------------------------
 -- Create table [Data.Resource.Model.Animation]
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `DT_RES_MODEL_ANIMATION`;
@@ -393,12 +340,12 @@ CREATE TABLE `DT_RES_MODEL_ANIMATION`
    `PROJECT_ID`                    BIGINT, 
    `MODEL_ID`                      BIGINT, 
    `SKELETON_ID`                   BIGINT, 
-   `FULL_CODE`                     VARCHAR(200), 
    `CODE`                          VARCHAR(80), 
    `LABEL`                         VARCHAR(200), 
    `FRAME_COUNT`                   INTEGER, 
    `FRAME_TICK`                    INTEGER, 
    `FRAME_SPAN`                    INTEGER, 
+   `CONTENT`                       TEXT, 
    `NOTE`                          VARCHAR(2000), 
    `CREATE_USER_ID`                BIGINT, 
    `CREATE_DATE`                   DATETIME, 

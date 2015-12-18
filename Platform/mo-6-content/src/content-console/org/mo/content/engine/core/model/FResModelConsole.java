@@ -5,23 +5,19 @@ import org.mo.cloud.core.storage.EGcStorageCatalog;
 import org.mo.cloud.core.storage.FGcStorageContent;
 import org.mo.cloud.data.data.FDataResourceModelAnimationLogic;
 import org.mo.cloud.data.data.FDataResourceModelSkeletonLogic;
-import org.mo.cloud.data.data.FDataResourceModelUnit;
 import org.mo.com.io.FByteStream;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.RInteger;
-import org.mo.com.lang.RString;
 import org.mo.content.access.data.resource.model.FGcResModelConsole;
 import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
-import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackInfo;
 import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
 import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
 import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.model.animation.IResModelAnimationConsole;
 import org.mo.content.engine.core.model.animation.IResModelAnimationTrackConsole;
 import org.mo.content.engine.core.model.skeleton.IResModelSkeletonConsole;
-import org.mo.content.engine.core.model.skeleton.IResModelSkeletonSkinStreamConsole;
 import org.mo.content.geom.mesh.FGeomMesh;
 import org.mo.content.geom.mesh.FGeomModel;
 import org.mo.content.mime.obj.FObjFile;
@@ -29,8 +25,6 @@ import org.mo.content.mime.phy.FPlyFile;
 import org.mo.content.mime.stl.FStlFile;
 import org.mo.content.resource.common.FResAnimation;
 import org.mo.content.resource.common.FResSkeleton;
-import org.mo.content.resource.common.FResSkeletonSkin;
-import org.mo.content.resource.common.FResTrack;
 import org.mo.content.resource.model.FResModel;
 import org.mo.content.resource.model.FResModelMesh;
 import org.mo.core.aop.face.ALink;
@@ -62,10 +56,6 @@ public class FResModelConsole
    // 资源模型网格控制台
    @ALink
    protected IResModelSkeletonConsole _skeletonConsole;
-
-   // 资源模型网格控制台
-   @ALink
-   protected IResModelSkeletonSkinStreamConsole _skeletonSkinStreamConsole;
 
    //============================================================
    // <T>生成资源模型。</T>
@@ -369,27 +359,16 @@ public class FResModelConsole
       // 加载骨骼资源
       FResSkeleton skeleton = new FResSkeleton();
       skeleton.importFile(fileName);
-      String skeletonCode = skeleton.code();
+      String modelCode = skeleton.code();
       //............................................................
       // 查找模型信息
-      FDataResourceModelUnit modelInfo = findByCode(logicContext, userId, projectId, skeletonCode);
-      long modelId = modelInfo.ouid();
+      FGcResModelInfo modelInfo = findByCode(logicContext, userId, projectId, modelCode);
+      if(modelInfo == null){
+         throw new FFatalError("Model is not exists. (code={1})", modelCode);
+      }
       //............................................................
       // 新建骨骼信息
-      FGcResModelSkeletonInfo skeletonInfo = _skeletonConsole.doPrepare(logicContext);
-      skeletonInfo.setUserId(session.userId());
-      skeletonInfo.setProjectId(session.projectId());
-      skeletonInfo.setModelId(modelInfo.ouid());
-      skeleton.saveUnit(skeletonInfo);
-      _skeletonConsole.doInsert(logicContext, skeletonInfo);
-      //............................................................
-      // 新建蒙皮集合
-      for(FResSkeletonSkin skin : skeleton.skins()){
-         // 查找网格
-         FGcResModelMeshInfo meshInfo = _meshConsole.findByModelCode(logicContext, modelId, skin.code());
-         // 新建蒙皮
-         _skeletonConsole.insertSkin(logicContext, meshInfo, skeletonInfo, skin);
-      }
+      _skeletonConsole.importSkeleton(logicContext, session, modelInfo, skeleton);
       return EResult.Success;
    }
 
@@ -417,49 +396,12 @@ public class FResModelConsole
       if(modelInfo == null){
          throw new FFatalError("Model is not exists. (code={1})", modelCode);
       }
-      long modelId = modelInfo.ouid();
       //............................................................
       // 查找骨骼信息
-      long skeletonId = 0;
       FGcResModelSkeletonInfo skeletonInfo = _skeletonConsole.findByCode(logicContext, modelCode);
-      if(skeletonInfo != null){
-         skeletonId = skeletonInfo.ouid();
-      }
       //............................................................
       // 新建动画信息
-      FGcResModelAnimationInfo animationInfo = _animationConsole.doPrepare(logicContext);
-      animationInfo.setUserId(session.userId());
-      animationInfo.setProjectId(session.projectId());
-      animationInfo.setModelId(modelId);
-      animationInfo.setSkeletonId(skeletonId);
-      animation.saveUnit(animationInfo);
-      _animationConsole.doInsert(logicContext, animationInfo);
-      long animationId = animationInfo.ouid();
-      //............................................................
-      // 新建蒙皮集合
-      for(FResTrack track : animation.tracks()){
-         // 查找关联网格信息
-         long meshId = 0;
-         String meshCode = track.meshCode();
-         if(!RString.isEmpty(meshCode)){
-            FGcResModelMeshInfo meshInfo = _meshConsole.findByModelCode(logicContext, modelId, meshCode);
-            if(meshInfo == null){
-               throw new FFatalError("Model mesh is not found. (model={1}, mesh={2})", modelCode, meshCode);
-            }
-            meshId = meshInfo.ouid();
-         }
-         // 新建轨迹信息
-         FGcResModelAnimationTrackInfo trackInfo = _animationTrackConsole.doPrepare(logicContext);
-         trackInfo.setUserId(session.userId());
-         trackInfo.setProjectId(session.projectId());
-         trackInfo.setModelId(modelId);
-         trackInfo.setMeshId(meshId);
-         trackInfo.setSkeletonId(skeletonId);
-         trackInfo.setAnimationId(animationId);
-         _animationTrackConsole.doInsert(logicContext, trackInfo);
-         // 更新轨迹数据
-         _animationTrackConsole.updateResource(logicContext, trackInfo, track);
-      }
+      _animationConsole.importAnimation(logicContext, session, modelInfo, skeletonInfo, animation);
       return EResult.Success;
    }
 }

@@ -49,9 +49,6 @@ public class FDataResourceModelAnimationLogic
    // 字段骨骼编号的定义。
    public final static SLogicFieldInfo SKELETON_ID = new SLogicFieldInfo("SKELETON_ID");
 
-   // 字段全代码的定义。
-   public final static SLogicFieldInfo FULL_CODE = new SLogicFieldInfo("FULL_CODE");
-
    // 字段代码的定义。
    public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
 
@@ -66,6 +63,9 @@ public class FDataResourceModelAnimationLogic
 
    // 字段帧时长的定义。
    public final static SLogicFieldInfo FRAME_SPAN = new SLogicFieldInfo("FRAME_SPAN");
+
+   // 字段内容的定义。
+   public final static SLogicFieldInfo CONTENT = new SLogicFieldInfo("CONTENT");
 
    // 字段备注的定义。
    public final static SLogicFieldInfo NOTE = new SLogicFieldInfo("NOTE");
@@ -83,7 +83,7 @@ public class FDataResourceModelAnimationLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`SKELETON_ID`,`FULL_CODE`,`CODE`,`LABEL`,`FRAME_COUNT`,`FRAME_TICK`,`FRAME_SPAN`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`SKELETON_ID`,`CODE`,`LABEL`,`FRAME_COUNT`,`FRAME_TICK`,`FRAME_SPAN`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源模型动画表逻辑单元。</T>
@@ -367,12 +367,12 @@ public class FDataResourceModelAnimationLogic
       cmd.append(",`PROJECT_ID`");
       cmd.append(",`MODEL_ID`");
       cmd.append(",`SKELETON_ID`");
-      cmd.append(",`FULL_CODE`");
       cmd.append(",`CODE`");
       cmd.append(",`LABEL`");
       cmd.append(",`FRAME_COUNT`");
       cmd.append(",`FRAME_TICK`");
       cmd.append(",`FRAME_SPAN`");
+      cmd.append(",`CONTENT`");
       cmd.append(",`NOTE`");
       cmd.append(",`CREATE_USER_ID`");
       cmd.append(",`CREATE_DATE`");
@@ -421,15 +421,6 @@ public class FDataResourceModelAnimationLogic
          cmd.append(skeletonId);
       }
       cmd.append(',');
-      String fullCode = unit.fullCode();
-      if(RString.isEmpty(fullCode)){
-         cmd.append("NULL");
-      }else{
-         cmd.append('\'');
-         cmd.append(RSql.formatValue(fullCode));
-         cmd.append('\'');
-      }
-      cmd.append(',');
       String code = unit.code();
       if(RString.isEmpty(code)){
          cmd.append("NULL");
@@ -453,6 +444,15 @@ public class FDataResourceModelAnimationLogic
       cmd.append(unit.frameTick());
       cmd.append(',');
       cmd.append(unit.frameSpan());
+      cmd.append(',');
+      String content = unit.content();
+      if(RString.isEmpty(content)){
+         cmd.append("NULL");
+      }else{
+         cmd.append('\'');
+         cmd.append(RSql.formatValue(content));
+         cmd.append('\'');
+      }
       cmd.append(',');
       String note = unit.note();
       if(RString.isEmpty(note)){
@@ -572,17 +572,6 @@ public class FDataResourceModelAnimationLogic
             cmd.append(skeletonId);
          }
       }
-      if(unit.isFullCodeChanged()){
-         cmd.append(",`FULL_CODE`=");
-         String fullCode = unit.fullCode();
-         if(RString.isEmpty(fullCode)){
-            cmd.append("NULL");
-         }else{
-            cmd.append('\'');
-            cmd.append(RSql.formatValue(fullCode));
-            cmd.append('\'');
-         }
-      }
       if(unit.isCodeChanged()){
          cmd.append(",`CODE`=");
          String code = unit.code();
@@ -616,6 +605,17 @@ public class FDataResourceModelAnimationLogic
       if(unit.isFrameSpanChanged()){
          cmd.append(",`FRAME_SPAN`=");
          cmd.append(unit.frameSpan());
+      }
+      if(unit.isContentChanged()){
+         cmd.append(",`CONTENT`=");
+         String content = unit.content();
+         if(RString.isEmpty(content)){
+            cmd.append("NULL");
+         }else{
+            cmd.append('\'');
+            cmd.append(RSql.formatValue(content));
+            cmd.append('\'');
+         }
       }
       if(unit.isNoteChanged()){
          cmd.append(",`NOTE`=");

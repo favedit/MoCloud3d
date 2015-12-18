@@ -5,14 +5,10 @@ import org.mo.core.aop.RAop;
 
 public class RResAllImport
 {
-   //public static String Config = "application-home.xml";
-
    //============================================================
    // <T>主函数。</T>
    //============================================================
    public static void main(String[] args) throws Exception{
-      // 设置变量
-      //RRs3Configuration.Config = RResAllImport.Config;
       // 设置环境
       String configPath = RRs3Configuration.RootPath + "/Platform";
       RAop.configConsole().defineCollection().attributes().set("application", configPath);

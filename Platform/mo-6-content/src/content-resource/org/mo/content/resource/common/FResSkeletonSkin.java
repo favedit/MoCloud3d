@@ -110,6 +110,40 @@ public class FResSkeletonSkin
    }
 
    //============================================================
+   // <T>序列化数据到输出流。</T>
+   //
+   // @param output 输出流
+   //============================================================
+   @Override
+   public void storageSerialize(IDataOutput output){
+      super.storageSerialize(output);
+      // 输出数据流集合
+      int streamCount = _streams.count();
+      output.writeInt32(streamCount);
+      for(int i = 0; i < streamCount; i++){
+         FResStream stream = _streams.get(i);
+         stream.storageSerialize(output);
+      }
+   }
+
+   //============================================================
+   // <T>从输入流反序列化数据。</T>
+   //
+   // @param input 输入流
+   //============================================================
+   @Override
+   public void storageUnserialize(IDataInput input){
+      super.storageUnserialize(input);
+      // 读取数据流集合
+      int streamCount = input.readInt32();
+      for(int i = 0; i < streamCount; i++){
+         FResStream stream = new FResStream();
+         stream.storageUnserialize(input);
+         pushStream(stream);
+      }
+   }
+
+   //============================================================
    // <T>从配置信息中加载配置。</T>
    //
    // @param xconfig 配置信息
@@ -185,7 +219,7 @@ public class FResSkeletonSkin
       // 加载配置
       FXmlDocument xdocument = new FXmlDocument();
       xdocument.loadString(unit.content());
-      this.loadConfig(xdocument.root());
+      loadConfig(xdocument.root());
    }
 
    //============================================================

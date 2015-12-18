@@ -35,6 +35,9 @@ public class EGcStorageCatalog
    // 资源模型网格数据
    public final static String ResourceModelMeshStream = "resource.model.mesh.stream";
 
+   // 资源模型骨骼蒙皮数据
+   public final static String ResourceModelSkeletonSkin = "resource.model.skeleton.skin";
+
    // 资源模型骨骼蒙皮数据流数据
    public final static String ResourceModelSkeletonSkinStream = "resource.model.skeleton.skin.stream";
 

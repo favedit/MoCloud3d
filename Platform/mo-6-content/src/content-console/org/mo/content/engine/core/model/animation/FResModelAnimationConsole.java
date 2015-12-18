@@ -1,10 +1,12 @@
 package org.mo.content.engine.core.model.animation;
 
 import org.mo.cloud.data.data.FDataResourceModelAnimationTrackLogic;
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationConsole;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationTrackInfo;
 import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.model.skeleton.IResModelSkeletonConsole;
 import org.mo.content.resource.common.FResAnimation;
 import org.mo.content.resource.common.FResTrack;
@@ -74,5 +76,45 @@ public class FResModelAnimationConsole
                                       long animationId){
       FGcResModelAnimationInfo animationInfo = get(logicContext, animationId);
       return makeAnimation(logicContext, animationInfo);
+   }
+
+   //============================================================
+   // <T>导入动画。</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param session 会话信息
+   // @param modelInfo 模型信息
+   // @param skeletonInfo 骨骼信息
+   // @param animation 动画
+   // @return 处理结果
+   //============================================================
+   @Override
+   public FGcResModelAnimationInfo importAnimation(ILogicContext logicContext,
+                                                   IGcSession session,
+                                                   FGcResModelInfo modelInfo,
+                                                   FGcResModelSkeletonInfo skeletonInfo,
+                                                   FResAnimation animation){
+      long userId = session.userId();
+      long projectId = session.projectId();
+      long modelId = modelInfo.ouid();
+      long skeletonId = 0;
+      if(skeletonInfo != null){
+         skeletonId = skeletonInfo.ouid();
+      }
+      //............................................................
+      // 新建动画信息
+      FGcResModelAnimationInfo animationInfo = doPrepare(logicContext);
+      animationInfo.setUserId(userId);
+      animationInfo.setProjectId(projectId);
+      animationInfo.setModelId(modelId);
+      animationInfo.setSkeletonId(skeletonId);
+      animation.saveUnit(animationInfo);
+      doInsert(logicContext, animationInfo);
+      //............................................................
+      // 新建蒙皮集合
+      for(FResTrack track : animation.tracks()){
+         _modelAnimationTrackConsole.importResource(logicContext, session, modelInfo, skeletonInfo, animationInfo, track);
+      }
+      return animationInfo;
    }
 }

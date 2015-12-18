@@ -46,9 +46,6 @@ public class FDataResourceModelSkeletonLogic
    // 字段模型编号的定义。
    public final static SLogicFieldInfo MODEL_ID = new SLogicFieldInfo("MODEL_ID");
 
-   // 字段全代码的定义。
-   public final static SLogicFieldInfo FULL_CODE = new SLogicFieldInfo("FULL_CODE");
-
    // 字段代码的定义。
    public final static SLogicFieldInfo CODE = new SLogicFieldInfo("CODE");
 
@@ -74,7 +71,7 @@ public class FDataResourceModelSkeletonLogic
    public final static SLogicFieldInfo UPDATE_DATE = new SLogicFieldInfo("UPDATE_DATE");
 
    // 字段集合的定义。
-   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`FULL_CODE`,`CODE`,`LABEL`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
+   public final static String FIELDS = "`OUID`,`OVLD`,`GUID`,`USER_ID`,`PROJECT_ID`,`MODEL_ID`,`CODE`,`LABEL`,`CONTENT`,`NOTE`,`CREATE_USER_ID`,`CREATE_DATE`,`UPDATE_USER_ID`,`UPDATE_DATE`";
 
    //============================================================
    // <T>构造资源网格骨骼表逻辑单元。</T>
@@ -357,7 +354,6 @@ public class FDataResourceModelSkeletonLogic
       cmd.append(",`USER_ID`");
       cmd.append(",`PROJECT_ID`");
       cmd.append(",`MODEL_ID`");
-      cmd.append(",`FULL_CODE`");
       cmd.append(",`CODE`");
       cmd.append(",`LABEL`");
       cmd.append(",`CONTENT`");
@@ -400,15 +396,6 @@ public class FDataResourceModelSkeletonLogic
          cmd.append("NULL");
       }else{
          cmd.append(modelId);
-      }
-      cmd.append(',');
-      String fullCode = unit.fullCode();
-      if(RString.isEmpty(fullCode)){
-         cmd.append("NULL");
-      }else{
-         cmd.append('\'');
-         cmd.append(RSql.formatValue(fullCode));
-         cmd.append('\'');
       }
       cmd.append(',');
       String code = unit.code();
@@ -545,17 +532,6 @@ public class FDataResourceModelSkeletonLogic
             cmd.append("NULL");
          }else{
             cmd.append(modelId);
-         }
-      }
-      if(unit.isFullCodeChanged()){
-         cmd.append(",`FULL_CODE`=");
-         String fullCode = unit.fullCode();
-         if(RString.isEmpty(fullCode)){
-            cmd.append("NULL");
-         }else{
-            cmd.append('\'');
-            cmd.append(RSql.formatValue(fullCode));
-            cmd.append('\'');
          }
       }
       if(unit.isCodeChanged()){

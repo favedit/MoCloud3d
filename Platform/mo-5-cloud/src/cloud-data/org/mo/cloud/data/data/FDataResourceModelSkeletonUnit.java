@@ -58,12 +58,6 @@ public class FDataResourceModelSkeletonUnit
    // 字段模型编号的定义。
    protected long _modelId;
 
-   // 存储字段全代码的定义。
-   private String __fullCode;
-
-   // 字段全代码的定义。
-   protected String _fullCode;
-
    // 存储字段代码的定义。
    private String __code;
 
@@ -303,33 +297,6 @@ public class FDataResourceModelSkeletonUnit
    }
 
    //============================================================
-   // <T>判断全代码的数据是否改变。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public boolean isFullCodeChanged(){
-      return !RString.equals(__fullCode, _fullCode);
-   }
-
-   //============================================================
-   // <T>获得全代码的数据内容。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public String fullCode(){
-      return _fullCode;
-   }
-
-   //============================================================
-   // <T>设置全代码的数据内容。</T>
-   //
-   // @param value 数据内容
-   //============================================================
-   public void setFullCode(String value){
-      _fullCode = value;
-   }
-
-   //============================================================
    // <T>判断代码的数据是否改变。</T>
    //
    // @return 数据内容
@@ -566,8 +533,6 @@ public class FDataResourceModelSkeletonUnit
             return Long.toString(_projectId);
          case "model_id":
             return Long.toString(_modelId);
-         case "full_code":
-            return _fullCode;
          case "code":
             return _code;
          case "label":
@@ -615,9 +580,6 @@ public class FDataResourceModelSkeletonUnit
             break;
          case "model_id":
             _modelId = RLong.parse(value);
-            break;
-         case "full_code":
-            _fullCode = value;
             break;
          case "code":
             _code = value;
@@ -688,10 +650,6 @@ public class FDataResourceModelSkeletonUnit
                __modelId = RLong.parse(value);
                _modelId = __modelId;
                break;
-            case "full_code":
-               __fullCode = value;
-               _fullCode = __fullCode;
-               break;
             case "code":
                __code = value;
                _code = __code;
@@ -742,7 +700,6 @@ public class FDataResourceModelSkeletonUnit
       row.set("userId", _userId);
       row.set("projectId", _projectId);
       row.set("modelId", _modelId);
-      row.set("fullCode", _fullCode);
       row.set("code", _code);
       row.set("label", _label);
       row.set("content", _content);
@@ -767,7 +724,6 @@ public class FDataResourceModelSkeletonUnit
       map.put("userId", RLong.toString(_userId));
       map.put("projectId", RLong.toString(_projectId));
       map.put("modelId", RLong.toString(_modelId));
-      map.put("fullCode", _fullCode);
       map.put("code", _code);
       map.put("label", _label);
       map.put("content", _content);
@@ -792,7 +748,6 @@ public class FDataResourceModelSkeletonUnit
       _userId = input.readInt64();
       _projectId = input.readInt64();
       _modelId = input.readInt64();
-      _fullCode = input.readString();
       _code = input.readString();
       _label = input.readString();
       _content = input.readString();
@@ -817,7 +772,6 @@ public class FDataResourceModelSkeletonUnit
       output.writeInt64(_userId);
       output.writeInt64(_projectId);
       output.writeInt64(_modelId);
-      output.writeString(_fullCode);
       output.writeString(_code);
       output.writeString(_label);
       output.writeString(_content);
@@ -844,7 +798,6 @@ public class FDataResourceModelSkeletonUnit
       unit.setUserId(_userId);
       unit.setProjectId(_projectId);
       unit.setModelId(_modelId);
-      unit.setFullCode(_fullCode);
       unit.setCode(_code);
       unit.setLabel(_label);
       unit.setContent(_content);

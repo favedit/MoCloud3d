@@ -1,7 +1,10 @@
 package org.mo.content.engine.core.model.animation;
 
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.animation.FGcResModelAnimationInfo;
 import org.mo.content.access.data.resource.model.animation.IGcResModelAnimationConsole;
+import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.common.FResAnimation;
 import org.mo.data.logic.ILogicContext;
 
@@ -31,4 +34,20 @@ public interface IResModelAnimationConsole
    //============================================================
    FResAnimation makeAnimation(ILogicContext logicContext,
                                long animationId);
+
+   //============================================================
+   // <T>导入动画。</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param session 会话信息
+   // @param modelInfo 模型信息
+   // @param skeletonInfo 骨骼信息
+   // @param animation 动画
+   // @return 处理结果
+   //============================================================
+   FGcResModelAnimationInfo importAnimation(ILogicContext logicContext,
+                                            IGcSession session,
+                                            FGcResModelInfo modelInfo,
+                                            FGcResModelSkeletonInfo skeletonInfo,
+                                            FResAnimation animation);
 }

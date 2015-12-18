@@ -65,12 +65,6 @@ public class FDataResourceModelAnimationUnit
    // 字段骨骼编号的定义。
    protected long _skeletonId;
 
-   // 存储字段全代码的定义。
-   private String __fullCode;
-
-   // 字段全代码的定义。
-   protected String _fullCode;
-
    // 存储字段代码的定义。
    private String __code;
 
@@ -100,6 +94,12 @@ public class FDataResourceModelAnimationUnit
 
    // 字段帧时长的定义。
    protected int _frameSpan;
+
+   // 存储字段内容的定义。
+   private String __content;
+
+   // 字段内容的定义。
+   protected String _content;
 
    // 存储字段备注的定义。
    private String __note;
@@ -371,33 +371,6 @@ public class FDataResourceModelAnimationUnit
    }
 
    //============================================================
-   // <T>判断全代码的数据是否改变。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public boolean isFullCodeChanged(){
-      return !RString.equals(__fullCode, _fullCode);
-   }
-
-   //============================================================
-   // <T>获得全代码的数据内容。</T>
-   //
-   // @return 数据内容
-   //============================================================
-   public String fullCode(){
-      return _fullCode;
-   }
-
-   //============================================================
-   // <T>设置全代码的数据内容。</T>
-   //
-   // @param value 数据内容
-   //============================================================
-   public void setFullCode(String value){
-      _fullCode = value;
-   }
-
-   //============================================================
    // <T>判断代码的数据是否改变。</T>
    //
    // @return 数据内容
@@ -530,6 +503,33 @@ public class FDataResourceModelAnimationUnit
    //============================================================
    public void setFrameSpan(int value){
       _frameSpan = value;
+   }
+
+   //============================================================
+   // <T>判断内容的数据是否改变。</T>
+   //
+   // @return 数据内容
+   //============================================================
+   public boolean isContentChanged(){
+      return !RString.equals(__content, _content);
+   }
+
+   //============================================================
+   // <T>获得内容的数据内容。</T>
+   //
+   // @return 数据内容
+   //============================================================
+   public String content(){
+      return _content;
+   }
+
+   //============================================================
+   // <T>设置内容的数据内容。</T>
+   //
+   // @param value 数据内容
+   //============================================================
+   public void setContent(String value){
+      _content = value;
    }
 
    //============================================================
@@ -690,8 +690,6 @@ public class FDataResourceModelAnimationUnit
             return Long.toString(_modelId);
          case "skeleton_id":
             return Long.toString(_skeletonId);
-         case "full_code":
-            return _fullCode;
          case "code":
             return _code;
          case "label":
@@ -702,6 +700,8 @@ public class FDataResourceModelAnimationUnit
             return RInteger.toString(_frameTick);
          case "frame_span":
             return RInteger.toString(_frameSpan);
+         case "content":
+            return _content;
          case "note":
             return _note;
          case "create_user_id":
@@ -747,9 +747,6 @@ public class FDataResourceModelAnimationUnit
          case "skeleton_id":
             _skeletonId = RLong.parse(value);
             break;
-         case "full_code":
-            _fullCode = value;
-            break;
          case "code":
             _code = value;
             break;
@@ -764,6 +761,9 @@ public class FDataResourceModelAnimationUnit
             break;
          case "frame_span":
             _frameSpan = RInteger.parse(value);
+            break;
+         case "content":
+            _content = value;
             break;
          case "note":
             _note = value;
@@ -829,10 +829,6 @@ public class FDataResourceModelAnimationUnit
                __skeletonId = RLong.parse(value);
                _skeletonId = __skeletonId;
                break;
-            case "full_code":
-               __fullCode = value;
-               _fullCode = __fullCode;
-               break;
             case "code":
                __code = value;
                _code = __code;
@@ -852,6 +848,10 @@ public class FDataResourceModelAnimationUnit
             case "frame_span":
                __frameSpan = RInteger.parse(value);
                _frameSpan = __frameSpan;
+               break;
+            case "content":
+               __content = value;
+               _content = __content;
                break;
             case "note":
                __note = value;
@@ -892,12 +892,12 @@ public class FDataResourceModelAnimationUnit
       row.set("projectId", _projectId);
       row.set("modelId", _modelId);
       row.set("skeletonId", _skeletonId);
-      row.set("fullCode", _fullCode);
       row.set("code", _code);
       row.set("label", _label);
       row.set("frameCount", _frameCount);
       row.set("frameTick", _frameTick);
       row.set("frameSpan", _frameSpan);
+      row.set("content", _content);
       row.set("note", _note);
       row.set("createUserId", _createUserId);
       row.set("createDate", _createDate);
@@ -920,12 +920,12 @@ public class FDataResourceModelAnimationUnit
       map.put("projectId", RLong.toString(_projectId));
       map.put("modelId", RLong.toString(_modelId));
       map.put("skeletonId", RLong.toString(_skeletonId));
-      map.put("fullCode", _fullCode);
       map.put("code", _code);
       map.put("label", _label);
       map.put("frameCount", RInteger.toString(_frameCount));
       map.put("frameTick", RInteger.toString(_frameTick));
       map.put("frameSpan", RInteger.toString(_frameSpan));
+      map.put("content", _content);
       map.put("note", _note);
       map.put("createUserId", RLong.toString(_createUserId));
       map.put("createDate", _createDate.format("YYYY-MM-DD HH24:MI:SS"));
@@ -948,12 +948,12 @@ public class FDataResourceModelAnimationUnit
       _projectId = input.readInt64();
       _modelId = input.readInt64();
       _skeletonId = input.readInt64();
-      _fullCode = input.readString();
       _code = input.readString();
       _label = input.readString();
       _frameCount = input.readInt32();
       _frameTick = input.readInt32();
       _frameSpan = input.readInt32();
+      _content = input.readString();
       _note = input.readString();
       _createUserId = input.readInt64();
       _createDate.set(input.readInt64());
@@ -976,12 +976,12 @@ public class FDataResourceModelAnimationUnit
       output.writeInt64(_projectId);
       output.writeInt64(_modelId);
       output.writeInt64(_skeletonId);
-      output.writeString(_fullCode);
       output.writeString(_code);
       output.writeString(_label);
       output.writeInt32(_frameCount);
       output.writeInt32(_frameTick);
       output.writeInt32(_frameSpan);
+      output.writeString(_content);
       output.writeString(_note);
       output.writeInt64(_createUserId);
       output.writeInt64(_createDate.get());
@@ -1006,12 +1006,12 @@ public class FDataResourceModelAnimationUnit
       unit.setProjectId(_projectId);
       unit.setModelId(_modelId);
       unit.setSkeletonId(_skeletonId);
-      unit.setFullCode(_fullCode);
       unit.setCode(_code);
       unit.setLabel(_label);
       unit.setFrameCount(_frameCount);
       unit.setFrameTick(_frameTick);
       unit.setFrameSpan(_frameSpan);
+      unit.setContent(_content);
       unit.setNote(_note);
       unit.setCreateUserId(_createUserId);
       unit.createDate().assign(_createDate);

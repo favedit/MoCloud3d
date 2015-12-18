@@ -1,11 +1,10 @@
 package org.mo.content.engine.core.model.skeleton;
 
-import org.mo.content.access.data.resource.model.mesh.FGcResModelMeshInfo;
-import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonInfo;
-import org.mo.content.access.data.resource.model.skeleton.FGcResModelSkeletonSkinInfo;
+import org.mo.com.lang.EResult;
+import org.mo.content.access.data.resource.model.FGcResModelInfo;
 import org.mo.content.access.data.resource.model.skeleton.IGcResModelSkeletonConsole;
+import org.mo.content.core.web.IGcSession;
 import org.mo.content.resource.common.FResSkeleton;
-import org.mo.content.resource.common.FResSkeletonSkin;
 import org.mo.data.logic.ILogicContext;
 
 //============================================================
@@ -16,6 +15,18 @@ public interface IResModelSkeletonConsole
          IGcResModelSkeletonConsole
 {
    //============================================================
+   // <T>构建骨骼对象。</T>
+   //
+   // @param logicContext 逻辑环境
+   // @param modelId 模块编号
+   // @param skeletonId 骨骼编号
+   // @return 骨骼对象
+   //============================================================
+   FResSkeleton makeSkeleton(ILogicContext logicContext,
+                             long modelId,
+                             long skeletonId);
+
+   //============================================================
    // <T>新建一个蒙皮。</T>
    //
    // @param logicContext 逻辑环境
@@ -23,19 +34,24 @@ public interface IResModelSkeletonConsole
    // @param skin 蒙皮
    // @return 蒙皮单元
    //============================================================
-   FGcResModelSkeletonSkinInfo insertSkin(ILogicContext logicContext,
-                                          FGcResModelMeshInfo meshInfo,
-                                          FGcResModelSkeletonInfo skeletonInfo,
-                                          FResSkeletonSkin skin);
+   //   FGcResModelSkeletonSkinInfo insertSkin(ILogicContext logicContext,
+   //                                          IGcSession session,
+   //                                          FGcResModelInfo modelInfo,
+   //                                          FGcResModelMeshInfo meshInfo,
+   //                                          FGcResModelSkeletonInfo skeletonInfo,
+   //                                          FResSkeletonSkin skin);
 
    //============================================================
-   // <T>构建蒙皮处理。</T>
+   // <T>导入骨骼。</T>
    //
    // @param logicContext 逻辑环境
-   // @param guid 唯一编号
-   // @return 蒙皮
+   // @param session 会话信息
+   // @param modelInfo 模块信息
+   // @param skeleton 骨骼信息
+   // @return 处理结果
    //============================================================
-   FResSkeleton makeSkeleton(ILogicContext logicContext,
-                             long modelId,
-                             long skeletonId);
+   EResult importSkeleton(ILogicContext logicContext,
+                          IGcSession session,
+                          FGcResModelInfo modelInfo,
+                          FResSkeleton skeleton);
 }
