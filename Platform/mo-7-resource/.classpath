@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/resource-core"/>
+	<classpathentry kind="src" path="src/resource-service"/>
+	<classpathentry kind="src" path="src/resource-face"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-1-common"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-lib-lzma"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-2-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-3-logic"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-4-web"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-5-cloud"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-6-content"/>
+	<classpathentry kind="lib" path="lib/servlet-api.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

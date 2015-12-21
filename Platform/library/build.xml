@@ -14,7 +14,8 @@
       <jar destfile="mo-web.jar"         basedir="${solution.dir}/mo-4-web/bin"/>
       <jar destfile="mo-cloud.jar"       basedir="${solution.dir}/mo-5-cloud/bin"/>
       <jar destfile="mo-content.jar"     basedir="${solution.dir}/mo-6-content/bin"/>
-      <jar destfile="mo-utility.jar"     basedir="${solution.dir}/mo-7-utility/bin"/>
+      <jar destfile="mo-resource.jar"    basedir="${solution.dir}/mo-7-resource/bin"/>
+      <jar destfile="mo-utility.jar"     basedir="${solution.dir}/mo-8-utility/bin"/>
       <jar destfile="mo-lib-lzma.jar"    basedir="${solution.dir}/mo-lib-lzma/bin"/>
    </target> 
 </project>

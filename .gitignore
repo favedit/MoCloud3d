@@ -7,9 +7,8 @@
 /Platform/mo-4-web/bin
 /Platform/mo-5-cloud/bin
 /Platform/mo-6-content/bin
-/Platform/mo-6-eai-content/bin
-/Platform/mo-6-zmf-content/bin
-/Platform/mo-7-utility/bin
+/Platform/mo-7-resource/bin
+/Platform/mo-8-utility/bin
 /Platform/mo-lib-lzma/bin
 /Platform/mp-cloud.develop/webroot/WEB-INF/classes
 /Platform/mp-cloud.develop/webroot/WEB-INF/lib

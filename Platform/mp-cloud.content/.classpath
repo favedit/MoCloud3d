@@ -29,5 +29,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/mo-lib-lzma"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.13.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-simple-1.7.13.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/mo-7-resource"/>
 	<classpathentry kind="output" path="webroot/WEB-INF/classes"/>
 </classpath>

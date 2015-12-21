@@ -2,6 +2,7 @@ package org.mo.content.service.resource;
 
 import org.mo.cloud.data.data.FDataResourceResourceLogic;
 import org.mo.cloud.define.enums.core.EGcResource;
+import org.mo.cloud.define.enums.core.EGcResourceShare;
 import org.mo.cloud.logic.data.system.FGcSessionInfo;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
