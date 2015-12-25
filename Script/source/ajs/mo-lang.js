@@ -683,6 +683,7 @@ MO.TObjects = function TObjects(){
    o.get        = MO.TObjects_get;
    o.setAt      = MO.TObjects_setAt;
    o.set        = MO.TObjects_set;
+   o.search     = MO.TObjects_search;
    o.assign     = MO.TObjects_assign;
    o.append     = MO.TObjects_append;
    o.insert     = MO.TObjects_insert;
@@ -748,6 +749,19 @@ MO.TObjects_set = function TObjects_set(index, value){
    if((index >= 0) && (index < o._count)){
       items[index] = value;
    }
+}
+MO.TObjects_search = function TObjects_search(name, value){
+   var o = this;
+   var items = o._items;
+   var count = o._count;
+   for(var i = 0; i < count; i++){
+      var item = items[i];
+      var find = item[name];
+      if(find == value){
+         return item;
+      }
+   }
+   return null;
 }
 MO.TObjects_assign = function TObjects_assign(values){
    var o = this;
@@ -3500,6 +3514,12 @@ MO.RMethod.prototype.emptyFalse = function RMethod_emptyFalse(){
    return false;
 }
 MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
+}
+MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
+   var o = this;
+   for(var name in o){
+      o[name] = null;
+   }
 }
 MO.RMethod.prototype.virtual = function RMethod_virtual(value, name){
    var o = this;

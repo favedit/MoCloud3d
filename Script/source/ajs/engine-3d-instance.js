@@ -448,6 +448,7 @@ MO.FE3dModel = function FE3dModel(o){
    o.testReady      = MO.FE3dModel_testReady;
    o.loadRenderable = MO.FE3dModel_loadRenderable;
    o.processLoad    = MO.FE3dModel_processLoad;
+   o.dispose        = MO.FE3dModel_dispose;
    return o;
 }
 MO.FE3dModel_construct = function FE3dModel_construct(){
@@ -480,8 +481,16 @@ MO.FE3dModel_processLoad = function FE3dModel_processLoad(){
       return false;
    }
    o.loadRenderable(renderable);
-   o.processLoadListener(o);
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.source = o;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
    return true;
+}
+MO.FE3dModel_dispose = function FE3dModel_dispose(){
+   var o = this;
+   o._display = MO.Lang.Object.dispose(o._display);
+   o.__base.FE3dSpace.dispose.call(o);
 }
 MO.FE3dModelConsole = function FE3dModelConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
@@ -521,22 +530,28 @@ MO.FE3dModelConsole_construct = function FE3dModelConsole_construct(){
 MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context, guid){
    var o = this;
    var model = o._pools.alloc(guid);
-   if(model){
-      return model;
+   if(!model){
+      var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
+      MO.Assert.debugNotNull(renderable);
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(guid);
+      model.setRenderable(renderable);
+      o._looper.push(model);
    }
-   var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
-   var model = MO.Class.create(MO.FE3dModel);
-   model.linkGraphicContext(context);
-   model.setPoolCode(guid);
-   model.setRenderable(renderable);
-   o._looper.push(model);
    return model;
 }
 MO.FE3dModelConsole_allocByCode = function FE3dModelConsole_allocByCode(context, code){
    var o = this;
    var model = o._pools.alloc(code);
-   if(model){
-      return model;
+   if(!model){
+      var renderable = MO.Console.find(MO.FE3rModelConsole).loadByCode(context, code);
+      MO.Assert.debugNotNull(renderable);
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(code);
+      model.setRenderable(renderable);
+      o._looper.push(model);
    }
    return model;
 }

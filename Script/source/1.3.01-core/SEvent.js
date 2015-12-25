@@ -27,18 +27,7 @@ MO.SEvent = function SEvent(sender){
    // @method
    o.process    = null;
    // @method
-   o.dispose    = MO.SEvent_dispose;
+   o.free       = MO.Method.disposeStruct;
+   o.dispose    = MO.Method.disposeStruct;
    return o;
-}
-
-//==========================================================
-// <T>释放处理。</T>
-//
-// @method
-//==========================================================
-MO.SEvent_dispose = function SEvent_dispose(){
-   var o = this;
-   for(var name in o){
-      o[name] = null;
-   }
 }

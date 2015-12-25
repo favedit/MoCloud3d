@@ -68,6 +68,14 @@ MO.SE3sCompressEvent = function SE3sCompressEvent(w, f, d){
    o.data    = d;
    return o;
 }
+MO.SE3sLoadArgs = function SE3sLoadArgs(){
+   var o = this;
+   o.guid    = null;
+   o.code    = null;
+   o.free    = MO.Method.disposeStruct;
+   o.dispose = MO.Method.disposeStruct;
+   return o;
+}
 MO.SE3sMaterialInfo = function SE3sMaterialInfo(){
    var o = this;
    MO.SG3dMaterialInfo.call(o);
@@ -1066,6 +1074,8 @@ MO.FE3sModelConsole = function FE3sModelConsole(o){
    o.unserialSkeleton  = MO.FE3sModelConsole_unserialSkeleton;
    o.unserialAnimation = MO.FE3sModelConsole_unserialAnimation;
    o.load              = MO.FE3sModelConsole_load;
+   o.loadByGuid        = MO.FE3sModelConsole_loadByGuid;
+   o.loadByCode        = MO.FE3sModelConsole_loadByCode;
    o.dispose           = MO.FE3sModelConsole_dispose;
    return o;
 }
@@ -1076,68 +1086,91 @@ MO.FE3sModelConsole_construct = function FE3sModelConsole_construct(){
    o._meshs = new MO.TDictionary();
    o._skeletons = new MO.TDictionary();
    o._animations = new MO.TDictionary();
-   var rc = MO.Console.find(MO.FResourceConsole);
-   var rp = MO.Class.create(MO.FResourcePipeline);
-   var rt = MO.Class.create(MO.FResourceType);
-   rt.setCode('resource3d.model');
-   rt._pipeline = rp;
-   rc.registerType(rt);
 }
-MO.FE3sModelConsole_findModel = function FE3sModelConsole_findModel(p){
-   return this._models.get(p);
+MO.FE3sModelConsole_findModel = function FE3sModelConsole_findModel(guid){
+   return this._models.get(guid);
 }
-MO.FE3sModelConsole_findMesh = function FE3sModelConsole_findMesh(p){
-   return this._meshs.get(p);
+MO.FE3sModelConsole_findMesh = function FE3sModelConsole_findMesh(guid){
+   return this._meshs.get(guid);
 }
-MO.FE3sModelConsole_findSkeleton = function FE3sModelConsole_findSkeleton(p){
-   return this._skeletons.get(p);
+MO.FE3sModelConsole_findSkeleton = function FE3sModelConsole_findSkeleton(guid){
+   return this._skeletons.get(guid);
 }
-MO.FE3sModelConsole_findAnimation = function FE3sModelConsole_findAnimation(p){
-   return this._animations.get(p);
+MO.FE3sModelConsole_findAnimation = function FE3sModelConsole_findAnimation(guid){
+   return this._animations.get(guid);
 }
-MO.FE3sModelConsole_unserialMesh = function FE3sModelConsole_unserialMesh(p){
+MO.FE3sModelConsole_unserialMesh = function FE3sModelConsole_unserialMesh(input){
    var o = this;
-   var r = MO.Class.create(MO.FE3sModelMesh);
-   r.unserialize(p);
-   o._meshs.set(r.guid(), r);
-   return r;
+   var mesh = MO.Class.create(MO.FE3sModelMesh);
+   mesh.unserialize(input);
+   o._meshs.set(mesh.guid(), mesh);
+   return mesh;
 }
-MO.FE3sModelConsole_unserialSkeleton = function FE3sModelConsole_unserialSkeleton(p){
+MO.FE3sModelConsole_unserialSkeleton = function FE3sModelConsole_unserialSkeleton(input){
    var o = this;
-   var r = MO.Class.create(MO.FE3sSkeleton);
-   r.unserialize(p);
-   o._skeletons.set(r.guid(), r);
-   return r;
+   var skeleton = MO.Class.create(MO.FE3sSkeleton);
+   skeleton.unserialize(input);
+   o._skeletons.set(skeleton.guid(), skeleton);
+   return skeleton;
 }
-MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimation(m, p){
+MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimation(model, input){
    var o = this;
-   var r = MO.Class.create(MO.FE3sAnimation);
-   r._model = m;
-   r.unserialize(p);
-   o._animations.set(r.guid(), r);
-   return r;
+   var animation = MO.Class.create(MO.FE3sAnimation);
+   animation._model = model;
+   animation.unserialize(input);
+   o._animations.set(animation.guid(), animation);
+   return animation;
 }
-MO.FE3sModelConsole_load = function FE3sModelConsole_load(guid){
+MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
    var o = this;
    var models = o._models;
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Model);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(args.code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
    var model = models.get(guid);
    if(model){
       return model;
    }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find('model');
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
    model = MO.Class.create(MO.FE3sModel);
-   model.setGuid(guid);
+   model.setGuid(identity);
    model.setVendor(vendor);
    model.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(model);
-   models.set(guid, model);
+   models.set(identity, model);
+   return model;
+}
+MO.FE3sModelConsole_loadByGuid = function FE3sModelConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var model = o.load(args);
+   MO.Memory.free(args);
+   return model;
+}
+MO.FE3sModelConsole_loadByCode = function FE3sModelConsole_loadByCode(code){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var model = o.load(args);
+   MO.Memory.free(args);
    return model;
 }
 MO.FE3sModelConsole_dispose = function FE3sModelConsole_dispose(){
    var o = this;
-   o._materials = MO.Lang.Object.free(o._materials);
+   o._models = MO.Lang.Object.free(o._models);
+   o._meshs = MO.Lang.Object.free(o._meshs);
+   o._skeletons = MO.Lang.Object.free(o._skeletons);
+   o._animations = MO.Lang.Object.free(o._animations);
    o.__base.FConsole.dispose.call(o);
 }
 MO.FE3sModelDisplay = function FE3sModelDisplay(o){
@@ -2499,24 +2532,24 @@ MO.FE3sVendor_construct = function FE3sVendor_construct(){
    o.__base.FObject.construct.call(o);
    o._parameters = new MO.TAttributes();
 }
-MO.FE3sVendor_get = function FE3sVendor_get(n){
-   return this._parameters.get(n);
+MO.FE3sVendor_get = function FE3sVendor_get(name){
+   return this._parameters.get(name);
 }
-MO.FE3sVendor_set = function FE3sVendor_set(n, v){
-   this._parameters.set(n, v);
+MO.FE3sVendor_set = function FE3sVendor_set(name, value){
+   this._parameters.set(name, value);
 }
 MO.FE3sVendor_makeUrl = function FE3sVendor_makeUrl(){
    var o = this;
-   var r = o.makeSource();
+   var url = o.makeSource();
    if(MO.Runtime.isDebug()){
-      if(r.indexOf('?') == -1){
-         r += '?';
+      if(url.indexOf('?') == -1){
+         url += '?';
       }else{
-         r += '&';
+         url += '&';
       }
-      r += 'date=' + MO.Lang.Date.format();
+      url += 'version=' + MO.Runtime.version();
    }
-   return r;
+   return url;
 }
 MO.FE3sVendor_reset = function FE3sVendor_reset(){
    this._parameters.clear();

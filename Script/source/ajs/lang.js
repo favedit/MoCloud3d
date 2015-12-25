@@ -1982,6 +1982,12 @@ MO.RMethod.prototype.emptyFalse = function RMethod_emptyFalse(){
 }
 MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
 }
+MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
+   var o = this;
+   for(var name in o){
+      o[name] = null;
+   }
+}
 MO.RMethod.prototype.virtual = function RMethod_virtual(value, name){
    var o = this;
    var method = null;

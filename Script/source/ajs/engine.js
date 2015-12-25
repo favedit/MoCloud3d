@@ -6,6 +6,14 @@ MO.EDisplayTransform = new function EDisplayTransform(){
    o.BilboardedCylinder = 'bilboarded.cylinder';
    return o;
 }
+MO.EEngineConstant = new function EEngineConstant(){
+   var o = this;
+   o.Country      = "china";
+   o.Language     = "cn";
+   o.Resource     = "resource";
+   o.Service      = "service";
+   return o;
+}
 MO.EResourceCompress = new function EResourceCompress(){
    var o = this;
    o.None    = 'none';

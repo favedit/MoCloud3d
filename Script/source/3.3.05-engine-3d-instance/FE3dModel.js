@@ -19,6 +19,8 @@ MO.FE3dModel = function FE3dModel(o){
    o.testReady      = MO.FE3dModel_testReady;
    o.loadRenderable = MO.FE3dModel_loadRenderable;
    o.processLoad    = MO.FE3dModel_processLoad;
+   // @method
+   o.dispose        = MO.FE3dModel_dispose;
    return o;
 }
 
@@ -74,15 +76,33 @@ MO.FE3dModel_loadRenderable = function FE3dModel_loadRenderable(renderable){
 //==========================================================
 MO.FE3dModel_processLoad = function FE3dModel_processLoad(){
    var o = this;
+   // 检测数据状态
    if(o._dataReady){
       return true;
    }
+   // 检测渲染对象状态
    var renderable = o._renderable;
    if(!renderable.testReady()){
       return false;
    }
    o.loadRenderable(renderable);
    // 加载完成
-   o.processLoadListener(o);
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.source = o;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
    return true;
+}
+
+//==========================================================
+// <T>构造处理。</T>
+//
+// @method
+//==========================================================
+MO.FE3dModel_dispose = function FE3dModel_dispose(){
+   var o = this;
+   // 释放属性
+   o._display = MO.Lang.Object.dispose(o._display);
+   // 父处理
+   o.__base.FE3dSpace.dispose.call(o);
 }

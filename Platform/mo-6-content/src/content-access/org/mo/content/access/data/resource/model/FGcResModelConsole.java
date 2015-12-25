@@ -108,11 +108,14 @@ public class FGcResModelConsole
                                      long projectId,
                                      String code){
       // 生成条件
-      FSql whereSql = new FSql("(" + FDataResourceModelLogic.USER_ID + "=" + userId + ")");
-      if(projectId > 0){
-         whereSql.append(" AND (" + FDataResourceModelLogic.PROJECT_ID + "=" + projectId + ")");
+      FSql whereSql = new FSql();
+      if(userId > 0){
+         whereSql.append("(" + FDataResourceModelLogic.USER_ID + "=" + userId + ")");
       }
-      whereSql.append(" AND (" + FDataResourceModelLogic.CODE + "='" + code + "')");
+      if(projectId > 0){
+         whereSql.appendCondition(!whereSql.isEmpty(), " AND ", FDataResourceModelLogic.PROJECT_ID + "='" + projectId + "'");
+      }
+      whereSql.appendCondition(!whereSql.isEmpty(), " AND ", FDataResourceModelLogic.CODE + "='" + code + "'");
       // 查询信息
       FGcResModelInfo modelInfo = search(logicContext, whereSql);
       return modelInfo;

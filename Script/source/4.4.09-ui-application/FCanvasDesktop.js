@@ -11,7 +11,9 @@ MO.FCanvasDesktop = function FCanvasDesktop(o){
    // @attribute
    o._orientationCd         = null;
    o._visible               = MO.Class.register(o, new MO.AGetter('_visible'), true);
+   o._canvas2dClass         = MO.Class.register(o, new MO.AGetSet('_canvas2dClass'), MO.FGuiCanvas);
    o._canvas2d              = MO.Class.register(o, new MO.AGetter('_canvas2d'));
+   o._canvas3dClass         = MO.Class.register(o, new MO.AGetSet('_canvas3dClass'), MO.FCanvas3d);
    o._canvas3d              = MO.Class.register(o, new MO.AGetter('_canvas3d'));
    //..........................................................
    // @event
@@ -81,13 +83,13 @@ MO.FCanvasDesktop_build = function FCanvasDesktop_build(hPanel){
    var o = this;
    o.__base.FDesktop.build.call(o, hPanel);
    // 创建3D画板
-   var canvas3d = o._canvas3d = MO.Class.create(MO.FCanvas3d);
+   var canvas3d = o._canvas3d = MO.Class.create(o._canvas3dClass);
    canvas3d.setDesktop(o);
    canvas3d.build(hPanel);
    canvas3d.setPanel(hPanel);
    o.canvasRegister(canvas3d);
    // 创建2D画板
-   var canvas2d = o._canvas2d = MO.Class.create(MO.FGuiCanvas);
+   var canvas2d = o._canvas2d = MO.Class.create(o._canvas2dClass);
    canvas2d.setDesktop(o);
    canvas2d.build(hPanel);
    canvas2d.setPanel(hPanel);

@@ -1,6 +1,7 @@
 package org.mo.com.lang.generic;
 
 import java.io.UnsupportedEncodingException;
+
 import org.mo.com.lang.FFatalError;
 import org.mo.com.lang.FString;
 import org.mo.com.lang.RChar;

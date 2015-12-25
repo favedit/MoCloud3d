@@ -41,42 +41,42 @@ MO.FE3sVendor_construct = function FE3sVendor_construct(){
 // <T>获得参数。</T>
 //
 // @method
-// @param p:name:String 名称
+// @param name:String 名称
+// @return String 内容
 //==========================================================
-MO.FE3sVendor_get = function FE3sVendor_get(n){
-   return this._parameters.get(n);
+MO.FE3sVendor_get = function FE3sVendor_get(name){
+   return this._parameters.get(name);
 }
 
 //==========================================================
 // <T>设置参数。</T>
 //
 // @method
-// @param n:name:String 名称
-// @param v:value:String 内容
+// @param name:String 名称
+// @param value:String 内容
 //==========================================================
-MO.FE3sVendor_set = function FE3sVendor_set(n, v){
-   this._parameters.set(n, v);
+MO.FE3sVendor_set = function FE3sVendor_set(name, value){
+   this._parameters.set(name, value);
 }
 
 //==========================================================
 // <T>生成网络地址。</T>
-// <P>调试模式，追加时间，总是获得新内容。</P>
 //
 // @method
-// @return 时间内容
+// @return 网络地址
 //==========================================================
 MO.FE3sVendor_makeUrl = function FE3sVendor_makeUrl(){
    var o = this;
-   var r = o.makeSource();
+   var url = o.makeSource();
    if(MO.Runtime.isDebug()){
-      if(r.indexOf('?') == -1){
-         r += '?';
+      if(url.indexOf('?') == -1){
+         url += '?';
       }else{
-         r += '&';
+         url += '&';
       }
-      r += 'date=' + MO.Lang.Date.format();
+      url += 'version=' + MO.Runtime.version();
    }
-   return r;
+   return url;
 }
 
 //==========================================================

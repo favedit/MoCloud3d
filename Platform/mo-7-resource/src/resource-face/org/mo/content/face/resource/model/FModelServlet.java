@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.mo.com.io.FByteFile;
 import org.mo.com.io.RFile;
 import org.mo.com.lang.FFatalError;
-import org.mo.com.lang.FObject;
 import org.mo.com.lang.RInteger;
 import org.mo.com.lang.RString;
 import org.mo.com.logging.ILogger;
@@ -22,6 +21,7 @@ import org.mo.content.core.resource.model.ICntModelConsole;
 import org.mo.content.core.resource.model.ICntModelMeshConsole;
 import org.mo.content.core.web.IGcSession;
 import org.mo.content.engine.core.model.IResModelMeshConsole;
+import org.mo.content.face.resource.common.FAbstractResourceServlet;
 import org.mo.content.mime.obj.FObjFile;
 import org.mo.content.mime.phy.FPlyFile;
 import org.mo.content.mime.stl.FStlFile;
@@ -35,7 +35,7 @@ import org.mo.web.protocol.context.IWebContext;
 // <T>上传处理。</T>
 //============================================================
 public class FModelServlet
-      extends FObject
+      extends FAbstractResourceServlet
       implements
          IModelServlet
 {
@@ -88,28 +88,29 @@ public class FModelServlet
                        IWebServletRequest request,
                        IWebServletResponse response){
       // 检查参数
+      String code = context.parameter("code");
       String guid = context.parameter("guid");
-      if(RString.isEmpty(guid)){
-         throw new FFatalError("Resource guid is empty.");
+      if(RString.isEmpty(guid) && RString.isEmpty(code)){
+         throw new FFatalError("Resource identity is empty. (guid={1}, code={2})", guid, code);
+      }
+      //............................................................
+      // 获得唯一编号
+      if(!RString.isEmpty(code)){
+         FGcResModelInfo modelInfo = _modelConsole.findByCode(logicContext, 0, 0, code);
+         if(modelInfo == null){
+            throw new FFatalError("Model is not exists. (code={1})", code);
+         }
+         guid = modelInfo.guid();
       }
       //............................................................
       // 生成数据
       byte[] data = _modelConsole.makeModelData(logicContext, guid);
       if(data == null){
-         throw new FFatalError("process", "Model is not exists. (guid={1})", guid);
+         throw new FFatalError("Make model is not exists. (guid={1})", guid);
       }
-      int dataLength = data.length;
       //............................................................
       // 发送数据
-      _logger.debug(this, "process", "Send model data. (length={1})", dataLength);
-      response.setCharacterEncoding("utf-8");
-      response.setStatus(HttpServletResponse.SC_OK);
-      response.setHeader("Cache-Control", "max-age=" + CacheTimeout);
-      response.addHeader("Last-Modified", System.currentTimeMillis());
-      response.addHeader("Expires", System.currentTimeMillis() + CacheTimeout * 1000);
-      response.setContentType(EMime.Bin.mime());
-      response.setContentLength(dataLength);
-      response.write(data, 0, dataLength);
+      sendBinaryData(response, data);
    }
 
    //============================================================

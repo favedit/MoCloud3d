@@ -25,10 +25,14 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    // @method
    o.construct      = MO.FE3rModelConsole_construct;
    // @method
+   o.registerModel  = MO.FE3rModelConsole_registerModel;
+   o.registerMesh   = MO.FE3rModelConsole_registerMesh;
+   // @method
    o.findModel      = MO.FE3rModelConsole_findModel;
    o.findMesh       = MO.FE3rModelConsole_findMesh;
    // @method
    o.load           = MO.FE3rModelConsole_load;
+   o.loadByCode     = MO.FE3rModelConsole_loadByCode;
    o.loadMeshByGuid = MO.FE3rModelConsole_loadMeshByGuid;
    o.loadMeshByCode = MO.FE3rModelConsole_loadMeshByCode;
    o.merge          = MO.FE3rModelConsole_merge;
@@ -42,12 +46,12 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
 //==========================================================
 MO.FE3rModelConsole_onProcess = function FE3rModelConsole_onProcess(){
    var o = this;
-   var s = o._loadModels;
-   s.record();
-   while(s.next()){
-      var m = s.current();
-      if(m.processLoad()){
-         s.removeCurrent();
+   var models = o._loadModels;
+   models.record();
+   while(models.next()){
+      var model = models.current();
+      if(model.processLoad()){
+         models.removeCurrent();
       }
    }
 }
@@ -70,6 +74,28 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    thread.setInterval(o._interval);
    thread.addProcessListener(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+}
+
+//==========================================================
+// <T>注册一个模型。</T>
+//
+// @method
+// @param code:String 代码
+// @param model:FE3rModel 模型
+//==========================================================
+MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
+   this._models.set(code, model);
+}
+
+//==========================================================
+// <T>注册一个网格。</T>
+//
+// @method
+// @param code:String 代码
+// @param mesh:FE3rMesh 模型
+//==========================================================
+MO.FE3rModelConsole_registerMesh = function FE3rModelConsole_registerMesh(code, mesh){
+   this._meshs.get(code, mesh);
 }
 
 //==========================================================
@@ -133,9 +159,43 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
 // <T>加载一个渲染模型。</T>
 //
 // @method
-// @param pc:content:FG3dContext 环境
-// @param pg:guid:String 唯一编号
-// @return FRenderModel 渲染模型
+// @param content:FG3dContext 环境
+// @param code:String 代码
+// @return FE3rModel 渲染模型
+//==========================================================
+MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){
+   var o = this;
+   // 检查参数
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotEmpty(code);
+   // 查找模型
+   var model = o._models.get(code);
+   if(!model){
+      // 获得路径
+      var resource = MO.Console.find(MO.FE3sModelConsole).loadByCode(code);
+      // 加载模型
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(code);
+      model.setResource(resource);
+      o._models.set(code, model);
+      // 测试是否已加载
+      if(resource.testReady()){
+         model.loadResource(resource);
+      }else{
+         o._loadModels.push(model);
+      }
+   }
+   return model;
+}
+
+//==========================================================
+// <T>加载一个渲染模型。</T>
+//
+// @method
+// @param content:FG3dContext 环境
+// @param guid:String 唯一编号
+// @return FE3rModel 渲染模型
 //==========================================================
 MO.FE3rModelConsole_loadMeshByGuid = function FE3rModelConsole_loadMeshByGuid(context, pg){
    var o = this;

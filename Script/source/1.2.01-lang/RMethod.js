@@ -137,6 +137,18 @@ MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
 }
 
 //==========================================================
+// <T>释放结构。</T>
+//
+// @method
+//==========================================================
+MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
+   var o = this;
+   for(var name in o){
+      o[name] = null;
+   }
+}
+
+//==========================================================
 // <T>创建一个虚函数。</T>
 //
 // @method

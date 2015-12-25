@@ -16,9 +16,9 @@ MO.FE3rModel = function FE3rModel(o){
    o._dataReady           = false;
    //..........................................................
    // @method
-   o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
-   // @method
    o.testReady            = MO.FE3rModel_testReady;
+   // @method
+   o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    // @method
    o.loadResource         = MO.FE3rModel_loadResource;
    o.loadSkeletonResource = MO.FE3rModel_loadSkeletonResource;
@@ -29,30 +29,23 @@ MO.FE3rModel = function FE3rModel(o){
 }
 
 //==========================================================
-// <T>根据唯一编号查找网格。</T>
-//
-// @param p:name:String 名称
-//==========================================================
-MO.FE3rModel_findMeshByGuid = function FE3rModel_findMeshByGuid(p){
-   var o = this;
-   var s = o._meshes;
-   var c = s.count();
-   for(var i = 0; i < c; i++){
-      var m = s.get(i);
-      if(m._guid == p){
-         return m;
-      }
-   }
-   return null;
-}
-
-//==========================================================
 // <T>测试是否准备好。</T>
 //
 // @return 是否准备好
 //==========================================================
 MO.FE3rModel_testReady = function FE3rModel_testReady(){
    return this._dataReady;
+}
+
+//==========================================================
+// <T>根据唯一编号查找网格。</T>
+//
+// @param p:name:String 名称
+//==========================================================
+MO.FE3rModel_findMeshByGuid = function FE3rModel_findMeshByGuid(guid){
+   var o = this;
+   var mesh = o._meshes.search('_guid', guid);
+   return null;
 }
 
 //==========================================================
@@ -103,7 +96,7 @@ MO.FE3rModel_loadResource = function FE3rModel_loadResource(resource){
          mesh.linkGraphicContext(o);
          mesh.loadResource(meshResource);
          meshes.push(mesh);
-         modelConsole.meshs().set(mesh.guid(), mesh);
+         modelConsole.registerMesh(mesh.guid(), mesh);
       }
    }
    // 读取骨骼集合

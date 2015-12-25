@@ -1,9 +1,10 @@
 <HTML>
 <HEAD>
-<TITLE>Sample - Model</TITLE>
+<TITLE>Stage3d Example</TITLE>
 <META http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <LINK rel="stylesheet" href='../../acs/lang_cn.css' type="text/css" media="all"/>
-<SCRIPT language='javascript' src='../../ajs/mp.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/me.js'></SCRIPT>
+<SCRIPT language='javascript' src='../../ajs/context_cn.js'></SCRIPT>
 </HEAD>
 
 <SCRIPT>
@@ -80,22 +81,24 @@ function onThemeLoad(){
 }
 //----------------------------------------------------------
 function _load(){
-   var code = 'pvw.show.item.001';
-   // 设置变量
    MO.initialize();
-   MO.Runtime.setVersion('151223');
-   MO.Runtime.setProcessCd(MO.EProcess.Debug);
-   // 设置环境
-   MO.Console.find(MO.FE3sVendorConsole).setup('net');
-   MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEngineConstant.Resource, '/script/ars');
-   // 设置应用
-   var application = MO.Desktop.initialize(MO.FE3dModelApplication);
-   application.setup(document.body);
-   application.loadByCode(code);
+   MO.Runtime.processCd = MO.EProcess.Debug;
+   MO.RBrowser.construct();
+   MO.RBrowser.setContentPath('../..');
+
+   models = new MO.TObjects();
+
+   var tc = MO.Console.find(MO.FE3sThemeConsole);
+   var m = tc.select('color');
+   m.loadListener().register(m, onThemeLoad);
 }
 </SCRIPT>
 
 <BODY scroll='auto' onload='_load()'>
+<CANVAS id="_canvas" width="100" height="100">您的浏览器不支持HTML5</CANVAS>
+<DIV id='_info'></DIV><br>
+<DIV id='_dump'></DIV><br>
+<DIV id='_msg'></DIV><br>
 </BODY>
 
 </HTML>

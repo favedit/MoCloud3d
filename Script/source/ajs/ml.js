@@ -836,6 +836,7 @@ MO.TObjects = function TObjects(){
    o.get        = MO.TObjects_get;
    o.setAt      = MO.TObjects_setAt;
    o.set        = MO.TObjects_set;
+   o.search     = MO.TObjects_search;
    o.assign     = MO.TObjects_assign;
    o.append     = MO.TObjects_append;
    o.insert     = MO.TObjects_insert;
@@ -901,6 +902,19 @@ MO.TObjects_set = function TObjects_set(index, value){
    if((index >= 0) && (index < o._count)){
       items[index] = value;
    }
+}
+MO.TObjects_search = function TObjects_search(name, value){
+   var o = this;
+   var items = o._items;
+   var count = o._count;
+   for(var i = 0; i < count; i++){
+      var item = items[i];
+      var find = item[name];
+      if(find == value){
+         return item;
+      }
+   }
+   return null;
 }
 MO.TObjects_assign = function TObjects_assign(values){
    var o = this;
@@ -3653,6 +3667,12 @@ MO.RMethod.prototype.emptyFalse = function RMethod_emptyFalse(){
    return false;
 }
 MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
+}
+MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
+   var o = this;
+   for(var name in o){
+      o[name] = null;
+   }
 }
 MO.RMethod.prototype.virtual = function RMethod_virtual(value, name){
    var o = this;
@@ -10216,14 +10236,9 @@ MO.SEvent = function SEvent(sender){
    o.ohProcess  = null;
    o.onProcess  = null;
    o.process    = null;
-   o.dispose    = MO.SEvent_dispose;
+   o.free       = MO.Method.disposeStruct;
+   o.dispose    = MO.Method.disposeStruct;
    return o;
-}
-MO.SEvent_dispose = function SEvent_dispose(){
-   var o = this;
-   for(var name in o){
-      o[name] = null;
-   }
 }
 MO.SKeyboardEvent = function SKeyboardEvent(){
    var o = this;
@@ -13776,6 +13791,19 @@ MO.EThreadStatus = new function EThreadStatus(){
    o.Finish = 2;
    return o;
 }
+MO.MProgress = function MProgress(o){
+   o = MO.Class.inherits(this, o);
+   o.construct       = MO.MProgress_construct;
+   o.processProgress = MO.Method.emptyTrue;
+   o.dispose         = MO.MProgress_dispose;
+   return o;
+}
+MO.MProgress_construct = function MProgress_construct(){
+   var o = this;
+}
+MO.MProgress_dispose = function MProgress_dispose(){
+   var o = this;
+}
 MO.SProcessEvent = function SProcessEvent(){
    var o = this;
    o.index = null;
@@ -14639,6 +14667,45 @@ MO.FProcessServer_process = function FProcessServer_process(){
    var o = this;
    onmessage = o.ohMessage;
    FProcessServer.__linker = o;
+}
+MO.FProgressConsole = function FProgressConsole(o){
+   o = MO.Class.inherits(this, o, MO.FConsole);
+   o._scopeCd    = MO.EScope.Local;
+   o._looper     = null;
+   o._thread     = null;
+   o._interval   = 100;
+   o.onProcess   = MO.FProgressConsole_onProcess;
+   o.construct   = MO.FProgressConsole_construct;
+   o.push        = MO.FProgressConsole_push;
+   o.dispose     = MO.FProgressConsole_dispose;
+   return o;
+}
+MO.FProgressConsole_onProcess = function FProgressConsole_onProcess(){
+   var o = this;
+   var looper = o._looper;
+   looper.record();
+   while(looper.next()){
+      var item = looper.current();
+      if(item.processLoad()){
+         looper.removeCurrent();
+      }
+   }
+}
+MO.FProgressConsole_construct = function FProgressConsole_construct(){
+   var o = this;
+   o.__base.FConsole.construct.call(o);
+   o._looper = new MO.TLooper();
+   var thread = o._thread = MO.Class.create(MO.FThread);
+   thread.setInterval(o._interval);
+   thread.addProcessListener(o, o.onProcess);
+   MO.Console.find(MO.FThreadConsole).start(thread);
+}
+MO.FProgressConsole_push = function FProgressConsole_push(progress){
+   o._looper.push(progress);
+}
+MO.FProgressConsole_dispose = function FProgressConsole_dispose(){
+   var o = this;
+   o.__base.FConsole.dispose.call(o);
 }
 MO.FServiceConsole = function FServiceConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
@@ -18812,7 +18879,6 @@ MO.FG3dEffectConsole = function FG3dEffectConsole(o){
    o._registerEffects = null;
    o._templateEffects = null;
    o._effects         = null;
-   o._path            = MO.Class.register(o, MO.AGetter('_path'), "/ars/shader/");
    o._effectInfo      = null;
    o._tagContext      = null;
    o._thread          = null;
@@ -18984,7 +19050,7 @@ MO.FG3dEffectConsole_loadConfig = function FG3dEffectConsole_loadConfig(name){
    var o = this;
    var xconfig = o._configs.get(uri);
    if(!xconfig){
-      var uri = MO.Window.Browser.contentPath(o._path + name + ".xml");
+      var uri = "{resource}/shader/" + name + ".xml";
       var url = o._url = MO.Console.find(MO.FEnvironmentConsole).parseUrl(uri);
       xconfig = MO.Class.create(MO.FXmlConnection).send(url);
       o._configs.set(name, xconfig);

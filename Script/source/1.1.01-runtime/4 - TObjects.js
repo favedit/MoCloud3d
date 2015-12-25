@@ -25,6 +25,7 @@ MO.TObjects = function TObjects(){
    o.get        = MO.TObjects_get;
    o.setAt      = MO.TObjects_setAt;
    o.set        = MO.TObjects_set;
+   o.search     = MO.TObjects_search;
    // @method
    o.assign     = MO.TObjects_assign;
    o.append     = MO.TObjects_append;
@@ -175,6 +176,28 @@ MO.TObjects_set = function TObjects_set(index, value){
    if((index >= 0) && (index < o._count)){
       items[index] = value;
    }
+}
+
+//===========================================================
+// <T>搜索属性内容相等的对象。</T>
+//
+// @method
+// @param name:String 名称
+// @param value:String 内容
+// @return 对象
+//===========================================================
+MO.TObjects_search = function TObjects_search(name, value){
+   var o = this;
+   var items = o._items;
+   var count = o._count;
+   for(var i = 0; i < count; i++){
+      var item = items[i];
+      var find = item[name];
+      if(find == value){
+         return item;
+      }
+   }
+   return null;
 }
 
 //===========================================================

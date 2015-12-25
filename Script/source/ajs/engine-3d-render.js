@@ -1097,28 +1097,21 @@ MO.FE3rModel = function FE3rModel(o){
    o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
    o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
    o._dataReady           = false;
-   o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.testReady            = MO.FE3rModel_testReady;
+   o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.loadResource         = MO.FE3rModel_loadResource;
    o.loadSkeletonResource = MO.FE3rModel_loadSkeletonResource;
    o.processLoad          = MO.FE3rModel_processLoad;
    o.dispose              = MO.FE3rModel_dispose;
    return o;
 }
-MO.FE3rModel_findMeshByGuid = function FE3rModel_findMeshByGuid(p){
-   var o = this;
-   var s = o._meshes;
-   var c = s.count();
-   for(var i = 0; i < c; i++){
-      var m = s.get(i);
-      if(m._guid == p){
-         return m;
-      }
-   }
-   return null;
-}
 MO.FE3rModel_testReady = function FE3rModel_testReady(){
    return this._dataReady;
+}
+MO.FE3rModel_findMeshByGuid = function FE3rModel_findMeshByGuid(guid){
+   var o = this;
+   var mesh = o._meshes.search('_guid', guid);
+   return null;
 }
 MO.FE3rModel_loadSkeletonResource = function FE3rModel_loadSkeletonResource(resource){
    var o = this;
@@ -1150,7 +1143,7 @@ MO.FE3rModel_loadResource = function FE3rModel_loadResource(resource){
          mesh.linkGraphicContext(o);
          mesh.loadResource(meshResource);
          meshes.push(mesh);
-         modelConsole.meshs().set(mesh.guid(), mesh);
+         modelConsole.registerMesh(mesh.guid(), mesh);
       }
    }
    var skeletonResources = resource.skeletons();
@@ -1193,9 +1186,12 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    o._interval      = 200;
    o.onProcess      = MO.FE3rModelConsole_onProcess;
    o.construct      = MO.FE3rModelConsole_construct;
+   o.registerModel  = MO.FE3rModelConsole_registerModel;
+   o.registerMesh   = MO.FE3rModelConsole_registerMesh;
    o.findModel      = MO.FE3rModelConsole_findModel;
    o.findMesh       = MO.FE3rModelConsole_findMesh;
    o.load           = MO.FE3rModelConsole_load;
+   o.loadByCode     = MO.FE3rModelConsole_loadByCode;
    o.loadMeshByGuid = MO.FE3rModelConsole_loadMeshByGuid;
    o.loadMeshByCode = MO.FE3rModelConsole_loadMeshByCode;
    o.merge          = MO.FE3rModelConsole_merge;
@@ -1203,12 +1199,12 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
 }
 MO.FE3rModelConsole_onProcess = function FE3rModelConsole_onProcess(){
    var o = this;
-   var s = o._loadModels;
-   s.record();
-   while(s.next()){
-      var m = s.current();
-      if(m.processLoad()){
-         s.removeCurrent();
+   var models = o._loadModels;
+   models.record();
+   while(models.next()){
+      var model = models.current();
+      if(model.processLoad()){
+         models.removeCurrent();
       }
    }
 }
@@ -1223,6 +1219,12 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    thread.setInterval(o._interval);
    thread.addProcessListener(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+}
+MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
+   this._models.set(code, model);
+}
+MO.FE3rModelConsole_registerMesh = function FE3rModelConsole_registerMesh(code, mesh){
+   this._meshs.get(code, mesh);
 }
 MO.FE3rModelConsole_findModel = function FE3rModelConsole_findModel(guid){
    return this._models.get(guid);
@@ -1249,6 +1251,26 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
    model.setResource(resource);
    o._models.set(guid, model);
    o._loadModels.push(model);
+   return model;
+}
+MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){
+   var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotEmpty(code);
+   var model = o._models.get(code);
+   if(!model){
+      var resource = MO.Console.find(MO.FE3sModelConsole).loadByCode(code);
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(code);
+      model.setResource(resource);
+      o._models.set(code, model);
+      if(resource.testReady()){
+         model.loadResource(resource);
+      }else{
+         o._loadModels.push(model);
+      }
+   }
    return model;
 }
 MO.FE3rModelConsole_loadMeshByGuid = function FE3rModelConsole_loadMeshByGuid(context, pg){

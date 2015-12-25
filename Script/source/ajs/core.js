@@ -200,14 +200,9 @@ MO.SEvent = function SEvent(sender){
    o.ohProcess  = null;
    o.onProcess  = null;
    o.process    = null;
-   o.dispose    = MO.SEvent_dispose;
+   o.free       = MO.Method.disposeStruct;
+   o.dispose    = MO.Method.disposeStruct;
    return o;
-}
-MO.SEvent_dispose = function SEvent_dispose(){
-   var o = this;
-   for(var name in o){
-      o[name] = null;
-   }
 }
 MO.SKeyboardEvent = function SKeyboardEvent(){
    var o = this;

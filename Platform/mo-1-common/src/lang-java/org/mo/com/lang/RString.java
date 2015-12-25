@@ -36,17 +36,14 @@ public class RString
    // @return 是否为空
    //============================================================
    public final static boolean isEmpty(CharSequence value){
-      return (value == null) ? true : (0 == value.length());
-   }
-
-   //============================================================
-   // <T>判断字符串是否为空。</T>
-   //
-   // @param value 字符串
-   // @return 是否为空
-   //============================================================
-   public final static boolean isEmpty(String value){
-      return (value == null) ? true : (0 == value.length());
+      if(value == null){
+         return true;
+      }
+      int length = value.length();
+      if(length == 0){
+         return true;
+      }
+      return false;
    }
 
    //============================================================
@@ -66,43 +63,12 @@ public class RString
          return true;
       }
       // 检查集合
-      int n = -1;
-      while(++n < count){
-         CharSequence value = values[n];
+      for(CharSequence value : values){
          if(value == null){
             return true;
          }
-         if(value.length() == 0){
-            return true;
-         }
-      }
-      return false;
-   }
-
-   //============================================================
-   // <T>判断字符串集合是否含有空。</T>
-   //
-   // @param values 字符串集合
-   // @return 是否为空
-   //============================================================
-   public final static boolean isEmpty(String... values){
-      // 检查参数
-      if(values == null){
-         return true;
-      }
-      // 检查个数
-      int count = values.length;
-      if(count == 0){
-         return true;
-      }
-      // 检查集合
-      int n = -1;
-      while(++n < count){
-         CharSequence value = values[n];
-         if(value == null){
-            return true;
-         }
-         if(value.length() == 0){
+         int valueLength = value.length();
+         if(valueLength == 0){
             return true;
          }
       }
@@ -115,8 +81,15 @@ public class RString
    // @param value 字符串
    // @return 是否非空
    //============================================================
-   public final static boolean isNotEmpty(String value){
-      return (value == null) ? false : (0 != value.length());
+   public final static boolean isNotEmpty(CharSequence value){
+      if(value == null){
+         return false;
+      }
+      int length = value.length();
+      if(length == 0){
+         return false;
+      }
+      return true;
    }
 
    //============================================================
@@ -125,7 +98,7 @@ public class RString
    // @param values 字符串集合
    // @return 是否为空
    //============================================================
-   public final static boolean isNotEmpty(String... values){
+   public final static boolean isNotEmpty(CharSequence... values){
       // 检查参数
       if(values == null){
          return false;
@@ -136,13 +109,12 @@ public class RString
          return false;
       }
       // 检查集合
-      int n = -1;
-      while(++n < count){
-         String value = values[n];
-         if(null == value){
+      for(CharSequence value : values){
+         if(value == null){
             return false;
          }
-         if(value.length() == 0){
+         int valueLength = value.length();
+         if(valueLength == 0){
             return false;
          }
       }
@@ -157,7 +129,14 @@ public class RString
    // @return 是否为空
    //============================================================
    public final static boolean isBlank(String value){
-      return (null == value) ? true : (0 == value.trim().length());
+      if(value == null){
+         return true;
+      }
+      int length = value.trim().length();
+      if(length == 0){
+         return true;
+      }
+      return false;
    }
 
    //============================================================
@@ -189,7 +168,14 @@ public class RString
    // @return 是否为空
    //============================================================
    public final static boolean isNotBlank(String value){
-      return (null == value) ? false : (0 != value.trim().length());
+      if(value == null){
+         return false;
+      }
+      int length = value.trim().length();
+      if(length == 0){
+         return false;
+      }
+      return true;
    }
 
    //============================================================

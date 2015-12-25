@@ -6,6 +6,14 @@ MO.EDisplayTransform = new function EDisplayTransform(){
    o.BilboardedCylinder = 'bilboarded.cylinder';
    return o;
 }
+MO.EEngineConstant = new function EEngineConstant(){
+   var o = this;
+   o.Country      = "china";
+   o.Language     = "cn";
+   o.Resource     = "resource";
+   o.Service      = "service";
+   return o;
+}
 MO.EResourceCompress = new function EResourceCompress(){
    var o = this;
    o.None    = 'none';
@@ -3596,6 +3604,14 @@ MO.SE3sCompressEvent = function SE3sCompressEvent(w, f, d){
    o.data    = d;
    return o;
 }
+MO.SE3sLoadArgs = function SE3sLoadArgs(){
+   var o = this;
+   o.guid    = null;
+   o.code    = null;
+   o.free    = MO.Method.disposeStruct;
+   o.dispose = MO.Method.disposeStruct;
+   return o;
+}
 MO.SE3sMaterialInfo = function SE3sMaterialInfo(){
    var o = this;
    MO.SG3dMaterialInfo.call(o);
@@ -4594,6 +4610,8 @@ MO.FE3sModelConsole = function FE3sModelConsole(o){
    o.unserialSkeleton  = MO.FE3sModelConsole_unserialSkeleton;
    o.unserialAnimation = MO.FE3sModelConsole_unserialAnimation;
    o.load              = MO.FE3sModelConsole_load;
+   o.loadByGuid        = MO.FE3sModelConsole_loadByGuid;
+   o.loadByCode        = MO.FE3sModelConsole_loadByCode;
    o.dispose           = MO.FE3sModelConsole_dispose;
    return o;
 }
@@ -4604,68 +4622,91 @@ MO.FE3sModelConsole_construct = function FE3sModelConsole_construct(){
    o._meshs = new MO.TDictionary();
    o._skeletons = new MO.TDictionary();
    o._animations = new MO.TDictionary();
-   var rc = MO.Console.find(MO.FResourceConsole);
-   var rp = MO.Class.create(MO.FResourcePipeline);
-   var rt = MO.Class.create(MO.FResourceType);
-   rt.setCode('resource3d.model');
-   rt._pipeline = rp;
-   rc.registerType(rt);
 }
-MO.FE3sModelConsole_findModel = function FE3sModelConsole_findModel(p){
-   return this._models.get(p);
+MO.FE3sModelConsole_findModel = function FE3sModelConsole_findModel(guid){
+   return this._models.get(guid);
 }
-MO.FE3sModelConsole_findMesh = function FE3sModelConsole_findMesh(p){
-   return this._meshs.get(p);
+MO.FE3sModelConsole_findMesh = function FE3sModelConsole_findMesh(guid){
+   return this._meshs.get(guid);
 }
-MO.FE3sModelConsole_findSkeleton = function FE3sModelConsole_findSkeleton(p){
-   return this._skeletons.get(p);
+MO.FE3sModelConsole_findSkeleton = function FE3sModelConsole_findSkeleton(guid){
+   return this._skeletons.get(guid);
 }
-MO.FE3sModelConsole_findAnimation = function FE3sModelConsole_findAnimation(p){
-   return this._animations.get(p);
+MO.FE3sModelConsole_findAnimation = function FE3sModelConsole_findAnimation(guid){
+   return this._animations.get(guid);
 }
-MO.FE3sModelConsole_unserialMesh = function FE3sModelConsole_unserialMesh(p){
+MO.FE3sModelConsole_unserialMesh = function FE3sModelConsole_unserialMesh(input){
    var o = this;
-   var r = MO.Class.create(MO.FE3sModelMesh);
-   r.unserialize(p);
-   o._meshs.set(r.guid(), r);
-   return r;
+   var mesh = MO.Class.create(MO.FE3sModelMesh);
+   mesh.unserialize(input);
+   o._meshs.set(mesh.guid(), mesh);
+   return mesh;
 }
-MO.FE3sModelConsole_unserialSkeleton = function FE3sModelConsole_unserialSkeleton(p){
+MO.FE3sModelConsole_unserialSkeleton = function FE3sModelConsole_unserialSkeleton(input){
    var o = this;
-   var r = MO.Class.create(MO.FE3sSkeleton);
-   r.unserialize(p);
-   o._skeletons.set(r.guid(), r);
-   return r;
+   var skeleton = MO.Class.create(MO.FE3sSkeleton);
+   skeleton.unserialize(input);
+   o._skeletons.set(skeleton.guid(), skeleton);
+   return skeleton;
 }
-MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimation(m, p){
+MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimation(model, input){
    var o = this;
-   var r = MO.Class.create(MO.FE3sAnimation);
-   r._model = m;
-   r.unserialize(p);
-   o._animations.set(r.guid(), r);
-   return r;
+   var animation = MO.Class.create(MO.FE3sAnimation);
+   animation._model = model;
+   animation.unserialize(input);
+   o._animations.set(animation.guid(), animation);
+   return animation;
 }
-MO.FE3sModelConsole_load = function FE3sModelConsole_load(guid){
+MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
    var o = this;
    var models = o._models;
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Model);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(args.code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
    var model = models.get(guid);
    if(model){
       return model;
    }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find('model');
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
    model = MO.Class.create(MO.FE3sModel);
-   model.setGuid(guid);
+   model.setGuid(identity);
    model.setVendor(vendor);
    model.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(model);
-   models.set(guid, model);
+   models.set(identity, model);
+   return model;
+}
+MO.FE3sModelConsole_loadByGuid = function FE3sModelConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var model = o.load(args);
+   MO.Memory.free(args);
+   return model;
+}
+MO.FE3sModelConsole_loadByCode = function FE3sModelConsole_loadByCode(code){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var model = o.load(args);
+   MO.Memory.free(args);
    return model;
 }
 MO.FE3sModelConsole_dispose = function FE3sModelConsole_dispose(){
    var o = this;
-   o._materials = MO.Lang.Object.free(o._materials);
+   o._models = MO.Lang.Object.free(o._models);
+   o._meshs = MO.Lang.Object.free(o._meshs);
+   o._skeletons = MO.Lang.Object.free(o._skeletons);
+   o._animations = MO.Lang.Object.free(o._animations);
    o.__base.FConsole.dispose.call(o);
 }
 MO.FE3sModelDisplay = function FE3sModelDisplay(o){
@@ -6027,24 +6068,24 @@ MO.FE3sVendor_construct = function FE3sVendor_construct(){
    o.__base.FObject.construct.call(o);
    o._parameters = new MO.TAttributes();
 }
-MO.FE3sVendor_get = function FE3sVendor_get(n){
-   return this._parameters.get(n);
+MO.FE3sVendor_get = function FE3sVendor_get(name){
+   return this._parameters.get(name);
 }
-MO.FE3sVendor_set = function FE3sVendor_set(n, v){
-   this._parameters.set(n, v);
+MO.FE3sVendor_set = function FE3sVendor_set(name, value){
+   this._parameters.set(name, value);
 }
 MO.FE3sVendor_makeUrl = function FE3sVendor_makeUrl(){
    var o = this;
-   var r = o.makeSource();
+   var url = o.makeSource();
    if(MO.Runtime.isDebug()){
-      if(r.indexOf('?') == -1){
-         r += '?';
+      if(url.indexOf('?') == -1){
+         url += '?';
       }else{
-         r += '&';
+         url += '&';
       }
-      r += 'date=' + MO.Lang.Date.format();
+      url += 'version=' + MO.Runtime.version();
    }
-   return r;
+   return url;
 }
 MO.FE3sVendor_reset = function FE3sVendor_reset(){
    this._parameters.clear();
@@ -7254,28 +7295,21 @@ MO.FE3rModel = function FE3rModel(o){
    o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
    o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
    o._dataReady           = false;
-   o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.testReady            = MO.FE3rModel_testReady;
+   o.findMeshByGuid       = MO.FE3rModel_findMeshByGuid;
    o.loadResource         = MO.FE3rModel_loadResource;
    o.loadSkeletonResource = MO.FE3rModel_loadSkeletonResource;
    o.processLoad          = MO.FE3rModel_processLoad;
    o.dispose              = MO.FE3rModel_dispose;
    return o;
 }
-MO.FE3rModel_findMeshByGuid = function FE3rModel_findMeshByGuid(p){
-   var o = this;
-   var s = o._meshes;
-   var c = s.count();
-   for(var i = 0; i < c; i++){
-      var m = s.get(i);
-      if(m._guid == p){
-         return m;
-      }
-   }
-   return null;
-}
 MO.FE3rModel_testReady = function FE3rModel_testReady(){
    return this._dataReady;
+}
+MO.FE3rModel_findMeshByGuid = function FE3rModel_findMeshByGuid(guid){
+   var o = this;
+   var mesh = o._meshes.search('_guid', guid);
+   return null;
 }
 MO.FE3rModel_loadSkeletonResource = function FE3rModel_loadSkeletonResource(resource){
    var o = this;
@@ -7307,7 +7341,7 @@ MO.FE3rModel_loadResource = function FE3rModel_loadResource(resource){
          mesh.linkGraphicContext(o);
          mesh.loadResource(meshResource);
          meshes.push(mesh);
-         modelConsole.meshs().set(mesh.guid(), mesh);
+         modelConsole.registerMesh(mesh.guid(), mesh);
       }
    }
    var skeletonResources = resource.skeletons();
@@ -7350,9 +7384,12 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    o._interval      = 200;
    o.onProcess      = MO.FE3rModelConsole_onProcess;
    o.construct      = MO.FE3rModelConsole_construct;
+   o.registerModel  = MO.FE3rModelConsole_registerModel;
+   o.registerMesh   = MO.FE3rModelConsole_registerMesh;
    o.findModel      = MO.FE3rModelConsole_findModel;
    o.findMesh       = MO.FE3rModelConsole_findMesh;
    o.load           = MO.FE3rModelConsole_load;
+   o.loadByCode     = MO.FE3rModelConsole_loadByCode;
    o.loadMeshByGuid = MO.FE3rModelConsole_loadMeshByGuid;
    o.loadMeshByCode = MO.FE3rModelConsole_loadMeshByCode;
    o.merge          = MO.FE3rModelConsole_merge;
@@ -7360,12 +7397,12 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
 }
 MO.FE3rModelConsole_onProcess = function FE3rModelConsole_onProcess(){
    var o = this;
-   var s = o._loadModels;
-   s.record();
-   while(s.next()){
-      var m = s.current();
-      if(m.processLoad()){
-         s.removeCurrent();
+   var models = o._loadModels;
+   models.record();
+   while(models.next()){
+      var model = models.current();
+      if(model.processLoad()){
+         models.removeCurrent();
       }
    }
 }
@@ -7380,6 +7417,12 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    thread.setInterval(o._interval);
    thread.addProcessListener(o, o.onProcess);
    MO.Console.find(MO.FThreadConsole).start(thread);
+}
+MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
+   this._models.set(code, model);
+}
+MO.FE3rModelConsole_registerMesh = function FE3rModelConsole_registerMesh(code, mesh){
+   this._meshs.get(code, mesh);
 }
 MO.FE3rModelConsole_findModel = function FE3rModelConsole_findModel(guid){
    return this._models.get(guid);
@@ -7406,6 +7449,26 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
    model.setResource(resource);
    o._models.set(guid, model);
    o._loadModels.push(model);
+   return model;
+}
+MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){
+   var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotEmpty(code);
+   var model = o._models.get(code);
+   if(!model){
+      var resource = MO.Console.find(MO.FE3sModelConsole).loadByCode(code);
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(code);
+      model.setResource(resource);
+      o._models.set(code, model);
+      if(resource.testReady()){
+         model.loadResource(resource);
+      }else{
+         o._loadModels.push(model);
+      }
+   }
    return model;
 }
 MO.FE3rModelConsole_loadMeshByGuid = function FE3rModelConsole_loadMeshByGuid(context, pg){
@@ -9355,6 +9418,7 @@ MO.FE3dModel = function FE3dModel(o){
    o.testReady      = MO.FE3dModel_testReady;
    o.loadRenderable = MO.FE3dModel_loadRenderable;
    o.processLoad    = MO.FE3dModel_processLoad;
+   o.dispose        = MO.FE3dModel_dispose;
    return o;
 }
 MO.FE3dModel_construct = function FE3dModel_construct(){
@@ -9387,8 +9451,16 @@ MO.FE3dModel_processLoad = function FE3dModel_processLoad(){
       return false;
    }
    o.loadRenderable(renderable);
-   o.processLoadListener(o);
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.source = o;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
    return true;
+}
+MO.FE3dModel_dispose = function FE3dModel_dispose(){
+   var o = this;
+   o._display = MO.Lang.Object.dispose(o._display);
+   o.__base.FE3dSpace.dispose.call(o);
 }
 MO.FE3dModelConsole = function FE3dModelConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
@@ -9428,22 +9500,28 @@ MO.FE3dModelConsole_construct = function FE3dModelConsole_construct(){
 MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context, guid){
    var o = this;
    var model = o._pools.alloc(guid);
-   if(model){
-      return model;
+   if(!model){
+      var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
+      MO.Assert.debugNotNull(renderable);
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(guid);
+      model.setRenderable(renderable);
+      o._looper.push(model);
    }
-   var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
-   var model = MO.Class.create(MO.FE3dModel);
-   model.linkGraphicContext(context);
-   model.setPoolCode(guid);
-   model.setRenderable(renderable);
-   o._looper.push(model);
    return model;
 }
 MO.FE3dModelConsole_allocByCode = function FE3dModelConsole_allocByCode(context, code){
    var o = this;
    var model = o._pools.alloc(code);
-   if(model){
-      return model;
+   if(!model){
+      var renderable = MO.Console.find(MO.FE3rModelConsole).loadByCode(context, code);
+      MO.Assert.debugNotNull(renderable);
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(code);
+      model.setRenderable(renderable);
+      o._looper.push(model);
    }
    return model;
 }

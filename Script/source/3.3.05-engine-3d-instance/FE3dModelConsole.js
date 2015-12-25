@@ -66,7 +66,7 @@ MO.FE3dModelConsole_construct = function FE3dModelConsole_construct(){
 }
 
 //==========================================================
-// <T>加载一个模型。</T>
+// <T>根据唯一编号加载一个模型。</T>
 //
 // @method
 // @param context:MGraphicObject 渲染环境
@@ -77,45 +77,45 @@ MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context,
    var o = this;
    // 尝试从缓冲池中取出
    var model = o._pools.alloc(guid);
-   if(model){
-      return model;
+   if(!model){
+      // 加载渲染对象
+      var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
+      MO.Assert.debugNotNull(renderable);
+      // 加载模型
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(guid);
+      model.setRenderable(renderable);
+      // 追加到加载队列
+      o._looper.push(model);
    }
-   // 加载渲染对象
-   var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
-   // 加载模型
-   var model = MO.Class.create(MO.FE3dModel);
-   model.linkGraphicContext(context);
-   model.setPoolCode(guid);
-   model.setRenderable(renderable);
-   // 追加到加载队列
-   o._looper.push(model);
    return model;
 }
 
 //==========================================================
-// <T>加载一个模型。</T>
+// <T>根据代码加载一个模型。</T>
 //
 // @method
 // @param context:MGraphicObject 渲染环境
-// @param guid:String 唯一编码
+// @param code:String 代码
 // @return FE3dModel 渲染模型
 //==========================================================
 MO.FE3dModelConsole_allocByCode = function FE3dModelConsole_allocByCode(context, code){
    var o = this;
    // 尝试从缓冲池中取出
    var model = o._pools.alloc(code);
-   if(model){
-      return model;
+   if(!model){
+      // 加载渲染对象
+      var renderable = MO.Console.find(MO.FE3rModelConsole).loadByCode(context, code);
+      MO.Assert.debugNotNull(renderable);
+      // 加载模型
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(code);
+      model.setRenderable(renderable);
+      // 追加到加载队列
+      o._looper.push(model);
    }
-   // 加载渲染对象
-   //var renderable = RConsole.find(FE3rModelConsole).load(context, guid);
-   // 加载模型
-   //var model = MO.Class.create(FE3dModel);
-   //model.linkGraphicContext(context);
-   //model.setPoolCode(code);
-   //model.setRenderable(renderable);
-   // 追加到加载队列
-   //o._looper.push(model);
    return model;
 }
 

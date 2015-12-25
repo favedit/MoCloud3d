@@ -15,7 +15,6 @@ MO.FG3dEffectConsole = function FG3dEffectConsole(o){
    o._registerEffects = null;
    o._templateEffects = null;
    o._effects         = null;
-   o._path            = MO.Class.register(o, MO.AGetter('_path'), "/ars/shader/");
    o._effectInfo      = null;
    o._tagContext      = null;
    // @attribute
@@ -285,7 +284,7 @@ MO.FG3dEffectConsole_loadConfig = function FG3dEffectConsole_loadConfig(name){
    var xconfig = o._configs.get(uri);
    if(!xconfig){
       // 生成地址
-      var uri = MO.Window.Browser.contentPath(o._path + name + ".xml");
+      var uri = "{resource}/shader/" + name + ".xml";
       var url = o._url = MO.Console.find(MO.FEnvironmentConsole).parseUrl(uri);
       // 获得网络数据
       xconfig = MO.Class.create(MO.FXmlConnection).send(url);

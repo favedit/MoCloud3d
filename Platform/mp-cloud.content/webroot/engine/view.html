@@ -6,8 +6,8 @@
 <META content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
 <LINK rel="stylesheet" href='acs/mobile.css' type="text/css" media="all"/>
 
-<SCRIPT language='javascript' src='ajs/lzma-d.js'></SCRIPT>
-<SCRIPT language='javascript' src='ajs/lzma.js'></SCRIPT>
+<SCRIPT language='javascript' src='/script/ajs/lzma.js'></SCRIPT>
+<SCRIPT language='javascript' src='/script/ajs/lzma_worker.js'></SCRIPT>
 <SCRIPT language='javascript' src='/script/ajs/me.js'></SCRIPT>
 <SCRIPT language='javascript' src='/script/ajs/context_cn.js'></SCRIPT>
 <SCRIPT>
@@ -50,7 +50,7 @@ function onLoad(){
    MO.initialize();
    MO.Runtime.setVersion('151101');
    MO.Runtime.setProcessCd(MO.EProcess.Debug);
-   MO.Runtime.setProcessCd(MO.EProcess.Release);
+   //MO.Runtime.setProcessCd(MO.EProcess.Release);
    //MO.RApplication.initialize();
    MO.Window.Browser.setContentPath('.');
    MO.Window.Browser.fullscreen(window, true);
@@ -70,16 +70,12 @@ function onLoad(){
    MO.Console.find(MO.FE3sVendorConsole).setup('net');
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.LogicService, 'http://localhost:8020');
-   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.LogicService, 'http://service.test.eai.ezubo.com');
    // 设置日志
    // MO.Console.find(MO.FLoggerConsole).connect('ws://10.21.0.128:8080/logger');
    // 设置应用
    var application = MO.Desktop.initialize(MO.FSceneApplication);
-   //application.setSceneCode(MO.EEaiScene.Cockpit);
    application.setup(document.body);
    application.loadByCode(code);
-   //application.desktop().setGuiBufferScale(1.5);
-
    // 创建场景画板
    //canvas = canvas = MO.RClass.create(MO.FE3dSceneCanvas);
    //canvas._scaleRate = 1;
