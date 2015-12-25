@@ -148,9 +148,6 @@ MO.FE3dCanvas = function FE3dCanvas(o){
    o._hPanel             = null;
    o._hCanvas            = null;
    o.onEnterFrame        = MO.Method.empty;
-   o.ohTouchStart        = MO.FE3dCanvas_ohTouchStart;
-   o.ohTouchMove         = MO.FE3dCanvas_ohTouchMove;
-   o.ohTouchStop         = MO.FE3dCanvas_ohTouchStop;
    o.onMouseCaptureStart = MO.Method.empty;
    o.onMouseCapture      = MO.Method.empty;
    o.onMouseCaptureStop  = MO.Method.empty;
@@ -168,15 +165,6 @@ MO.FE3dCanvas = function FE3dCanvas(o){
    o.dispose             = MO.FE3dCanvas_dispose;
    return o;
 }
-MO.FE3dCanvas_ohTouchStart = function FE3dCanvas_ohTouchStart(event){
-   this.__linker.onTouchStart(event);
-}
-MO.FE3dCanvas_ohTouchMove = function FE3dCanvas_ohTouchMove(event){
-   this.__linker.onTouchMove(event);
-}
-MO.FE3dCanvas_ohTouchStop = function FE3dCanvas_ohTouchStop(event){
-   this.__linker.onTouchStop(event);
-}
 MO.FE3dCanvas_onResize = function FE3dCanvas_onResize(event){
    this.resize();
 }
@@ -192,8 +180,7 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    var size = o._size;
    var width = size.width;
    var height = size.height;
-   var hCanvas = o._hCanvas = MO.RBuilder.create(hPanel, 'CANVAS');
-   hCanvas.__linker = o;
+   var hCanvas = o._hCanvas = MO.Window.Builder.create(hPanel, 'CANVAS');
    hCanvas.width = width;
    hCanvas.height = height;
    var hStyle = hCanvas.style;
@@ -201,26 +188,10 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    hStyle.top = '0px';
    hStyle.width = '100%';
    hStyle.height = '100%';
-   if(!MO.Method.isEmpty(o.onTouchStart)){
-      hCanvas.addEventListener('touchstart', o.ohTouchStart, false);
-   }
-   if(!MO.Method.isEmpty(o.onTouchMove)){
-      hCanvas.addEventListener('touchmove', o.ohTouchMove, false);
-   }
-   if(!MO.Method.isEmpty(o.onTouchStop)){
-      hCanvas.addEventListener('touchend', o.ohTouchStop, false);
-   }
-   var parameters = new Object();
+   var parameters = new MO.SArguments();
    parameters.alpha = o._optionAlpha;
    parameters.antialias = o._optionAntialias;
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
-   if(o._optionStageProcess){
-   }
-   if(o._optionResize){
-   }
-   if(o._optionMouseCapture){
-      MO.Console.find(MO.FMouseConsole).register(o);
-   }
 }
 MO.FE3dCanvas_resize = function FE3dCanvas_resize(sourceWidth, sourceHeight){
    var o = this;
@@ -249,19 +220,11 @@ MO.FE3dCanvas_setVisible = function FE3dCanvas_setVisible(visible){
 }
 MO.FE3dCanvas_setPanel = function FE3dCanvas_setPanel(hPanel){
    var o = this;
-   hPanel.appendChild(o._hCanvas);
    o._hPanel = hPanel;
-   o.resize();
+   hPanel.appendChild(o._hCanvas);
 }
 MO.FE3dCanvas_dispose = function FE3dCanvas_dispose(){
    var o = this;
-   var h = o._hCanvas;
-   if(h){
-      h.__linker = null;
-      h.removeEventListener('touchstart', o.ohTouchStart);
-      h.removeEventListener('touchmove', o.ohTouchMove);
-      h.removeEventListener('touchend', o.ohTouchStop);
-   }
    o._graphicContext = MO.Lang.Object.dispose(o._graphicContext);
    o._size = MO.Lang.Object.dispose(o._size);
    o._screenSize = MO.Lang.Object.dispose(o._screenSize);

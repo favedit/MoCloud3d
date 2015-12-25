@@ -56,10 +56,10 @@ MO.MEventDispatcher = function MEventDispatcher(o){
    o.onOperationResize      = MO.Method.empty;
    o.onOperationVisibility  = MO.Method.empty;
    o.onOperationOrientation = MO.Method.empty;
-   o.dispatcherEvent        = MO.MEventDispatcher_dispatcherEvent;
+   o.dispatchEvent          = MO.MEventDispatcher_dispatchEvent;
    return o;
 }
-MO.MEventDispatcher_dispatcherEvent = function MEventDispatcher_dispatcherEvent(event, flag){
+MO.MEventDispatcher_dispatchEvent = function MEventDispatcher_dispatchEvent(event, flag){
    var o = this;
    switch(event.code){
       case MO.EEvent.MouseDown:
@@ -526,7 +526,7 @@ MO.STimelineContext = function STimelineContext(){
    return o;
 }
 MO.FCanvas = function FCanvas(o){
-   o = MO.Class.inherits(this, o, MO.FObject);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
    o._desktop     = MO.Class.register(o, new MO.AGetSet('_desktop'));
    o._activeStage = MO.Class.register(o, new MO.AGetter('_activeStage'));
    o.construct    = MO.FCanvas_construct;
@@ -540,10 +540,12 @@ MO.FCanvas_construct = function FCanvas_construct(){
 MO.FCanvas_dispose = function FCanvas_dispose(){
    var o = this;
    o._desktop = null;
+   o._activeStage = null;
    o.__base.FObject.dispose.call(o);
 }
 MO.FDesktop = function FDesktop(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
+   o._visible         = MO.Class.register(o, new MO.AGetSet('_visible'));
    o._size            = MO.Class.register(o, new MO.AGetter('_size'));
    o._sizeRate        = MO.Class.register(o, new MO.AGetter('_sizeRate'), 1);
    o._sizeScale       = MO.Class.register(o, new MO.AGetter('_sizeScale'), 1);
@@ -560,6 +562,8 @@ MO.FDesktop = function FDesktop(o){
    o.canvasUnregister = MO.FDesktop_canvasUnregister;
    o.setup            = MO.Method.empty;
    o.build            = MO.Method.empty;
+   o.show             = MO.FDesktop_show;
+   o.hide             = MO.FDesktop_hide;
    o.resize           = MO.Method.empty;
    o.processEvent     = MO.FDesktop_processEvent;
    o.process          = MO.Method.empty;
@@ -588,9 +592,14 @@ MO.FDesktop_canvasUnregister = function FDesktop_canvasUnregister(canvas){
    MO.Assert.debugTrue(canvases.contains(canvas));
    canvases.remove(canvas);
 }
+MO.FDesktop_show = function FDesktop_show(){
+   this.setVisible(true);
+}
+MO.FDesktop_hide = function FDesktop_hide(){
+   this.setVisible(false);
+}
 MO.FDesktop_processEvent = function FDesktop_processEvent(event){
-   var o = this;
-   o.dispatcherEvent(event);
+   this.dispatchEvent(event);
 }
 MO.FDesktop_dispose = function FDesktop_dispose(){
    var o = this;

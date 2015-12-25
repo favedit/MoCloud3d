@@ -188,3 +188,4 @@ MO.RKeyboard.prototype.fixChars = function RKeyboard_fixChars(e, p){
 //..........................................................
 // 实例化内容
 MO.Window.Keyboard = new MO.RKeyboard();
+MO.Device.Keyboard = MO.Window.Keyboard;

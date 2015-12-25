@@ -172,7 +172,7 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
    }
    var url = vendor.makeUrl();
    // 查找模型
-   var model = models.get(guid);
+   var model = models.get(identity);
    if(model){
       return model;
    }
@@ -188,9 +188,9 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
 }
 
 //==========================================================
-// <T>加载指定代码的模型资源。</T>
+// <T>加载唯一编码的模型资源。</T>
 //
-// @param code:String 唯一编号
+// @param guid:String 唯一编号
 // @return FE3sModel 模型资源
 //==========================================================
 MO.FE3sModelConsole_loadByGuid = function FE3sModelConsole_loadByGuid(guid){

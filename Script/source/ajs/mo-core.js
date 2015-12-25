@@ -276,6 +276,7 @@ MO.SMouseEvent_attachEvent = function SMouseEvent_attachEvent(event){
    o.deltaY = event.deltaY;
    o.deltaZ = event.deltaZ;
 }
+MO.Device = new function MoDeviceSpace(){return this;}
 MO.SResizeEvent = function SResizeEvent(){
    var o = this;
    MO.SEvent.call(o);

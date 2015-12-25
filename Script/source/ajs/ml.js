@@ -3668,6 +3668,21 @@ MO.RMethod.prototype.emptyFalse = function RMethod_emptyFalse(){
 }
 MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
 }
+MO.RMethod.prototype.freeStruct = function freeStruct(){
+   var o = this;
+   for(var name in o){
+      if(name.indexOf('__') == 0){
+         continue;
+      }
+      var value = o[name];
+      if(value){
+         if(value.constructor == Function){
+            continue;
+         }
+         o[name] = null;
+      }
+   }
+}
 MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
    var o = this;
    for(var name in o){
@@ -10312,6 +10327,7 @@ MO.SMouseEvent_attachEvent = function SMouseEvent_attachEvent(event){
    o.deltaY = event.deltaY;
    o.deltaZ = event.deltaZ;
 }
+MO.Device = new function MoDeviceSpace(){return this;}
 MO.SResizeEvent = function SResizeEvent(){
    var o = this;
    MO.SEvent.call(o);
@@ -16978,6 +16994,7 @@ MO.RKeyboard.prototype.fixChars = function RKeyboard_fixChars(e, p){
    return true;
 }
 MO.Window.Keyboard = new MO.RKeyboard();
+MO.Device.Keyboard = MO.Window.Keyboard;
 MO.RResource = function RResource(){
    var o = this;
    o.uriIcon  = '/ars/icon/';

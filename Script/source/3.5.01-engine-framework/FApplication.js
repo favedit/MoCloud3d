@@ -15,6 +15,7 @@ MO.FApplication = function FApplication(o){
    //..........................................................
    // @event
    o.onProcessReady       = MO.FApplication_onProcessReady;
+   o.onProcessInput       = MO.FApplication_onProcessInput;
    o.onProcess            = MO.FApplication_onProcess;
    //..........................................................
    // @method
@@ -45,6 +46,15 @@ MO.FApplication = function FApplication(o){
 //==========================================================
 MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
    MO.Logger.debug(this, 'Application process ready.');
+}
+
+//==========================================================
+// <T>响应输入处理。</T>
+//
+// @method
+// @param event:SEvent 事件信息
+//==========================================================
+MO.FApplication_onProcessInput = function FApplication_onProcessInput(event){
 }
 
 //==========================================================
@@ -166,7 +176,7 @@ MO.FApplication_processResize = function FApplication_processResize(){
 MO.FApplication_processEvent = function FApplication_processEvent(event){
    var o = this;
    // 处理事件
-   o.dispatcherEvent(event);
+   o.dispatchEvent(event);
    // 激活章节处理事件
    var chapter = o._activeChapter;
    if(chapter){
@@ -187,6 +197,8 @@ MO.FApplication_process = function FApplication_process(){
       return;
    }
    //..........................................................
+   // 输入处理
+   o.onProcessInput();
    // 前处理
    o.processEnterFrameListener(o._eventEnterFrame);
    // 场景处理

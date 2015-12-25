@@ -276,6 +276,7 @@ MO.SMouseEvent_attachEvent = function SMouseEvent_attachEvent(event){
    o.deltaY = event.deltaY;
    o.deltaZ = event.deltaZ;
 }
+MO.Device = new function MoDeviceSpace(){return this;}
 MO.SResizeEvent = function SResizeEvent(){
    var o = this;
    MO.SEvent.call(o);
@@ -10922,10 +10923,10 @@ MO.MEventDispatcher = function MEventDispatcher(o){
    o.onOperationResize      = MO.Method.empty;
    o.onOperationVisibility  = MO.Method.empty;
    o.onOperationOrientation = MO.Method.empty;
-   o.dispatcherEvent        = MO.MEventDispatcher_dispatcherEvent;
+   o.dispatchEvent          = MO.MEventDispatcher_dispatchEvent;
    return o;
 }
-MO.MEventDispatcher_dispatcherEvent = function MEventDispatcher_dispatcherEvent(event, flag){
+MO.MEventDispatcher_dispatchEvent = function MEventDispatcher_dispatchEvent(event, flag){
    var o = this;
    switch(event.code){
       case MO.EEvent.MouseDown:
@@ -11392,7 +11393,7 @@ MO.STimelineContext = function STimelineContext(){
    return o;
 }
 MO.FCanvas = function FCanvas(o){
-   o = MO.Class.inherits(this, o, MO.FObject);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
    o._desktop     = MO.Class.register(o, new MO.AGetSet('_desktop'));
    o._activeStage = MO.Class.register(o, new MO.AGetter('_activeStage'));
    o.construct    = MO.FCanvas_construct;
@@ -11406,10 +11407,12 @@ MO.FCanvas_construct = function FCanvas_construct(){
 MO.FCanvas_dispose = function FCanvas_dispose(){
    var o = this;
    o._desktop = null;
+   o._activeStage = null;
    o.__base.FObject.dispose.call(o);
 }
 MO.FDesktop = function FDesktop(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
+   o._visible         = MO.Class.register(o, new MO.AGetSet('_visible'));
    o._size            = MO.Class.register(o, new MO.AGetter('_size'));
    o._sizeRate        = MO.Class.register(o, new MO.AGetter('_sizeRate'), 1);
    o._sizeScale       = MO.Class.register(o, new MO.AGetter('_sizeScale'), 1);
@@ -11426,6 +11429,8 @@ MO.FDesktop = function FDesktop(o){
    o.canvasUnregister = MO.FDesktop_canvasUnregister;
    o.setup            = MO.Method.empty;
    o.build            = MO.Method.empty;
+   o.show             = MO.FDesktop_show;
+   o.hide             = MO.FDesktop_hide;
    o.resize           = MO.Method.empty;
    o.processEvent     = MO.FDesktop_processEvent;
    o.process          = MO.Method.empty;
@@ -11454,9 +11459,14 @@ MO.FDesktop_canvasUnregister = function FDesktop_canvasUnregister(canvas){
    MO.Assert.debugTrue(canvases.contains(canvas));
    canvases.remove(canvas);
 }
+MO.FDesktop_show = function FDesktop_show(){
+   this.setVisible(true);
+}
+MO.FDesktop_hide = function FDesktop_hide(){
+   this.setVisible(false);
+}
 MO.FDesktop_processEvent = function FDesktop_processEvent(event){
-   var o = this;
-   o.dispatcherEvent(event);
+   this.dispatchEvent(event);
 }
 MO.FDesktop_dispose = function FDesktop_dispose(){
    var o = this;
@@ -13570,9 +13580,6 @@ MO.FE3dCanvas = function FE3dCanvas(o){
    o._hPanel             = null;
    o._hCanvas            = null;
    o.onEnterFrame        = MO.Method.empty;
-   o.ohTouchStart        = MO.FE3dCanvas_ohTouchStart;
-   o.ohTouchMove         = MO.FE3dCanvas_ohTouchMove;
-   o.ohTouchStop         = MO.FE3dCanvas_ohTouchStop;
    o.onMouseCaptureStart = MO.Method.empty;
    o.onMouseCapture      = MO.Method.empty;
    o.onMouseCaptureStop  = MO.Method.empty;
@@ -13590,15 +13597,6 @@ MO.FE3dCanvas = function FE3dCanvas(o){
    o.dispose             = MO.FE3dCanvas_dispose;
    return o;
 }
-MO.FE3dCanvas_ohTouchStart = function FE3dCanvas_ohTouchStart(event){
-   this.__linker.onTouchStart(event);
-}
-MO.FE3dCanvas_ohTouchMove = function FE3dCanvas_ohTouchMove(event){
-   this.__linker.onTouchMove(event);
-}
-MO.FE3dCanvas_ohTouchStop = function FE3dCanvas_ohTouchStop(event){
-   this.__linker.onTouchStop(event);
-}
 MO.FE3dCanvas_onResize = function FE3dCanvas_onResize(event){
    this.resize();
 }
@@ -13614,8 +13612,7 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    var size = o._size;
    var width = size.width;
    var height = size.height;
-   var hCanvas = o._hCanvas = MO.RBuilder.create(hPanel, 'CANVAS');
-   hCanvas.__linker = o;
+   var hCanvas = o._hCanvas = MO.Window.Builder.create(hPanel, 'CANVAS');
    hCanvas.width = width;
    hCanvas.height = height;
    var hStyle = hCanvas.style;
@@ -13623,26 +13620,10 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    hStyle.top = '0px';
    hStyle.width = '100%';
    hStyle.height = '100%';
-   if(!MO.Method.isEmpty(o.onTouchStart)){
-      hCanvas.addEventListener('touchstart', o.ohTouchStart, false);
-   }
-   if(!MO.Method.isEmpty(o.onTouchMove)){
-      hCanvas.addEventListener('touchmove', o.ohTouchMove, false);
-   }
-   if(!MO.Method.isEmpty(o.onTouchStop)){
-      hCanvas.addEventListener('touchend', o.ohTouchStop, false);
-   }
-   var parameters = new Object();
+   var parameters = new MO.SArguments();
    parameters.alpha = o._optionAlpha;
    parameters.antialias = o._optionAntialias;
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
-   if(o._optionStageProcess){
-   }
-   if(o._optionResize){
-   }
-   if(o._optionMouseCapture){
-      MO.Console.find(MO.FMouseConsole).register(o);
-   }
 }
 MO.FE3dCanvas_resize = function FE3dCanvas_resize(sourceWidth, sourceHeight){
    var o = this;
@@ -13671,19 +13652,11 @@ MO.FE3dCanvas_setVisible = function FE3dCanvas_setVisible(visible){
 }
 MO.FE3dCanvas_setPanel = function FE3dCanvas_setPanel(hPanel){
    var o = this;
-   hPanel.appendChild(o._hCanvas);
    o._hPanel = hPanel;
-   o.resize();
+   hPanel.appendChild(o._hCanvas);
 }
 MO.FE3dCanvas_dispose = function FE3dCanvas_dispose(){
    var o = this;
-   var h = o._hCanvas;
-   if(h){
-      h.__linker = null;
-      h.removeEventListener('touchstart', o.ohTouchStart);
-      h.removeEventListener('touchmove', o.ohTouchMove);
-      h.removeEventListener('touchend', o.ohTouchStop);
-   }
    o._graphicContext = MO.Lang.Object.dispose(o._graphicContext);
    o._size = MO.Lang.Object.dispose(o._size);
    o._screenSize = MO.Lang.Object.dispose(o._screenSize);
@@ -14474,7 +14447,7 @@ MO.SE3sLoadArgs = function SE3sLoadArgs(){
    var o = this;
    o.guid    = null;
    o.code    = null;
-   o.free    = MO.Method.disposeStruct;
+   o.free    = MO.Method.freeStruct;
    o.dispose = MO.Method.disposeStruct;
    return o;
 }
@@ -15539,7 +15512,7 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
       identity = code;
    }
    var url = vendor.makeUrl();
-   var model = models.get(guid);
+   var model = models.get(identity);
    if(model){
       return model;
    }
@@ -16569,6 +16542,7 @@ MO.FE3sTemplateConsole = function FE3sTemplateConsole(o){
    o._serviceUrl = '/cloud.content.template.ws'
    o.construct   = MO.FE3sTemplateConsole_construct;
    o.unserialize = MO.FE3sTemplateConsole_unserialize;
+   o.load        = MO.FE3sTemplateConsole_load;
    o.loadByGuid  = MO.FE3sTemplateConsole_loadByGuid;
    o.loadByCode  = MO.FE3sTemplateConsole_loadByCode;
    o.update      = MO.FE3sTemplateConsole_update;
@@ -16587,40 +16561,48 @@ MO.FE3sTemplateConsole_unserialize = function FE3sTemplateConsole_unserialize(p)
    o._templates.set(r.guid(), r);
    return r;
 }
-MO.FE3sTemplateConsole_loadByGuid = function FE3sTemplateConsole_loadByGuid(guid){
+MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
    var o = this;
    var templates = o._templates;
-   var template = templates.get(guid);
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Template);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(args.code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
+   var template = templates.get(identity);
    if(template){
       return template;
    }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find('template');
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
    template = MO.Class.create(MO.FE3sTemplate);
-   template.setGuid(guid);
+   template.setGuid(identity);
    template.setVendor(vendor);
    template.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(template);
-   templates.set(guid, template);
+   templates.set(identity, template);
+   return template;
+}
+MO.FE3sTemplateConsole_loadByGuid = function FE3sTemplateConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var template = o.load(args);
+   MO.Memory.free(args);
    return template;
 }
 MO.FE3sTemplateConsole_loadByCode = function FE3sTemplateConsole_loadByCode(code){
    var o = this;
-   var templates = o._templates;
-   var template = templates.get(code);
-   if(template){
-      return template;
-   }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find('template');
-   vendor.set('code', code);
-   var url = vendor.makeUrl();
-   template = MO.Class.create(MO.FE3sTemplate);
-   template.setCode(code);
-   template.setVendor(vendor);
-   template.setSourceUrl(url);
-   MO.Console.find(MO.FResourceConsole).load(template);
-   templates.set(code, template);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var template = o.load(args);
+   MO.Memory.free(args);
    return template;
 }
 MO.FE3sTemplateConsole_update = function FE3sTemplateConsole_update(p){
@@ -17238,6 +17220,7 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    }else{
       bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
+   bitmap.loadUrl(url);
    o._bitmaps.set(flag, bitmap);
    return bitmap;
 }
@@ -17715,6 +17698,8 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
    var o = this;
    var context = o._graphicContext;
    o._resource = resource;
+   o._guid = resource.guid();
+   o._code = resource.code();
    var streamResources = resource.streams();
    var streamCount = streamResources.count();
    for(var i = 0; i < streamCount; i++){
@@ -18255,6 +18240,7 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    o.findModel      = MO.FE3rModelConsole_findModel;
    o.findMesh       = MO.FE3rModelConsole_findMesh;
    o.load           = MO.FE3rModelConsole_load;
+   o.loadByGuid     = MO.FE3rModelConsole_loadByGuid;
    o.loadByCode     = MO.FE3rModelConsole_loadByCode;
    o.loadMeshByGuid = MO.FE3rModelConsole_loadMeshByGuid;
    o.loadMeshByCode = MO.FE3rModelConsole_loadMeshByCode;
@@ -18285,10 +18271,14 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    MO.Console.find(MO.FThreadConsole).start(thread);
 }
 MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
+   MO.Assert.debugNotEmpty(code);
+   MO.Assert.debugNotNull(model);
    this._models.set(code, model);
 }
 MO.FE3rModelConsole_registerMesh = function FE3rModelConsole_registerMesh(code, mesh){
-   this._meshs.get(code, mesh);
+   MO.Assert.debugNotEmpty(code);
+   MO.Assert.debugNotNull(mesh);
+   this._meshs.set(code, mesh);
 }
 MO.FE3rModelConsole_findModel = function FE3rModelConsole_findModel(guid){
    return this._models.get(guid);
@@ -18315,6 +18305,26 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
    model.setResource(resource);
    o._models.set(guid, model);
    o._loadModels.push(model);
+   return model;
+}
+MO.FE3rModelConsole_loadByGuid = function FE3rModelConsole_loadByGuid(context, guid){
+   var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotEmpty(guid);
+   var model = o._models.get(guid);
+   if(!model){
+      var resource = MO.Console.find(MO.FE3sModelConsole).loadByGuid(guid);
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(guid);
+      model.setResource(resource);
+      o._models.set(guid, model);
+      if(resource.testReady()){
+         model.loadResource(resource);
+      }else{
+         o._loadModels.push(model);
+      }
+   }
    return model;
 }
 MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){
@@ -20318,7 +20328,7 @@ MO.FE3dModel_processLoad = function FE3dModel_processLoad(){
    }
    o.loadRenderable(renderable);
    var event = MO.Memory.alloc(MO.SEvent);
-   event.source = o;
+   event.sender = o;
    o.processLoadListener(event);
    MO.Memory.free(event);
    return true;
@@ -22531,7 +22541,6 @@ MO.FE3dTemplate_processLoad = function FE3dTemplate_processLoad(){
    o._ready = true;
    var event = MO.Memory.alloc(MO.SEvent);
    event.sender = o;
-   event.template = o;
    o.processLoadListener(event);
    MO.Memory.free(event);
    return o._ready;
@@ -23005,7 +23014,7 @@ MO.FE3dTemplateRenderable_loadResource = function FE3dTemplateRenderable_loadRes
    o._resource = resource;
    o._matrix.assign(resource.matrix());
    var modelGuid = resource.modelGuid();
-   o._model = MO.Console.find(MO.FE3rModelConsole).load(o, modelGuid);
+   o._model = MO.Console.find(MO.FE3rModelConsole).loadByGuid(o, modelGuid);
    var materialGuid = resource.materialGuid();
    if(!MO.Lang.String.isEmpty(materialGuid)){
       var material = o._material = o._materialReference = MO.Console.find(MO.FE3rMaterialConsole).load(o, materialGuid);
@@ -23058,6 +23067,7 @@ MO.FE3dTemplateRenderable_load = function FE3dTemplateRenderable_load(){
    var meshResource = resource.mesh();
    var meshGuid = resource.meshGuid();
    var renderable = o._renderable = MO.Console.find(MO.FE3rModelConsole).findMesh(meshGuid);
+   MO.Assert.debugNotNull(renderable);
    var vertexBuffers = renderable.vertexBuffers();
    var vertexBufferCount = vertexBuffers.count();
    for(var i = 0; i < vertexBufferCount; i++){
@@ -26642,6 +26652,7 @@ MO.FApplication = function FApplication(o){
    o._activeChapter       = MO.Class.register(o, new MO.AGetter('_activeChapter'));
    o._chapters            = MO.Class.register(o, new MO.AGetter('_chapters'));
    o.onProcessReady       = MO.FApplication_onProcessReady;
+   o.onProcessInput       = MO.FApplication_onProcessInput;
    o.onProcess            = MO.FApplication_onProcess;
    o.construct            = MO.FApplication_construct;
    o.setup                = MO.Method.emptyTrue;
@@ -26659,6 +26670,8 @@ MO.FApplication = function FApplication(o){
 }
 MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
    MO.Logger.debug(this, 'Application process ready.');
+}
+MO.FApplication_onProcessInput = function FApplication_onProcessInput(event){
 }
 MO.FApplication_onProcess = function FApplication_onProcess(event){
    var o = this;
@@ -26715,7 +26728,7 @@ MO.FApplication_processResize = function FApplication_processResize(){
 }
 MO.FApplication_processEvent = function FApplication_processEvent(event){
    var o = this;
-   o.dispatcherEvent(event);
+   o.dispatchEvent(event);
    var chapter = o._activeChapter;
    if(chapter){
       chapter.processEvent(event);
@@ -26727,6 +26740,7 @@ MO.FApplication_process = function FApplication_process(){
    if(!loader.testReady()){
       return;
    }
+   o.onProcessInput();
    o.processEnterFrameListener(o._eventEnterFrame);
    o.onProcess();
    o.processLeaveFrameListener(o._eventLeaveFrame);

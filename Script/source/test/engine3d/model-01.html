@@ -7,78 +7,6 @@
 </HEAD>
 
 <SCRIPT>
-var context = null;
-var stage = null;
-var layer = null;
-var models = null;
-
-var mRotationX = 0;
-var mRotationY = 0;
-var mRotationZ = 0;
-//----------------------------------------------------------
-function onEnterFrame(){
-   // 旋转模型
-   var mc = models.count();
-   var c = 4;
-   for(var z = 0; z < c; z++){
-      for(var x = 0; x < c; x++){
-         var n = c * z + x;
-         if(n >= mc){
-            break;
-         }
-         var m = models.get(n);
-         // m.location().set(0.1 * x - 8, -0.5, 0.1 * z - 4);
-         m.location().set(0, -6.0, 0);
-         m.rotation().set(0, mRotationY, 0);
-         m.scale().set(2, 2, 2);
-         m.update();
-      }
-   }
-   mRotationX += 0.01;
-   mRotationY += 0.01;
-   mRotationZ += 0.03;
-   // 设置帧速
-   var info = RTimer.rate() + ' f/s';
-   if(info != _info.innerText){
-      _info.innerText = RTimer.rate() + ' f/s';
-   }
-}
-//----------------------------------------------------------
-function onThemeLoad(){
-   var hCanvas = document.getElementById('_canvas');
-   context = REngine3d.createContext(FWglContext, hCanvas);
-
-   stage = RClass.create(FSimpleStage3d);
-   stage.backgroundColor().set(1, 1, 1, 1);
-   stage.selectTechnique(context, FG3dGeneralTechnique);
-   //RDump.dump(stage, _dump);
-
-   layer = stage.spriteLayer();
-   RStage.register('stage3d', stage);
-
-   var rmc = RConsole.find(FModel3dConsole);
-   for(var x = 0; x < 1; x++){
-      var model3d = rmc.alloc(context, 'pvw.show.item.001');
-      layer.pushDisplay(model3d);
-      models.push(model3d);
-   }
-   // 设置相机
-   var rc = stage.camera();
-   rc.setPosition(0, 8, -8);
-   rc.lookAt(0, 0, 0);
-   rc.update();
-   // 设置光源
-   stage.directionalLight().direction().set(0.7, -0.7, 0);
-   // 设置投影
-   var rp = stage.camera().projection();
-   rp.size().set(hCanvas.width, hCanvas.height);
-   rp.update();
-   // 启动处理
-   RStage.lsnsEnterFrame.register(null, onEnterFrame);
-   RStage.start();
-   RDump.dump(stage, _dump);
-}
-//----------------------------------------------------------
 function _load(){
    var code = 'pvw.show.item.001';
    // 设置变量
@@ -89,7 +17,7 @@ function _load(){
    MO.Console.find(MO.FE3sVendorConsole).setup('net');
    MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEngineConstant.Resource, '/script/ars');
    // 设置应用
-   var application = MO.Desktop.initialize(MO.FE3dModelApplication);
+   var application = MO.Desktop.initialize(MO.FModelSpaceApplication);
    application.setup(document.body);
    application.loadByCode(code);
 }

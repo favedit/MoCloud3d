@@ -6,7 +6,6 @@ import org.mo.cloud.data.data.FDataResourceTemplateLogic;
 import org.mo.cloud.data.data.FDataResourceTemplateMaterialLogic;
 import org.mo.cloud.define.enums.core.EGcResource;
 import org.mo.com.data.FSql;
-import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
 import org.mo.content.access.data.resource.FGcResourceInfo;
@@ -91,11 +90,14 @@ public class FGcResTemplateConsole
                                         long projectId,
                                         String code){
       // 生成条件
-      FSql whereSql = new FSql("(" + FDataResourceTemplateLogic.USER_ID + "=" + userId + ")");
-      if(projectId > 0){
-         whereSql.append(" AND (" + FDataResourceTemplateLogic.PROJECT_ID + "=" + projectId + ")");
+      FSql whereSql = new FSql();
+      if(userId > 0){
+         whereSql.append("(" + FDataResourceTemplateLogic.USER_ID + "=" + userId + ")");
       }
-      whereSql.append(" AND (" + FDataResourceTemplateLogic.CODE + "='" + RSql.formatValue(code) + "')");
+      if(projectId > 0){
+         whereSql.appendCondition(!whereSql.isEmpty(), " AND ", FDataResourceTemplateLogic.PROJECT_ID + "='" + projectId + "'");
+      }
+      whereSql.appendCondition(!whereSql.isEmpty(), " AND ", FDataResourceTemplateLogic.CODE + "='" + code + "'");
       // 查询数据
       FGcResTemplateInfo template = search(logicContext, whereSql);
       return template;

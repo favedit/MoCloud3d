@@ -88,7 +88,7 @@ MO.FE3dModel_processLoad = function FE3dModel_processLoad(){
    o.loadRenderable(renderable);
    // 加载完成
    var event = MO.Memory.alloc(MO.SEvent);
-   event.source = o;
+   event.sender = o;
    o.processLoadListener(event);
    MO.Memory.free(event);
    return true;

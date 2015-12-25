@@ -60,6 +60,7 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    }else{
       bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
+   bitmap.loadUrl(url);
    o._bitmaps.set(flag, bitmap);
    return bitmap;
 }

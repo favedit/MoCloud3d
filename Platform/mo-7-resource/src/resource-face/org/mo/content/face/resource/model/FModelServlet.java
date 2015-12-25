@@ -42,12 +42,6 @@ public class FModelServlet
    // 日志输出接口
    private static ILogger _logger = RLogger.find(FModelServlet.class);
 
-   // 数据缓冲大小
-   protected static int BufferLength = 1024 * 64;
-
-   // 缓冲时间
-   protected static long CacheTimeout = 3600 * 24 * 7 * 4;
-
    // 数据网格控制台
    @ALink
    protected IGcResourceCatalogConsole _dataCatalogConsole;
@@ -93,7 +87,6 @@ public class FModelServlet
       if(RString.isEmpty(guid) && RString.isEmpty(code)){
          throw new FFatalError("Resource identity is empty. (guid={1}, code={2})", guid, code);
       }
-      //............................................................
       // 获得唯一编号
       if(!RString.isEmpty(code)){
          FGcResModelInfo modelInfo = _modelConsole.findByCode(logicContext, 0, 0, code);

@@ -141,6 +141,27 @@ MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
 //
 // @method
 //==========================================================
+MO.RMethod.prototype.freeStruct = function freeStruct(){
+   var o = this;
+   for(var name in o){
+      if(name.indexOf('__') == 0){
+         continue;
+      }
+      var value = o[name];
+      if(value){
+         if(value.constructor == Function){
+            continue;
+         }
+         o[name] = null;
+      }
+   }
+}
+
+//==========================================================
+// <T>释放结构。</T>
+//
+// @method
+//==========================================================
 MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
    var o = this;
    for(var name in o){

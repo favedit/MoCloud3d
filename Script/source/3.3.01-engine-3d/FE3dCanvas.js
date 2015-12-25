@@ -27,10 +27,6 @@ MO.FE3dCanvas = function FE3dCanvas(o){
    // @event
    o.onEnterFrame        = MO.Method.empty;
    // @event
-   o.ohTouchStart        = MO.FE3dCanvas_ohTouchStart;
-   o.ohTouchMove         = MO.FE3dCanvas_ohTouchMove;
-   o.ohTouchStop         = MO.FE3dCanvas_ohTouchStop;
-   // @event
    // @event
    o.onMouseCaptureStart = MO.Method.empty;
    o.onMouseCapture      = MO.Method.empty;
@@ -53,36 +49,6 @@ MO.FE3dCanvas = function FE3dCanvas(o){
    // @method
    o.dispose             = MO.FE3dCanvas_dispose;
    return o;
-}
-
-//==========================================================
-// <T>触摸事件开始处理。</T>
-//
-// @method
-// @param event:TouchEvent 触摸事件
-//==========================================================
-MO.FE3dCanvas_ohTouchStart = function FE3dCanvas_ohTouchStart(event){
-   this.__linker.onTouchStart(event);
-}
-
-//==========================================================
-// <T>触摸事件移动处理。</T>
-//
-// @method
-// @param event:TouchEvent 触摸事件
-//==========================================================
-MO.FE3dCanvas_ohTouchMove = function FE3dCanvas_ohTouchMove(event){
-   this.__linker.onTouchMove(event);
-}
-
-//==========================================================
-// <T>触摸事件结束处理。</T>
-//
-// @method
-// @param event:TouchEvent 触摸事件
-//==========================================================
-MO.FE3dCanvas_ohTouchStop = function FE3dCanvas_ohTouchStop(event){
-   this.__linker.onTouchStop(event);
 }
 
 //==========================================================
@@ -122,44 +88,20 @@ MO.FE3dCanvas_build = function FE3dCanvas_build(hPanel){
    var width = size.width;
    var height = size.height;
    // 创建画板
-   var hCanvas = o._hCanvas = MO.RBuilder.create(hPanel, 'CANVAS');
-   hCanvas.__linker = o;
+   var hCanvas = o._hCanvas = MO.Window.Builder.create(hPanel, 'CANVAS');
    hCanvas.width = width;
    hCanvas.height = height;
+   // 设置样式
    var hStyle = hCanvas.style;
    hStyle.left = '0px';
    hStyle.top = '0px';
    hStyle.width = '100%';
    hStyle.height = '100%';
-   // 设置事件
-   if(!MO.Method.isEmpty(o.onTouchStart)){
-      hCanvas.addEventListener('touchstart', o.ohTouchStart, false);
-   }
-   if(!MO.Method.isEmpty(o.onTouchMove)){
-      hCanvas.addEventListener('touchmove', o.ohTouchMove, false);
-   }
-   if(!MO.Method.isEmpty(o.onTouchStop)){
-      hCanvas.addEventListener('touchend', o.ohTouchStop, false);
-   }
    // 创建渲染环境
-   var parameters = new Object();
+   var parameters = new MO.SArguments();
    parameters.alpha = o._optionAlpha;
    parameters.antialias = o._optionAntialias;
    o._graphicContext = MO.Graphic.Context3d.createContext(MO.FWglContext, hCanvas, parameters);
-   // 启动处理
-   if(o._optionStageProcess){
-      //RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-      //RStage.start(o._interval);
-   }
-   // 监听大小改变
-   if(o._optionResize){
-      //MO.Window.lsnsResize.register(o, o.onResize);
-      //MO.Window.lsnsOrientation.register(o, o.onResize);
-   }
-   // 注册鼠标捕捉监听
-   if(o._optionMouseCapture){
-      MO.Console.find(MO.FMouseConsole).register(o);
-   }
 }
 
 //==========================================================
@@ -224,11 +166,9 @@ MO.FE3dCanvas_setVisible = function FE3dCanvas_setVisible(visible){
 //==========================================================
 MO.FE3dCanvas_setPanel = function FE3dCanvas_setPanel(hPanel){
    var o = this;
+   o._hPanel = hPanel;
    // 放入父容器
    hPanel.appendChild(o._hCanvas);
-   o._hPanel = hPanel;
-   // 改变大小
-   o.resize();
 }
 
 //==========================================================
@@ -238,14 +178,6 @@ MO.FE3dCanvas_setPanel = function FE3dCanvas_setPanel(hPanel){
 //==========================================================
 MO.FE3dCanvas_dispose = function FE3dCanvas_dispose(){
    var o = this;
-   // 移除事件
-   var h = o._hCanvas;
-   if(h){
-      h.__linker = null;
-      h.removeEventListener('touchstart', o.ohTouchStart);
-      h.removeEventListener('touchmove', o.ohTouchMove);
-      h.removeEventListener('touchend', o.ohTouchStop);
-   }
    // 释放属性
    o._graphicContext = MO.Lang.Object.dispose(o._graphicContext);
    o._size = MO.Lang.Object.dispose(o._size);

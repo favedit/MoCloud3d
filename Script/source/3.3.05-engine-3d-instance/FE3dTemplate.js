@@ -345,7 +345,6 @@ MO.FE3dTemplate_processLoad = function FE3dTemplate_processLoad(){
    // 事件发送
    var event = MO.Memory.alloc(MO.SEvent);
    event.sender = o;
-   event.template = o;
    o.processLoadListener(event);
    MO.Memory.free(event);
    return o._ready;

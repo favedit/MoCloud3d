@@ -121,7 +121,7 @@ MO.FE3dTemplateRenderable_loadResource = function FE3dTemplateRenderable_loadRes
    o._matrix.assign(resource.matrix());
    // 加载模型
    var modelGuid = resource.modelGuid();
-   o._model = MO.Console.find(MO.FE3rModelConsole).load(o, modelGuid);
+   o._model = MO.Console.find(MO.FE3rModelConsole).loadByGuid(o, modelGuid);
    // 设置资源
    var materialGuid = resource.materialGuid();
    if(!MO.Lang.String.isEmpty(materialGuid)){
@@ -199,6 +199,7 @@ MO.FE3dTemplateRenderable_load = function FE3dTemplateRenderable_load(){
    var meshResource = resource.mesh();
    var meshGuid = resource.meshGuid();
    var renderable = o._renderable = MO.Console.find(MO.FE3rModelConsole).findMesh(meshGuid);
+   MO.Assert.debugNotNull(renderable);
    var vertexBuffers = renderable.vertexBuffers();
    var vertexBufferCount = vertexBuffers.count();
    for(var i = 0; i < vertexBufferCount; i++){

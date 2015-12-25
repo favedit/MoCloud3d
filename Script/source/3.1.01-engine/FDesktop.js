@@ -9,6 +9,7 @@ MO.FDesktop = function FDesktop(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MEventDispatcher);
    //..........................................................
    // @attribute
+   o._visible         = MO.Class.register(o, new MO.AGetSet('_visible'));
    o._size            = MO.Class.register(o, new MO.AGetter('_size'));
    o._sizeRate        = MO.Class.register(o, new MO.AGetter('_sizeRate'), 1);
    o._sizeScale       = MO.Class.register(o, new MO.AGetter('_sizeScale'), 1);
@@ -29,6 +30,8 @@ MO.FDesktop = function FDesktop(o){
    o.canvasUnregister = MO.FDesktop_canvasUnregister;
    o.setup            = MO.Method.empty;
    o.build            = MO.Method.empty;
+   o.show             = MO.FDesktop_show;
+   o.hide             = MO.FDesktop_hide;
    o.resize           = MO.Method.empty;
    o.processEvent     = MO.FDesktop_processEvent;
    o.process          = MO.Method.empty;
@@ -81,15 +84,31 @@ MO.FDesktop_canvasUnregister = function FDesktop_canvasUnregister(canvas){
 }
 
 //==========================================================
+// <T>可见处理。</T>
+//
+// @method
+//==========================================================
+MO.FDesktop_show = function FDesktop_show(){
+   this.setVisible(true);
+}
+
+//==========================================================
+// <T>隐藏处理。</T>
+//
+// @method
+//==========================================================
+MO.FDesktop_hide = function FDesktop_hide(){
+   this.setVisible(false);
+}
+
+//==========================================================
 // <T>事件处理。</T>
 //
 // @method
 // @param event:SEvent 事件信息
 //==========================================================
 MO.FDesktop_processEvent = function FDesktop_processEvent(event){
-   var o = this;
-   // 处理事件
-   o.dispatcherEvent(event);
+   this.dispatchEvent(event);
 }
 
 //==========================================================

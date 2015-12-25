@@ -482,7 +482,7 @@ MO.FE3dModel_processLoad = function FE3dModel_processLoad(){
    }
    o.loadRenderable(renderable);
    var event = MO.Memory.alloc(MO.SEvent);
-   event.source = o;
+   event.sender = o;
    o.processLoadListener(event);
    MO.Memory.free(event);
    return true;
@@ -2695,7 +2695,6 @@ MO.FE3dTemplate_processLoad = function FE3dTemplate_processLoad(){
    o._ready = true;
    var event = MO.Memory.alloc(MO.SEvent);
    event.sender = o;
-   event.template = o;
    o.processLoadListener(event);
    MO.Memory.free(event);
    return o._ready;
@@ -3169,7 +3168,7 @@ MO.FE3dTemplateRenderable_loadResource = function FE3dTemplateRenderable_loadRes
    o._resource = resource;
    o._matrix.assign(resource.matrix());
    var modelGuid = resource.modelGuid();
-   o._model = MO.Console.find(MO.FE3rModelConsole).load(o, modelGuid);
+   o._model = MO.Console.find(MO.FE3rModelConsole).loadByGuid(o, modelGuid);
    var materialGuid = resource.materialGuid();
    if(!MO.Lang.String.isEmpty(materialGuid)){
       var material = o._material = o._materialReference = MO.Console.find(MO.FE3rMaterialConsole).load(o, materialGuid);
@@ -3222,6 +3221,7 @@ MO.FE3dTemplateRenderable_load = function FE3dTemplateRenderable_load(){
    var meshResource = resource.mesh();
    var meshGuid = resource.meshGuid();
    var renderable = o._renderable = MO.Console.find(MO.FE3rModelConsole).findMesh(meshGuid);
+   MO.Assert.debugNotNull(renderable);
    var vertexBuffers = renderable.vertexBuffers();
    var vertexBufferCount = vertexBuffers.count();
    for(var i = 0; i < vertexBufferCount; i++){

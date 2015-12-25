@@ -174,6 +174,7 @@ MO.FE3rBitmapConsole_load = function FE3rBitmapConsole_load(context, guid, code)
    }else{
       bitmap = graphic.createObject(MO.FE3rBitmapFlatPack);
    }
+   bitmap.loadUrl(url);
    o._bitmaps.set(flag, bitmap);
    return bitmap;
 }
@@ -651,6 +652,8 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
    var o = this;
    var context = o._graphicContext;
    o._resource = resource;
+   o._guid = resource.guid();
+   o._code = resource.code();
    var streamResources = resource.streams();
    var streamCount = streamResources.count();
    for(var i = 0; i < streamCount; i++){
@@ -1191,6 +1194,7 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    o.findModel      = MO.FE3rModelConsole_findModel;
    o.findMesh       = MO.FE3rModelConsole_findMesh;
    o.load           = MO.FE3rModelConsole_load;
+   o.loadByGuid     = MO.FE3rModelConsole_loadByGuid;
    o.loadByCode     = MO.FE3rModelConsole_loadByCode;
    o.loadMeshByGuid = MO.FE3rModelConsole_loadMeshByGuid;
    o.loadMeshByCode = MO.FE3rModelConsole_loadMeshByCode;
@@ -1221,10 +1225,14 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    MO.Console.find(MO.FThreadConsole).start(thread);
 }
 MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
+   MO.Assert.debugNotEmpty(code);
+   MO.Assert.debugNotNull(model);
    this._models.set(code, model);
 }
 MO.FE3rModelConsole_registerMesh = function FE3rModelConsole_registerMesh(code, mesh){
-   this._meshs.get(code, mesh);
+   MO.Assert.debugNotEmpty(code);
+   MO.Assert.debugNotNull(mesh);
+   this._meshs.set(code, mesh);
 }
 MO.FE3rModelConsole_findModel = function FE3rModelConsole_findModel(guid){
    return this._models.get(guid);
@@ -1251,6 +1259,26 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
    model.setResource(resource);
    o._models.set(guid, model);
    o._loadModels.push(model);
+   return model;
+}
+MO.FE3rModelConsole_loadByGuid = function FE3rModelConsole_loadByGuid(context, guid){
+   var o = this;
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotEmpty(guid);
+   var model = o._models.get(guid);
+   if(!model){
+      var resource = MO.Console.find(MO.FE3sModelConsole).loadByGuid(guid);
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(guid);
+      model.setResource(resource);
+      o._models.set(guid, model);
+      if(resource.testReady()){
+         model.loadResource(resource);
+      }else{
+         o._loadModels.push(model);
+      }
+   }
    return model;
 }
 MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){

@@ -1111,6 +1111,7 @@ MO.RKeyboard.prototype.fixChars = function RKeyboard_fixChars(e, p){
    return true;
 }
 MO.Window.Keyboard = new MO.RKeyboard();
+MO.Device.Keyboard = MO.Window.Keyboard;
 MO.RResource = function RResource(){
    var o = this;
    o.uriIcon  = '/ars/icon/';

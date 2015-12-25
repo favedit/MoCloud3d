@@ -32,6 +32,7 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    o.findMesh       = MO.FE3rModelConsole_findMesh;
    // @method
    o.load           = MO.FE3rModelConsole_load;
+   o.loadByGuid     = MO.FE3rModelConsole_loadByGuid;
    o.loadByCode     = MO.FE3rModelConsole_loadByCode;
    o.loadMeshByGuid = MO.FE3rModelConsole_loadMeshByGuid;
    o.loadMeshByCode = MO.FE3rModelConsole_loadMeshByCode;
@@ -84,6 +85,8 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
 // @param model:FE3rModel 模型
 //==========================================================
 MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
+   MO.Assert.debugNotEmpty(code);
+   MO.Assert.debugNotNull(model);
    this._models.set(code, model);
 }
 
@@ -95,7 +98,9 @@ MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code
 // @param mesh:FE3rMesh 模型
 //==========================================================
 MO.FE3rModelConsole_registerMesh = function FE3rModelConsole_registerMesh(code, mesh){
-   this._meshs.get(code, mesh);
+   MO.Assert.debugNotEmpty(code);
+   MO.Assert.debugNotNull(mesh);
+   this._meshs.set(code, mesh);
 }
 
 //==========================================================
@@ -152,6 +157,40 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
    o._models.set(guid, model);
    // 追加到加载队列
    o._loadModels.push(model);
+   return model;
+}
+
+//==========================================================
+// <T>加载一个渲染模型。</T>
+//
+// @method
+// @param content:FG3dContext 环境
+// @param code:String 代码
+// @return FE3rModel 渲染模型
+//==========================================================
+MO.FE3rModelConsole_loadByGuid = function FE3rModelConsole_loadByGuid(context, guid){
+   var o = this;
+   // 检查参数
+   MO.Assert.debugNotNull(context);
+   MO.Assert.debugNotEmpty(guid);
+   // 查找模型
+   var model = o._models.get(guid);
+   if(!model){
+      // 获得路径
+      var resource = MO.Console.find(MO.FE3sModelConsole).loadByGuid(guid);
+      // 加载模型
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(guid);
+      model.setResource(resource);
+      o._models.set(guid, model);
+      // 测试是否已加载
+      if(resource.testReady()){
+         model.loadResource(resource);
+      }else{
+         o._loadModels.push(model);
+      }
+   }
    return model;
 }
 

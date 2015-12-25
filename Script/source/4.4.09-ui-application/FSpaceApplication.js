@@ -5,31 +5,29 @@
 // @author maocy
 // @history 150930
 //==========================================================
-MO.FE3dModelApplication = function FE3dModelApplication(o){
+MO.FSpaceApplication = function FSpaceApplication(o){
    o = MO.Class.inherits(this, o, MO.FApplication);
    //..........................................................
    // @attribute
-   o._desktop      = MO.Class.register(o, new MO.AGetter('_desktop'));
+   o._activeSpace   = MO.Class.register(o, new MO.AGetter('_activeSpace'));
+   o._desktop       = MO.Class.register(o, new MO.AGetter('_desktop'));
    // @attribute
-   o._dynamicInfo  = MO.Class.register(o, new MO.AGetter('_dynamicInfo'));
+   o._dynamicInfo   = MO.Class.register(o, new MO.AGetter('_dynamicInfo'));
    //..........................................................
    // @event
-   o.onDataLoaded  = MO.FE3dModelApplication_onDataLoaded;
+   o.onDataLoaded   = MO.FSpaceApplication_onDataLoaded;
+   o.onProcessInput = MO.FSpaceApplication_onProcessInput;
    //..........................................................
    // @method
-   o.construct     = MO.FE3dModelApplication_construct;
+   o.construct      = MO.FSpaceApplication_construct;
    // @method
-   o.createChapter = MO.FE3dModelApplication_createChapter;
-   o.setup         = MO.FE3dModelApplication_setup;
+   o.setup          = MO.FSpaceApplication_setup;
    // @method
-   o.processResize = MO.FE3dModelApplication_processResize;
-   o.processEvent  = MO.FE3dModelApplication_processEvent;
-   o.process       = MO.FE3dModelApplication_process;
+   o.processResize  = MO.FSpaceApplication_processResize;
+   o.processEvent   = MO.FSpaceApplication_processEvent;
+   o.process        = MO.FSpaceApplication_process;
    // @method
-   o.loadByGuid    = MO.FE3dModelApplication_loadByGuid;
-   o.loadByCode    = MO.FE3dModelApplication_loadByCode;
-   // @method
-   o.dispose       = MO.FE3dModelApplication_dispose;
+   o.dispose        = MO.FSpaceApplication_dispose;
    return o;
 }
 
@@ -39,7 +37,7 @@ MO.FE3dModelApplication = function FE3dModelApplication(o){
 // @method
 // @param event:SEvent 事件信息
 //==========================================================
-MO.FE3dModelApplication_onDataLoaded = function FE3dModelApplication_onDataLoaded(event){
+MO.FSpaceApplication_onDataLoaded = function FSpaceApplication_onDataLoaded(event){
    var o = this;
    var graphic = o._graphicContext;
    var space = o._activeSpace = event.source;
@@ -54,8 +52,11 @@ MO.FE3dModelApplication_onDataLoaded = function FE3dModelApplication_onDataLoade
    o._cameraKeyRotation = regionResource.rotationKeySpeed();
    o._cameraMouseRotation = regionResource.rotationMouseSpeed();
    // 加载完成
-   var canvas3d = o._desktop.canvas3d();
-   canvas3d.selectStage(space);
+   //var canvas3d = o._desktop.canvas3d();
+   //canvas3d.selectStage(space);
+   o._desktop.selectStage(space);
+   // 设置大小
+   //o._desktop.resize();
    //var event = new MO.SEvent(o);
    //event.space = s;
    //o.processLoadListener(event);
@@ -63,33 +64,91 @@ MO.FE3dModelApplication_onDataLoaded = function FE3dModelApplication_onDataLoade
 }
 
 //==========================================================
+// <T>响应输入处理。</T>
+//
+// @method
+// @param event:SEvent 事件信息
+//==========================================================
+MO.FSpaceApplication_onProcessInput = function FSpaceApplication_onProcessInput(event){
+   var o = this;
+   o.__base.FApplication.onProcessInput.call(o);
+   // 检查参数
+   var space = o._activeSpace;
+   if(!space){
+      return;
+   }
+   var timer = space.timer();
+   var span = timer.spanSecond();
+   var keyboard = MO.Device.Keyboard;
+   //..........................................................
+   // 按键处理
+   var camera = space.camera();
+   var distance = o._cameraMoveRate * span;
+   var rotation = o._cameraKeyRotation * span;
+   // 按键前后移动
+   var keyForward = keyboard.isPress(MO.EStageKey.Forward);
+   var keyBack = keyboard.isPress(MO.EStageKey.Back);
+   if((keyForward && !keyBack) || o._actionForward){
+      camera.doWalk(distance);
+   }
+   if((!keyForward && keyBack) || o._actionBack){
+      camera.doWalk(-distance);
+   }
+   // 按键上下移动
+   var keyUp = keyboard.isPress(MO.EStageKey.Up);
+   var keyDown = keyboard.isPress(MO.EStageKey.Down);
+   if((keyUp && !keyDown) || o._actionUp){
+      camera.doFly(distance);
+   }
+   if((!keyUp && keyDown) || o._actionDown){
+      camera.doFly(-distance);
+   }
+   // 按键左右旋转
+   var keyLeft = keyboard.isPress(MO.EStageKey.RotationLeft);
+   var keyRight = keyboard.isPress(MO.EStageKey.RotationRight);
+   if(keyLeft && !keyRight){
+      camera.doYaw(rotation);
+   }
+   if(!keyLeft && keyRight){
+      camera.doYaw(-rotation);
+   }
+   // 按键上下旋转
+   var keyRotationUp = keyboard.isPress(MO.EStageKey.RotationUp);
+   var keyRotationDown = keyboard.isPress(MO.EStageKey.RotationDown);
+   if(keyRotationUp && !keyRotationDown){
+      camera.doPitch(rotation);
+   }
+   if(!keyRotationUp && keyRotationDown){
+      camera.doPitch(-rotation);
+   }
+   // 更新相机
+   camera.update();
+   //..........................................................
+   // 旋转模型
+   if(o._optionRotation){
+      var rotation = o._rotation;
+      // 旋转所有层
+      var layers = space.layers();
+      var count = layers.count();
+      for(var i = 0; i < count; i++){
+         var layer = layers.at(i);
+         var matrix = layer.matrix();
+         matrix.setRotation(0, rotation.y, 0);
+         matrix.update();
+      }
+      // 设置变量
+      rotation.y += 0.01;
+   }
+}
+
+//==========================================================
 // <T>构造处理。</T>
 //
 // @method
 //==========================================================
-MO.FE3dModelApplication_construct = function FE3dModelApplication_construct(){
+MO.FSpaceApplication_construct = function FSpaceApplication_construct(){
    var o = this;
    o.__base.FApplication.construct.call(o);
-}
-
-//==========================================================
-// <T>根据代码创建章节。</T>
-//
-// @method
-// @param code:String 代码
-// @return FChapter 章节
-//==========================================================
-MO.FE3dModelApplication_createChapter = function FE3dModelApplication_createChapter(code){
-   var o = this;
-   var chapter = null;
-   switch(code){
-      // 创建图表章节
-      case MO.ECanvasChapter.Simple:
-         chapter = MO.Class.create(MO.FCanvasSimpleChapter);
-         break;
-   }
-   chapter.linkGraphicContext(o);
-   return chapter;
 }
 
 //==========================================================
@@ -98,7 +157,7 @@ MO.FE3dModelApplication_createChapter = function FE3dModelApplication_createChap
 // @method
 // @param hPanel:HtmlTag 页面元素
 //==========================================================
-MO.FE3dModelApplication_setup = function FE3dModelApplication_setup(hPanel){
+MO.FSpaceApplication_setup = function FSpaceApplication_setup(hPanel){
    var o = this;
    var result = o.__base.FApplication.setup.call(o, hPanel);
    if(!result){
@@ -107,9 +166,9 @@ MO.FE3dModelApplication_setup = function FE3dModelApplication_setup(hPanel){
    o._hPanel = hPanel;
    //..........................................................
    // 创建桌面
-   var desktop = o._desktop = MO.Class.create(MO.FCanvasDesktop);
+   var desktop = o._desktop = MO.Class.create(MO.FSpaceDesktop);
    desktop.setCanvas2dClass(MO.FGuiCanvas);
-   desktop.setCanvas3dClass(MO.FCanvas3d);
+   desktop.setCanvas3dClass(MO.FSpaceCanvas);
    desktop.build(hPanel);
    // 检查状态
    var canvas = desktop.canvas3d();
@@ -134,7 +193,7 @@ MO.FE3dModelApplication_setup = function FE3dModelApplication_setup(hPanel){
 // @method
 // @param event:SEvent 事件信息
 //==========================================================
-MO.FE3dModelApplication_processResize = function FE3dModelApplication_processResize(event){
+MO.FSpaceApplication_processResize = function FSpaceApplication_processResize(event){
    var o = this;
    o.__base.FApplication.processResize.call(o, event);
    // 处理事件
@@ -150,7 +209,7 @@ MO.FE3dModelApplication_processResize = function FE3dModelApplication_processRes
 // @method
 // @param event:SEvent 事件信息
 //==========================================================
-MO.FE3dModelApplication_processEvent = function FE3dModelApplication_processEvent(event){
+MO.FSpaceApplication_processEvent = function FSpaceApplication_processEvent(event){
    var o = this;
    o.__base.FApplication.processEvent.call(o, event);
    // 处理事件
@@ -165,11 +224,12 @@ MO.FE3dModelApplication_processEvent = function FE3dModelApplication_processEven
 //
 // @method
 //==========================================================
-MO.FE3dModelApplication_process = function FE3dModelApplication_process(){
+MO.FSpaceApplication_process = function FSpaceApplication_process(){
    var o = this;
    o.__base.FApplication.process.call(o);
    // 桌面处理
    o._desktop.process();
+   // 空间处理
    var space = o._activeSpace;
    if(space){
       space.process();
@@ -177,47 +237,11 @@ MO.FE3dModelApplication_process = function FE3dModelApplication_process(){
 }
 
 //==========================================================
-// <T>加载场景处理。</T>
-//
-// @method
-// @param guid:String 唯一编号
-//==========================================================
-MO.FE3dModelApplication_loadByGuid = function FE3dModelApplication_loadByGuid(guid){
-   var o = this;
-   // 收集场景
-   var modelConsole = MO.Console.find(MO.FE3dSceneConsole);
-   if(o._activeSpace){
-      modelConsole.free(o._activeSpace);
-   }
-   // 监听加载完成
-   var model = o._activeSpace = modelConsole.allocByGuid(o._graphicContext, guid);
-   model.addLoadListener(o, o.onDataLoaded);
-}
-
-//==========================================================
-// <T>加载场景处理。</T>
-//
-// @method
-// @param code:String 代码
-//==========================================================
-MO.FE3dModelApplication_loadByCode = function FE3dModelApplication_loadByCode(code){
-   var o = this;
-   // 收集场景
-   var modelConsole = MO.Console.find(MO.FE3dModelConsole);
-   if(o._activeSpace){
-      modelConsole.free(o._activeSpace);
-   }
-   // 监听加载完成
-   var model = o._activeSpace = modelConsole.allocByCode(o._graphicContext, code);
-   model.addLoadListener(o, o.onDataLoaded);
-}
-
-//==========================================================
 // <T>释放处理。</T>
 //
 // @method
 //==========================================================
-MO.FE3dModelApplication_dispose = function FE3dModelApplication_dispose(){
+MO.FSpaceApplication_dispose = function FSpaceApplication_dispose(){
    var o = this;
    // 父处理
    o.__base.FApplication.dispose.call(o);

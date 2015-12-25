@@ -72,7 +72,7 @@ MO.SE3sLoadArgs = function SE3sLoadArgs(){
    var o = this;
    o.guid    = null;
    o.code    = null;
-   o.free    = MO.Method.disposeStruct;
+   o.free    = MO.Method.freeStruct;
    o.dispose = MO.Method.disposeStruct;
    return o;
 }
@@ -1137,7 +1137,7 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
       identity = code;
    }
    var url = vendor.makeUrl();
-   var model = models.get(guid);
+   var model = models.get(identity);
    if(model){
       return model;
    }
@@ -2167,6 +2167,7 @@ MO.FE3sTemplateConsole = function FE3sTemplateConsole(o){
    o._serviceUrl = '/cloud.content.template.ws'
    o.construct   = MO.FE3sTemplateConsole_construct;
    o.unserialize = MO.FE3sTemplateConsole_unserialize;
+   o.load        = MO.FE3sTemplateConsole_load;
    o.loadByGuid  = MO.FE3sTemplateConsole_loadByGuid;
    o.loadByCode  = MO.FE3sTemplateConsole_loadByCode;
    o.update      = MO.FE3sTemplateConsole_update;
@@ -2185,40 +2186,48 @@ MO.FE3sTemplateConsole_unserialize = function FE3sTemplateConsole_unserialize(p)
    o._templates.set(r.guid(), r);
    return r;
 }
-MO.FE3sTemplateConsole_loadByGuid = function FE3sTemplateConsole_loadByGuid(guid){
+MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
    var o = this;
    var templates = o._templates;
-   var template = templates.get(guid);
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Template);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(args.code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
+   var template = templates.get(identity);
    if(template){
       return template;
    }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find('template');
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
    template = MO.Class.create(MO.FE3sTemplate);
-   template.setGuid(guid);
+   template.setGuid(identity);
    template.setVendor(vendor);
    template.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(template);
-   templates.set(guid, template);
+   templates.set(identity, template);
+   return template;
+}
+MO.FE3sTemplateConsole_loadByGuid = function FE3sTemplateConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var template = o.load(args);
+   MO.Memory.free(args);
    return template;
 }
 MO.FE3sTemplateConsole_loadByCode = function FE3sTemplateConsole_loadByCode(code){
    var o = this;
-   var templates = o._templates;
-   var template = templates.get(code);
-   if(template){
-      return template;
-   }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find('template');
-   vendor.set('code', code);
-   var url = vendor.makeUrl();
-   template = MO.Class.create(MO.FE3sTemplate);
-   template.setCode(code);
-   template.setVendor(vendor);
-   template.setSourceUrl(url);
-   MO.Console.find(MO.FResourceConsole).load(template);
-   templates.set(code, template);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var template = o.load(args);
+   MO.Memory.free(args);
    return template;
 }
 MO.FE3sTemplateConsole_update = function FE3sTemplateConsole_update(p){

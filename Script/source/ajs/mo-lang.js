@@ -3515,6 +3515,21 @@ MO.RMethod.prototype.emptyFalse = function RMethod_emptyFalse(){
 }
 MO.RMethod.prototype.emptyCall = function RMethod_emptyCall(){
 }
+MO.RMethod.prototype.freeStruct = function freeStruct(){
+   var o = this;
+   for(var name in o){
+      if(name.indexOf('__') == 0){
+         continue;
+      }
+      var value = o[name];
+      if(value){
+         if(value.constructor == Function){
+            continue;
+         }
+         o[name] = null;
+      }
+   }
+}
 MO.RMethod.prototype.disposeStruct = function RMethod_disposeStruct(){
    var o = this;
    for(var name in o){

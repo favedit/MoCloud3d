@@ -12,7 +12,7 @@ MO.SE3sLoadArgs = function SE3sLoadArgs(){
    o.code    = null;
    //..........................................................
    // @method
-   o.free    = MO.Method.disposeStruct;
+   o.free    = MO.Method.freeStruct;
    o.dispose = MO.Method.disposeStruct;
    return o;
 }

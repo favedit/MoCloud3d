@@ -114,6 +114,8 @@ MO.FE3rGeometry_loadResource = function FE3rGeometry_loadResource(resource){
    var context = o._graphicContext;
    // 设置属性
    o._resource = resource;
+   o._guid = resource.guid();
+   o._code = resource.code();
    // 创建顶点缓冲集合
    var streamResources = resource.streams();
    var streamCount = streamResources.count();

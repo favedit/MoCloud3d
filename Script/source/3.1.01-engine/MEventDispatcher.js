@@ -21,7 +21,7 @@ MO.MEventDispatcher = function MEventDispatcher(o){
    o.onOperationOrientation = MO.Method.empty;
    //..........................................................
    // @method
-   o.dispatcherEvent        = MO.MEventDispatcher_dispatcherEvent;
+   o.dispatchEvent          = MO.MEventDispatcher_dispatchEvent;
    return o;
 }
 
@@ -32,7 +32,7 @@ MO.MEventDispatcher = function MEventDispatcher(o){
 // @param event:SEvent 事件信息
 // @param flag:Boolean 标志
 //==========================================================
-MO.MEventDispatcher_dispatcherEvent = function MEventDispatcher_dispatcherEvent(event, flag){
+MO.MEventDispatcher_dispatchEvent = function MEventDispatcher_dispatchEvent(event, flag){
    var o = this;
    switch(event.code){
       case MO.EEvent.MouseDown:

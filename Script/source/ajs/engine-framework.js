@@ -29,6 +29,7 @@ MO.FApplication = function FApplication(o){
    o._activeChapter       = MO.Class.register(o, new MO.AGetter('_activeChapter'));
    o._chapters            = MO.Class.register(o, new MO.AGetter('_chapters'));
    o.onProcessReady       = MO.FApplication_onProcessReady;
+   o.onProcessInput       = MO.FApplication_onProcessInput;
    o.onProcess            = MO.FApplication_onProcess;
    o.construct            = MO.FApplication_construct;
    o.setup                = MO.Method.emptyTrue;
@@ -46,6 +47,8 @@ MO.FApplication = function FApplication(o){
 }
 MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
    MO.Logger.debug(this, 'Application process ready.');
+}
+MO.FApplication_onProcessInput = function FApplication_onProcessInput(event){
 }
 MO.FApplication_onProcess = function FApplication_onProcess(event){
    var o = this;
@@ -102,7 +105,7 @@ MO.FApplication_processResize = function FApplication_processResize(){
 }
 MO.FApplication_processEvent = function FApplication_processEvent(event){
    var o = this;
-   o.dispatcherEvent(event);
+   o.dispatchEvent(event);
    var chapter = o._activeChapter;
    if(chapter){
       chapter.processEvent(event);
@@ -114,6 +117,7 @@ MO.FApplication_process = function FApplication_process(){
    if(!loader.testReady()){
       return;
    }
+   o.onProcessInput();
    o.processEnterFrameListener(o._eventEnterFrame);
    o.onProcess();
    o.processLeaveFrameListener(o._eventLeaveFrame);
