@@ -15,7 +15,7 @@ MO.FDsCanvas = function FDsCanvas(o){
    // @attribute
    o._optionRotation      = false;
    // @attribute
-   o._activeSpace         = null;
+   o._activeSpace         = MO.Class.register(o, new MO.AGetter('_activeSpace'));
    // @attribute
    o._canvasModeCd        = MO.EDsCanvasMode.Drop;
    o._canvasMoveCd        = MO.EDsCanvasDrag.Unknown;
@@ -39,9 +39,9 @@ MO.FDsCanvas = function FDsCanvas(o){
    o.onMouseCaptureStart  = MO.FDsCanvas_onMouseCaptureStart;
    o.onMouseCapture       = MO.FDsCanvas_onMouseCapture;
    o.onMouseCaptureStop   = MO.FDsCanvas_onMouseCaptureStop;
-   o.onEnterFrame         = MO.FDsCanvas_onEnterFrame;
    //..........................................................
    o.oeResize             = MO.FDsCanvas_oeResize;
+   o.oeFrame              = MO.FDsCanvas_oeFrame;
    o.oeRefresh            = MO.FDsCanvas_oeRefresh;
    //..........................................................
    // @method
@@ -82,8 +82,8 @@ MO.FDsCanvas_onBuild = function FDsCanvas_onBuild(event){
    dimensional.linkGraphicContext(context);
    dimensional.setup();
    // 启动处理
-   MO.RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-   MO.RStage.start(1000 / 60);
+   //MO.RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
+   //MO.RStage.start(1000 / 60);
    // 注册鼠标捕捉监听
    MO.Console.find(MO.FMouseConsole).register(o);
 }
@@ -110,7 +110,7 @@ MO.FDsCanvas_onMouseCaptureStart = function FDsCanvas_onMouseCaptureStart(event)
    //o._captureMatrix.assign(d.matrix());
    //o._captureRotation.assign(s.camera()._rotation);
    // 设置鼠标
-   MO.RHtml.cursorSet(o._hPanel, MO.EUiCursor.Pointer);
+   MO.Window.Html.cursorSet(o._hPanel, MO.EUiCursor.Pointer);
 }
 
 //==========================================================
@@ -174,81 +174,6 @@ MO.FDsCanvas_onMouseCaptureStop = function FDsCanvas_onMouseCaptureStop(event){
 }
 
 //==========================================================
-// <T>每帧处理。</T>
-//
-// @method
-//==========================================================
-MO.FDsCanvas_onEnterFrame = function FDsCanvas_onEnterFrame(){
-   var o = this;
-   // 检查参数
-   var space = o._activeSpace;
-   if(!space){
-      return;
-   }
-   var camera = space.camera();
-   //..........................................................
-   // 计算间隔
-   var timer = space.timer();
-   var span = timer.spanSecond();
-   var moveRate = o._cameraMoveRate * span;
-   var rotationRate = o._cameraKeyRotation * span;
-   //..........................................................
-   // 按键前后移动
-   var keyForward = MO.Window.Keyboard.isPress(MO.EStageKey.Forward);
-   var keyBack = MO.Window.Keyboard.isPress(MO.EStageKey.Back);
-   if(keyForward && !keyBack){
-      camera.doWalk(moveRate);
-   }
-   if(!keyForward && keyBack){
-      camera.doWalk(-moveRate);
-   }
-   // 按键上下移动
-   var keyUp = MO.Window.Keyboard.isPress(MO.EStageKey.Up);
-   var keyDown = MO.Window.Keyboard.isPress(MO.EStageKey.Down);
-   if(keyUp && !keyDown){
-      camera.doFly(moveRate);
-   }
-   if(!keyUp && keyDown){
-      camera.doFly(-moveRate);
-   }
-   // 按键左右旋转
-   var keyRleft = MO.Window.Keyboard.isPress(MO.EStageKey.RotationLeft);
-   var keyRright = MO.Window.Keyboard.isPress(MO.EStageKey.RotationRight);
-   if(keyRleft && !keyRright){
-      camera.doYaw(rotationRate);
-   }
-   if(!keyRleft && keyRright){
-      camera.doYaw(-rotationRate);
-   }
-   // 按键上下旋转
-   var keyRup = MO.Window.Keyboard.isPress(MO.EStageKey.RotationUp);
-   var keyDown = MO.Window.Keyboard.isPress(MO.EStageKey.RotationDown);
-   if(keyRup && !keyDown){
-      camera.doPitch(rotationRate);
-   }
-   if(!keyRup && keyDown){
-      camera.doPitch(-rotationRate);
-   }
-   // 更新相机
-   camera.update();
-   //..........................................................
-   // 旋转处理
-   if(o._optionRotation){
-      var rotation = o._rotation;
-      var layers = space.layers();
-      var count = layers.count();
-      for(var i = 0; i < count; i++){
-         var layer = layers.at(i);
-         var matrix = layer.matrix();
-         matrix.setRotation(0, rotation.y, 0);
-         matrix.update();
-      }
-      // 设置变量
-      rotation.y += 0.01;
-   }
-}
-
-//==========================================================
 // <T>刷新处理。</T>
 //
 // @method
@@ -267,6 +192,89 @@ MO.FDsCanvas_oeResize = function FDsCanvas_oeResize(p){
    o._graphicContext.setViewport(0, 0, w, h);
    // 设置范围
    return MO.EEventStatus.Stop;
+}
+
+//==========================================================
+// <T>每帧处理。</T>
+//
+// @method
+//==========================================================
+MO.FDsCanvas_oeFrame = function FDsCanvas_oeFrame(event){
+   var o = this;
+   o.__base.FDuiCanvas.oeFrame.call(o, event);
+   // 检查参数
+   var space = o._activeSpace;
+   if(!space){
+      return;
+   }
+   // 帧前处理
+   if(event.isBefore()){
+      var camera = space.camera();
+      //..........................................................
+      // 计算间隔
+      var timer = space.timer();
+      var span = timer.spanSecond();
+      var moveRate = o._cameraMoveRate * span;
+      var rotationRate = o._cameraKeyRotation * span;
+      //..........................................................
+      // 按键前后移动
+      var keyForward = MO.Device.Keyboard.isPress(MO.EStageKey.Forward);
+      var keyBack = MO.Device.Keyboard.isPress(MO.EStageKey.Back);
+      if(keyForward && !keyBack){
+         camera.doWalk(moveRate);
+      }
+      if(!keyForward && keyBack){
+         camera.doWalk(-moveRate);
+      }
+      // 按键上下移动
+      var keyUp = MO.Device.Keyboard.isPress(MO.EStageKey.Up);
+      var keyDown = MO.Device.Keyboard.isPress(MO.EStageKey.Down);
+      if(keyUp && !keyDown){
+         camera.doFly(moveRate);
+      }
+      if(!keyUp && keyDown){
+         camera.doFly(-moveRate);
+      }
+      // 按键左右旋转
+      var keyRleft = MO.Device.Keyboard.isPress(MO.EStageKey.RotationLeft);
+      var keyRright = MO.Device.Keyboard.isPress(MO.EStageKey.RotationRight);
+      if(keyRleft && !keyRright){
+         camera.doYaw(rotationRate);
+      }
+      if(!keyRleft && keyRright){
+         camera.doYaw(-rotationRate);
+      }
+      // 按键上下旋转
+      var keyRup = MO.Device.Keyboard.isPress(MO.EStageKey.RotationUp);
+      var keyDown = MO.Device.Keyboard.isPress(MO.EStageKey.RotationDown);
+      if(keyRup && !keyDown){
+         camera.doPitch(rotationRate);
+      }
+      if(!keyRup && keyDown){
+         camera.doPitch(-rotationRate);
+      }
+      // 更新相机
+      camera.update();
+      //..........................................................
+      // 旋转处理
+      if(o._optionRotation){
+         var rotation = o._rotation;
+         var layers = space.layers();
+         var count = layers.count();
+         for(var i = 0; i < count; i++){
+            var layer = layers.at(i);
+            var matrix = layer.matrix();
+            matrix.setRotation(0, rotation.y, 0);
+            matrix.update();
+         }
+         // 设置变量
+         rotation.y += 0.01;
+      }
+   }
+   // 帧后处理
+   if(event.isAfter()){
+      space.process();
+   }
 }
 
 //==========================================================

@@ -27,9 +27,13 @@ MO.FE3dSceneConsole = function FE3dSceneConsole(o){
    o.scenes        = MO.FE3dSceneConsole_scenes;
    // @method
    o.loadDisplay   = MO.FE3dSceneConsole_loadDisplay;
+   // @method
+   o.alloc         = MO.FE3dSceneConsole_alloc;
    o.allocByGuid   = MO.FE3dSceneConsole_allocByGuid;
    o.allocByCode   = MO.FE3dSceneConsole_allocByCode;
    o.free          = MO.FE3dSceneConsole_free;
+   // @method
+   o.dispose       = MO.FE3dSceneConsole_dispose;
    return o;
 }
 
@@ -52,14 +56,14 @@ MO.FE3dSceneConsole_onProcess = function FE3dSceneConsole_onProcess(){
    }
    //..........................................................
    // 处理加载场景
-   var scenes = o._loadScenes;
-   scenes.record();
-   while(scenes.next()){
-      var scene = scenes.current();
-      if(scene.processLoad()){
-         scenes.removeCurrent();
-      }
-   }
+   //var scenes = o._loadScenes;
+   //scenes.record();
+   //while(scenes.next()){
+   //   var scene = scenes.current();
+   //   if(scene.processLoad()){
+   //      scenes.removeCurrent();
+   //   }
+   //}
 }
 
 //==========================================================
@@ -101,6 +105,46 @@ MO.FE3dSceneConsole_loadDisplay = function FE3dSceneConsole_loadDisplay(display)
 }
 
 //==========================================================
+// <T>根据信息收集一个场景实例。</T>
+//
+// @method
+// @param args:SE3sLoadArgs 加载参数
+// @return FE3dScene 渲染场景
+//==========================================================
+MO.FE3dSceneConsole_alloc = function FE3dSceneConsole_alloc(args){
+   var o = this;
+   // 获得环境
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   // 获得标识
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
+   }
+   MO.Assert.debugNotEmpty(identity);
+   // 尝试从缓冲池中取出
+   var scene = o._pools.alloc(identity);
+   if(!scene){
+      // 加载渲染对象
+      var resource = MO.Console.find(MO.FE3sSceneConsole).load(args);
+      // 加载模型
+      scene = MO.Class.create(MO.FE3dScene);
+      scene.linkGraphicContext(context);
+      scene.setPoolCode(identity);
+      scene.setResource(resource);
+      scene.setup();
+      // 追加到加载队列
+      MO.Console.find(MO.FProcessLoadConsole).push(scene);
+   }
+   return scene;
+}
+
+//==========================================================
 // <T>收集一个场景。</T>
 //
 // @method
@@ -110,21 +154,11 @@ MO.FE3dSceneConsole_loadDisplay = function FE3dSceneConsole_loadDisplay(display)
 //==========================================================
 MO.FE3dSceneConsole_allocByGuid = function FE3dSceneConsole_allocByGuid(context, guid){
    var o = this;
-   // 尝试从缓冲池中取出
-   var scene = o._pools.alloc(guid);
-   if(scene){
-      return scene;
-   }
-   // 加载渲染对象
-   var resource = MO.Console.find(MO.FE3sSceneConsole).loadByGuid(guid);
-   // 加载模型
-   scene = MO.Class.create(MO.FE3dScene);
-   scene.linkGraphicContext(context);
-   scene.setResource(resource);
-   scene._poolCode = guid;
-   scene.setup();
-   // 增加加载中
-   o._loadScenes.push(scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var scene = o.alloc(args);
+   MO.Memory.free(args);
    return scene;
 }
 
@@ -133,26 +167,16 @@ MO.FE3dSceneConsole_allocByGuid = function FE3dSceneConsole_allocByGuid(context,
 //
 // @method
 // @param context:FGraphicContext 渲染环境
-// @param context:String 代码
+// @param code:String 代码
 // @return FE3dScene 渲染模型
 //==========================================================
 MO.FE3dSceneConsole_allocByCode = function FE3dSceneConsole_allocByCode(context, code){
    var o = this;
-   // 尝试从缓冲池中取出
-   var scene = o._pools.alloc(code);
-   if(scene){
-      return scene;
-   }
-   // 加载渲染对象
-   var resource = MO.Console.find(MO.FE3sSceneConsole).loadByCode(code);
-   // 加载模型
-   scene = MO.Class.create(MO.FE3dScene);
-   scene.linkGraphicContext(context);
-   scene.setResource(resource);
-   scene._poolCode = code;
-   scene.setup();
-   // 增加加载中
-   o._loadScenes.push(scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var scene = o.alloc(args);
+   MO.Memory.free(args);
    return scene;
 }
 
@@ -165,6 +189,19 @@ MO.FE3dSceneConsole_allocByCode = function FE3dSceneConsole_allocByCode(context,
 MO.FE3dSceneConsole_free = function FE3dSceneConsole_free(scene){
    var o = this;
    // 放到缓冲池
-   var code = scene._poolCode;
+   var code = scene.poolCode();
    o._pools.free(code, scene);
+}
+
+//==========================================================
+// <T>释放处理。</T>
+//
+// @method
+//==========================================================
+MO.FE3dSceneConsole_dispose = function FE3dSceneConsole_dispose(){
+   var o = this;
+   // 释放属性
+   o._pools = MO.Lang.Object.dispose(o._pools);
+   // 父处理
+   o.__base.FConsole.dispose.call(o);
 }

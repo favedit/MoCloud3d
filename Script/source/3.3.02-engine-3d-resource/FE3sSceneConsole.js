@@ -56,6 +56,7 @@ MO.FE3sSceneConsole_load = function FE3sSceneConsole_load(args){
       vendor.set('code', code);
       identity = code;
    }
+   MO.Assert.debugNotEmpty(identity);
    var url = vendor.makeUrl();
    // 查找模型
    var scenes = o._scenes;

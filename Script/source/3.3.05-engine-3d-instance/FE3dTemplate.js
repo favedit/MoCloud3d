@@ -5,7 +5,7 @@
 // @history 150106
 //==========================================================
 MO.FE3dTemplate = function FE3dTemplate(o){
-   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MGraphicObject, MO.MListenerLoad);
+   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MProcessLoad);
    //..........................................................
    // @attribute
    o._dataReady       = false;

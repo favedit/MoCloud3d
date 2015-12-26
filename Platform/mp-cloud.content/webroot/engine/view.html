@@ -50,10 +50,10 @@ function onLoad(){
    MO.initialize();
    MO.Runtime.setVersion('151101');
    MO.Runtime.setProcessCd(MO.EProcess.Debug);
+   MO.Window.Browser.setContentPath('.');
    //MO.Runtime.setProcessCd(MO.EProcess.Release);
    //MO.RApplication.initialize();
-   MO.Window.Browser.setContentPath('.');
-   MO.Window.Browser.fullscreen(window, true);
+   //MO.Window.Browser.fullscreen(window, true);
    //MO.Window.lsnsLoaded.register(null, onLoaded);
    //MO.Window.lsnsDeviceError.register(null, onDeviceError);
    // 获得场景代码
@@ -63,17 +63,17 @@ function onLoad(){
    if(find != -1){
       code = url.substring(find + 5);
    }
-   if(MO.RString.isEmpty(code)){
+   if(MO.Lang.String.isEmpty(code)){
       throw new TFatal(this, 'Scnee code is empty.');
    }
    // 设置环境
    MO.Console.find(MO.FE3sVendorConsole).setup('net');
-   //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
+   MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEngineConstant.Resource, '/script/ars');
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.LogicService, 'http://localhost:8020');
    // 设置日志
    // MO.Console.find(MO.FLoggerConsole).connect('ws://10.21.0.128:8080/logger');
    // 设置应用
-   var application = MO.Desktop.initialize(MO.FSceneApplication);
+   var application = MO.Desktop.initialize(MO.FSceneSpaceApplication);
    application.setup(document.body);
    application.loadByCode(code);
    // 创建场景画板

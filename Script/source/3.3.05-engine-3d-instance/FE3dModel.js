@@ -5,13 +5,15 @@
 // @history 150106
 //==========================================================
 MO.FE3dModel = function FE3dModel(o){
-   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MListenerLoad);
+   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MProcessLoad);
    //..........................................................
    // @attribute
    o._dataReady     = false;
    // @attribute
    o._display       = MO.Class.register(o, new MO.AGetter('_display'));
    o._renderable    = MO.Class.register(o, new MO.AGetSet('_renderable'));
+   // @attribute
+   o._listenerLoad  = MO.Class.register(o, new MO.AListener('_listenerLoad', MO.EEvent.Load));
    //..........................................................
    // @method
    o.construct      = MO.FE3dModel_construct;
@@ -58,10 +60,10 @@ MO.FE3dModel_testReady = function FE3dModel_testReady(){
 MO.FE3dModel_loadRenderable = function FE3dModel_loadRenderable(renderable){
    var o = this;
    o._renderable = renderable;
-   var resource = renderable.resource();
    // 选择技术
    o.selectTechnique(o, MO.FE3dGeneralTechnique);
    // 加载资源
+   var resource = renderable.resource();
    o.loadResource(resource);
    // 创建渲染对象
    o._display.load(renderable);

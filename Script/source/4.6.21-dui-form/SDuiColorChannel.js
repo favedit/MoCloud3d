@@ -25,15 +25,15 @@ MO.SDuiColorChannel = function SDuiColorChannel(){
 // <T>设置输入内容。</T>
 //
 // @method
-// @param p:value:Number 内容
+// @param value:Number 内容
 //==========================================================
-MO.SDuiColorChannel_setInputValue = function SDuiColorChannel_setInputValue(p){
+MO.SDuiColorChannel_setInputValue = function SDuiColorChannel_setInputValue(value){
    var o = this;
-   var v = MO.Integer.toRange(p, o.minValue, o.maxValue);
-   var t = MO.Integer.format(v);
-   var h = o.hInput;
-   if(h.value != t){
-      h.value = t;
+   var validValue = MO.Lang.Integer.toRange(value, o.minValue, o.maxValue);
+   var text = MO.Lang.Integer.format(validValue);
+   var hInput = o.hInput;
+   if(hInput.value != text){
+      hInput.value = text;
    }
 }
 
@@ -41,20 +41,20 @@ MO.SDuiColorChannel_setInputValue = function SDuiColorChannel_setInputValue(p){
 // <T>获得转换。</T>
 //
 // @method
-// @param p:value:Number 内容
+// @param value:Number 内容
 //==========================================================
-MO.SDuiColorChannel_convertGet = function SDuiColorChannel_convertGet(p){
+MO.SDuiColorChannel_convertGet = function SDuiColorChannel_convertGet(value){
    var o = this;
-   var v = MO.Lang.Integer.parse(MO.Lang.String.nvl(p, '0'));
-   return MO.Lang.Integer.toRange(v, o.minValue, o.maxValue) / 255;
+   var validValue = MO.Lang.Integer.parse(MO.Lang.String.nvl(value, '0'));
+   return MO.Lang.Integer.toRange(validValue, o.minValue, o.maxValue) / 255;
 }
 
 //==========================================================
 // <T>设置转换。</T>
 //
 // @method
-// @param p:value:Number 内容
+// @param value:Number 内容
 //==========================================================
-MO.SDuiColorChannel_convertSet = function SDuiColorChannel_convertSet(p){
-   return parseInt(p * 255);
+MO.SDuiColorChannel_convertSet = function SDuiColorChannel_convertSet(value){
+   return parseInt(value * 255);
 }

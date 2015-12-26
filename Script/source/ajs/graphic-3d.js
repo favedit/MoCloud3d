@@ -1722,12 +1722,13 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
 MO.FG3dTechniquePass_activeEffects = function FG3dTechniquePass_activeEffects(region, renderables){
    var o = this;
    var spaceName = region.spaceName();
+   var effectConsole = MO.Console.find(MO.FG3dEffectConsole);
    var count = renderables.count();
    for(var i = 0; i < count; i++){
       var renderable = renderables.at(i);
       var info = renderable.selectInfo(spaceName);
       if(!info.effect){
-         info.effect = MO.Console.find(MO.FG3dEffectConsole).find(o._graphicContext, region, renderable);
+         info.effect = effectConsole.find(o, region, renderable);
       }
    }
 }

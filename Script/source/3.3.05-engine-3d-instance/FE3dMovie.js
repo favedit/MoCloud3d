@@ -74,7 +74,7 @@ MO.FE3dMovie_process = function FE3dMovie_process(matrix){
       o._lastTick = MO.Timer.current();
    }
    // 更新间隔
-   var tick = RTimer.current();
+   var tick = MO.Timer.current();
    var span = tick - o._lastTick;
    if(span > o._interval){
       var resource = o._resource;

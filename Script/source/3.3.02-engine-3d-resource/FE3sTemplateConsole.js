@@ -74,6 +74,7 @@ MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
       vendor.set('code', code);
       identity = code;
    }
+   MO.Assert.debugNotEmpty(identity);
    var url = vendor.makeUrl();
    // 查找模板
    var templates = o._templates;

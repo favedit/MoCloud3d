@@ -5,7 +5,7 @@
 // @history 150106
 //==========================================================
 MO.FE3dScene = function FE3dScene(o){
-   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MLinkerResource, MO.MListenerLoad);
+   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MProcessLoad);
    //..........................................................
    // @attribute
    o._ready                = false;

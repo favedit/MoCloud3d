@@ -112,6 +112,7 @@ MO.RDesktop.prototype.initialize = function RDesktop_initialize(clazz){
    MO.Timer.setup();
    // 创建应用
    var application = MO.Application = o._application = MO.Class.create(clazz);
+   application.initialize();
    return application;
 }
 

@@ -1095,7 +1095,7 @@ MO.FE3rMeshConsole_loadByCode = function FE3rMeshConsole_loadByCode(pc, pg){
    return m;
 }
 MO.FE3rModel = function FE3rModel(o){
-   o = MO.Class.inherits(this, o, MO.FE3rObject);
+   o = MO.Class.inherits(this, o, MO.FE3rObject, MO.MProcessLoad);
    o._resource            = MO.Class.register(o, new MO.AGetSet('_resource'));
    o._meshes              = MO.Class.register(o, new MO.AGetter('_meshes'));
    o._skeletons           = MO.Class.register(o, new MO.AGetter('_skeletons'));
@@ -1181,13 +1181,9 @@ MO.FE3rModel_dispose = function FE3rModel_dispose(){
 MO.FE3rModelConsole = function FE3rModelConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._scopeCd       = MO.EScope.Local;
-   o._loadModels    = null;
    o._models        = MO.Class.register(o, new MO.AGetter('_models'));
    o._meshs         = MO.Class.register(o, new MO.AGetter('_meshs'));
    o._dynamicMeshs  = null;
-   o._thread        = null;
-   o._interval      = 200;
-   o.onProcess      = MO.FE3rModelConsole_onProcess;
    o.construct      = MO.FE3rModelConsole_construct;
    o.registerModel  = MO.FE3rModelConsole_registerModel;
    o.registerMesh   = MO.FE3rModelConsole_registerMesh;
@@ -1201,28 +1197,12 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    o.merge          = MO.FE3rModelConsole_merge;
    return o;
 }
-MO.FE3rModelConsole_onProcess = function FE3rModelConsole_onProcess(){
-   var o = this;
-   var models = o._loadModels;
-   models.record();
-   while(models.next()){
-      var model = models.current();
-      if(model.processLoad()){
-         models.removeCurrent();
-      }
-   }
-}
 MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    var o = this;
    o.__base.FConsole.construct.call(o);
-   o._loadModels = new MO.TLooper();
    o._models = new MO.TDictionary();
    o._meshs = new MO.TDictionary();
    o._dynamicMeshs = new MO.TDictionary();
-   var thread = o._thread = MO.Class.create(MO.FThread);
-   thread.setInterval(o._interval);
-   thread.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(thread);
 }
 MO.FE3rModelConsole_registerModel = function FE3rModelConsole_registerModel(code, model){
    MO.Assert.debugNotEmpty(code);
@@ -1240,65 +1220,49 @@ MO.FE3rModelConsole_findModel = function FE3rModelConsole_findModel(guid){
 MO.FE3rModelConsole_findMesh = function FE3rModelConsole_findMesh(guid){
    return this._meshs.get(guid);
 }
-MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
+MO.FE3rModelConsole_load = function FE3rModelConsole_load(args){
    var o = this;
-   if(!context){
-      throw new MO.TError('Graphics context is empty');
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
    }
-   if(!guid){
-      throw new MO.TError('Model guid is empty');
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
    }
-   var model = o._models.get(guid);
-   if(model){
-      return model;
+   MO.Assert.debugNotEmpty(identity);
+   var models = o._models;
+   var model = models.get(identity);
+   if(!model){
+      var resource = MO.Console.find(MO.FE3sModelConsole).load(args);
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(identity);
+      model.setResource(resource);
+      models.set(identity, model);
+      MO.Console.find(MO.FProcessLoadConsole).push(model);
    }
-   var resource = MO.Console.find(MO.FE3sModelConsole).load(guid);
-   model = MO.Class.create(MO.FE3rModel);
-   model.linkGraphicContext(context);
-   model.setCode(guid);
-   model.setResource(resource);
-   o._models.set(guid, model);
-   o._loadModels.push(model);
    return model;
 }
 MO.FE3rModelConsole_loadByGuid = function FE3rModelConsole_loadByGuid(context, guid){
    var o = this;
-   MO.Assert.debugNotNull(context);
-   MO.Assert.debugNotEmpty(guid);
-   var model = o._models.get(guid);
-   if(!model){
-      var resource = MO.Console.find(MO.FE3sModelConsole).loadByGuid(guid);
-      model = MO.Class.create(MO.FE3rModel);
-      model.linkGraphicContext(context);
-      model.setCode(guid);
-      model.setResource(resource);
-      o._models.set(guid, model);
-      if(resource.testReady()){
-         model.loadResource(resource);
-      }else{
-         o._loadModels.push(model);
-      }
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var model = o.load(args);
+   MO.Memory.free(args);
    return model;
 }
 MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){
    var o = this;
-   MO.Assert.debugNotNull(context);
-   MO.Assert.debugNotEmpty(code);
-   var model = o._models.get(code);
-   if(!model){
-      var resource = MO.Console.find(MO.FE3sModelConsole).loadByCode(code);
-      model = MO.Class.create(MO.FE3rModel);
-      model.linkGraphicContext(context);
-      model.setCode(code);
-      model.setResource(resource);
-      o._models.set(code, model);
-      if(resource.testReady()){
-         model.loadResource(resource);
-      }else{
-         o._loadModels.push(model);
-      }
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var model = o.load(args);
+   MO.Memory.free(args);
    return model;
 }
 MO.FE3rModelConsole_loadMeshByGuid = function FE3rModelConsole_loadMeshByGuid(context, pg){
@@ -1322,7 +1286,7 @@ MO.FE3rModelConsole_loadMeshByGuid = function FE3rModelConsole_loadMeshByGuid(co
    if(rm.testReady()){
       m.loadResource(rm);
    }else{
-      o._loadModels.push(m);
+      MO.Console.find(MO.FProcessLoadConsole).push(m);
    }
    return m;
 }
@@ -1347,7 +1311,7 @@ MO.FE3rModelConsole_loadMeshByCode = function FE3rModelConsole_loadMeshByCode(co
    if(rm.testReady()){
       m.loadResource(rm);
    }else{
-      o._loadModels.push(m);
+      MO.Console.find(MO.FProcessLoadConsole).push(m);
    }
    return m;
 }

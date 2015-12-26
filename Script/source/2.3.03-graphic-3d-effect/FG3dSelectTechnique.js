@@ -49,7 +49,6 @@ MO.FG3dSelectTechnique_test = function FG3dSelectTechnique_test(region, x, y){
    // 设置区域属性
    region._selectX = x;
    region._selectY = y;
-   region.setTechnique(o);
    // 绘制所有过程
    o.drawRegion(region);
    // 返回选中内容

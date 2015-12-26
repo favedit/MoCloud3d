@@ -533,15 +533,15 @@ MO.FWglContext_setRenderTarget = function FWglContext_setRenderTarget(renderTarg
    var result = true;
    if(renderTarget == null){
       graphic.bindFramebuffer(graphic.FRAMEBUFFER, null);
-      result = o.checkError("glBindFramebuffer", "Bind frame buffer. (frame_buffer={1})", null);
+      result = o.checkError("bindFramebuffer", "Bind frame buffer. (frame_buffer={1})", null);
       if(!result){
          return result;
       }
-      var size = o._size;
-      graphic.viewport(0, 0, size.width, size.height);
+      var rectangle = o._viewportRectangle;
+      graphic.viewport(0, 0, rectangle.width, rectangle.height);
    }else{
       graphic.bindFramebuffer(graphic.FRAMEBUFFER, renderTarget._handle);
-      result = o.checkError("glBindFramebuffer", "Bind frame buffer. (frame_buffer={1})", renderTarget._handle);
+      result = o.checkError("bindFramebuffer", "Bind frame buffer. (frame_buffer={1})", renderTarget._handle);
       if(!result){
          return result;
       }

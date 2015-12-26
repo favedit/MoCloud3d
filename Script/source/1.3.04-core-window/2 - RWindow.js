@@ -66,6 +66,10 @@ MO.RWindow.prototype.ohMouseDown = function RWindow_ohMouseDown(hEvent){
    var event = o._eventMouse;
    event.code = MO.EEvent.MouseDown;
    event.attachEvent(hEvent);
+   //o.lsnsMouseDown._listeners.at(0).process(event);
+   //o.lsnsMouseDown._listeners.at(1).process(event);
+   //o.lsnsMouseDown._listeners.at(2).process(event);
+   //o.lsnsMouseDown._listeners.at(3).process(event);
    o.lsnsMouseDown.process(event);
 }
 

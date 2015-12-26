@@ -2149,10 +2149,8 @@ MO.MUiEditValue_formator = function MUiEditValue_formator(){
    return this;
 }
 MO.MUiEditValue_get = function MUiEditValue_get(){
-   throw new MO.TError('Unsupport method.');
 }
 MO.MUiEditValue_set = function MUiEditValue_set(value){
-   throw new MO.TError('Unsupport method.');
 }
 MO.MUiEditValue_text = function MUiEditValue_text(){
    return this.get();

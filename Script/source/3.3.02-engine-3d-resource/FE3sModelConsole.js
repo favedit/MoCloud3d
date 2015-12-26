@@ -112,7 +112,8 @@ MO.FE3sModelConsole_unserialMesh = function FE3sModelConsole_unserialMesh(input)
    var o = this;
    var mesh = MO.Class.create(MO.FE3sModelMesh);
    mesh.unserialize(input);
-   o._meshs.set(mesh.guid(), mesh);
+   var guid = mesh.guid();
+   o._meshs.set(guid, mesh);
    return mesh;
 }
 
@@ -127,7 +128,8 @@ MO.FE3sModelConsole_unserialSkeleton = function FE3sModelConsole_unserialSkeleto
    var o = this;
    var skeleton = MO.Class.create(MO.FE3sSkeleton);
    skeleton.unserialize(input);
-   o._skeletons.set(skeleton.guid(), skeleton);
+   var guid = skeleton.guid();
+   o._skeletons.set(guid, skeleton);
    return skeleton;
 }
 
@@ -144,7 +146,8 @@ MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimat
    var animation = MO.Class.create(MO.FE3sAnimation);
    animation._model = model;
    animation.unserialize(input);
-   o._animations.set(animation.guid(), animation);
+   var guid = animation.guid();
+   o._animations.set(guid, animation);
    return animation;
 }
 
@@ -169,6 +172,7 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
       vendor.set('code', code);
       identity = code;
    }
+   MO.Assert.debugNotEmpty(identity);
    var url = vendor.makeUrl();
    // 查找模型
    var models = o._models;

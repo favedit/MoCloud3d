@@ -29,8 +29,8 @@ MO.FDuiNumber3 = function FDuiNumber3(o){
    o.onBuildEditInput      = MO.FDuiNumber3_onBuildEditInput;
    o.onBuildEditValue      = MO.FDuiNumber3_onBuildEditValue;
    // @event
-   o.onInputKeyPress       = MO.Class.register(o, new MO.AEventKeyPress('onInputKeyPress'), FDuiNumber3_onInputKeyPress);
-   o.onInputChanged        = MO.Class.register(o, new MO.AEventInputChanged('onInputChanged'), FDuiNumber3_onInputChanged);
+   o.onInputKeyPress       = MO.Class.register(o, new MO.AEventKeyPress('onInputKeyPress'), MO.FDuiNumber3_onInputKeyPress);
+   o.onInputChanged        = MO.Class.register(o, new MO.AEventInputChanged('onInputChanged'), MO.FDuiNumber3_onInputChanged);
    //..........................................................
    // @method
    o.construct             = MO.FDuiNumber3_construct;

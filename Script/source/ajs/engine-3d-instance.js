@@ -440,10 +440,11 @@ MO.FE3dMeshRenderable_dispose = function FE3dMeshRenderable_dispose(){
    o.__base.FE3dRenderable.dispose.call(o);
 }
 MO.FE3dModel = function FE3dModel(o){
-   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MListenerLoad);
+   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MProcessLoad);
    o._dataReady     = false;
    o._display       = MO.Class.register(o, new MO.AGetter('_display'));
    o._renderable    = MO.Class.register(o, new MO.AGetSet('_renderable'));
+   o._listenerLoad  = MO.Class.register(o, new MO.AListener('_listenerLoad', MO.EEvent.Load));
    o.construct      = MO.FE3dModel_construct;
    o.testReady      = MO.FE3dModel_testReady;
    o.loadRenderable = MO.FE3dModel_loadRenderable;
@@ -465,8 +466,8 @@ MO.FE3dModel_testReady = function FE3dModel_testReady(){
 MO.FE3dModel_loadRenderable = function FE3dModel_loadRenderable(renderable){
    var o = this;
    o._renderable = renderable;
-   var resource = renderable.resource();
    o.selectTechnique(o, MO.FE3dGeneralTechnique);
+   var resource = renderable.resource();
    o.loadResource(resource);
    o._display.load(renderable);
    o._dataReady = true;
@@ -495,70 +496,73 @@ MO.FE3dModel_dispose = function FE3dModel_dispose(){
 MO.FE3dModelConsole = function FE3dModelConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._scopeCd    = MO.EScope.Local;
-   o._looper     = null;
    o._pools      = MO.Class.register(o, new MO.AGetter('_pools'));
-   o._thread     = null;
-   o._interval   = 100;
-   o.onProcess   = MO.FE3dModelConsole_onProcess;
    o.construct   = MO.FE3dModelConsole_construct;
-   o.pools       = MO.FE3dModelConsole_pools;
+   o.alloc       = MO.FE3dModelConsole_alloc;
    o.allocByGuid = MO.FE3dModelConsole_allocByGuid;
    o.allocByCode = MO.FE3dModelConsole_allocByCode;
    o.free        = MO.FE3dModelConsole_free;
+   o.dispose     = MO.FE3dModelConsole_dispose;
    return o;
-}
-MO.FE3dModelConsole_onProcess = function FE3dModelConsole_onProcess(){
-   var o = this;
-   var looper = o._looper;
-   looper.record();
-   while(looper.next()){
-      var item = looper.current();
-      if(item.processLoad()){
-         looper.removeCurrent();
-      }
-   }
 }
 MO.FE3dModelConsole_construct = function FE3dModelConsole_construct(){
    var o = this;
-   o._looper = new MO.TLooper();
+   o.__base.FConsole.construct.call(o);
    o._pools = MO.Class.create(MO.FObjectPools);
-   var thread = o._thread = MO.Class.create(MO.FThread);
-   thread.setInterval(o._interval);
-   thread.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(thread);
 }
-MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context, guid){
+MO.FE3dModelConsole_alloc = function FE3dModelConsole_alloc(args){
    var o = this;
-   var model = o._pools.alloc(guid);
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
+   }
+   MO.Assert.debugNotEmpty(identity);
+   var model = o._pools.alloc(identity);
    if(!model){
-      var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
+      var renderable = MO.Console.find(MO.FE3rModelConsole).load(args);
       MO.Assert.debugNotNull(renderable);
       model = MO.Class.create(MO.FE3dModel);
       model.linkGraphicContext(context);
-      model.setPoolCode(guid);
+      model.setPoolCode(identity);
       model.setRenderable(renderable);
-      o._looper.push(model);
+      MO.Console.find(MO.FProcessLoadConsole).push(model);
    }
+   return model;
+}
+MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context, guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var model = o.alloc(args);
+   MO.Memory.free(args);
    return model;
 }
 MO.FE3dModelConsole_allocByCode = function FE3dModelConsole_allocByCode(context, code){
    var o = this;
-   var model = o._pools.alloc(code);
-   if(!model){
-      var renderable = MO.Console.find(MO.FE3rModelConsole).loadByCode(context, code);
-      MO.Assert.debugNotNull(renderable);
-      model = MO.Class.create(MO.FE3dModel);
-      model.linkGraphicContext(context);
-      model.setPoolCode(code);
-      model.setRenderable(renderable);
-      o._looper.push(model);
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var model = o.alloc(args);
+   MO.Memory.free(args);
    return model;
 }
 MO.FE3dModelConsole_free = function FE3dModelConsole_free(model){
    var o = this;
    var code = model.poolCode();
    o._pools.free(code, model);
+}
+MO.FE3dModelConsole_dispose = function FE3dModelConsole_dispose(){
+   var o = this;
+   o._pools = MO.Lang.Object.dispose(o._pools);
+   o.__base.FConsole.dispose.call(o);
 }
 MO.FE3dModelDisplay = function FE3dModelDisplay(o){
    o = MO.Class.inherits(this, o, MO.FE3dDisplay, MO.MLinkerResource);
@@ -674,7 +678,7 @@ MO.FE3dMovie_process = function FE3dMovie_process(matrix){
    if(o._lastTick == 0){
       o._lastTick = MO.Timer.current();
    }
-   var tick = RTimer.current();
+   var tick = MO.Timer.current();
    var span = tick - o._lastTick;
    if(span > o._interval){
       var resource = o._resource;
@@ -878,7 +882,7 @@ MO.FE3dRegion_dispose = function FE3dRegion_dispose(){
    o.__base.MG3dRegion.dispose.call(o);
 }
 MO.FE3dScene = function FE3dScene(o){
-   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MLinkerResource, MO.MListenerLoad);
+   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MProcessLoad);
    o._ready                = false;
    o._dataReady            = false;
    o._dirty                = false;
@@ -1410,9 +1414,11 @@ MO.FE3dSceneConsole = function FE3dSceneConsole(o){
    o.construct     = MO.FE3dSceneConsole_construct;
    o.scenes        = MO.FE3dSceneConsole_scenes;
    o.loadDisplay   = MO.FE3dSceneConsole_loadDisplay;
+   o.alloc         = MO.FE3dSceneConsole_alloc;
    o.allocByGuid   = MO.FE3dSceneConsole_allocByGuid;
    o.allocByCode   = MO.FE3dSceneConsole_allocByCode;
    o.free          = MO.FE3dSceneConsole_free;
+   o.dispose       = MO.FE3dSceneConsole_dispose;
    return o;
 }
 MO.FE3dSceneConsole_onProcess = function FE3dSceneConsole_onProcess(){
@@ -1423,14 +1429,6 @@ MO.FE3dSceneConsole_onProcess = function FE3dSceneConsole_onProcess(){
       var display = displays.current();
       if(display.processLoad()){
          displays.removeCurrent();
-      }
-   }
-   var scenes = o._loadScenes;
-   scenes.record();
-   while(scenes.next()){
-      var scene = scenes.current();
-      if(scene.processLoad()){
-         scenes.removeCurrent();
       }
    }
 }
@@ -1450,40 +1448,59 @@ MO.FE3dSceneConsole_scenes = function FE3dSceneConsole_scenes(){
 MO.FE3dSceneConsole_loadDisplay = function FE3dSceneConsole_loadDisplay(display){
    this._loadDisplays.push(display);
 }
+MO.FE3dSceneConsole_alloc = function FE3dSceneConsole_alloc(args){
+   var o = this;
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
+   }
+   MO.Assert.debugNotEmpty(identity);
+   var scene = o._pools.alloc(identity);
+   if(!scene){
+      var resource = MO.Console.find(MO.FE3sSceneConsole).load(args);
+      scene = MO.Class.create(MO.FE3dScene);
+      scene.linkGraphicContext(context);
+      scene.setPoolCode(identity);
+      scene.setResource(resource);
+      scene.setup();
+      MO.Console.find(MO.FProcessLoadConsole).push(scene);
+   }
+   return scene;
+}
 MO.FE3dSceneConsole_allocByGuid = function FE3dSceneConsole_allocByGuid(context, guid){
    var o = this;
-   var scene = o._pools.alloc(guid);
-   if(scene){
-      return scene;
-   }
-   var resource = MO.Console.find(MO.FE3sSceneConsole).loadByGuid(guid);
-   scene = MO.Class.create(MO.FE3dScene);
-   scene.linkGraphicContext(context);
-   scene.setResource(resource);
-   scene._poolCode = guid;
-   scene.setup();
-   o._loadScenes.push(scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var scene = o.alloc(args);
+   MO.Memory.free(args);
    return scene;
 }
 MO.FE3dSceneConsole_allocByCode = function FE3dSceneConsole_allocByCode(context, code){
    var o = this;
-   var scene = o._pools.alloc(code);
-   if(scene){
-      return scene;
-   }
-   var resource = MO.Console.find(MO.FE3sSceneConsole).loadByCode(code);
-   scene = MO.Class.create(MO.FE3dScene);
-   scene.linkGraphicContext(context);
-   scene.setResource(resource);
-   scene._poolCode = code;
-   scene.setup();
-   o._loadScenes.push(scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var scene = o.alloc(args);
+   MO.Memory.free(args);
    return scene;
 }
 MO.FE3dSceneConsole_free = function FE3dSceneConsole_free(scene){
    var o = this;
-   var code = scene._poolCode;
+   var code = scene.poolCode();
    o._pools.free(code, scene);
+}
+MO.FE3dSceneConsole_dispose = function FE3dSceneConsole_dispose(){
+   var o = this;
+   o._pools = MO.Lang.Object.dispose(o._pools);
+   o.__base.FConsole.dispose.call(o);
 }
 MO.FE3dSceneDisplay = function FE3dSceneDisplay(o){
    o = MO.Class.inherits(this, o, MO.FE3dSprite, MO.MListenerLoad);
@@ -2491,7 +2508,7 @@ MO.FE3dSprite_dispose = function FE3dSprite_dispose(){
    o.__base.FE3dDisplayContainer.dispose.call(o);
 }
 MO.FE3dTemplate = function FE3dTemplate(o){
-   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MGraphicObject, MO.MListenerLoad);
+   o = MO.Class.inherits(this, o, MO.FE3dSpace, MO.MPoolAble, MO.MLinkerResource, MO.MProcessLoad);
    o._dataReady       = false;
    o._ready           = false;
    o._sprites         = MO.Class.register(o, new MO.AGetter('_sprites'));
@@ -2873,69 +2890,73 @@ MO.FE3dTemplateCanvas_dispose = function FE3dTemplateCanvas_dispose(){
 MO.FE3dTemplateConsole = function FE3dTemplateConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
    o._scopeCd    = MO.EScope.Local;
-   o._loadQueue  = null;
    o._pools      = null;
-   o._thread     = null;
-   o._interval   = 200;
-   o.onProcess   = MO.FE3dTemplateConsole_onProcess;
    o.construct   = MO.FE3dTemplateConsole_construct;
+   o.alloc       = MO.FE3dTemplateConsole_alloc;
    o.allocByGuid = MO.FE3dTemplateConsole_allocByGuid;
    o.allocByCode = MO.FE3dTemplateConsole_allocByCode;
    o.free        = MO.FE3dTemplateConsole_free;
+   o.dispose     = MO.FE3dTemplateConsole_dispose;
    return o;
-}
-MO.FE3dTemplateConsole_onProcess = function FE3dTemplateConsole_onProcess(){
-   var o = this;
-   var looper = o._loadQueue;
-   looper.record();
-   while(looper.next()){
-      var template = looper.current();
-      if(template.processLoad()){
-         looper.removeCurrent();
-      }
-   }
 }
 MO.FE3dTemplateConsole_construct = function FE3dTemplateConsole_construct(){
    var o = this;
-   o._loadQueue = new MO.TLooper();
+   o.__base.FConsole.construct.call(o);
    o._pools = MO.Class.create(MO.FObjectPools);
-   var t = o._thread = MO.Class.create(MO.FThread);
-   t.setInterval(o._interval);
-   t.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(t);
+}
+MO.FE3dTemplateConsole_alloc = function FE3dTemplateConsole_alloc(args){
+   var o = this;
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
+   }
+   MO.Assert.debugNotEmpty(identity);
+   var template = o._pools.alloc(identity);
+   if(!template){
+      var resource = MO.Console.find(MO.FE3sTemplateConsole).load(args);
+      MO.Assert.debugNotNull(resource);
+      template = MO.Class.create(MO.FE3dTemplate);
+      template.linkGraphicContext(context);
+      template.setPoolCode(identity);
+      template.setResource(resource);
+      MO.Console.find(MO.FProcessLoadConsole).push(template);
+   }
+   return template;
 }
 MO.FE3dTemplateConsole_allocByGuid = function FE3dTemplateConsole_allocByGuid(context, guid){
    var o = this;
-   var template = o._pools.alloc(guid);
-   if(template){
-      return template;
-   }
-   var resource = MO.Console.find(MO.FE3sTemplateConsole).loadByGuid(guid);
-   template = MO.Class.create(MO.FE3dTemplate);
-   template.linkGraphicContext(context);
-   template.setResource(resource);
-   template._poolCode = guid;
-   o._loadQueue.push(template);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var template = o.alloc(args);
+   MO.Memory.free(args);
    return template;
 }
 MO.FE3dTemplateConsole_allocByCode = function FE3dTemplateConsole_allocByCode(context, code){
    var o = this;
-   var template = o._pools.alloc(code);
-   if(template){
-      return template;
-   }
-   var resource = MO.Console.find(MO.FE3sTemplateConsole).loadByCode(code);
-   template = MO.Class.create(MO.FE3dTemplate);
-   template.linkGraphicContext(context);
-   template.setResource(resource);
-   template._poolCode = code;
-   o._loadQueue.push(template);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var template = o.alloc(args);
+   MO.Memory.free(args);
    return template;
 }
 MO.FE3dTemplateConsole_free = function FE3dTemplateConsole_free(template){
    var o = this;
-   var code = template._poolCode;
+   var code = template.poolCode();
    o._pools.free(code, template);
+}
+MO.FE3dTemplateConsole_dispose = function FE3dTemplateConsole_dispose(){
+   var o = this;
+   o._pools = MO.Lang.Object.dispose(o._pools);
+   o.__base.FConsole.dispose.call(o);
 }
 MO.FE3dTemplateDisplay = function FE3dTemplateDisplay(o){
    o = MO.Class.inherits(this, o, MO.FE3dSprite, MO.MListenerLoad);

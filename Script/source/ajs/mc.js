@@ -2006,7 +2006,8 @@ MO.TListeners_process = function TListeners_process(ps, p1, p2, p3, p4, p5){
    if(listeners){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
-         listeners.at(i).process(ps, p1, p2, p3, p4, p5);
+         var listener = listeners.at(i);
+         listener.process(ps, p1, p2, p3, p4, p5);
       }
    }
 }

@@ -11,41 +11,18 @@ MO.FE3dModelConsole = function FE3dModelConsole(o){
    // @attribute
    o._scopeCd    = MO.EScope.Local;
    // @attribute
-   o._looper     = null;
    o._pools      = MO.Class.register(o, new MO.AGetter('_pools'));
-   // @attribute
-   o._thread     = null;
-   o._interval   = 100;
-   //..........................................................
-   // @event
-   o.onProcess   = MO.FE3dModelConsole_onProcess;
    //..........................................................
    // @method
    o.construct   = MO.FE3dModelConsole_construct;
    // @method
-   o.pools       = MO.FE3dModelConsole_pools;
-   // @method
+   o.alloc       = MO.FE3dModelConsole_alloc;
    o.allocByGuid = MO.FE3dModelConsole_allocByGuid;
    o.allocByCode = MO.FE3dModelConsole_allocByCode;
    o.free        = MO.FE3dModelConsole_free;
+   // @method
+   o.dispose     = MO.FE3dModelConsole_dispose;
    return o;
-}
-
-//==========================================================
-// <T>逻辑处理。</T>
-//
-// @method
-//==========================================================
-MO.FE3dModelConsole_onProcess = function FE3dModelConsole_onProcess(){
-   var o = this;
-   var looper = o._looper;
-   looper.record();
-   while(looper.next()){
-      var item = looper.current();
-      if(item.processLoad()){
-         looper.removeCurrent();
-      }
-   }
 }
 
 //==========================================================
@@ -55,14 +32,49 @@ MO.FE3dModelConsole_onProcess = function FE3dModelConsole_onProcess(){
 //==========================================================
 MO.FE3dModelConsole_construct = function FE3dModelConsole_construct(){
    var o = this;
+   o.__base.FConsole.construct.call(o);
    // 设置属性
-   o._looper = new MO.TLooper();
    o._pools = MO.Class.create(MO.FObjectPools);
-   // 创建线程
-   var thread = o._thread = MO.Class.create(MO.FThread);
-   thread.setInterval(o._interval);
-   thread.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(thread);
+}
+
+//==========================================================
+// <T>根据信息收集一个模型实例。</T>
+//
+// @method
+// @param args:SE3sLoadArgs 加载参数
+// @return FE3dModel 渲染模型
+//==========================================================
+MO.FE3dModelConsole_alloc = function FE3dModelConsole_alloc(args){
+   var o = this;
+   // 获得环境
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   // 获得标识
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
+   }
+   MO.Assert.debugNotEmpty(identity);
+   // 尝试从缓冲池中取出
+   var model = o._pools.alloc(identity);
+   if(!model){
+      // 加载渲染对象
+      var renderable = MO.Console.find(MO.FE3rModelConsole).load(args);
+      MO.Assert.debugNotNull(renderable);
+      // 加载模型
+      model = MO.Class.create(MO.FE3dModel);
+      model.linkGraphicContext(context);
+      model.setPoolCode(identity);
+      model.setRenderable(renderable);
+      // 追加到加载队列
+      MO.Console.find(MO.FProcessLoadConsole).push(model);
+   }
+   return model;
 }
 
 //==========================================================
@@ -75,20 +87,11 @@ MO.FE3dModelConsole_construct = function FE3dModelConsole_construct(){
 //==========================================================
 MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context, guid){
    var o = this;
-   // 尝试从缓冲池中取出
-   var model = o._pools.alloc(guid);
-   if(!model){
-      // 加载渲染对象
-      var renderable = MO.Console.find(MO.FE3rModelConsole).load(context, guid);
-      MO.Assert.debugNotNull(renderable);
-      // 加载模型
-      model = MO.Class.create(MO.FE3dModel);
-      model.linkGraphicContext(context);
-      model.setPoolCode(guid);
-      model.setRenderable(renderable);
-      // 追加到加载队列
-      o._looper.push(model);
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var model = o.alloc(args);
+   MO.Memory.free(args);
    return model;
 }
 
@@ -102,20 +105,11 @@ MO.FE3dModelConsole_allocByGuid = function FE3dModelConsole_allocByGuid(context,
 //==========================================================
 MO.FE3dModelConsole_allocByCode = function FE3dModelConsole_allocByCode(context, code){
    var o = this;
-   // 尝试从缓冲池中取出
-   var model = o._pools.alloc(code);
-   if(!model){
-      // 加载渲染对象
-      var renderable = MO.Console.find(MO.FE3rModelConsole).loadByCode(context, code);
-      MO.Assert.debugNotNull(renderable);
-      // 加载模型
-      model = MO.Class.create(MO.FE3dModel);
-      model.linkGraphicContext(context);
-      model.setPoolCode(code);
-      model.setRenderable(renderable);
-      // 追加到加载队列
-      o._looper.push(model);
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var model = o.alloc(args);
+   MO.Memory.free(args);
    return model;
 }
 
@@ -130,4 +124,17 @@ MO.FE3dModelConsole_free = function FE3dModelConsole_free(model){
    // 放到缓冲池
    var code = model.poolCode();
    o._pools.free(code, model);
+}
+
+//==========================================================
+// <T>释放处理。</T>
+//
+// @method
+//==========================================================
+MO.FE3dModelConsole_dispose = function FE3dModelConsole_dispose(){
+   var o = this;
+   // 释放属性
+   o._pools = MO.Lang.Object.dispose(o._pools);
+   // 父处理
+   o.__base.FConsole.dispose.call(o);
 }

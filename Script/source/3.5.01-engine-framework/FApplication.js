@@ -20,6 +20,7 @@ MO.FApplication = function FApplication(o){
    //..........................................................
    // @method
    o.construct            = MO.FApplication_construct;
+   o.initialize           = MO.Method.emptyTrue;
    o.setup                = MO.Method.emptyTrue;
    // @method
    o.findSessionId        = MO.FApplication_findSessionId;

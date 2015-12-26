@@ -32,6 +32,7 @@ MO.FApplication = function FApplication(o){
    o.onProcessInput       = MO.FApplication_onProcessInput;
    o.onProcess            = MO.FApplication_onProcess;
    o.construct            = MO.FApplication_construct;
+   o.initialize           = MO.Method.emptyTrue;
    o.setup                = MO.Method.emptyTrue;
    o.findSessionId        = MO.FApplication_findSessionId;
    o.createChapter        = MO.Method.empty;
@@ -376,6 +377,7 @@ MO.RDesktop.prototype.initialize = function RDesktop_initialize(clazz){
    MO.Console.find(MO.FThreadConsole).start(thread);
    MO.Timer.setup();
    var application = MO.Application = o._application = MO.Class.create(clazz);
+   application.initialize();
    return application;
 }
 MO.RDesktop.prototype.findWorkspace = function RDesktop_findWorkspace(clazz){

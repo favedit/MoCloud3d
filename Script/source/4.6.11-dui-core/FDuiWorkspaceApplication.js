@@ -16,10 +16,12 @@ MO.FDuiWorkspaceApplication = function FDuiWorkspaceApplication(o){
    o.onProcess        = MO.FDuiWorkspaceApplication_onProcess;
    //..........................................................
    // @method
+   o.construct        = MO.FDuiWorkspaceApplication_construct;
+   o.initialize       = MO.FDuiWorkspaceApplication_initialize;
+   // @method
    o.selectWorkspace  = MO.FDuiWorkspaceApplication_selectWorkspace;
    // @method
-   o.processResize    = MO.FDuiWorkspaceApplication_processResize;
-   o.processEvent     = MO.FDuiWorkspaceApplication_processEvent;
+   o.dispose          = MO.FDuiWorkspaceApplication_dispose;
    return o;
 }
 
@@ -39,6 +41,30 @@ MO.FDuiWorkspaceApplication_onProcess = function FDuiWorkspaceApplication_onProc
 }
 
 //==========================================================
+// <T>构造处理。</T>
+//
+// @method
+//==========================================================
+MO.FDuiWorkspaceApplication_construct = function FDuiWorkspaceApplication_construct(){
+   var o = this;
+   o.__base.FApplication.construct.call(o);
+   // 设置变量
+   o._workspaces = new MO.TDictionary();
+}
+
+//==========================================================
+// <T>配置处理。</T>
+//
+// @method
+//==========================================================
+MO.FDuiWorkspaceApplication_initialize = function FDuiWorkspaceApplication_initialize(){
+   var o = this;
+   o.__base.FApplication.initialize.call(o);
+   // 设置处理
+   MO.RE3dEngine.setup();
+}
+
+//==========================================================
 // <T>增加一个控件。</T>
 //
 // @method
@@ -51,28 +77,14 @@ MO.FDuiWorkspaceApplication_selectWorkspace = function FDuiWorkspaceApplication_
 }
 
 //==========================================================
-// <T>大小变更事件处理。</T>
+// <T>释放处理。</T>
 //
 // @method
-// @param event:SEvent 事件信息
 //==========================================================
-MO.FDuiWorkspaceApplication_processResize = function FDuiWorkspaceApplication_processResize(){
+MO.FDuiWorkspaceApplication_dispose = function FDuiWorkspaceApplication_dispose(){
    var o = this;
-}
-
-//==========================================================
-// <T>事件处理。</T>
-//
-// @method
-// @param event:SEvent 事件信息
-//==========================================================
-MO.FDuiWorkspaceApplication_processEvent = function FDuiWorkspaceApplication_processEvent(event){
-   var o = this;
-   // 处理事件
-   //o.dispatcherEvent(event);
-   // 激活章节处理事件
-   //var chapter = o._activeWorkspace;
-   //if(chapter){
-   //   chapter.processEvent(event);
-   //}
+   // 释放变量
+   o._workspaces = MO.Lang.Object.dispose(o._workspaces, true);
+   // 父处理
+   o.__base.FApplication.dispose.call(o);
 }

@@ -2489,7 +2489,8 @@ MO.TListeners_process = function TListeners_process(ps, p1, p2, p3, p4, p5){
    if(listeners){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
-         listeners.at(i).process(ps, p1, p2, p3, p4, p5);
+         var listener = listeners.at(i);
+         listener.process(ps, p1, p2, p3, p4, p5);
       }
    }
 }
@@ -6062,7 +6063,7 @@ MO.RHex = function RHex(){
    return o;
 }
 MO.RHex.prototype.isValid = function RHex_isValid(value){
-   return MO.String.isPattern(value, this.NUMBER);
+   return MO.Lang.String.isPattern(value, this.NUMBER);
 }
 MO.RHex.prototype.parse = function RHex_parse(value){
    return value ? parseInt('0x' + value) : 0;
@@ -6074,10 +6075,9 @@ MO.RHex.prototype.format = function RHex_format(value, length){
    }else{
       result = '0';
    }
-   return length ? MO.String.lpad(result, length, this.PAD) : result;
+   return length ? MO.Lang.String.lpad(result, length, this.PAD) : result;
 }
-MO.RHex = new MO.RHex();
-MO.Lang.Hex = MO.RHex;
+MO.Lang.Hex = new MO.RHex();
 MO.RInstance = function RInstance(){
    var o = this;
    o._pools = new MO.TDictionary();
@@ -13807,17 +13807,26 @@ MO.EThreadStatus = new function EThreadStatus(){
    o.Finish = 2;
    return o;
 }
-MO.MProgress = function MProgress(o){
+MO.MProcessLoad = function MProcessLoad(o){
    o = MO.Class.inherits(this, o);
-   o.construct       = MO.MProgress_construct;
-   o.processProgress = MO.Method.emptyTrue;
-   o.dispose         = MO.MProgress_dispose;
+   o._statusLoading   = MO.Class.register(o, new MO.AGetter('_statusLoading'));
+   o.construct        = MO.MProcessLoad_construct;
+   o.processLoadBegin = MO.MProcessLoad_processLoadBegin;
+   o.processLoad      = MO.Method.emptyTrue;
+   o.processLoadEnd   = MO.MProcessLoad_processLoadEnd;
+   o.dispose          = MO.MProcessLoad_dispose;
    return o;
 }
-MO.MProgress_construct = function MProgress_construct(){
+MO.MProcessLoad_construct = function MProcessLoad_construct(){
    var o = this;
 }
-MO.MProgress_dispose = function MProgress_dispose(){
+MO.MProcessLoad_processLoadBegin = function MProcessLoad_processLoadBegin(){
+   this._statusLoading = true;
+}
+MO.MProcessLoad_processLoadEnd = function MProcessLoad_processLoadEnd(){
+   this._statusLoading = false;
+}
+MO.MProcessLoad_dispose = function MProcessLoad_dispose(){
    var o = this;
 }
 MO.SProcessEvent = function SProcessEvent(){
@@ -14590,6 +14599,49 @@ MO.FProcessEvent_register = function FProcessEvent_register(owner, callback){
    }
    o._listeners.register(owner, callback);
 }
+MO.FProcessLoadConsole = function FProcessLoadConsole(o){
+   o = MO.Class.inherits(this, o, MO.FConsole);
+   o._scopeCd    = MO.EScope.Local;
+   o._looper     = null;
+   o._thread     = null;
+   o._interval   = 100;
+   o.onProcess   = MO.FProcessLoadConsole_onProcess;
+   o.construct   = MO.FProcessLoadConsole_construct;
+   o.push        = MO.FProcessLoadConsole_push;
+   o.dispose     = MO.FProcessLoadConsole_dispose;
+   return o;
+}
+MO.FProcessLoadConsole_onProcess = function FProcessLoadConsole_onProcess(){
+   var o = this;
+   var looper = o._looper;
+   looper.record();
+   while(looper.next()){
+      var item = looper.current();
+      if(!item.statusLoading()){
+         item.processLoadBegin();
+      }
+      if(item.processLoad()){
+         looper.removeCurrent();
+         item.processLoadEnd();
+      }
+   }
+}
+MO.FProcessLoadConsole_construct = function FProcessLoadConsole_construct(){
+   var o = this;
+   o.__base.FConsole.construct.call(o);
+   o._looper = new MO.TLooper();
+   var thread = o._thread = MO.Class.create(MO.FThread);
+   thread.setInterval(o._interval);
+   thread.addProcessListener(o, o.onProcess);
+   MO.Console.find(MO.FThreadConsole).start(thread);
+}
+MO.FProcessLoadConsole_push = function FProcessLoadConsole_push(load){
+   this._looper.push(load);
+}
+MO.FProcessLoadConsole_dispose = function FProcessLoadConsole_dispose(){
+   var o = this;
+   o.__base.FConsole.dispose.call(o);
+}
 MO.FProcessor = function FProcessor(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    o._name     = MO.Class.register(o, new MO.AGetter('_name'));
@@ -14683,45 +14735,6 @@ MO.FProcessServer_process = function FProcessServer_process(){
    var o = this;
    onmessage = o.ohMessage;
    FProcessServer.__linker = o;
-}
-MO.FProgressConsole = function FProgressConsole(o){
-   o = MO.Class.inherits(this, o, MO.FConsole);
-   o._scopeCd    = MO.EScope.Local;
-   o._looper     = null;
-   o._thread     = null;
-   o._interval   = 100;
-   o.onProcess   = MO.FProgressConsole_onProcess;
-   o.construct   = MO.FProgressConsole_construct;
-   o.push        = MO.FProgressConsole_push;
-   o.dispose     = MO.FProgressConsole_dispose;
-   return o;
-}
-MO.FProgressConsole_onProcess = function FProgressConsole_onProcess(){
-   var o = this;
-   var looper = o._looper;
-   looper.record();
-   while(looper.next()){
-      var item = looper.current();
-      if(item.processLoad()){
-         looper.removeCurrent();
-      }
-   }
-}
-MO.FProgressConsole_construct = function FProgressConsole_construct(){
-   var o = this;
-   o.__base.FConsole.construct.call(o);
-   o._looper = new MO.TLooper();
-   var thread = o._thread = MO.Class.create(MO.FThread);
-   thread.setInterval(o._interval);
-   thread.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(thread);
-}
-MO.FProgressConsole_push = function FProgressConsole_push(progress){
-   o._looper.push(progress);
-}
-MO.FProgressConsole_dispose = function FProgressConsole_dispose(){
-   var o = this;
-   o.__base.FConsole.dispose.call(o);
 }
 MO.FServiceConsole = function FServiceConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
@@ -19539,12 +19552,13 @@ MO.FG3dTechniquePass_sortRenderables = function FG3dTechniquePass_sortRenderable
 MO.FG3dTechniquePass_activeEffects = function FG3dTechniquePass_activeEffects(region, renderables){
    var o = this;
    var spaceName = region.spaceName();
+   var effectConsole = MO.Console.find(MO.FG3dEffectConsole);
    var count = renderables.count();
    for(var i = 0; i < count; i++){
       var renderable = renderables.at(i);
       var info = renderable.selectInfo(spaceName);
       if(!info.effect){
-         info.effect = MO.Console.find(MO.FG3dEffectConsole).find(o._graphicContext, region, renderable);
+         info.effect = effectConsole.find(o, region, renderable);
       }
    }
 }
@@ -21309,7 +21323,6 @@ MO.FG3dSelectTechnique_test = function FG3dSelectTechnique_test(region, x, y){
    var o = this;
    region._selectX = x;
    region._selectY = y;
-   region.setTechnique(o);
    o.drawRegion(region);
    return o._passSelect._selectRenderable;
 }
@@ -21848,15 +21861,15 @@ MO.FWglContext_setRenderTarget = function FWglContext_setRenderTarget(renderTarg
    var result = true;
    if(renderTarget == null){
       graphic.bindFramebuffer(graphic.FRAMEBUFFER, null);
-      result = o.checkError("glBindFramebuffer", "Bind frame buffer. (frame_buffer={1})", null);
+      result = o.checkError("bindFramebuffer", "Bind frame buffer. (frame_buffer={1})", null);
       if(!result){
          return result;
       }
-      var size = o._size;
-      graphic.viewport(0, 0, size.width, size.height);
+      var rectangle = o._viewportRectangle;
+      graphic.viewport(0, 0, rectangle.width, rectangle.height);
    }else{
       graphic.bindFramebuffer(graphic.FRAMEBUFFER, renderTarget._handle);
-      result = o.checkError("glBindFramebuffer", "Bind frame buffer. (frame_buffer={1})", renderTarget._handle);
+      result = o.checkError("bindFramebuffer", "Bind frame buffer. (frame_buffer={1})", renderTarget._handle);
       if(!result){
          return result;
       }

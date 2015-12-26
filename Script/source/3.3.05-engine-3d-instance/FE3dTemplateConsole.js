@@ -11,39 +11,18 @@ MO.FE3dTemplateConsole = function FE3dTemplateConsole(o){
    // @attribute
    o._scopeCd    = MO.EScope.Local;
    // @attribute
-   o._loadQueue  = null;
    o._pools      = null;
-   // @attribute
-   o._thread     = null;
-   o._interval   = 200;
-   //..........................................................
-   // @event
-   o.onProcess   = MO.FE3dTemplateConsole_onProcess;
    //..........................................................
    // @method
    o.construct   = MO.FE3dTemplateConsole_construct;
    // @method
+   o.alloc       = MO.FE3dTemplateConsole_alloc;
    o.allocByGuid = MO.FE3dTemplateConsole_allocByGuid;
    o.allocByCode = MO.FE3dTemplateConsole_allocByCode;
    o.free        = MO.FE3dTemplateConsole_free;
+   // @method
+   o.dispose     = MO.FE3dTemplateConsole_dispose;
    return o;
-}
-
-//==========================================================
-// <T>逻辑处理。</T>
-//
-// @method
-//==========================================================
-MO.FE3dTemplateConsole_onProcess = function FE3dTemplateConsole_onProcess(){
-   var o = this;
-   var looper = o._loadQueue;
-   looper.record();
-   while(looper.next()){
-      var template = looper.current();
-      if(template.processLoad()){
-         looper.removeCurrent();
-      }
-   }
 }
 
 //==========================================================
@@ -53,14 +32,49 @@ MO.FE3dTemplateConsole_onProcess = function FE3dTemplateConsole_onProcess(){
 //==========================================================
 MO.FE3dTemplateConsole_construct = function FE3dTemplateConsole_construct(){
    var o = this;
+   o.__base.FConsole.construct.call(o);
    // 设置属性
-   o._loadQueue = new MO.TLooper();
    o._pools = MO.Class.create(MO.FObjectPools);
-   // 创建线程
-   var t = o._thread = MO.Class.create(MO.FThread);
-   t.setInterval(o._interval);
-   t.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(t);
+}
+
+//==========================================================
+// <T>根据信息收集一个模板实例。</T>
+//
+// @method
+// @param args:SE3sLoadArgs 加载参数
+// @return FE3dTemplate 渲染模板
+//==========================================================
+MO.FE3dTemplateConsole_alloc = function FE3dTemplateConsole_alloc(args){
+   var o = this;
+   // 获得环境
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   // 获得标识
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
+   }
+   MO.Assert.debugNotEmpty(identity);
+   // 尝试从缓冲池中取出
+   var template = o._pools.alloc(identity);
+   if(!template){
+      // 加载渲染对象
+      var resource = MO.Console.find(MO.FE3sTemplateConsole).load(args);
+      MO.Assert.debugNotNull(resource);
+      // 加载模板
+      template = MO.Class.create(MO.FE3dTemplate);
+      template.linkGraphicContext(context);
+      template.setPoolCode(identity);
+      template.setResource(resource);
+      // 追加到加载队列
+      MO.Console.find(MO.FProcessLoadConsole).push(template);
+   }
+   return template;
 }
 
 //==========================================================
@@ -73,20 +87,11 @@ MO.FE3dTemplateConsole_construct = function FE3dTemplateConsole_construct(){
 //==========================================================
 MO.FE3dTemplateConsole_allocByGuid = function FE3dTemplateConsole_allocByGuid(context, guid){
    var o = this;
-   // 尝试从缓冲池中取出
-   var template = o._pools.alloc(guid);
-   if(template){
-      return template;
-   }
-   // 获得模板资源
-   var resource = MO.Console.find(MO.FE3sTemplateConsole).loadByGuid(guid);
-   // 创建模板
-   template = MO.Class.create(MO.FE3dTemplate);
-   template.linkGraphicContext(context);
-   template.setResource(resource);
-   template._poolCode = guid;
-   // 加载处理
-   o._loadQueue.push(template);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var template = o.alloc(args);
+   MO.Memory.free(args);
    return template;
 }
 
@@ -100,20 +105,11 @@ MO.FE3dTemplateConsole_allocByGuid = function FE3dTemplateConsole_allocByGuid(co
 //==========================================================
 MO.FE3dTemplateConsole_allocByCode = function FE3dTemplateConsole_allocByCode(context, code){
    var o = this;
-   // 尝试从缓冲池中取出
-   var template = o._pools.alloc(code);
-   if(template){
-      return template;
-   }
-   // 获得模板资源
-   var resource = MO.Console.find(MO.FE3sTemplateConsole).loadByCode(code);
-   // 创建模板
-   template = MO.Class.create(MO.FE3dTemplate);
-   template.linkGraphicContext(context);
-   template.setResource(resource);
-   template._poolCode = code;
-   // 加载处理
-   o._loadQueue.push(template);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var template = o.alloc(args);
+   MO.Memory.free(args);
    return template;
 }
 
@@ -126,6 +122,19 @@ MO.FE3dTemplateConsole_allocByCode = function FE3dTemplateConsole_allocByCode(co
 MO.FE3dTemplateConsole_free = function FE3dTemplateConsole_free(template){
    var o = this;
    // 放到缓冲池
-   var code = template._poolCode;
+   var code = template.poolCode();
    o._pools.free(code, template);
+}
+
+//==========================================================
+// <T>释放处理。</T>
+//
+// @method
+//==========================================================
+MO.FE3dTemplateConsole_dispose = function FE3dTemplateConsole_dispose(){
+   var o = this;
+   // 释放属性
+   o._pools = MO.Lang.Object.dispose(o._pools);
+   // 父处理
+   o.__base.FConsole.dispose.call(o);
 }

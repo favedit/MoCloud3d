@@ -1,37 +1,34 @@
-with(MO){
-   MO.FDsSceneCanvasContent = function FDsSceneCanvasContent(o){
-      o = MO.Class.inherits(this, o, FDsSpaceDesignCanvas);
-      o._resourceTypeCd = EE3sResource.Scene;
-      o.loadByGuid      = FDsSceneCanvasContent_loadByGuid;
-      o.dispose         = FDsSceneCanvasContent_dispose;
-      return o;
+MO.FDsSceneCanvasContent = function FDsSceneCanvasContent(o){
+   o = MO.Class.inherits(this, o, MO.FDsSpaceCanvas);
+   o._resourceTypeCd = MO.EE3sResource.Scene;
+   o.onDataLoaded    = MO.FDsSceneCanvasContent_onDataLoaded;
+   o.loadByGuid      = MO.FDsSceneCanvasContent_loadByGuid;
+   o.dispose         = MO.FDsSceneCanvasContent_dispose;
+   return o;
+}
+MO.FDsSceneCanvasContent_onDataLoaded = function FDsSceneCanvasContent_onDataLoaded(p){
+   var o = this;
+   o.reloadRegion()
+   o.processLoadListener(o);
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsSceneCanvasContent_loadByGuid = function FDsSceneCanvasContent_loadByGuid(guid){
+   var o = this;
+   var space = o._activeSpace;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(space){
+      sceneConsole.free(space);
    }
-   MO.FDsSceneCanvasContent_onDataLoaded = function FDsSceneCanvasContent_onDataLoaded(p){
-      var o = this;
-      o.reloadRegion()
-      o.processLoadListener(o);
-      MO.Console.find(FDuiDesktopConsole).hide();
+   space = o._activeSpace = sceneConsole.allocByGuid(o, guid);
+   if(!space._linked){
+      MO.Console.find(MO.FDuiDesktopConsole).showLoading();
+      space.addLoadListener(o, o.onDataLoaded);
+      space._linked = true;
    }
-   MO.FDsSceneCanvasContent_loadByGuid = function FDsSceneCanvasContent_loadByGuid(guid){
-      var o = this;
-      var space = o._activeSpace;
-      var sceneConsole = MO.Console.find(FE3dSceneConsole);
-      if(space){
-         RStage.unregister(space);
-         sceneConsole.free(space);
-      }
-      space = o._activeSpace = sceneConsole.allocByGuid(o, guid);
-      if(!space._linked){
-         MO.Console.find(FDuiDesktopConsole).showLoading();
-         space.addLoadListener(o, o.onDataLoaded);
-         space._linked = true;
-      }
-      RStage.register('space', space);
-   }
-   MO.FDsSceneCanvasContent_dispose = function FDsSceneCanvasContent_dispose(){
-      var o = this;
-      o.__base.FDsSpaceDesignCanvas.dispose.call(o);
-   }
+}
+MO.FDsSceneCanvasContent_dispose = function FDsSceneCanvasContent_dispose(){
+   var o = this;
+   o.__base.FDsSpaceCanvas.dispose.call(o);
 }
 with(MO){
    MO.FDsSceneCanvasToolBar = function FDsSceneCanvasToolBar(o){
@@ -110,167 +107,165 @@ with(MO){
       o.__base.FDuiToolBar.dispose.call(o);
    }
 }
-with(MO){
-   MO.FDsSceneCatalogContent = function FDsSceneCatalogContent(o){
-      o = MO.Class.inherits(this, o, FDsCatalog);
-      o._catalogCode    = 'resource.scene';
-      o.onBuild         = FDsSceneCatalogContent_onBuild;
-      o.onLoadDisplay   = FDsSceneCatalogContent_onLoadDisplay;
-      o.construct       = FDsSceneCatalogContent_construct;
-      o.buildRenderable = FDsSceneCatalogContent_buildRenderable;
-      o.buildDisplay    = FDsSceneCatalogContent_buildDisplay;
-      o.buildLayer      = FDsSceneCatalogContent_buildLayer;
-      o.buildSpace      = FDsSceneCatalogContent_buildSpace;
-      o.dispose         = FDsSceneCatalogContent_dispose;
-      return o;
-   }
-   MO.FDsSceneCatalogContent_onBuild = function FDsSceneCatalogContent_onBuild(event){
-      var o = this;
-      var column = MO.Class.create(FDuiTreeColumn);
-      column.setName('view');
-      o.push(column);
-      o.__base.FDsCatalog.onBuild.call(o, event);
-      o.loadDefine(o._catalogCode);
-   }
-   MO.FDsSceneCatalogContent_onLoadDisplay = function FDsSceneCatalogContent_onLoadDisplay(event){
-      var o = this;
-      var node = event._linkNode;
-      o.buildRenderable(node, event);
-   }
-   MO.FDsSceneCatalogContent_construct = function FDsSceneCatalogContent_construct(){
-      var o = this;
-      o.__base.FDsCatalog.construct.call(o);
-   }
-   MO.FDsSceneCatalogContent_buildRenderable = function FDsSceneCatalogContent_buildRenderable(parentNode, sprite){
-      var o = this;
-      var movies = sprite.movies();
-      if(movies){
-         var movieCount = movies.count();
-         for(var i = 0; i < movieCount; i++){
-            var movie = movies.at(i);
-            var movieResource = movie.resource();
-            var movieNode = o.createNode();
-            movieNode.setTypeCode('Movie');
-            movieNode.setLabel(movieResource.code());
-            movieNode.setNote(movieResource.label());
-            movieNode.dataPropertySet('linker', movie);
-            parentNode.appendNode(movieNode);
-         }
-      }
-      var materials = sprite.materials();
-      if(materials){
-         var materialCount = materials.count();
-         for(var i = 0; i < materialCount; i++){
-            var material = materials.at(i);
-            var materialResource = material.resource();
-            var materialNode = o.createNode();
-            materialNode.setTypeCode('Material');
-            materialNode.setLabel(materialResource.code());
-            materialNode.setNote(materialResource.label());
-            materialNode.dataPropertySet('linker', material);
-            o.buildNodeView(materialNode, true);
-            parentNode.appendNode(materialNode);
-            o._materialNodes.push(materialNode);
-         }
-      }
-      var animations = sprite.animations();
-      if(animations){
-         var animationCount = animations.count();
-         for(var i = 0; i < animationCount; i++){
-            var animation = animations.at(i);
-            var animationResource = animation.resource();
-            var animationNode = o.createNode();
-            animationNode.setTypeCode('Animation');
-            animationNode.setLabel(animationResource.code());
-            animationNode.setNote(animationResource.label());
-            animationNode.dataPropertySet('linker', animation);
-            parentNode.appendNode(animationNode);
-            o.buildNodeView(animationNode, true);
-         }
-      }
-      var renderables = sprite.meshRenderables();
-      if(renderables){
-         var renderableCount = renderables.count();
-         for(var i = 0; i < renderableCount; i++){
-            var renderable = renderables.at(i);
-            var renderableResource = renderable.resource();
-            var modelResource = renderableResource.model();
-            var meshResource = renderableResource.mesh();
-            var renderableNode = o.createNode();
-            renderableNode.setTypeCode('Renderable');
-            renderableNode.setLabel(meshResource.code());
-            renderableNode.dataPropertySet('linker', renderable);
-            o.buildNodeView(renderableNode, true);
-            parentNode.appendNode(renderableNode);
-            o._renderableNodes.push(renderableNode);
-         }
+MO.FDsSceneCatalogContent = function FDsSceneCatalogContent(o){
+   o = MO.Class.inherits(this, o, MO.FDsCatalog);
+   o._catalogCode    = 'resource.scene';
+   o.onBuild         = MO.FDsSceneCatalogContent_onBuild;
+   o.onLoadDisplay   = MO.FDsSceneCatalogContent_onLoadDisplay;
+   o.construct       = MO.FDsSceneCatalogContent_construct;
+   o.buildRenderable = MO.FDsSceneCatalogContent_buildRenderable;
+   o.buildDisplay    = MO.FDsSceneCatalogContent_buildDisplay;
+   o.buildLayer      = MO.FDsSceneCatalogContent_buildLayer;
+   o.buildSpace      = MO.FDsSceneCatalogContent_buildSpace;
+   o.dispose         = MO.FDsSceneCatalogContent_dispose;
+   return o;
+}
+MO.FDsSceneCatalogContent_onBuild = function FDsSceneCatalogContent_onBuild(event){
+   var o = this;
+   var column = MO.Class.create(MO.FDuiTreeColumn);
+   column.setName('view');
+   o.push(column);
+   o.__base.FDsCatalog.onBuild.call(o, event);
+   o.loadDefine(o._catalogCode);
+}
+MO.FDsSceneCatalogContent_onLoadDisplay = function FDsSceneCatalogContent_onLoadDisplay(event){
+   var o = this;
+   var node = event._linkNode;
+   o.buildRenderable(node, event);
+}
+MO.FDsSceneCatalogContent_construct = function FDsSceneCatalogContent_construct(){
+   var o = this;
+   o.__base.FDsCatalog.construct.call(o);
+}
+MO.FDsSceneCatalogContent_buildRenderable = function FDsSceneCatalogContent_buildRenderable(parentNode, sprite){
+   var o = this;
+   var movies = sprite.movies();
+   if(movies){
+      var movieCount = movies.count();
+      for(var i = 0; i < movieCount; i++){
+         var movie = movies.at(i);
+         var movieResource = movie.resource();
+         var movieNode = o.createNode();
+         movieNode.setTypeCode('Movie');
+         movieNode.setLabel(movieResource.code());
+         movieNode.setNote(movieResource.label());
+         movieNode.dataPropertySet('linker', movie);
+         parentNode.appendNode(movieNode);
       }
    }
-   MO.FDsSceneCatalogContent_buildDisplay = function FDsSceneCatalogContent_buildDisplay(parentNode, p){
-      var o = this;
-      var displays = p.displays();
-      if(displays){
-         var displayCount = displays.count();
-         for(var i = 0; i < displayCount; i++){
-            var display = displays.at(i);
-            var resource = display.resource();
-            var displayNode = o.createNode();
-            displayNode.setTypeCode('display');
-            displayNode.setLabel(resource.code());
-            displayNode.setNote(resource.label());
-            displayNode.dataPropertySet('linker', display);
-            o.buildNodeView(displayNode, true);
-            o._displayNodes.push(displayNode);
-            parentNode.appendNode(displayNode);
-            display.addLoadListener(o, o.onLoadDisplay);
-            display._linkNode = displayNode;
-         }
+   var materials = sprite.materials();
+   if(materials){
+      var materialCount = materials.count();
+      for(var i = 0; i < materialCount; i++){
+         var material = materials.at(i);
+         var materialResource = material.resource();
+         var materialNode = o.createNode();
+         materialNode.setTypeCode('Material');
+         materialNode.setLabel(materialResource.code());
+         materialNode.setNote(materialResource.label());
+         materialNode.dataPropertySet('linker', material);
+         o.buildNodeView(materialNode, true);
+         parentNode.appendNode(materialNode);
+         o._materialNodes.push(materialNode);
       }
    }
-   MO.FDsSceneCatalogContent_buildLayer = function FDsSceneCatalogContent_buildLayer(parentNode, space){
-      var o = this;
-      var layersNode = o.createNode();
-      layersNode.setTypeCode('Layers');
-      layersNode.setLabel('Layers');
-      layersNode.dataPropertySet('linker', 'layers');
-      o.buildNodeView(layersNode, true);
-      parentNode.appendNode(layersNode);
-      var layers = space.layers();
-      var layerCount = layers.count();
-      for(var i = 0; i < layerCount; i++){
-         var layer = layers.at(i);
-         if(MO.Class.isClass(layer, FDisplayUiLayer)){
-            continue;
-         }
-         var layerResource = layer.resource();
-         var layerNode = o.createNode();
-         layerNode.setTypeCode('Layer');
-         layerNode.setLabel('Layer:' + layerResource.code());
-         layerNode.dataPropertySet('linker', layer);
-         o.buildNodeView(layerNode, true);
-         layersNode.appendNode(layerNode);
-         o.buildDisplay(layerNode, layer)
+   var animations = sprite.animations();
+   if(animations){
+      var animationCount = animations.count();
+      for(var i = 0; i < animationCount; i++){
+         var animation = animations.at(i);
+         var animationResource = animation.resource();
+         var animationNode = o.createNode();
+         animationNode.setTypeCode('Animation');
+         animationNode.setLabel(animationResource.code());
+         animationNode.setNote(animationResource.label());
+         animationNode.dataPropertySet('linker', animation);
+         parentNode.appendNode(animationNode);
+         o.buildNodeView(animationNode, true);
       }
    }
-   MO.FDsSceneCatalogContent_buildSpace = function FDsSceneCatalogContent_buildSpace(space){
-      var o = this;
-      o.clearAllNodes();
-      var resource = space.resource();
-      var spaceNode = o.createNode();
-      spaceNode.setTypeCode('Scene');
-      spaceNode.setLabel(resource.code());
-      spaceNode.setNote(resource.label());
-      spaceNode.dataPropertySet('linker', space);
-      o.push(spaceNode);
-      o.buildTechnique(spaceNode, space.technique())
-      o.buildRegion(spaceNode, space.region());
-      o.buildLayer(spaceNode, space);
-      spaceNode.click();
+   var renderables = sprite.meshRenderables();
+   if(renderables){
+      var renderableCount = renderables.count();
+      for(var i = 0; i < renderableCount; i++){
+         var renderable = renderables.at(i);
+         var renderableResource = renderable.resource();
+         var modelResource = renderableResource.model();
+         var meshResource = renderableResource.mesh();
+         var renderableNode = o.createNode();
+         renderableNode.setTypeCode('Renderable');
+         renderableNode.setLabel(meshResource.code());
+         renderableNode.dataPropertySet('linker', renderable);
+         o.buildNodeView(renderableNode, true);
+         parentNode.appendNode(renderableNode);
+         o._renderableNodes.push(renderableNode);
+      }
    }
-   MO.FDsSceneCatalogContent_dispose = function FDsSceneCatalogContent_dispose(){
-      var o = this;
-      o.__base.FDsCatalog.dispose.call(o);
+}
+MO.FDsSceneCatalogContent_buildDisplay = function FDsSceneCatalogContent_buildDisplay(parentNode, p){
+   var o = this;
+   var displays = p.displays();
+   if(displays){
+      var displayCount = displays.count();
+      for(var i = 0; i < displayCount; i++){
+         var display = displays.at(i);
+         var resource = display.resource();
+         var displayNode = o.createNode();
+         displayNode.setTypeCode('display');
+         displayNode.setLabel(resource.code());
+         displayNode.setNote(resource.label());
+         displayNode.dataPropertySet('linker', display);
+         o.buildNodeView(displayNode, true);
+         o._displayNodes.push(displayNode);
+         parentNode.appendNode(displayNode);
+         display.addLoadListener(o, o.onLoadDisplay);
+         display._linkNode = displayNode;
+      }
    }
+}
+MO.FDsSceneCatalogContent_buildLayer = function FDsSceneCatalogContent_buildLayer(parentNode, space){
+   var o = this;
+   var layersNode = o.createNode();
+   layersNode.setTypeCode('Layers');
+   layersNode.setLabel('Layers');
+   layersNode.dataPropertySet('linker', 'layers');
+   o.buildNodeView(layersNode, true);
+   parentNode.appendNode(layersNode);
+   var layers = space.layers();
+   var layerCount = layers.count();
+   for(var i = 0; i < layerCount; i++){
+      var layer = layers.at(i);
+      if(MO.Class.isClass(layer, MO.FDisplayUiLayer)){
+         continue;
+      }
+      var layerResource = layer.resource();
+      var layerNode = o.createNode();
+      layerNode.setTypeCode('Layer');
+      layerNode.setLabel('Layer:' + layerResource.code());
+      layerNode.dataPropertySet('linker', layer);
+      o.buildNodeView(layerNode, true);
+      layersNode.appendNode(layerNode);
+      o.buildDisplay(layerNode, layer)
+   }
+}
+MO.FDsSceneCatalogContent_buildSpace = function FDsSceneCatalogContent_buildSpace(space){
+   var o = this;
+   o.clearAllNodes();
+   var resource = space.resource();
+   var spaceNode = o.createNode();
+   spaceNode.setTypeCode('Scene');
+   spaceNode.setLabel(resource.code());
+   spaceNode.setNote(resource.label());
+   spaceNode.dataPropertySet('linker', space);
+   o.push(spaceNode);
+   o.buildTechnique(spaceNode, space.technique())
+   o.buildRegion(spaceNode, space.region());
+   o.buildLayer(spaceNode, space);
+   spaceNode.click();
+}
+MO.FDsSceneCatalogContent_dispose = function FDsSceneCatalogContent_dispose(){
+   var o = this;
+   o.__base.FDsCatalog.dispose.call(o);
 }
 with(MO){
    MO.FDsSceneCatalogToolBar = function FDsSceneCatalogToolBar(o){
@@ -482,143 +477,141 @@ with(MO){
       o.__base.FDuiToolBar.dispose.call(o);
    }
 }
-with(MO){
-   MO.FDsSceneFrameSet = function FDsSceneFrameSet(o){
-      o = MO.Class.inherits(this, o, FDsFrameSet);
-      o._frameCatalog         = null;
-      o._frameCatalogToolBar  = null;
-      o._frameCatalogContent  = null;
-      o._frameCanvas          = null;
-      o._frameCanvasToolBar   = null;
-      o._frameCanvasContent   = null;
-      o._frameProperty        = null;
-      o._framePropertyToolBar = null;
-      o._framePropertyContent = null;
-      o.onBuilded             = FDsSceneFrameSet_onBuilded;
-      o.onDataLoaded          = FDsSceneFrameSet_onDataLoaded;
-      o.onCatalogSelected     = FDsSceneFrameSet_onCatalogSelected;
-      o.construct             = FDsSceneFrameSet_construct;
-      o.loadByGuid            = FDsSceneFrameSet_loadByGuid;
-      o.loadByCode            = FDsSceneFrameSet_loadByCode;
-      o.dispose               = FDsSceneFrameSet_dispose;
-      return o;
+MO.FDsSceneFrameSet = function FDsSceneFrameSet(o){
+   o = MO.Class.inherits(this, o, MO.FDsFrameSet);
+   o._frameCatalog         = null;
+   o._frameCatalogToolBar  = null;
+   o._frameCatalogContent  = null;
+   o._frameCanvas          = null;
+   o._frameCanvasToolBar   = null;
+   o._frameCanvasContent   = null;
+   o._frameProperty        = null;
+   o._framePropertyToolBar = null;
+   o._framePropertyContent = null;
+   o.onBuilded             = MO.FDsSceneFrameSet_onBuilded;
+   o.onDataLoaded          = MO.FDsSceneFrameSet_onDataLoaded;
+   o.onCatalogSelected     = MO.FDsSceneFrameSet_onCatalogSelected;
+   o.construct             = MO.FDsSceneFrameSet_construct;
+   o.loadByGuid            = MO.FDsSceneFrameSet_loadByGuid;
+   o.loadByCode            = MO.FDsSceneFrameSet_loadByCode;
+   o.dispose               = MO.FDsSceneFrameSet_dispose;
+   return o;
+}
+MO.FDsSceneFrameSet_onBuilded = function FDsSceneFrameSet_onBuilded(event){
+   var o = this;
+   o.__base.FDsFrameSet.onBuilded.call(o, event);
+   o._frameCatalogToolBar._hPanel.className = o.styleName('ToolBar_Ground');
+   o._frameCatalogContent._hPanel.className = o.styleName('Catalog_Content');
+   o._frameCanvasToolBar._hPanel.className = o.styleName('ToolBar_Ground');
+   o._frameCanvasContent._hPanel.className = o.styleName('Canvas_Content');
+   o._framePropertyToolBar._hPanel.className = o.styleName('ToolBar_Ground');
+   o._framePropertyContent._hPanel.className = o.styleName('Property_Content');
+   var spliter = o._spliterCatalog;
+   spliter.setAlignCd(MO.EUiAlign.Left);
+   spliter.setSizeHtml(o._frameCatalog._hPanel);
+   var spliter = o._spliterProperty;
+   spliter.setAlignCd(MO.EUiAlign.Right);
+   spliter.setSizeHtml(o._frameProperty._hPanel);
+   var sceneConsole = MO.Console.find(MO.FE3dInstanceConsole);
+   sceneConsole.register(MO.EE3dInstance.TemplateRenderable, MO.FDsSceneRenderable);
+   sceneConsole.register(MO.EE3dInstance.SceneLayer, MO.FDsSceneLayer);
+   sceneConsole.register(MO.EE3dInstance.SceneDisplay, MO.FDsSceneDisplay);
+   sceneConsole.register(MO.EE3dInstance.SceneRenderable, MO.FDsSceneRenderable);
+}
+MO.FDsSceneFrameSet_onDataLoaded = function FDsSceneFrameSet_onDataLoaded(canvas){
+   var o = this;
+   var space = o._activeSpace = canvas._activeSpace;
+   o._catalogContent.buildSpace(space);
+}
+MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelected(select, flag){
+   var o = this;
+   var space = o._activeSpace;
+   if(!space){
+      return;
    }
-   MO.FDsSceneFrameSet_onBuilded = function FDsSceneFrameSet_onBuilded(event){
-      var o = this;
-      o.__base.FDsFrameSet.onBuilded.call(o, event);
-      o._frameCatalogToolBar._hPanel.className = o.styleName('ToolBar_Ground');
-      o._frameCatalogContent._hPanel.className = o.styleName('Catalog_Content');
-      o._frameCanvasToolBar._hPanel.className = o.styleName('ToolBar_Ground');
-      o._frameCanvasContent._hPanel.className = o.styleName('Canvas_Content');
-      o._framePropertyToolBar._hPanel.className = o.styleName('ToolBar_Ground');
-      o._framePropertyContent._hPanel.className = o.styleName('Property_Content');
-      var spliter = o._spliterCatalog;
-      spliter.setAlignCd(EUiAlign.Left);
-      spliter.setSizeHtml(o._frameCatalog._hPanel);
-      var spliter = o._spliterProperty;
-      spliter.setAlignCd(EUiAlign.Right);
-      spliter.setSizeHtml(o._frameProperty._hPanel);
-      var sceneConsole = MO.Console.find(FE3dInstanceConsole);
-      sceneConsole.register(EE3dInstance.TemplateRenderable, FDsSceneRenderable);
-      sceneConsole.register(EE3dInstance.SceneLayer, FDsSceneLayer);
-      sceneConsole.register(EE3dInstance.SceneDisplay, FDsSceneDisplay);
-      sceneConsole.register(EE3dInstance.SceneRenderable, FDsSceneRenderable);
-   }
-   MO.FDsSceneFrameSet_onDataLoaded = function FDsSceneFrameSet_onDataLoaded(canvas){
-      var o = this;
-      var space = o._activeSpace = canvas._activeSpace;
-      o._catalogContent.buildSpace(space);
-   }
-   MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelected(select, flag){
-      var o = this;
-      var space = o._activeSpace;
-      if(!space){
-         return;
+   var canvas = o._canvasContent;
+   o.hidePropertyFrames();
+   if(MO.Class.isClass(select, MO.FE3dScene)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonSpacePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FG3dTechnique)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonTechniquePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dRegion)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonRegionPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dCamera)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonCameraPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FG3dDirectionalLight)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonLightPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(select == 'layers'){
+      if(flag){
+         canvas.selectLayers(select);
       }
-      var canvas = o._canvasContent;
-      o.hidePropertyFrames();
-      if(MO.Class.isClass(select, FE3dScene)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonSpacePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FG3dTechnique)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonTechniquePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dRegion)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonRegionPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dCamera)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonCameraPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FG3dDirectionalLight)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonLightPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(select == 'layers'){
-         if(flag){
-            canvas.selectLayers(select);
-         }
-      }else if(MO.Class.isClass(select, FE3dSceneLayer)){
-         if(flag){
-            canvas.selectLayer(select);
-         }
-         var frame = o.findPropertyFrame(EDsFrame.CommonLayerPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dSceneDisplay)){
-         if(flag){
-            canvas.selectDisplay(select);
-         }
-         var frame = o.findPropertyFrame(EDsFrame.CommonDisplayPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dSceneMaterial)){
-         if(flag){
-            canvas.selectMaterial(select);
-         }
-         var frame = o.findPropertyFrame(EDsFrame.CommonMaterialPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dAnimation)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonAnimationPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dMovie)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonMoviePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dRenderable)){
-         if(flag){
-            canvas.selectRenderable(select);
-         }
-         var frame = o.findPropertyFrame(EDsFrame.CommonRenderablePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else{
-         throw new TError('Unknown select type. (select={1})', select);
+   }else if(MO.Class.isClass(select, MO.FE3dSceneLayer)){
+      if(flag){
+         canvas.selectLayer(select);
       }
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonLayerPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dSceneDisplay)){
+      if(flag){
+         canvas.selectDisplay(select);
+      }
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonDisplayPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dSceneMaterial)){
+      if(flag){
+         canvas.selectMaterial(select);
+      }
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonMaterialPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dAnimation)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonAnimationPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dMovie)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonMoviePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dRenderable)){
+      if(flag){
+         canvas.selectRenderable(select);
+      }
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonRenderablePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else{
+      throw new TError('Unknown select type. (select={1})', select);
    }
-   MO.FDsSceneFrameSet_construct = function FDsSceneFrameSet_construct(){
-      var o = this;
-      o.__base.FDsFrameSet.construct.call(o);
-   }
-   MO.FDsSceneFrameSet_loadByGuid = function FDsSceneFrameSet_loadByGuid(guid){
-      var o = this;
-      o._activeGuid = guid;
-      o._canvasContent.loadByGuid(guid);
-   }
-   MO.FDsSceneFrameSet_loadByCode = function FDsSceneFrameSet_loadByCode(code){
-      var o = this;
-      o._avtiveCode = code;
-      o._canvasContent.loadByCode(code);
-   }
-   MO.FDsSceneFrameSet_dispose = function FDsSceneFrameSet_dispose(){
-      var o = this;
-      o.__base.FDsFrameSet.dispose.call(o);
-   }
+}
+MO.FDsSceneFrameSet_construct = function FDsSceneFrameSet_construct(){
+   var o = this;
+   o.__base.FDsFrameSet.construct.call(o);
+}
+MO.FDsSceneFrameSet_loadByGuid = function FDsSceneFrameSet_loadByGuid(guid){
+   var o = this;
+   o._activeGuid = guid;
+   o._canvasContent.loadByGuid(guid);
+}
+MO.FDsSceneFrameSet_loadByCode = function FDsSceneFrameSet_loadByCode(code){
+   var o = this;
+   o._avtiveCode = code;
+   o._canvasContent.loadByCode(code);
+}
+MO.FDsSceneFrameSet_dispose = function FDsSceneFrameSet_dispose(){
+   var o = this;
+   o.__base.FDsFrameSet.dispose.call(o);
 }
 with(MO){
    MO.FDsSceneMenuBar = function FDsSceneMenuBar(o){

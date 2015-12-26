@@ -107,7 +107,7 @@ MO.MUiEditValue_formator = function MUiEditValue_formator(){
 // @return String 数据
 //==========================================================
 MO.MUiEditValue_get = function MUiEditValue_get(){
-   throw new MO.TError('Unsupport method.');
+   // throw new MO.TError('Unsupport method.');
 }
 
 //==========================================================
@@ -117,7 +117,7 @@ MO.MUiEditValue_get = function MUiEditValue_get(){
 // @param value:String 数据
 //==========================================================
 MO.MUiEditValue_set = function MUiEditValue_set(value){
-   throw new MO.TError('Unsupport method.');
+   // throw new MO.TError('Unsupport method.');
 }
 
 //==========================================================

@@ -1690,9 +1690,10 @@ MO.FDuiWorkspaceApplication = function FDuiWorkspaceApplication(o){
    o._workspaces      = MO.Class.register(o, new MO.AGetter('_workspaces'));
    o._activeWorkspace = MO.Class.register(o, new MO.AGetter('_activeWorkspace'));
    o.onProcess        = MO.FDuiWorkspaceApplication_onProcess;
+   o.construct        = MO.FDuiWorkspaceApplication_construct;
+   o.initialize       = MO.FDuiWorkspaceApplication_initialize;
    o.selectWorkspace  = MO.FDuiWorkspaceApplication_selectWorkspace;
-   o.processResize    = MO.FDuiWorkspaceApplication_processResize;
-   o.processEvent     = MO.FDuiWorkspaceApplication_processEvent;
+   o.dispose          = MO.FDuiWorkspaceApplication_dispose;
    return o;
 }
 MO.FDuiWorkspaceApplication_onProcess = function FDuiWorkspaceApplication_onProcess(){
@@ -1702,16 +1703,25 @@ MO.FDuiWorkspaceApplication_onProcess = function FDuiWorkspaceApplication_onProc
       workspace.psFrame();
    }
 }
+MO.FDuiWorkspaceApplication_construct = function FDuiWorkspaceApplication_construct(){
+   var o = this;
+   o.__base.FApplication.construct.call(o);
+   o._workspaces = new MO.TDictionary();
+}
+MO.FDuiWorkspaceApplication_initialize = function FDuiWorkspaceApplication_initialize(){
+   var o = this;
+   o.__base.FApplication.initialize.call(o);
+   MO.RE3dEngine.setup();
+}
 MO.FDuiWorkspaceApplication_selectWorkspace = function FDuiWorkspaceApplication_selectWorkspace(clazz){
    var o = this;
    var workspace = o._activeWorkspace = MO.Class.create(clazz);
    return workspace;
 }
-MO.FDuiWorkspaceApplication_processResize = function FDuiWorkspaceApplication_processResize(){
+MO.FDuiWorkspaceApplication_dispose = function FDuiWorkspaceApplication_dispose(){
    var o = this;
-}
-MO.FDuiWorkspaceApplication_processEvent = function FDuiWorkspaceApplication_processEvent(event){
-   var o = this;
+   o._workspaces = MO.Lang.Object.dispose(o._workspaces, true);
+   o.__base.FApplication.dispose.call(o);
 }
 MO.FDuiWorkspaceConsole = function FDuiWorkspaceConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);

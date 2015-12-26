@@ -11,16 +11,9 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
    // @attribute
    o._scopeCd       = MO.EScope.Local;
    // @attribute
-   o._loadModels    = null;
    o._models        = MO.Class.register(o, new MO.AGetter('_models'));
    o._meshs         = MO.Class.register(o, new MO.AGetter('_meshs'));
    o._dynamicMeshs  = null;
-   // @attribute
-   o._thread        = null;
-   o._interval      = 200;
-   //..........................................................
-   // @event
-   o.onProcess      = MO.FE3rModelConsole_onProcess;
    //..........................................................
    // @method
    o.construct      = MO.FE3rModelConsole_construct;
@@ -41,23 +34,6 @@ MO.FE3rModelConsole = function FE3rModelConsole(o){
 }
 
 //==========================================================
-// <T>逻辑处理。</T>
-//
-// @method
-//==========================================================
-MO.FE3rModelConsole_onProcess = function FE3rModelConsole_onProcess(){
-   var o = this;
-   var models = o._loadModels;
-   models.record();
-   while(models.next()){
-      var model = models.current();
-      if(model.processLoad()){
-         models.removeCurrent();
-      }
-   }
-}
-
-//==========================================================
 // <T>构造处理。</T>
 //
 // @method
@@ -66,15 +42,9 @@ MO.FE3rModelConsole_construct = function FE3rModelConsole_construct(){
    var o = this;
    o.__base.FConsole.construct.call(o);
    // 设置属性
-   o._loadModels = new MO.TLooper();
    o._models = new MO.TDictionary();
    o._meshs = new MO.TDictionary();
    o._dynamicMeshs = new MO.TDictionary();
-   // 创建线程
-   var thread = o._thread = MO.Class.create(MO.FThread);
-   thread.setInterval(o._interval);
-   thread.addProcessListener(o, o.onProcess);
-   MO.Console.find(MO.FThreadConsole).start(thread);
 }
 
 //==========================================================
@@ -129,34 +99,40 @@ MO.FE3rModelConsole_findMesh = function FE3rModelConsole_findMesh(guid){
 // <T>加载一个渲染模型。</T>
 //
 // @method
-// @param context:FG3dContext 环境
-// @param guid:String 唯一编号
-// @return FRenderModel 渲染模型
+// @param args:SE3sLoadArgs 加载参数
+// @return FE3rModel 渲染模型
 //==========================================================
-MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
+MO.FE3rModelConsole_load = function FE3rModelConsole_load(args){
    var o = this;
-   // 检查参数
-   if(!context){
-      throw new MO.TError('Graphics context is empty');
+   // 获得环境
+   var context = args.context;
+   MO.Assert.debugNotNull(context);
+   // 获得标识
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      identity = guid;
    }
-   if(!guid){
-      throw new MO.TError('Model guid is empty');
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      identity = code;
    }
+   MO.Assert.debugNotEmpty(identity);
    // 查找模型
-   var model = o._models.get(guid);
-   if(model){
-      return model;
+   var models = o._models;
+   var model = models.get(identity);
+   if(!model){
+      // 获得路径
+      var resource = MO.Console.find(MO.FE3sModelConsole).load(args);
+      // 加载模型
+      model = MO.Class.create(MO.FE3rModel);
+      model.linkGraphicContext(context);
+      model.setCode(identity);
+      model.setResource(resource);
+      models.set(identity, model);
+      // 追加到加载队列
+      MO.Console.find(MO.FProcessLoadConsole).push(model);
    }
-   // 获得路径
-   var resource = MO.Console.find(MO.FE3sModelConsole).load(guid);
-   // 加载模型
-   model = MO.Class.create(MO.FE3rModel);
-   model.linkGraphicContext(context);
-   model.setCode(guid);
-   model.setResource(resource);
-   o._models.set(guid, model);
-   // 追加到加载队列
-   o._loadModels.push(model);
    return model;
 }
 
@@ -170,27 +146,11 @@ MO.FE3rModelConsole_load = function FE3rModelConsole_load(context, guid){
 //==========================================================
 MO.FE3rModelConsole_loadByGuid = function FE3rModelConsole_loadByGuid(context, guid){
    var o = this;
-   // 检查参数
-   MO.Assert.debugNotNull(context);
-   MO.Assert.debugNotEmpty(guid);
-   // 查找模型
-   var model = o._models.get(guid);
-   if(!model){
-      // 获得路径
-      var resource = MO.Console.find(MO.FE3sModelConsole).loadByGuid(guid);
-      // 加载模型
-      model = MO.Class.create(MO.FE3rModel);
-      model.linkGraphicContext(context);
-      model.setCode(guid);
-      model.setResource(resource);
-      o._models.set(guid, model);
-      // 测试是否已加载
-      if(resource.testReady()){
-         model.loadResource(resource);
-      }else{
-         o._loadModels.push(model);
-      }
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.guid = guid;
+   var model = o.load(args);
+   MO.Memory.free(args);
    return model;
 }
 
@@ -204,27 +164,11 @@ MO.FE3rModelConsole_loadByGuid = function FE3rModelConsole_loadByGuid(context, g
 //==========================================================
 MO.FE3rModelConsole_loadByCode = function FE3rModelConsole_loadByCode(context, code){
    var o = this;
-   // 检查参数
-   MO.Assert.debugNotNull(context);
-   MO.Assert.debugNotEmpty(code);
-   // 查找模型
-   var model = o._models.get(code);
-   if(!model){
-      // 获得路径
-      var resource = MO.Console.find(MO.FE3sModelConsole).loadByCode(code);
-      // 加载模型
-      model = MO.Class.create(MO.FE3rModel);
-      model.linkGraphicContext(context);
-      model.setCode(code);
-      model.setResource(resource);
-      o._models.set(code, model);
-      // 测试是否已加载
-      if(resource.testReady()){
-         model.loadResource(resource);
-      }else{
-         o._loadModels.push(model);
-      }
-   }
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.context = context;
+   args.code = code;
+   var model = o.load(args);
+   MO.Memory.free(args);
    return model;
 }
 
@@ -263,7 +207,7 @@ MO.FE3rModelConsole_loadMeshByGuid = function FE3rModelConsole_loadMeshByGuid(co
       m.loadResource(rm);
    }else{
       // 追加到加载队列
-      o._loadModels.push(m);
+      MO.Console.find(MO.FProcessLoadConsole).push(m);
    }
    return m;
 }
@@ -305,7 +249,7 @@ MO.FE3rModelConsole_loadMeshByCode = function FE3rModelConsole_loadMeshByCode(co
       m.loadResource(rm);
    }else{
       // 追加到加载队列
-      o._loadModels.push(m);
+      MO.Console.find(MO.FProcessLoadConsole).push(m);
    }
    return m;
 }

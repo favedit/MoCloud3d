@@ -2336,7 +2336,8 @@ MO.TListeners_process = function TListeners_process(ps, p1, p2, p3, p4, p5){
    if(listeners){
       var count = listeners.count();
       for(var i = 0; i < count; i++){
-         listeners.at(i).process(ps, p1, p2, p3, p4, p5);
+         var listener = listeners.at(i);
+         listener.process(ps, p1, p2, p3, p4, p5);
       }
    }
 }
@@ -5909,7 +5910,7 @@ MO.RHex = function RHex(){
    return o;
 }
 MO.RHex.prototype.isValid = function RHex_isValid(value){
-   return MO.String.isPattern(value, this.NUMBER);
+   return MO.Lang.String.isPattern(value, this.NUMBER);
 }
 MO.RHex.prototype.parse = function RHex_parse(value){
    return value ? parseInt('0x' + value) : 0;
@@ -5921,10 +5922,9 @@ MO.RHex.prototype.format = function RHex_format(value, length){
    }else{
       result = '0';
    }
-   return length ? MO.String.lpad(result, length, this.PAD) : result;
+   return length ? MO.Lang.String.lpad(result, length, this.PAD) : result;
 }
-MO.RHex = new MO.RHex();
-MO.Lang.Hex = MO.RHex;
+MO.Lang.Hex = new MO.RHex();
 MO.RInstance = function RInstance(){
    var o = this;
    o._pools = new MO.TDictionary();

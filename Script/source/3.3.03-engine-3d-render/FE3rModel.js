@@ -5,7 +5,7 @@
 // @history 150130
 //==========================================================
 MO.FE3rModel = function FE3rModel(o){
-   o = MO.Class.inherits(this, o, MO.FE3rObject);
+   o = MO.Class.inherits(this, o, MO.FE3rObject, MO.MProcessLoad);
    //..........................................................
    // @attribute
    o._resource            = MO.Class.register(o, new MO.AGetSet('_resource'));

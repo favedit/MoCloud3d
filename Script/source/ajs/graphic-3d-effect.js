@@ -619,7 +619,6 @@ MO.FG3dSelectTechnique_test = function FG3dSelectTechnique_test(region, x, y){
    var o = this;
    region._selectX = x;
    region._selectY = y;
-   region.setTechnique(o);
    o.drawRegion(region);
    return o._passSelect._selectRenderable;
 }

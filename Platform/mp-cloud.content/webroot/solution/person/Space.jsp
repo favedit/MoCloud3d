@@ -13,11 +13,13 @@
 <SCRIPT>
 function _load(){
    // 设置环境
-   MO.Runtime.setProcessCd(MO.EProcess.Debug);
    MO.initialize();
+   MO.Runtime.setVersion('151223');
+   MO.Runtime.setProcessCd(MO.EProcess.Debug);
    MO.Window.Browser.setContentPath('/script');
    // 设置环境
    MO.Console.find(MO.FE3sVendorConsole).setup('net');
+   MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEngineConstant.Resource, '/script/ars');
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.ServiceHost, '115.28.82.149');
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
    // 加载工作区

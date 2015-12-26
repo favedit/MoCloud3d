@@ -3847,9 +3847,10 @@ MO.FDuiWorkspaceApplication = function FDuiWorkspaceApplication(o){
    o._workspaces      = MO.Class.register(o, new MO.AGetter('_workspaces'));
    o._activeWorkspace = MO.Class.register(o, new MO.AGetter('_activeWorkspace'));
    o.onProcess        = MO.FDuiWorkspaceApplication_onProcess;
+   o.construct        = MO.FDuiWorkspaceApplication_construct;
+   o.initialize       = MO.FDuiWorkspaceApplication_initialize;
    o.selectWorkspace  = MO.FDuiWorkspaceApplication_selectWorkspace;
-   o.processResize    = MO.FDuiWorkspaceApplication_processResize;
-   o.processEvent     = MO.FDuiWorkspaceApplication_processEvent;
+   o.dispose          = MO.FDuiWorkspaceApplication_dispose;
    return o;
 }
 MO.FDuiWorkspaceApplication_onProcess = function FDuiWorkspaceApplication_onProcess(){
@@ -3859,16 +3860,25 @@ MO.FDuiWorkspaceApplication_onProcess = function FDuiWorkspaceApplication_onProc
       workspace.psFrame();
    }
 }
+MO.FDuiWorkspaceApplication_construct = function FDuiWorkspaceApplication_construct(){
+   var o = this;
+   o.__base.FApplication.construct.call(o);
+   o._workspaces = new MO.TDictionary();
+}
+MO.FDuiWorkspaceApplication_initialize = function FDuiWorkspaceApplication_initialize(){
+   var o = this;
+   o.__base.FApplication.initialize.call(o);
+   MO.RE3dEngine.setup();
+}
 MO.FDuiWorkspaceApplication_selectWorkspace = function FDuiWorkspaceApplication_selectWorkspace(clazz){
    var o = this;
    var workspace = o._activeWorkspace = MO.Class.create(clazz);
    return workspace;
 }
-MO.FDuiWorkspaceApplication_processResize = function FDuiWorkspaceApplication_processResize(){
+MO.FDuiWorkspaceApplication_dispose = function FDuiWorkspaceApplication_dispose(){
    var o = this;
-}
-MO.FDuiWorkspaceApplication_processEvent = function FDuiWorkspaceApplication_processEvent(event){
-   var o = this;
+   o._workspaces = MO.Lang.Object.dispose(o._workspaces, true);
+   o.__base.FApplication.dispose.call(o);
 }
 MO.FDuiWorkspaceConsole = function FDuiWorkspaceConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);
@@ -4188,22 +4198,22 @@ MO.SDuiColorChannel = function SDuiColorChannel(){
    o.convertSet    = MO.SDuiColorChannel_convertSet;
    return o;
 }
-MO.SDuiColorChannel_setInputValue = function SDuiColorChannel_setInputValue(p){
+MO.SDuiColorChannel_setInputValue = function SDuiColorChannel_setInputValue(value){
    var o = this;
-   var v = MO.Integer.toRange(p, o.minValue, o.maxValue);
-   var t = MO.Integer.format(v);
-   var h = o.hInput;
-   if(h.value != t){
-      h.value = t;
+   var validValue = MO.Lang.Integer.toRange(value, o.minValue, o.maxValue);
+   var text = MO.Lang.Integer.format(validValue);
+   var hInput = o.hInput;
+   if(hInput.value != text){
+      hInput.value = text;
    }
 }
-MO.SDuiColorChannel_convertGet = function SDuiColorChannel_convertGet(p){
+MO.SDuiColorChannel_convertGet = function SDuiColorChannel_convertGet(value){
    var o = this;
-   var v = MO.Lang.Integer.parse(MO.Lang.String.nvl(p, '0'));
-   return MO.Lang.Integer.toRange(v, o.minValue, o.maxValue) / 255;
+   var validValue = MO.Lang.Integer.parse(MO.Lang.String.nvl(value, '0'));
+   return MO.Lang.Integer.toRange(validValue, o.minValue, o.maxValue) / 255;
 }
-MO.SDuiColorChannel_convertSet = function SDuiColorChannel_convertSet(p){
-   return parseInt(p * 255);
+MO.SDuiColorChannel_convertSet = function SDuiColorChannel_convertSet(value){
+   return parseInt(value * 255);
 }
 MO.SDuiColorPower = function SDuiColorPower(){
    var o = this;
@@ -9401,8 +9411,8 @@ MO.FDuiNumber3 = function FDuiNumber3(o){
    o._hInput               = null;
    o.onBuildEditInput      = MO.FDuiNumber3_onBuildEditInput;
    o.onBuildEditValue      = MO.FDuiNumber3_onBuildEditValue;
-   o.onInputKeyPress       = MO.Class.register(o, new MO.AEventKeyPress('onInputKeyPress'), FDuiNumber3_onInputKeyPress);
-   o.onInputChanged        = MO.Class.register(o, new MO.AEventInputChanged('onInputChanged'), FDuiNumber3_onInputChanged);
+   o.onInputKeyPress       = MO.Class.register(o, new MO.AEventKeyPress('onInputKeyPress'), MO.FDuiNumber3_onInputKeyPress);
+   o.onInputChanged        = MO.Class.register(o, new MO.AEventInputChanged('onInputChanged'), MO.FDuiNumber3_onInputChanged);
    o.construct             = MO.FDuiNumber3_construct;
    o.get                   = MO.FDuiNumber3_get;
    o.set                   = MO.FDuiNumber3_set;
