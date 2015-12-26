@@ -9,7 +9,7 @@ MO.FImage = function FImage(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MListenerLoad);
    //..........................................................
    // @attribute
-   o._optionAlpha   = MO.Class.register(o, new MO.AGetter('_optionAlpha'), true);
+   o._optionAlpha   = MO.Class.register(o, new MO.AGetSet('_optionAlpha'), true);
    o._ready         = false;
    o._size          = MO.Class.register(o, new MO.AGetter('_size'));
    o._url           = MO.Class.register(o, new MO.AGetter('_url'));

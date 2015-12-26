@@ -8,8 +8,8 @@ MO.FE3rTrack = function FE3rTrack(o){
    o = MO.Class.inherits(this, o, MO.FObject);
    //..........................................................
    // @attribute
-   o._matrix      = MO.Class.register(o, new AGetter('_matrix'));
-   o._resource    = MO.Class.register(o, new AGetter('_resource'));
+   o._matrix      = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._resource    = MO.Class.register(o, new MO.AGetter('_resource'));
    //..........................................................
    // @method
    o.construct    = MO.FE3rTrack_construct;
@@ -35,17 +35,17 @@ MO.FE3rTrack_construct = function FE3rTrack_construct(){
 // <T>获得资源。</T>
 //
 // @method
-// @return FE3sBone 资源
+// @param resource:FE3sTrack 资源
 //==========================================================
-MO.FE3rTrack_loadResource = function FE3rTrack_loadResource(p){
+MO.FE3rTrack_loadResource = function FE3rTrack_loadResource(resource){
    var o = this;
-   o._resource = p;
+   o._resource = resource;
    // 设置属性
-   var fs = p.frames();
-   if(fs != null){
-      o._frameCount = fs.count();
+   var frames = resource.frames();
+   if(frames){
+      o._frameCount = frames.count();
    }
-   o._frameTick = p.frameTick();
+   o._frameTick = resource.frameTick();
 }
 
 //==========================================================

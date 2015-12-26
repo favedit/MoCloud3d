@@ -1259,6 +1259,56 @@ MO.FSceneDesktop_dispose = function FSceneDesktop_dispose(){
    o._canvas3d = MO.Lang.Object.dispose(o._canvas3d);
    o.__base.FDesktop.dispose.call(o);
 }
+MO.FSceneSpaceApplication = function FSceneSpaceApplication(o){
+   o = MO.Class.inherits(this, o, MO.FSpaceApplication);
+   o.onDataLoaded   = MO.FSceneSpaceApplication_onDataLoaded;
+   o.construct      = MO.FSceneSpaceApplication_construct;
+   o.setup          = MO.FSceneSpaceApplication_setup;
+   o.loadByGuid     = MO.FSceneSpaceApplication_loadByGuid;
+   o.loadByCode     = MO.FSceneSpaceApplication_loadByCode;
+   o.dispose        = MO.FSceneSpaceApplication_dispose;
+   return o;
+}
+MO.FSceneSpaceApplication_onDataLoaded = function FSceneSpaceApplication_onDataLoaded(event){
+   var o = this;
+   var graphic = o._graphicContext;
+   var space = o._activeSpace = event.sender;
+   var size = graphic.size();
+   var camerapPojection = space.camera().projection();
+   camerapPojection.size().set(size.width, size.height);
+   camerapPojection.update();
+   var regionResource = space.region()._resource;
+   o._cameraMoveRate = regionResource.moveSpeed();
+   o._cameraKeyRotation = regionResource.rotationKeySpeed();
+   o._cameraMouseRotation = regionResource.rotationMouseSpeed();
+   o._desktop.selectStage(space);
+}
+MO.FSceneSpaceApplication_construct = function FSceneSpaceApplication_construct(){
+   var o = this;
+   o.__base.FSpaceApplication.construct.call(o);
+}
+MO.FSceneSpaceApplication_loadByGuid = function FSceneSpaceApplication_loadByGuid(guid){
+   var o = this;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(o._activeSpace){
+      sceneConsole.free(o._activeSpace);
+   }
+   var scene = o._activeSpace = sceneConsole.allocByGuid(o._graphicContext, guid);
+   scene.addLoadListener(o, o.onDataLoaded);
+}
+MO.FSceneSpaceApplication_loadByCode = function FSceneSpaceApplication_loadByCode(code){
+   var o = this;
+   var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
+   if(o._activeSpace){
+      sceneConsole.free(o._activeSpace);
+   }
+   var scene = o._activeSpace = sceneConsole.allocByCode(o._graphicContext, code);
+   scene.addLoadListener(o, o.onDataLoaded);
+}
+MO.FSceneSpaceApplication_dispose = function FSceneSpaceApplication_dispose(){
+   var o = this;
+   o.__base.FSpaceApplication.dispose.call(o);
+}
 MO.FSpaceApplication = function FSpaceApplication(o){
    o = MO.Class.inherits(this, o, MO.FApplication);
    o._activeSpace   = MO.Class.register(o, new MO.AGetter('_activeSpace'));
@@ -1530,7 +1580,9 @@ MO.FSpaceCanvas_onOperationZoom = function FSpaceCanvas_onOperationZoom(event){
 }
 MO.FSpaceCanvas_onOperationKeyDown = function FSpaceCanvas_onOperationKeyDown(event){
    var o = this;
-   o._actionRotation = !o._actionRotation;
+   if(event.keyCode == 32){
+      o._actionRotation = !o._actionRotation;
+   }
 }
 MO.FSpaceCanvas_construct = function FSpaceCanvas_construct(){
    var o = this;

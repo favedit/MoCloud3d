@@ -200,7 +200,9 @@ MO.FSpaceCanvas_onOperationZoom = function FSpaceCanvas_onOperationZoom(event){
 MO.FSpaceCanvas_onOperationKeyDown = function FSpaceCanvas_onOperationKeyDown(event){
    var o = this;
    // 设置属性
-   o._actionRotation = !o._actionRotation;
+   if(event.keyCode == 32){
+      o._actionRotation = !o._actionRotation;
+   }
 }
 
 //==========================================================

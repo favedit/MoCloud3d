@@ -265,7 +265,7 @@ public class FResSceneConsole
       //............................................................
       // 新建场景
       FGcResSceneInfo sceneInfo = null;
-      FGcResSceneInfo findSceneInfo = findByUserCode(logicContext, userId, code);
+      FGcResSceneInfo findSceneInfo = findByCode(logicContext, userId, projectId, code);
       if(findSceneInfo == null){
          sceneInfo = doPrepare(logicContext);
       }else{

@@ -1123,7 +1123,6 @@ MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimat
 }
 MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
    var o = this;
-   var models = o._models;
    var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Model);
    var identity = null;
    var guid = args.guid;
@@ -1132,11 +1131,12 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
       identity = guid;
    }
    var code = args.code;
-   if(!MO.Lang.String.isEmpty(args.code)){
+   if(!MO.Lang.String.isEmpty(code)){
       vendor.set('code', code);
       identity = code;
    }
    var url = vendor.makeUrl();
+   var models = o._models;
    var model = models.get(identity);
    if(model){
       return model;
@@ -1645,8 +1645,10 @@ MO.FE3sSceneConsole = function FE3sSceneConsole(o){
    o._dataUrl    = '/cloud.content.scene.wv'
    o._scenes     = null;
    o.construct   = MO.FE3sSceneConsole_construct;
+   o.load        = MO.FE3sSceneConsole_load;
    o.loadByGuid  = MO.FE3sSceneConsole_loadByGuid;
    o.loadByCode  = MO.FE3sSceneConsole_loadByCode;
+   o.dispose     = MO.FE3sSceneConsole_dispose;
    return o;
 }
 MO.FE3sSceneConsole_construct = function FE3sSceneConsole_construct(){
@@ -1654,40 +1656,48 @@ MO.FE3sSceneConsole_construct = function FE3sSceneConsole_construct(){
    o.__base.FConsole.construct.call(o);
    o._scenes = new MO.TDictionary();
 }
-MO.FE3sSceneConsole_loadByGuid = function FE3sSceneConsole_loadByGuid(guid){
+MO.FE3sSceneConsole_load = function FE3sSceneConsole_load(args){
    var o = this;
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Scene);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
    var scenes = o._scenes;
-   var scene = scenes.get(guid);
+   var scene = scenes.get(identity);
    if(scene){
       return scene;
    }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(o._vendorCode);
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
    scene = MO.Class.create(MO.FE3sScene);
-   scene.setGuid(guid);
+   scene.setGuid(identity);
    scene.setVendor(vendor);
    scene.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(scene);
-   scenes.set(guid, scene);
+   scenes.set(identity, scene);
+   return scene;
+}
+MO.FE3sSceneConsole_loadByGuid = function FE3sSceneConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var scene = o.load(args);
+   MO.Memory.free(args);
    return scene;
 }
 MO.FE3sSceneConsole_loadByCode = function FE3sSceneConsole_loadByCode(code){
    var o = this;
-   var scenes = o._scenes;
-   var scene = scenes.get(code);
-   if(scene){
-      return scene;
-   }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(o._vendorCode);
-   vendor.set('code', code);
-   var url = vendor.makeUrl();
-   scene = MO.Class.create(MO.FE3sScene);
-   scene.setCode(code);
-   scene.setVendor(vendor);
-   scene.setSourceUrl(url);
-   MO.Console.find(MO.FResourceConsole).load(scene);
-   scenes.set(code, scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var scene = o.load(args);
+   MO.Memory.free(args);
    return scene;
 }
 MO.FE3sSceneDisplay = function FE3sSceneDisplay(o){
@@ -2188,7 +2198,6 @@ MO.FE3sTemplateConsole_unserialize = function FE3sTemplateConsole_unserialize(p)
 }
 MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
    var o = this;
-   var templates = o._templates;
    var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Template);
    var identity = null;
    var guid = args.guid;
@@ -2197,11 +2206,12 @@ MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
       identity = guid;
    }
    var code = args.code;
-   if(!MO.Lang.String.isEmpty(args.code)){
+   if(!MO.Lang.String.isEmpty(code)){
       vendor.set('code', code);
       identity = code;
    }
    var url = vendor.makeUrl();
+   var templates = o._templates;
    var template = templates.get(identity);
    if(template){
       return template;

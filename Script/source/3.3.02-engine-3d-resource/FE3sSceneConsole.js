@@ -15,8 +15,12 @@ MO.FE3sSceneConsole = function FE3sSceneConsole(o){
    //..........................................................
    // @method
    o.construct   = MO.FE3sSceneConsole_construct;
+   // @method
+   o.load        = MO.FE3sSceneConsole_load;
    o.loadByGuid  = MO.FE3sSceneConsole_loadByGuid;
    o.loadByCode  = MO.FE3sSceneConsole_loadByCode;
+   // @method
+   o.dispose     = MO.FE3sSceneConsole_dispose;
    return o;
 }
 
@@ -32,57 +36,70 @@ MO.FE3sSceneConsole_construct = function FE3sSceneConsole_construct(){
 }
 
 //==========================================================
-// <T>根据唯一编号加载资源场景。</T>
+// <T>加载指定参数的场景资源。</T>
 //
-// @param guid:String 唯一编号
-// @return 资源场景
+// @param args:SE3sLoadArgs 加载参数
+// @return FE3sScene 资源场景
 //==========================================================
-MO.FE3sSceneConsole_loadByGuid = function FE3sSceneConsole_loadByGuid(guid){
+MO.FE3sSceneConsole_load = function FE3sSceneConsole_load(args){
    var o = this;
+   // 生成地址
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Scene);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
+   // 查找模型
    var scenes = o._scenes;
-   // 获得场景
-   var scene = scenes.get(guid);
+   var scene = scenes.get(identity);
    if(scene){
       return scene;
    }
-   // 生成地址
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(o._vendorCode);
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
-   // 创建主题
+   // 创建模型资源
    scene = MO.Class.create(MO.FE3sScene);
-   scene.setGuid(guid);
+   scene.setGuid(identity);
    scene.setVendor(vendor);
    scene.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(scene);
-   scenes.set(guid, scene);
+   // 存储模型
+   scenes.set(identity, scene);
    return scene;
 }
 
 //==========================================================
-// <T>根据代码加载资源场景。</T>
+// <T>加载唯一编码的场景资源。</T>
+//
+// @param guid:String 唯一编号
+// @return FE3sScene 场景资源
+//==========================================================
+MO.FE3sSceneConsole_loadByGuid = function FE3sSceneConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var scene = o.load(args);
+   MO.Memory.free(args);
+   return scene;
+}
+
+//==========================================================
+// <T>加载指定代码的场景资源。</T>
 //
 // @param code:String 代码
-// @return 资源场景
+// @return FE3sScene 场景资源
 //==========================================================
 MO.FE3sSceneConsole_loadByCode = function FE3sSceneConsole_loadByCode(code){
    var o = this;
-   var scenes = o._scenes;
-   // 获得场景
-   var scene = scenes.get(code);
-   if(scene){
-      return scene;
-   }
-   // 生成地址
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(o._vendorCode);
-   vendor.set('code', code);
-   var url = vendor.makeUrl();
-   // 创建主题
-   scene = MO.Class.create(MO.FE3sScene);
-   scene.setCode(code);
-   scene.setVendor(vendor);
-   scene.setSourceUrl(url);
-   MO.Console.find(MO.FResourceConsole).load(scene);
-   scenes.set(code, scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var scene = o.load(args);
+   MO.Memory.free(args);
    return scene;
 }

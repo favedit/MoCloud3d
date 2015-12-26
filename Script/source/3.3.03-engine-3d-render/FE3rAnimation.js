@@ -13,8 +13,8 @@ MO.FE3rAnimation = function FE3rAnimation(o){
    o._currentTick = 0;
    o._lastTick    = 0;
    o._playRate    = 1.0;
-   o._tracks      = MO.Class.register(o, new AGetter('_tracks'));
-   o._resource    = MO.Class.register(o, new AGetter('_resource'));
+   o._tracks      = MO.Class.register(o, new MO.AGetter('_tracks'));
+   o._resource    = MO.Class.register(o, new MO.AGetter('_resource'));
    // @attribute
    o._playInfo    = null;
    //..........................................................
@@ -104,7 +104,7 @@ MO.FE3rAnimation_loadResource = function FE3rAnimation_loadResource(resource){
 MO.FE3rAnimation_record = function FE3rAnimation_record(){
    var o = this;
    // 获得时间
-   var t = RTimer.current();
+   var t = MO.Timer.current();
    if(o._lastTick == 0){
       o._lastTick = t;
    }

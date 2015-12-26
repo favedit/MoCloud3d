@@ -1236,9 +1236,6 @@ MO.RMemory.prototype.free = function RMemory_free(value){
    var pool = value.__pool;
    MO.Assert.debugNotNull(pool);
    pool.free(value);
-   if(value.free){
-      value.free();
-   }
 }
 MO.RMemory.prototype.refresh = function RMemory_refresh(){
    CollectGarbage();
@@ -1293,6 +1290,9 @@ MO.TMemoryPool_alloc = function TMemoryPool_alloc(){
 MO.TMemoryPool_free = function TMemoryPool_free(value){
    var o = this;
    MO.Assert.debugNotNull(value);
+   if(value.free){
+      value.free();
+   }
    var entry = MO.Memory.entryAlloc();
    entry.value = value;
    entry.next = o._unused;

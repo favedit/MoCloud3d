@@ -48,8 +48,8 @@ MO.FE3rAnimation = function FE3rAnimation(o){
    o._currentTick = 0;
    o._lastTick    = 0;
    o._playRate    = 1.0;
-   o._tracks      = MO.Class.register(o, new AGetter('_tracks'));
-   o._resource    = MO.Class.register(o, new AGetter('_resource'));
+   o._tracks      = MO.Class.register(o, new MO.AGetter('_tracks'));
+   o._resource    = MO.Class.register(o, new MO.AGetter('_resource'));
    o._playInfo    = null;
    o.construct    = MO.FE3rAnimation_construct;
    o.findTrack    = MO.FE3rAnimation_findTrack;
@@ -102,7 +102,7 @@ MO.FE3rAnimation_loadResource = function FE3rAnimation_loadResource(resource){
 }
 MO.FE3rAnimation_record = function FE3rAnimation_record(){
    var o = this;
-   var t = RTimer.current();
+   var t = MO.Timer.current();
    if(o._lastTick == 0){
       o._lastTick = t;
    }
@@ -1904,8 +1904,8 @@ MO.FE3rTextureConsole_loadBitmap = function FE3rTextureConsole_loadBitmap(pc, pt
 }
 MO.FE3rTrack = function FE3rTrack(o){
    o = MO.Class.inherits(this, o, MO.FObject);
-   o._matrix      = MO.Class.register(o, new AGetter('_matrix'));
-   o._resource    = MO.Class.register(o, new AGetter('_resource'));
+   o._matrix      = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._resource    = MO.Class.register(o, new MO.AGetter('_resource'));
    o.construct    = MO.FE3rTrack_construct;
    o.loadResource = MO.FE3rTrack_loadResource;
    o.dispose      = MO.FE3rTrack_dispose;
@@ -1916,14 +1916,14 @@ MO.FE3rTrack_construct = function FE3rTrack_construct(){
    o.__base.FObject.construct.call(o);
    o._matrix = new MO.SMatrix3d();
 }
-MO.FE3rTrack_loadResource = function FE3rTrack_loadResource(p){
+MO.FE3rTrack_loadResource = function FE3rTrack_loadResource(resource){
    var o = this;
-   o._resource = p;
-   var fs = p.frames();
-   if(fs != null){
-      o._frameCount = fs.count();
+   o._resource = resource;
+   var frames = resource.frames();
+   if(frames){
+      o._frameCount = frames.count();
    }
-   o._frameTick = p.frameTick();
+   o._frameTick = resource.frameTick();
 }
 MO.FE3rTrack_dispose = function FE3rTrack_dispose(){
    var o = this;

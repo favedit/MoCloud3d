@@ -61,7 +61,6 @@ MO.FE3sTemplateConsole_unserialize = function FE3sTemplateConsole_unserialize(p)
 //==========================================================
 MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
    var o = this;
-   var templates = o._templates;
    // 生成地址
    var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Template);
    var identity = null;
@@ -71,12 +70,13 @@ MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
       identity = guid;
    }
    var code = args.code;
-   if(!MO.Lang.String.isEmpty(args.code)){
+   if(!MO.Lang.String.isEmpty(code)){
       vendor.set('code', code);
       identity = code;
    }
    var url = vendor.makeUrl();
    // 查找模板
+   var templates = o._templates;
    var template = templates.get(identity);
    if(template){
       return template;

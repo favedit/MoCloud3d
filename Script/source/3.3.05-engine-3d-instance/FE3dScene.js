@@ -29,8 +29,7 @@ MO.FE3dScene = function FE3dScene(o){
    o.dirty                 = MO.FE3dScene_dirty;
    o.processLoad           = MO.FE3dScene_processLoad;
    // @method
-   o.active                = MO.FE3dScene_active;
-   o.deactive              = MO.FE3dScene_deactive;
+   o.dispose               = MO.FE3dScene_dispose;
    return o;
 }
 
@@ -89,14 +88,14 @@ MO.FE3dScene_loadTechniqueResource = function FE3dScene_loadTechniqueResource(p)
 // <T>加载区域资源。</T>
 //
 // @method
-// @param p:resource:FE3sSceneRegion 区域资源
+// @param resource:FE3sSceneRegion 区域资源
 //==========================================================
-MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
+MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(resource){
    var o = this;
-   o._region.loadResource(p);
+   o._region.loadResource(resource);
    //............................................................
    // 设置相机
-   var rc = p.camera();
+   var rc = resource.camera();
    var rcv = rc.projection();
    // 加载投影
    var c = o.camera();
@@ -113,7 +112,7 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    cp.update();
    //............................................................
    // 设置光源
-   var rl = p.light();
+   var rl = resource.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
    var light = o.directionalLight();
@@ -159,7 +158,7 @@ MO.FE3dScene_loadDisplayResource = function FE3dScene_loadDisplayResource(layer,
 // <T>加载天空资源。</T>
 //
 // @method
-// @param resource:FE3sSceneSky 天空资源
+// @param resource:FE3sSceneLayer 层资源
 //==========================================================
 MO.FE3dScene_loadLayerResource = function FE3dScene_loadLayerResource(resource){
    var o = this;
@@ -181,18 +180,18 @@ MO.FE3dScene_loadLayerResource = function FE3dScene_loadLayerResource(resource){
 // <T>加载资源。</T>
 //
 // @method
-// @param p:resource:资源
+// @param resource:FE3sScene 资源
 //==========================================================
-MO.FE3dScene_loadResource = function FE3dScene_loadResource(p){
+MO.FE3dScene_loadResource = function FE3dScene_loadResource(resource){
    var o = this;
    // 选择技术
    o.selectTechnique(o, MO.FE3dGeneralTechnique);
    // 加载技术资源
-   o.loadTechniqueResource(p.technique());
+   o.loadTechniqueResource(resource.technique());
    // 加载区域资源
-   o.loadRegionResource(p.region());
+   o.loadRegionResource(resource.region());
    // 加载层集合
-   var layers = p.layers();
+   var layers = resource.layers();
    if(layers){
       var layerCount = layers.count();
       for(var i = 0; i < layerCount; i++){
@@ -234,29 +233,23 @@ MO.FE3dScene_processLoad = function FE3dScene_processLoad(){
    if(!o._resource.testReady()){
       return false;
    }
+   // 加载资源
    o.loadResource(o._resource);
    o._ready = true;
-   // 事件发送
-   o.processLoadListener(o);
+   // 派发事件
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.sender = o;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
    return true;
 }
 
 //==========================================================
-// <T>激活处理。</T>
+// <T>释放处理。</T>
 //
 // @method
 //==========================================================
-MO.FE3dScene_active = function FE3dScene_active(){
+MO.FE3dScene_dispose = function FE3dScene_dispose(){
    var o = this;
-   o.__base.FE3dSpace.active.call(o);
-}
-
-//==========================================================
-// <T>取消激活处理。</T>
-//
-// @method
-//==========================================================
-MO.FE3dScene_deactive = function FE3dScene_deactive(){
-   var o = this;
-   o.__base.FE3dSpace.deactive.call(o);
+   o.__base.FE3dSpace.dispose.call(o);
 }

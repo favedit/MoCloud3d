@@ -156,7 +156,6 @@ MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimat
 //==========================================================
 MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
    var o = this;
-   var models = o._models;
    // 生成地址
    var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Model);
    var identity = null;
@@ -166,12 +165,13 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
       identity = guid;
    }
    var code = args.code;
-   if(!MO.Lang.String.isEmpty(args.code)){
+   if(!MO.Lang.String.isEmpty(code)){
       vendor.set('code', code);
       identity = code;
    }
    var url = vendor.makeUrl();
    // 查找模型
+   var models = o._models;
    var model = models.get(identity);
    if(model){
       return model;

@@ -17,24 +17,24 @@ MO.RKeyboard = function RKeyboard(){
 // <T>按键落下处理。</T>
 //
 // @method
-// @param p:event:SEvent 事件
+// @param event:SKeyboardEvent 事件
 //===========================================================
-MO.RKeyboard.prototype.onKeyDown = function RKeyboard_onKeyDown(p){
+MO.RKeyboard.prototype.onKeyDown = function RKeyboard_onKeyDown(event){
    var o = this;
-   var c = p.keyCode;
-   o._status[c] = MO.EKeyStatus.Press;
+   var keyCode = event.keyCode;
+   o._status[keyCode] = MO.EKeyStatus.Press;
 }
 
 //===========================================================
 // <T>按键抬起处理。</T>
 //
 // @method
-// @param p:event:SEvent 事件
+// @param event:SKeyboardEvent 事件
 //===========================================================
-MO.RKeyboard.prototype.onKeyUp = function RKeyboard_onKeyUp(p){
+MO.RKeyboard.prototype.onKeyUp = function RKeyboard_onKeyUp(event){
    var o = this;
-   var c = p.keyCode;
-   o._status[c] = MO.EKeyStatus.Normal;
+   var keyCode = event.keyCode;
+   o._status[keyCode] = MO.EKeyStatus.Normal;
 }
 
 //===========================================================

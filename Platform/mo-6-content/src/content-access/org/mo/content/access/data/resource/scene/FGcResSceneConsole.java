@@ -5,6 +5,7 @@ import org.mo.cloud.core.storage.mongo.IGcStorageMongoConsole;
 import org.mo.cloud.data.data.FDataResourceSceneLogic;
 import org.mo.cloud.data.data.FDataResourceTemplateLogic;
 import org.mo.cloud.define.enums.core.EGcResource;
+import org.mo.com.data.FSql;
 import org.mo.com.data.RSql;
 import org.mo.com.lang.EResult;
 import org.mo.com.lang.FFatalError;
@@ -79,26 +80,19 @@ public class FGcResSceneConsole
    //============================================================
    @Override
    public FGcResSceneInfo findByCode(ILogicContext logicContext,
+                                     long userId,
+                                     long projectId,
                                      String code){
-      String whereSql = FDataResourceSceneLogic.CODE + "='" + RSql.formatValue(code) + "'";
-      FGcResSceneInfo sceneInfo = search(logicContext, whereSql);
-      return sceneInfo;
-   }
-
-   //============================================================
-   // <T>根据用户编号和代码查找场景信息。</T>
-   //
-   // @param logicContext 逻辑环境
-   // @param userId 用户编号
-   // @param code 场景代码
-   // @return 场景信息
-   //============================================================
-   @Override
-   public FGcResSceneInfo findByUserCode(ILogicContext logicContext,
-                                         long userId,
-                                         String code){
-      String whereSql = "(" + FDataResourceSceneLogic.USER_ID + "=" + userId + ")";
-      whereSql += " AND (" + FDataResourceSceneLogic.CODE + "='" + RSql.formatValue(code) + "')";
+      // 生成条件
+      FSql whereSql = new FSql();
+      if(userId > 0){
+         whereSql.append("(" + FDataResourceSceneLogic.USER_ID + "=" + userId + ")");
+      }
+      if(projectId > 0){
+         whereSql.appendCondition(!whereSql.isEmpty(), " AND ", FDataResourceSceneLogic.PROJECT_ID + "=" + projectId);
+      }
+      whereSql.appendCondition(!whereSql.isEmpty(), " AND ", FDataResourceSceneLogic.CODE + "='" + code + "'");
+      // 查询信息
       FGcResSceneInfo sceneInfo = search(logicContext, whereSql);
       return sceneInfo;
    }

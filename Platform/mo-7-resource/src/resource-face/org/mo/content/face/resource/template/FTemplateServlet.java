@@ -57,9 +57,8 @@ public class FTemplateServlet
       // 获得参数
       String guid = context.parameter("guid");
       String code = context.parameter("code");
-      // 检查编号和代码，必须存在一个
       if(RString.isEmpty(guid) && RString.isEmpty(code)){
-         throw new FFatalError("Template guid and code is empty.");
+         throw new FFatalError("Template identity is empty. (guid={1}, code={2})", guid, code);
       }
       // 获得唯一编号
       if(RString.isEmpty(guid)){
@@ -68,6 +67,9 @@ public class FTemplateServlet
             throw new FFatalError("Template is not exists. (code={1})", code);
          }
          guid = templateInfo.guid();
+      }
+      if(RString.isEmpty(guid)){
+         throw new FFatalError("Template guid is empty. (guid={1}, code={2})", guid, code);
       }
       //............................................................
       // 生成数据

@@ -4631,7 +4631,6 @@ MO.FE3sModelConsole_unserialAnimation = function FE3sModelConsole_unserialAnimat
 }
 MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
    var o = this;
-   var models = o._models;
    var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Model);
    var identity = null;
    var guid = args.guid;
@@ -4640,11 +4639,12 @@ MO.FE3sModelConsole_load = function FE3sModelConsole_load(args){
       identity = guid;
    }
    var code = args.code;
-   if(!MO.Lang.String.isEmpty(args.code)){
+   if(!MO.Lang.String.isEmpty(code)){
       vendor.set('code', code);
       identity = code;
    }
    var url = vendor.makeUrl();
+   var models = o._models;
    var model = models.get(identity);
    if(model){
       return model;
@@ -5153,8 +5153,10 @@ MO.FE3sSceneConsole = function FE3sSceneConsole(o){
    o._dataUrl    = '/cloud.content.scene.wv'
    o._scenes     = null;
    o.construct   = MO.FE3sSceneConsole_construct;
+   o.load        = MO.FE3sSceneConsole_load;
    o.loadByGuid  = MO.FE3sSceneConsole_loadByGuid;
    o.loadByCode  = MO.FE3sSceneConsole_loadByCode;
+   o.dispose     = MO.FE3sSceneConsole_dispose;
    return o;
 }
 MO.FE3sSceneConsole_construct = function FE3sSceneConsole_construct(){
@@ -5162,40 +5164,48 @@ MO.FE3sSceneConsole_construct = function FE3sSceneConsole_construct(){
    o.__base.FConsole.construct.call(o);
    o._scenes = new MO.TDictionary();
 }
-MO.FE3sSceneConsole_loadByGuid = function FE3sSceneConsole_loadByGuid(guid){
+MO.FE3sSceneConsole_load = function FE3sSceneConsole_load(args){
    var o = this;
+   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Scene);
+   var identity = null;
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      vendor.set('guid', guid);
+      identity = guid;
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      vendor.set('code', code);
+      identity = code;
+   }
+   var url = vendor.makeUrl();
    var scenes = o._scenes;
-   var scene = scenes.get(guid);
+   var scene = scenes.get(identity);
    if(scene){
       return scene;
    }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(o._vendorCode);
-   vendor.set('guid', guid);
-   var url = vendor.makeUrl();
    scene = MO.Class.create(MO.FE3sScene);
-   scene.setGuid(guid);
+   scene.setGuid(identity);
    scene.setVendor(vendor);
    scene.setSourceUrl(url);
    MO.Console.find(MO.FResourceConsole).load(scene);
-   scenes.set(guid, scene);
+   scenes.set(identity, scene);
+   return scene;
+}
+MO.FE3sSceneConsole_loadByGuid = function FE3sSceneConsole_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.guid = guid;
+   var scene = o.load(args);
+   MO.Memory.free(args);
    return scene;
 }
 MO.FE3sSceneConsole_loadByCode = function FE3sSceneConsole_loadByCode(code){
    var o = this;
-   var scenes = o._scenes;
-   var scene = scenes.get(code);
-   if(scene){
-      return scene;
-   }
-   var vendor = MO.Console.find(MO.FE3sVendorConsole).find(o._vendorCode);
-   vendor.set('code', code);
-   var url = vendor.makeUrl();
-   scene = MO.Class.create(MO.FE3sScene);
-   scene.setCode(code);
-   scene.setVendor(vendor);
-   scene.setSourceUrl(url);
-   MO.Console.find(MO.FResourceConsole).load(scene);
-   scenes.set(code, scene);
+   var args = MO.Memory.alloc(MO.SE3sLoadArgs);
+   args.code = code;
+   var scene = o.load(args);
+   MO.Memory.free(args);
    return scene;
 }
 MO.FE3sSceneDisplay = function FE3sSceneDisplay(o){
@@ -5696,7 +5706,6 @@ MO.FE3sTemplateConsole_unserialize = function FE3sTemplateConsole_unserialize(p)
 }
 MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
    var o = this;
-   var templates = o._templates;
    var vendor = MO.Console.find(MO.FE3sVendorConsole).find(MO.EE3sResource.Template);
    var identity = null;
    var guid = args.guid;
@@ -5705,11 +5714,12 @@ MO.FE3sTemplateConsole_load = function FE3sTemplateConsole_load(args){
       identity = guid;
    }
    var code = args.code;
-   if(!MO.Lang.String.isEmpty(args.code)){
+   if(!MO.Lang.String.isEmpty(code)){
       vendor.set('code', code);
       identity = code;
    }
    var url = vendor.makeUrl();
+   var templates = o._templates;
    var template = templates.get(identity);
    if(template){
       return template;
@@ -6227,8 +6237,8 @@ MO.FE3rAnimation = function FE3rAnimation(o){
    o._currentTick = 0;
    o._lastTick    = 0;
    o._playRate    = 1.0;
-   o._tracks      = MO.Class.register(o, new AGetter('_tracks'));
-   o._resource    = MO.Class.register(o, new AGetter('_resource'));
+   o._tracks      = MO.Class.register(o, new MO.AGetter('_tracks'));
+   o._resource    = MO.Class.register(o, new MO.AGetter('_resource'));
    o._playInfo    = null;
    o.construct    = MO.FE3rAnimation_construct;
    o.findTrack    = MO.FE3rAnimation_findTrack;
@@ -6281,7 +6291,7 @@ MO.FE3rAnimation_loadResource = function FE3rAnimation_loadResource(resource){
 }
 MO.FE3rAnimation_record = function FE3rAnimation_record(){
    var o = this;
-   var t = RTimer.current();
+   var t = MO.Timer.current();
    if(o._lastTick == 0){
       o._lastTick = t;
    }
@@ -8083,8 +8093,8 @@ MO.FE3rTextureConsole_loadBitmap = function FE3rTextureConsole_loadBitmap(pc, pt
 }
 MO.FE3rTrack = function FE3rTrack(o){
    o = MO.Class.inherits(this, o, MO.FObject);
-   o._matrix      = MO.Class.register(o, new AGetter('_matrix'));
-   o._resource    = MO.Class.register(o, new AGetter('_resource'));
+   o._matrix      = MO.Class.register(o, new MO.AGetter('_matrix'));
+   o._resource    = MO.Class.register(o, new MO.AGetter('_resource'));
    o.construct    = MO.FE3rTrack_construct;
    o.loadResource = MO.FE3rTrack_loadResource;
    o.dispose      = MO.FE3rTrack_dispose;
@@ -8095,14 +8105,14 @@ MO.FE3rTrack_construct = function FE3rTrack_construct(){
    o.__base.FObject.construct.call(o);
    o._matrix = new MO.SMatrix3d();
 }
-MO.FE3rTrack_loadResource = function FE3rTrack_loadResource(p){
+MO.FE3rTrack_loadResource = function FE3rTrack_loadResource(resource){
    var o = this;
-   o._resource = p;
-   var fs = p.frames();
-   if(fs != null){
-      o._frameCount = fs.count();
+   o._resource = resource;
+   var frames = resource.frames();
+   if(frames){
+      o._frameCount = frames.count();
    }
-   o._frameTick = p.frameTick();
+   o._frameTick = resource.frameTick();
 }
 MO.FE3rTrack_dispose = function FE3rTrack_dispose(){
    var o = this;
@@ -9872,8 +9882,7 @@ MO.FE3dScene = function FE3dScene(o){
    o.testReady             = MO.FE3dScene_testReady;
    o.dirty                 = MO.FE3dScene_dirty;
    o.processLoad           = MO.FE3dScene_processLoad;
-   o.active                = MO.FE3dScene_active;
-   o.deactive              = MO.FE3dScene_deactive;
+   o.dispose               = MO.FE3dScene_dispose;
    return o;
 }
 MO.FE3dScene_onProcess = function FE3dScene_onProcess(){
@@ -9899,10 +9908,10 @@ MO.FE3dScene_loadTechniqueResource = function FE3dScene_loadTechniqueResource(p)
    var o = this;
    o._technique._resource = p;
 }
-MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
+MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(resource){
    var o = this;
-   o._region.loadResource(p);
-   var rc = p.camera();
+   o._region.loadResource(resource);
+   var rc = resource.camera();
    var rcv = rc.projection();
    var c = o.camera();
    c._resource = rc;
@@ -9915,7 +9924,7 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    cp._znear = rcv.znear();
    cp._zfar = rcv.zfar();
    cp.update();
-   var rl = p.light();
+   var rl = resource.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
    var light = o.directionalLight();
@@ -9954,12 +9963,12 @@ MO.FE3dScene_loadLayerResource = function FE3dScene_loadLayerResource(resource){
    }
    o.registerLayer(resource.code(), layer)
 }
-MO.FE3dScene_loadResource = function FE3dScene_loadResource(p){
+MO.FE3dScene_loadResource = function FE3dScene_loadResource(resource){
    var o = this;
    o.selectTechnique(o, MO.FE3dGeneralTechnique);
-   o.loadTechniqueResource(p.technique());
-   o.loadRegionResource(p.region());
-   var layers = p.layers();
+   o.loadTechniqueResource(resource.technique());
+   o.loadRegionResource(resource.region());
+   var layers = resource.layers();
    if(layers){
       var layerCount = layers.count();
       for(var i = 0; i < layerCount; i++){
@@ -9984,16 +9993,15 @@ MO.FE3dScene_processLoad = function FE3dScene_processLoad(){
    }
    o.loadResource(o._resource);
    o._ready = true;
-   o.processLoadListener(o);
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.sender = o;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
    return true;
 }
-MO.FE3dScene_active = function FE3dScene_active(){
+MO.FE3dScene_dispose = function FE3dScene_dispose(){
    var o = this;
-   o.__base.FE3dSpace.active.call(o);
-}
-MO.FE3dScene_deactive = function FE3dScene_deactive(){
-   var o = this;
-   o.__base.FE3dSpace.deactive.call(o);
+   o.__base.FE3dSpace.dispose.call(o);
 }
 MO.FE3dSceneAnimation = function FE3dSceneAnimation(o){
    o = MO.Class.inherits(this, o, MO.FE3dAnimation);

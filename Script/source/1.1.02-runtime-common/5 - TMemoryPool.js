@@ -58,6 +58,11 @@ MO.TMemoryPool_alloc = function TMemoryPool_alloc(){
 MO.TMemoryPool_free = function TMemoryPool_free(value){
    var o = this;
    MO.Assert.debugNotNull(value);
+   // 释放资源
+   if(value.free){
+      value.free();
+   }
+   // 放回缓冲池
    var entry = MO.Memory.entryAlloc();
    entry.value = value;
    entry.next = o._unused;

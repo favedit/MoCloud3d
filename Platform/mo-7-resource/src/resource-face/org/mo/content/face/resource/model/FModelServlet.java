@@ -85,7 +85,7 @@ public class FModelServlet
       String code = context.parameter("code");
       String guid = context.parameter("guid");
       if(RString.isEmpty(guid) && RString.isEmpty(code)){
-         throw new FFatalError("Resource identity is empty. (guid={1}, code={2})", guid, code);
+         throw new FFatalError("Model identity is empty. (guid={1}, code={2})", guid, code);
       }
       // 获得唯一编号
       if(!RString.isEmpty(code)){
@@ -94,6 +94,9 @@ public class FModelServlet
             throw new FFatalError("Model is not exists. (code={1})", code);
          }
          guid = modelInfo.guid();
+      }
+      if(RString.isEmpty(guid)){
+         throw new FFatalError("Model guid is empty. (guid={1}, code={2})", guid, code);
       }
       //............................................................
       // 生成数据

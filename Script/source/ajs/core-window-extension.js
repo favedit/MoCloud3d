@@ -65,7 +65,7 @@ MO.TDumpItem_show = function TDumpItem_show(v){
 }
 MO.FImage = function FImage(o){
    o = MO.Class.inherits(this, o, MO.FObject, MO.MListenerLoad);
-   o._optionAlpha   = MO.Class.register(o, new MO.AGetter('_optionAlpha'), true);
+   o._optionAlpha   = MO.Class.register(o, new MO.AGetSet('_optionAlpha'), true);
    o._ready         = false;
    o._size          = MO.Class.register(o, new MO.AGetter('_size'));
    o._url           = MO.Class.register(o, new MO.AGetter('_url'));
@@ -1026,15 +1026,15 @@ MO.RKeyboard = function RKeyboard(){
    o._status = new Array();
    return o;
 }
-MO.RKeyboard.prototype.onKeyDown = function RKeyboard_onKeyDown(p){
+MO.RKeyboard.prototype.onKeyDown = function RKeyboard_onKeyDown(event){
    var o = this;
-   var c = p.keyCode;
-   o._status[c] = MO.EKeyStatus.Press;
+   var keyCode = event.keyCode;
+   o._status[keyCode] = MO.EKeyStatus.Press;
 }
-MO.RKeyboard.prototype.onKeyUp = function RKeyboard_onKeyUp(p){
+MO.RKeyboard.prototype.onKeyUp = function RKeyboard_onKeyUp(event){
    var o = this;
-   var c = p.keyCode;
-   o._status[c] = MO.EKeyStatus.Normal;
+   var keyCode = event.keyCode;
+   o._status[keyCode] = MO.EKeyStatus.Normal;
 }
 MO.RKeyboard.prototype.construct = function RKeyboard_construct(){
    var o = this;

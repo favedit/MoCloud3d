@@ -27,7 +27,7 @@ MO.SEvent = function SEvent(sender){
    // @method
    o.process    = null;
    // @method
-   o.free       = MO.Method.disposeStruct;
+   o.free       = MO.Method.freeStruct;
    o.dispose    = MO.Method.disposeStruct;
    return o;
 }

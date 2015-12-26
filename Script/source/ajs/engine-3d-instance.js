@@ -893,8 +893,7 @@ MO.FE3dScene = function FE3dScene(o){
    o.testReady             = MO.FE3dScene_testReady;
    o.dirty                 = MO.FE3dScene_dirty;
    o.processLoad           = MO.FE3dScene_processLoad;
-   o.active                = MO.FE3dScene_active;
-   o.deactive              = MO.FE3dScene_deactive;
+   o.dispose               = MO.FE3dScene_dispose;
    return o;
 }
 MO.FE3dScene_onProcess = function FE3dScene_onProcess(){
@@ -920,10 +919,10 @@ MO.FE3dScene_loadTechniqueResource = function FE3dScene_loadTechniqueResource(p)
    var o = this;
    o._technique._resource = p;
 }
-MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
+MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(resource){
    var o = this;
-   o._region.loadResource(p);
-   var rc = p.camera();
+   o._region.loadResource(resource);
+   var rc = resource.camera();
    var rcv = rc.projection();
    var c = o.camera();
    c._resource = rc;
@@ -936,7 +935,7 @@ MO.FE3dScene_loadRegionResource = function FE3dScene_loadRegionResource(p){
    cp._znear = rcv.znear();
    cp._zfar = rcv.zfar();
    cp.update();
-   var rl = p.light();
+   var rl = resource.light();
    var rlc = rl.camera();
    var rlv = rlc.projection();
    var light = o.directionalLight();
@@ -975,12 +974,12 @@ MO.FE3dScene_loadLayerResource = function FE3dScene_loadLayerResource(resource){
    }
    o.registerLayer(resource.code(), layer)
 }
-MO.FE3dScene_loadResource = function FE3dScene_loadResource(p){
+MO.FE3dScene_loadResource = function FE3dScene_loadResource(resource){
    var o = this;
    o.selectTechnique(o, MO.FE3dGeneralTechnique);
-   o.loadTechniqueResource(p.technique());
-   o.loadRegionResource(p.region());
-   var layers = p.layers();
+   o.loadTechniqueResource(resource.technique());
+   o.loadRegionResource(resource.region());
+   var layers = resource.layers();
    if(layers){
       var layerCount = layers.count();
       for(var i = 0; i < layerCount; i++){
@@ -1005,16 +1004,15 @@ MO.FE3dScene_processLoad = function FE3dScene_processLoad(){
    }
    o.loadResource(o._resource);
    o._ready = true;
-   o.processLoadListener(o);
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.sender = o;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
    return true;
 }
-MO.FE3dScene_active = function FE3dScene_active(){
+MO.FE3dScene_dispose = function FE3dScene_dispose(){
    var o = this;
-   o.__base.FE3dSpace.active.call(o);
-}
-MO.FE3dScene_deactive = function FE3dScene_deactive(){
-   var o = this;
-   o.__base.FE3dSpace.deactive.call(o);
+   o.__base.FE3dSpace.dispose.call(o);
 }
 MO.FE3dSceneAnimation = function FE3dSceneAnimation(o){
    o = MO.Class.inherits(this, o, MO.FE3dAnimation);
