@@ -232,6 +232,37 @@ public class FFrameConsole
          }
       }
       //..........................................................
+      // 处理当前节点
+      String frameSource = control.get("frame_source", null);
+      if(!RString.isEmpty(frameSource)){
+         // 获得嵌入方式
+         String includeCd = null;
+         String frameName = null;
+         String[] items = RString.splitTwo(frameSource, '@');
+         if(items == null){
+            includeCd = "include";
+            frameName = frameSource;
+         }else{
+            includeCd = items[0];
+            frameName = items[1];
+         }
+         // 查找定义
+         FContentObject frame = buildDefine(storgeName, frameName, modeCd);
+         if(frame == null){
+            throw new FFatalError("Frame is not exists. (frame_name={1})", frameName);
+         }
+         // 嵌入节点
+         if(includeCd.equals("include")){
+            control.push(frame);
+         }else if(includeCd.equals("children")){
+            for(FContentObject node : frame.nodes()){
+               control.push(node);
+            }
+         }else{
+            throw new FFatalError("Frame include type is invalid. (frame_name={1}, include_cd={2})", frameName, includeCd);
+         }
+      }
+      //..........................................................
       // 处理选择框
       if(content.isName("Select")){
          buildSelect(storgeName, content, modeCd);

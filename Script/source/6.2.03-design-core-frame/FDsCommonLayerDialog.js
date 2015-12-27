@@ -6,7 +6,7 @@
 // @history 150430
 //==========================================================
 MO.FDsCommonLayerDialog = function FDsCommonLayerDialog(o){
-   o = MO.Class.inherits(this, o, FDuiDialog);
+   o = MO.Class.inherits(this, o, MO.FDuiDialog);
    //..........................................................
    // @property
    o._frameName            = 'resource.common.dialog.LayerDialog';

@@ -253,10 +253,10 @@ MO.FDsBitmapCanvas_onBuild = function FDsBitmapCanvas_onBuild(p){
    var hPanel = o._hPanel;
    var space = o._activeSpace = MO.Class.create(MO.FE3dFlatStage);
    space.linkGraphicContext(o);
-   space.selectTechnique(o, FE3dGeneralTechnique);
+   space.selectTechnique(o, MO.FE3dGeneralTechnique);
    space.region().backgroundColor().set(1, 1, 1, 1);
    space.region().linkGraphicContext(o);
-   RStage.register('space.bitmap', space);
+   MO.RStage.register('space.bitmap', space);
    var camera = space.camera();
    camera.setPosition(0, 0, -10);
    camera.lookAt(0, 0, 0);
@@ -265,7 +265,7 @@ MO.FDsBitmapCanvas_onBuild = function FDsBitmapCanvas_onBuild(p){
    projection._angle = 45;
    projection.size().set(hPanel.width, hPanel.height);
    projection.update();
-   RWindow.lsnsMouseWheel.register(o, o.onMouseWheel);
+   MO.Window.lsnsMouseWheel.register(o, o.onMouseWheel);
 }
 MO.FDsBitmapCanvas_onMouseCaptureStart = function FDsBitmapCanvas_onMouseCaptureStart(event){
    var o = this;
@@ -279,7 +279,7 @@ MO.FDsBitmapCanvas_onMouseCaptureStart = function FDsBitmapCanvas_onMouseCapture
    }
    o._capturePosition.set(event.clientX, event.clientY);
    o._captureMatrix.assign(bitmap.matrix());
-   RHtml.cursorSet(o._hPanel, EUiCursor.Pointer);
+   MO.Window.Html.cursorSet(o._hPanel, MO.EUiCursor.Pointer);
 }
 MO.FDsBitmapCanvas_onMouseCapture = function FDsBitmapCanvas_onMouseCapture(event){
    var o = this;
@@ -301,7 +301,7 @@ MO.FDsBitmapCanvas_onMouseCapture = function FDsBitmapCanvas_onMouseCapture(even
 }
 MO.FDsBitmapCanvas_onMouseCaptureStop = function FDsBitmapCanvas_onMouseCaptureStop(event){
    var o = this;
-   RHtml.cursorSet(o._hPanel, EUiCursor.Auto);
+   MO.Window.Html.cursorSet(o._hPanel, MO.EUiCursor.Auto);
 }
 MO.FDsBitmapCanvas_onMouseWheel = function FDsBitmapCanvas_onMouseWheel(event){
    var o = this;
@@ -322,15 +322,15 @@ MO.FDsBitmapCanvas_onMouseWheel = function FDsBitmapCanvas_onMouseWheel(event){
 }
 MO.FDsBitmapCanvas_onLoaded = function FDsBitmapCanvas_onLoaded(event){
    var o = this;
-   MO.Console.find(FDuiDesktopConsole).hide();
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
 }
 MO.FDsBitmapCanvas_oeResize = function FDsBitmapCanvas_oeResize(event){
    var o = this;
    o.__base.FDsCanvas.oeResize.call(o, event);
-   return EEventStatus.Stop;
+   return MO.EEventStatus.Stop;
 }
 MO.FDsBitmapCanvas_oeRefresh = function FDsBitmapCanvas_oeRefresh(p){
-   return EEventStatus.Stop;
+   return MO.EEventStatus.Stop;
 }
 MO.FDsBitmapCanvas_construct = function FDsBitmapCanvas_construct(){
    var o = this;
@@ -340,7 +340,7 @@ MO.FDsBitmapCanvas_construct = function FDsBitmapCanvas_construct(){
 MO.FDsBitmapCanvas_loadByGuid = function FDsBitmapCanvas_loadByGuid(guid){
    var o = this;
    var size = o._graphicContext.size();
-   MO.Console.find(FDuiDesktopConsole).showLoading();
+   MO.Console.find(MO.FDuiDesktopConsole).showLoading();
    var resource = o._activeResource = MO.Console.find(MO.FDrBitmapConsole).query(guid);
    var url = '/cloud.resource.bitmap.wv?do=view&guid=' + guid;
    var bitmap = o._activeBitmap = MO.Console.find(MO.FE3dBitmapConsole).loadByGuid(o, guid);

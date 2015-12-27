@@ -444,490 +444,484 @@ MO.FDsModelCanvasContent_dispose = function FDsModelCanvasContent_dispose(){
    o._rotation = MO.Lang.Object.dispose(o._rotation);
    o.__base.FDsCanvas.dispose.call(o);
 }
-with(MO){
-   MO.FDsModelCanvasToolBar = function FDsModelCanvasToolBar(o){
-      o = MO.Class.inherits(this, o, FDuiToolBar);
-      o._frameName                 = 'resource.model.CanvasToolBar';
-      o._canvasModeCd              = EDsCanvasMode.Drop;
-      o._controlDrop               = null;
-      o._controlSize1              = null;
-      o._controlSize2              = null;
-      o._controlSize3              = null;
-      o._controlSize4              = null;
-      o._controlSizeWidth          = null;
-      o._controlSizeHeight         = null;
-      o._controlDimensionalVisible = null;
-      o._controlDimensionalWidth   = null;
-      o._controlDimensionalHeight  = null;
-      o._controlDimensionalAuto    = null;
-      o._controlDimensionalFlipX   = null;
-      o._controlDimensionalFlipY   = null;
-      o._controlDimensionalFlipZ   = null;
-      o._controlDimensionalX       = null;
-      o._controlDimensionalY       = null;
-      o._controlDimensionalZ       = null;
-      o._controlRotation           = null;
-      o.onBuilded                  = FDsModelCanvasToolBar_onBuilded;
-      o.onModeClick                = FDsModelCanvasToolBar_onModeClick;
-      o.onSizeClick                = FDsModelCanvasToolBar_onSizeClick;
-      o.onDimensionalChange        = FDsModelCanvasToolBar_onDimensionalChange;
-      o.onDimensionalAutoClick     = FDsModelCanvasToolBar_onDimensionalAutoClick;
-      o.onRotationClick            = FDsModelCanvasToolBar_onRotationClick;
-      o.construct                  = FDsModelCanvasToolBar_construct;
-      o.dispose                    = FDsModelCanvasToolBar_dispose;
-      return o;
-   }
-   MO.FDsModelCanvasToolBar_onBuilded = function FDsModelCanvasToolBar_onBuilded(p){
-      var o = this;
-      o.__base.FDuiToolBar.onBuilded.call(o, p);
-      var control = o._controlDrop;
-      control._canvasModeCd = EDsCanvasMode.Drop;
-      control.addClickListener(o, o.onModeClick);
-      control.check(true);
-      o._controlSize1.addClickListener(o, o.onSizeClick);
-      o._controlSize2.addClickListener(o, o.onSizeClick);
-      o._controlSize3.addClickListener(o, o.onSizeClick);
-      o._controlSize4.addClickListener(o, o.onSizeClick);
-      o._controlSizeWidth.setText('*');
-      o._controlSizeHeight.setText('*');
-      o._controlDimensionalVisible.addClickListener(o, o.onDimensionalChange);
-      o._controlDimensionalVisible.check(true);
-      o._controlDimensionalWidth.addDataChangedListener(o, o.onDimensionalChange);
-      o._controlDimensionalWidth.setText(1);
-      o._controlDimensionalHeight.addDataChangedListener(o, o.onDimensionalChange);
-      o._controlDimensionalHeight.setText(1);
-      o._controlDimensionalAuto.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlDimensionalFlipX.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlDimensionalFlipY.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlDimensionalFlipZ.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlDimensionalX.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlDimensionalY.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlDimensionalZ.addClickListener(o, o.onDimensionalAutoClick);
-      o._controlRotation.addClickListener(o, o.onRotationClick);
-   }
-   MO.FDsModelCanvasToolBar_onModeClick = function FDsModelCanvasToolBar_onModeClick(p){
-      var o = this;
-   }
-   MO.FDsModelCanvasToolBar_onSizeClick = function FDsModelCanvasToolBar_onSizeClick(event){
-      var o = this;
-      var button = event.sender;
-      var width = '*';
-      var height = '*';
-      var name = button.name();
-      var label = button.label();
-      if(name != 'sizeAuto'){
-         var size = label.split('x');
-         width = parseInt(size[0]);
-         height = parseInt(size[1]);
-      }
-      o._controlSizeWidth.setText(width);
-      o._controlSizeHeight.setText(height);
-      o._frameSet._canvasContent.switchSize(width, height);
-   }
-   MO.FDsModelCanvasToolBar_onDimensionalChange = function FDsModelCanvasToolBar_onDimensionalChange(event){
-      var o = this;
-      var canvas = o._frameSet._canvasContent;
-      var visible = o._controlDimensionalVisible.isCheck();
-      var width = RInteger.parse(o._controlDimensionalWidth.text());
-      var height = RInteger.parse(o._controlDimensionalHeight.text());
-      canvas.switchDimensional(visible, width, height);
-   }
-   MO.FDsModelCanvasToolBar_onDimensionalAutoClick = function FDsModelCanvasToolBar_onDimensionalAutoClick(event){
-      var o = this;
-      var sender = event.sender;
-      var name = sender.name();
-      var flipX = false;
-      var flipY = false;
-      var flipZ = false;
-      var rotationX = false;
-      var rotationY = false;
-      var rotationZ = false;
-      switch(name){
-         case 'dimensionalAuto':
-            break;
-         case 'dimensionalFlipX':
-            flipX = true;
-            break;
-         case 'dimensionalFlipY':
-            flipY = true;
-            break;
-         case 'dimensionalFlipZ':
-            flipZ = true;
-            break;
-         case 'dimensionalX':
-            rotationX = true;
-            break;
-         case 'dimensionalY':
-            rotationY = true;
-            break;
-         case 'dimensionalZ':
-            rotationZ = true;
-            break;
-         default:
-            throw new TError(o, 'Unknown command.');
-      }
-      o._frameSet._canvasContent.viewAutoSize(flipX, flipY, flipZ, rotationX, rotationY, rotationZ);
-   }
-   MO.FDsModelCanvasToolBar_onRotationClick = function FDsModelCanvasToolBar_onRotationClick(event, v){
-      var o = this;
-      var button = event.sender;
-      var canvas = o._frameSet._canvasContent;
-      canvas.switchRotation(button.isCheck());
-   }
-   MO.FDsModelCanvasToolBar_construct = function FDsModelCanvasToolBar_construct(){
-      var o = this;
-      o.__base.FDuiToolBar.construct.call(o);
-   }
-   MO.FDsModelCanvasToolBar_dispose = function FDsModelCanvasToolBar_dispose(){
-      var o = this;
-      o.__base.FDuiToolBar.dispose.call(o);
-   }
+MO.FDsModelCanvasToolBar = function FDsModelCanvasToolBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiToolBar);
+   o._frameName                 = 'resource.model.CanvasToolBar';
+   o._canvasModeCd              = MO.EDsCanvasMode.Drop;
+   o._controlDrop               = null;
+   o._controlSize1              = null;
+   o._controlSize2              = null;
+   o._controlSize3              = null;
+   o._controlSize4              = null;
+   o._controlSizeWidth          = null;
+   o._controlSizeHeight         = null;
+   o._controlDimensionalVisible = null;
+   o._controlDimensionalWidth   = null;
+   o._controlDimensionalHeight  = null;
+   o._controlDimensionalAuto    = null;
+   o._controlDimensionalFlipX   = null;
+   o._controlDimensionalFlipY   = null;
+   o._controlDimensionalFlipZ   = null;
+   o._controlDimensionalX       = null;
+   o._controlDimensionalY       = null;
+   o._controlDimensionalZ       = null;
+   o._controlRotation           = null;
+   o.onBuilded                  = MO.FDsModelCanvasToolBar_onBuilded;
+   o.onModeClick                = MO.FDsModelCanvasToolBar_onModeClick;
+   o.onSizeClick                = MO.FDsModelCanvasToolBar_onSizeClick;
+   o.onDimensionalChange        = MO.FDsModelCanvasToolBar_onDimensionalChange;
+   o.onDimensionalAutoClick     = MO.FDsModelCanvasToolBar_onDimensionalAutoClick;
+   o.onRotationClick            = MO.FDsModelCanvasToolBar_onRotationClick;
+   o.construct                  = MO.FDsModelCanvasToolBar_construct;
+   o.dispose                    = MO.FDsModelCanvasToolBar_dispose;
+   return o;
 }
-with(MO){
-   MO.FDsModelCatalogContent = function FDsModelCatalogContent(o){
-      o = MO.Class.inherits(this, o, FDsCatalog);
-      o._iconView             = 'resource.tools.view';
-      o._iconViewNot          = 'resource.tools.viewno';
-      o.onBuild               = FDsModelCatalogContent_onBuild;
-      o.onLoadDisplay         = FDsModelCatalogContent_onLoadDisplay;
-      o.onNodeViewClick       = FDsModelCatalogContent_onNodeViewClick;
-      o.onNodeViewDoubleClick = FDsModelCatalogContent_onNodeViewDoubleClick;
-      o.lsnsSelect            = null;
-      o.construct             = FDsModelCatalogContent_construct;
-      o.buildRenderable       = FDsModelCatalogContent_buildRenderable;
-      o.buildDisplay          = FDsModelCatalogContent_buildDisplay;
-      o.buildSpace            = FDsModelCatalogContent_buildSpace;
-      o.selectObject          = FDsModelCatalogContent_selectObject;
-      o.showObject            = FDsModelCatalogContent_showObject;
-      o.dispose               = FDsModelCatalogContent_dispose;
-      return o;
+MO.FDsModelCanvasToolBar_onBuilded = function FDsModelCanvasToolBar_onBuilded(p){
+   var o = this;
+   o.__base.FDuiToolBar.onBuilded.call(o, p);
+   var control = o._controlDrop;
+   control._canvasModeCd = MO.EDsCanvasMode.Drop;
+   control.addClickListener(o, o.onModeClick);
+   control.check(true);
+   o._controlSize1.addClickListener(o, o.onSizeClick);
+   o._controlSize2.addClickListener(o, o.onSizeClick);
+   o._controlSize3.addClickListener(o, o.onSizeClick);
+   o._controlSize4.addClickListener(o, o.onSizeClick);
+   o._controlSizeWidth.setText('*');
+   o._controlSizeHeight.setText('*');
+   o._controlDimensionalVisible.addClickListener(o, o.onDimensionalChange);
+   o._controlDimensionalVisible.check(true);
+   o._controlDimensionalWidth.addDataChangedListener(o, o.onDimensionalChange);
+   o._controlDimensionalWidth.setText(1);
+   o._controlDimensionalHeight.addDataChangedListener(o, o.onDimensionalChange);
+   o._controlDimensionalHeight.setText(1);
+   o._controlDimensionalAuto.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlDimensionalFlipX.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlDimensionalFlipY.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlDimensionalFlipZ.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlDimensionalX.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlDimensionalY.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlDimensionalZ.addClickListener(o, o.onDimensionalAutoClick);
+   o._controlRotation.addClickListener(o, o.onRotationClick);
+}
+MO.FDsModelCanvasToolBar_onModeClick = function FDsModelCanvasToolBar_onModeClick(p){
+   var o = this;
+}
+MO.FDsModelCanvasToolBar_onSizeClick = function FDsModelCanvasToolBar_onSizeClick(event){
+   var o = this;
+   var button = event.sender;
+   var width = '*';
+   var height = '*';
+   var name = button.name();
+   var label = button.label();
+   if(name != 'sizeAuto'){
+      var size = label.split('x');
+      width = parseInt(size[0]);
+      height = parseInt(size[1]);
    }
-   MO.FDsModelCatalogContent_onBuild = function FDsModelCatalogContent_onBuild(p){
-      var o = this;
-      o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadDefine('resource.model');
+   o._controlSizeWidth.setText(width);
+   o._controlSizeHeight.setText(height);
+   o._frameSet._canvasContent.switchSize(width, height);
+}
+MO.FDsModelCanvasToolBar_onDimensionalChange = function FDsModelCanvasToolBar_onDimensionalChange(event){
+   var o = this;
+   var canvas = o._frameSet._canvasContent;
+   var visible = o._controlDimensionalVisible.isCheck();
+   var width = MO.Lang.Integer.parse(o._controlDimensionalWidth.text());
+   var height = MO.Lang.Integer.parse(o._controlDimensionalHeight.text());
+   canvas.switchDimensional(visible, width, height);
+}
+MO.FDsModelCanvasToolBar_onDimensionalAutoClick = function FDsModelCanvasToolBar_onDimensionalAutoClick(event){
+   var o = this;
+   var sender = event.sender;
+   var name = sender.name();
+   var flipX = false;
+   var flipY = false;
+   var flipZ = false;
+   var rotationX = false;
+   var rotationY = false;
+   var rotationZ = false;
+   switch(name){
+      case 'dimensionalAuto':
+         break;
+      case 'dimensionalFlipX':
+         flipX = true;
+         break;
+      case 'dimensionalFlipY':
+         flipY = true;
+         break;
+      case 'dimensionalFlipZ':
+         flipZ = true;
+         break;
+      case 'dimensionalX':
+         rotationX = true;
+         break;
+      case 'dimensionalY':
+         rotationY = true;
+         break;
+      case 'dimensionalZ':
+         rotationZ = true;
+         break;
+      default:
+         throw new MO.TError(o, 'Unknown command.');
    }
-   MO.FDsModelCatalogContent_onLoadDisplay = function FDsModelCatalogContent_onLoadDisplay(p){
-      var o = this;
-      var n = p._linkNode;
-      o.buildRenderable(n, p);
-   }
-   MO.FDsModelCatalogContent_onNodeViewClick = function FDsModelCatalogContent_onNodeViewClick(p){
-      var o = this;
-      var c = p.treeNodeCell;
-      var s = p.treeNode.dataPropertyGet('linker');
-      if(MO.Class.isClass(s, FDisplay)){
-         if(p.ctrlKey){
-            var ds = o._displays;
-            for(var i = ds.count() - 1; i >= 0; i--){
-               var nd = ds.get(i);
-               var d = nd.dataPropertyGet('linker');
-               d._visible = false;
-               nd.cell('view').setIcon(o._iconViewNot);
-            }
-            s._visible = true;
-            c.setIcon(o._iconView);
-         }else{
-            s._visible = !s._visible;
-            c.setIcon(s._visible ? o._iconView : o._iconViewNot);
+   o._frameSet._canvasContent.viewAutoSize(flipX, flipY, flipZ, rotationX, rotationY, rotationZ);
+}
+MO.FDsModelCanvasToolBar_onRotationClick = function FDsModelCanvasToolBar_onRotationClick(event, v){
+   var o = this;
+   var button = event.sender;
+   var canvas = o._frameSet._canvasContent;
+   canvas.switchRotation(button.isCheck());
+}
+MO.FDsModelCanvasToolBar_construct = function FDsModelCanvasToolBar_construct(){
+   var o = this;
+   o.__base.FDuiToolBar.construct.call(o);
+}
+MO.FDsModelCanvasToolBar_dispose = function FDsModelCanvasToolBar_dispose(){
+   var o = this;
+   o.__base.FDuiToolBar.dispose.call(o);
+}
+MO.FDsModelCatalogContent = function FDsModelCatalogContent(o){
+   o = MO.Class.inherits(this, o, MO.FDsCatalog);
+   o._iconView             = 'resource.tools.view';
+   o._iconViewNot          = 'resource.tools.viewno';
+   o.onBuild               = MO.FDsModelCatalogContent_onBuild;
+   o.onLoadDisplay         = MO.FDsModelCatalogContent_onLoadDisplay;
+   o.onNodeViewClick       = MO.FDsModelCatalogContent_onNodeViewClick;
+   o.onNodeViewDoubleClick = MO.FDsModelCatalogContent_onNodeViewDoubleClick;
+   o.lsnsSelect            = null;
+   o.construct             = MO.FDsModelCatalogContent_construct;
+   o.buildRenderable       = MO.FDsModelCatalogContent_buildRenderable;
+   o.buildDisplay          = MO.FDsModelCatalogContent_buildDisplay;
+   o.buildSpace            = MO.FDsModelCatalogContent_buildSpace;
+   o.selectObject          = MO.FDsModelCatalogContent_selectObject;
+   o.showObject            = MO.FDsModelCatalogContent_showObject;
+   o.dispose               = MO.FDsModelCatalogContent_dispose;
+   return o;
+}
+MO.FDsModelCatalogContent_onBuild = function FDsModelCatalogContent_onBuild(p){
+   var o = this;
+   o.__base.FDsCatalog.onBuild.call(o, p);
+   o.loadDefine('resource.model');
+}
+MO.FDsModelCatalogContent_onLoadDisplay = function FDsModelCatalogContent_onLoadDisplay(p){
+   var o = this;
+   var n = p._linkNode;
+   o.buildRenderable(n, p);
+}
+MO.FDsModelCatalogContent_onNodeViewClick = function FDsModelCatalogContent_onNodeViewClick(p){
+   var o = this;
+   var c = p.treeNodeCell;
+   var s = p.treeNode.dataPropertyGet('linker');
+   if(MO.Class.isClass(s, FDisplay)){
+      if(p.ctrlKey){
+         var ds = o._displays;
+         for(var i = ds.count() - 1; i >= 0; i--){
+            var nd = ds.get(i);
+            var d = nd.dataPropertyGet('linker');
+            d._visible = false;
+            nd.cell('view').setIcon(o._iconViewNot);
          }
-      }
-      if(MO.Class.isClass(s, FDrawable)){
-         if(p.ctrlKey){
-            var rs = o._renderables;
-            for(var i = rs.count() - 1; i >= 0; i--){
-               var nr = rs.get(i);
-               var r = nr.dataPropertyGet('linker');
-               r._visible = false;
-               nr.cell('view').setIcon(o._iconViewNot);
-            }
-            s._visible = true;
-            c.setIcon(o._iconView);
-         }else{
-            s._visible = !s._visible;
-            c.setIcon(s._visible ? o._iconView : o._iconViewNot);
-         }
+         s._visible = true;
+         c.setIcon(o._iconView);
+      }else{
+         s._visible = !s._visible;
+         c.setIcon(s._visible ? o._iconView : o._iconViewNot);
       }
    }
-   MO.FDsModelCatalogContent_onNodeViewDoubleClick = function FDsModelCatalogContent_onNodeViewDoubleClick(p){
-      var o = this;
-      var n = p.treeNode;
-      var c = p.treeNodeCell;
-      var s = n.dataPropertyGet('linker');
-      if(MO.Class.isClass(s, FDisplay)){
-         var s = o._displays;
-         for(var i = s.count() - 1; i >= 0; i--){
-            var n = s.get(i);
-            var d = n.dataPropertyGet('linker');
-            d._visible = true;
-            n.cell('view').setIcon(o._iconView);
-         }
-      }
-      if(MO.Class.isClass(s, FDrawable)){
-         var s = o._renderables;
-         for(var i = s.count() - 1; i >= 0; i--){
-            var n = s.get(i);
-            var r = n.dataPropertyGet('linker');
-            r._visible = true;
-            n.cell('view').setIcon(o._iconView);
-         }
-      }
-   }
-   MO.FDsModelCatalogContent_construct = function FDsModelCatalogContent_construct(){
-      var o = this;
-      o.__base.FDsCatalog.construct.call(o);
-      o._renderables = new TObjects();
-   }
-   MO.FDsModelCatalogContent_buildRenderable = function FDsModelCatalogContent_buildRenderable(parentNode, geometry){
-      var o = this;
-      var renderable = geometry._renderable;
-      var resource = renderable.resource();
-      var code = resource.code();
-      var label = resource.label();
-      var node = o.createNode();
-      node.setTypeCode('renderable');
-      node.setLabel(code);
-      node.setNote(label);
-      node.dataPropertySet('linker', geometry);
-      parentNode.appendNode(node);
-   }
-   MO.FDsModelCatalogContent_buildDisplay = function FDsModelCatalogContent_buildDisplay(parent, display){
-      var o = this;
-      var resource = display.resource();
-      var shapes = display.shapes();
-      var count = shapes.count();
-      var displayNode = o.createNode();
-      displayNode.setTypeCode('display');
-      displayNode.setLabel('Model (' + count + ')');
-      displayNode.dataPropertySet('linker', display);
-      parent.appendNode(displayNode);
-      var material = display.material();
-      var materialResource = resource.material();
-      var materialNode = o.createNode();
-      materialNode.setTypeCode('material');
-      materialNode.setLabel('Material');
-      materialNode.dataPropertySet('linker', material);
-      materialNode.dataPropertySet('resource', materialResource);
-      displayNode.appendNode(materialNode);
-      for(var i = 0; i < count; i++){
-         var shape = shapes.get(i);
-         o.buildRenderable(displayNode, shape);
-      }
-   }
-   MO.FDsModelCatalogContent_buildSpace = function FDsModelCatalogContent_buildSpace(space){
-      var o = this;
-      o.clearAllNodes();
-      var resource = space.resource();
-      o.clear();
-      var node = o.createNode();
-      node.setTypeCode('space');
-      node.setLabel(resource.code());
-      node.setNote(resource.label());
-      node.dataPropertySet('linker', space);
-      o.appendNode(node);
-      o.buildTechnique(node, space.technique())
-      o.buildRegion(node, space.region());
-      o.buildDisplay(node, space._display);
-      node.click();
-   }
-   MO.FDsModelCatalogContent_selectObject = function FDsModelCatalogContent_selectObject(p){
-      var o = this;
-      if(p != null){
-         o.processSelectedListener(p, true);
-      }
-   }
-   MO.FDsModelCatalogContent_showObject = function FDsModelCatalogContent_showObject(p){
-      var o = this;
-      if(MO.Class.isClass(p, FDsSceneRenderable)){
-         var s = o._renderables;
-         var c = s.count();
-         for(var i = 0; i < c; i++){
-            var nr = s.getAt(i);
+   if(MO.Class.isClass(s, FDrawable)){
+      if(p.ctrlKey){
+         var rs = o._renderables;
+         for(var i = rs.count() - 1; i >= 0; i--){
+            var nr = rs.get(i);
             var r = nr.dataPropertyGet('linker');
-            if(r == p){
-               o.processSelectedListener(p, false);
-            }
+            r._visible = false;
+            nr.cell('view').setIcon(o._iconViewNot);
+         }
+         s._visible = true;
+         c.setIcon(o._iconView);
+      }else{
+         s._visible = !s._visible;
+         c.setIcon(s._visible ? o._iconView : o._iconViewNot);
+      }
+   }
+}
+MO.FDsModelCatalogContent_onNodeViewDoubleClick = function FDsModelCatalogContent_onNodeViewDoubleClick(p){
+   var o = this;
+   var n = p.treeNode;
+   var c = p.treeNodeCell;
+   var s = n.dataPropertyGet('linker');
+   if(MO.Class.isClass(s, MO.FDisplay)){
+      var s = o._displays;
+      for(var i = s.count() - 1; i >= 0; i--){
+         var n = s.get(i);
+         var d = n.dataPropertyGet('linker');
+         d._visible = true;
+         n.cell('view').setIcon(o._iconView);
+      }
+   }
+   if(MO.Class.isClass(s, MO.FDrawable)){
+      var s = o._renderables;
+      for(var i = s.count() - 1; i >= 0; i--){
+         var n = s.get(i);
+         var r = n.dataPropertyGet('linker');
+         r._visible = true;
+         n.cell('view').setIcon(o._iconView);
+      }
+   }
+}
+MO.FDsModelCatalogContent_construct = function FDsModelCatalogContent_construct(){
+   var o = this;
+   o.__base.FDsCatalog.construct.call(o);
+   o._renderables = new MO.TObjects();
+}
+MO.FDsModelCatalogContent_buildRenderable = function FDsModelCatalogContent_buildRenderable(parentNode, geometry){
+   var o = this;
+   var renderable = geometry._renderable;
+   var resource = renderable.resource();
+   var code = resource.code();
+   var label = resource.label();
+   var node = o.createNode();
+   node.setTypeCode('renderable');
+   node.setLabel(code);
+   node.setNote(label);
+   node.dataPropertySet('linker', geometry);
+   parentNode.appendNode(node);
+}
+MO.FDsModelCatalogContent_buildDisplay = function FDsModelCatalogContent_buildDisplay(parent, display){
+   var o = this;
+   var resource = display.resource();
+   var shapes = display.shapes();
+   var count = shapes.count();
+   var displayNode = o.createNode();
+   displayNode.setTypeCode('display');
+   displayNode.setLabel('Model (' + count + ')');
+   displayNode.dataPropertySet('linker', display);
+   parent.appendNode(displayNode);
+   var material = display.material();
+   var materialResource = resource.material();
+   var materialNode = o.createNode();
+   materialNode.setTypeCode('material');
+   materialNode.setLabel('Material');
+   materialNode.dataPropertySet('linker', material);
+   materialNode.dataPropertySet('resource', materialResource);
+   displayNode.appendNode(materialNode);
+   for(var i = 0; i < count; i++){
+      var shape = shapes.get(i);
+      o.buildRenderable(displayNode, shape);
+   }
+}
+MO.FDsModelCatalogContent_buildSpace = function FDsModelCatalogContent_buildSpace(space){
+   var o = this;
+   o.clearAllNodes();
+   var resource = space.resource();
+   o.clear();
+   var node = o.createNode();
+   node.setTypeCode('space');
+   node.setLabel(resource.code());
+   node.setNote(resource.label());
+   node.dataPropertySet('linker', space);
+   o.appendNode(node);
+   o.buildTechnique(node, space.technique())
+   o.buildRegion(node, space.region());
+   o.buildDisplay(node, space._display);
+   node.click();
+}
+MO.FDsModelCatalogContent_selectObject = function FDsModelCatalogContent_selectObject(p){
+   var o = this;
+   if(p != null){
+      o.processSelectedListener(p, true);
+   }
+}
+MO.FDsModelCatalogContent_showObject = function FDsModelCatalogContent_showObject(p){
+   var o = this;
+   if(MO.Class.isClass(p, MO.FDsSceneRenderable)){
+      var s = o._renderables;
+      var c = s.count();
+      for(var i = 0; i < c; i++){
+         var nr = s.getAt(i);
+         var r = nr.dataPropertyGet('linker');
+         if(r == p){
+            o.processSelectedListener(p, false);
          }
       }
    }
-   MO.FDsModelCatalogContent_dispose = function FDsModelCatalogContent_dispose(){
-      var o = this;
-      o._displays = MO.Lang.Object.dispose(o._displays);
-      o._renderables = MO.Lang.Object.dispose(o._renderables);
-      o._materials = MO.Lang.Object.dispose(o._materials);
-      o.__base.FDsCatalog.dispose.call(o);
-   }
 }
-with(MO){
-   MO.FDsModelCatalogToolBar = function FDsModelCatalogToolBar(o){
-      o = MO.Class.inherits(this, o, FDuiToolBar);
-      o._frameName             = 'resource.model.CatalogToolBar';
-      o._activeNodeGuid        = null;
-      o._controlCreateCamera   = null;
-      o._controlCreateLayer    = null;
-      o._controlCreateSprite   = null;
-      o._controlDelete         = null;
-      o._controlFolderOpen     = null;
-      o._controlFolderClose    = null;
-      o.onBuilded              = FDsModelCatalogToolBar_onBuilded;
-      o.onCreateCameraClick    = FDsModelCatalogToolBar_onCreateCameraClick;
-      o.onCreateLayerClick     = FDsModelCatalogToolBar_onCreateLayerClick;
-      o.onCreateSpriteClick    = FDsModelCatalogToolBar_onCreateSpriteClick;
-      o.onDeleteLoad           = FDsModelCatalogToolBar_onDeleteLoad;
-      o.onDeleteExecute        = FDsModelCatalogToolBar_onDeleteExecute;
-      o.onCopyLoad             = FDsModelCatalogToolBar_onCopyLoad;
-      o.onCopyExecute          = FDsModelCatalogToolBar_onCopyExecute;
-      o.onCopyClick            = FDsModelCatalogToolBar_onCopyClick;
-      o.onDeleteClick          = FDsModelCatalogToolBar_onDeleteClick;
-      o.onFolderOpenClick      = FDsModelCatalogToolBar_onFolderOpenClick;
-      o.onFolderCloseClick     = FDsModelCatalogToolBar_onFolderCloseClick;
-      o.construct              = FDsModelCatalogToolBar_construct;
-      o.dispose                = FDsModelCatalogToolBar_dispose;
-      return o;
+MO.FDsModelCatalogContent_dispose = function FDsModelCatalogContent_dispose(){
+   var o = this;
+   o._displays = MO.Lang.Object.dispose(o._displays);
+   o._renderables = MO.Lang.Object.dispose(o._renderables);
+   o._materials = MO.Lang.Object.dispose(o._materials);
+   o.__base.FDsCatalog.dispose.call(o);
+}
+MO.FDsModelCatalogToolBar = function FDsModelCatalogToolBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiToolBar);
+   o._frameName             = 'resource.model.CatalogToolBar';
+   o._activeNodeGuid        = null;
+   o._controlCreateCamera   = null;
+   o._controlCreateLayer    = null;
+   o._controlCreateSprite   = null;
+   o._controlDelete         = null;
+   o._controlFolderOpen     = null;
+   o._controlFolderClose    = null;
+   o.onBuilded              = MO.FDsModelCatalogToolBar_onBuilded;
+   o.onCreateCameraClick    = MO.FDsModelCatalogToolBar_onCreateCameraClick;
+   o.onCreateLayerClick     = MO.FDsModelCatalogToolBar_onCreateLayerClick;
+   o.onCreateSpriteClick    = MO.FDsModelCatalogToolBar_onCreateSpriteClick;
+   o.onDeleteLoad           = MO.FDsModelCatalogToolBar_onDeleteLoad;
+   o.onDeleteExecute        = MO.FDsModelCatalogToolBar_onDeleteExecute;
+   o.onCopyLoad             = MO.FDsModelCatalogToolBar_onCopyLoad;
+   o.onCopyExecute          = MO.FDsModelCatalogToolBar_onCopyExecute;
+   o.onCopyClick            = MO.FDsModelCatalogToolBar_onCopyClick;
+   o.onDeleteClick          = MO.FDsModelCatalogToolBar_onDeleteClick;
+   o.onFolderOpenClick      = MO.FDsModelCatalogToolBar_onFolderOpenClick;
+   o.onFolderCloseClick     = MO.FDsModelCatalogToolBar_onFolderCloseClick;
+   o.construct              = MO.FDsModelCatalogToolBar_construct;
+   o.dispose                = MO.FDsModelCatalogToolBar_dispose;
+   return o;
+}
+MO.FDsModelCatalogToolBar_onBuilded = function FDsModelCatalogToolBar_onBuilded(p){
+   var o = this;
+   o.__base.FDuiToolBar.onBuilded.call(o, p);
+   o._controlFolderOpen.addClickListener(o, o.onFolderOpenClick);
+   o._controlFolderClose.addClickListener(o, o.onFolderCloseClick);
+}
+MO.FDsModelCatalogToolBar_onCreateCameraClick = function FDsModelCatalogToolBar_onCreateCameraClick(event){
+   var o = this;
+}
+MO.FDsModelCatalogToolBar_onCreateLayerClick = function FDsModelCatalogToolBar_onCreateLayerClick(event){
+   var o = this;
+}
+MO.FDsModelCatalogToolBar_onCreateSpriteClick = function FDsModelCatalogToolBar_onCreateSpriteClick(event){
+   var o = this;
+   var catalog = o._frameSet._catalogContent;
+   var node = catalog.focusNode();
+   if(!node){
+      return alert('请选中目录节点。');
    }
-   MO.FDsModelCatalogToolBar_onBuilded = function FDsModelCatalogToolBar_onBuilded(p){
-      var o = this;
-      o.__base.FDuiToolBar.onBuilded.call(o, p);
-      o._controlFolderOpen.addClickListener(o, o.onFolderOpenClick);
-      o._controlFolderClose.addClickListener(o, o.onFolderCloseClick);
+   var linker = node.dataPropertyGet('linker');
+   var layer = null;
+   var sprite = null;
+   if(MO.Class.isClass(linker, MO.FDisplayLayer)){
+      layer = linker;
+   }else if(MO.Class.isClass(linker, MO.FE3dSprite)){
+      layer = linker.findParent(MO.FDisplayLayer);
+      sprite = linker;
+   }else{
+      return alert('请选中显示层或者精灵节点。');
    }
-   MO.FDsModelCatalogToolBar_onCreateCameraClick = function FDsModelCatalogToolBar_onCreateCameraClick(event){
-      var o = this;
+   var frameSet = o._frameSet;
+   var dialog = MO.Console.find(MO.FDuiWindowConsole).find(MO.FDsCommonSpriteDialog);
+   dialog._frameSet = frameSet;
+   dialog._spaceGuid = frameSet._activeSpace.resource().guid();
+   dialog._layerGuid = layer.resource().guid();
+   if(sprite){
+      dialog._displayGuid = sprite.resource().guid();
+   }else{
+      dialog._displayGuid = null;
    }
-   MO.FDsModelCatalogToolBar_onCreateLayerClick = function FDsModelCatalogToolBar_onCreateLayerClick(event){
-      var o = this;
+   if(layer){
+      dialog.setLayerLabel(layer.makeLabel());
    }
-   MO.FDsModelCatalogToolBar_onCreateSpriteClick = function FDsModelCatalogToolBar_onCreateSpriteClick(event){
-      var o = this;
-      var catalog = o._frameSet._catalogContent;
-      var node = catalog.focusNode();
-      if(!node){
-         return alert('请选中目录节点。');
-      }
-      var linker = node.dataPropertyGet('linker');
-      var layer = null;
-      var sprite = null;
-      if(MO.Class.isClass(linker, FDisplayLayer)){
-         layer = linker;
-      }else if(MO.Class.isClass(linker, FE3dSprite)){
-         layer = linker.findParent(FDisplayLayer);
-         sprite = linker;
-      }else{
-         return alert('请选中显示层或者精灵节点。');
-      }
-      var frameSet = o._frameSet;
-      var dialog = MO.Console.find(FDuiWindowConsole).find(FDsCommonSpriteDialog);
-      dialog._frameSet = frameSet;
-      dialog._spaceGuid = frameSet._activeSpace.resource().guid();
-      dialog._layerGuid = layer.resource().guid();
-      if(sprite){
-         dialog._displayGuid = sprite.resource().guid();
-      }else{
-         dialog._displayGuid = null;
-      }
-      if(layer){
-         dialog.setLayerLabel(layer.makeLabel());
-      }
-      if(sprite){
-         dialog.setDisplayLabel(sprite.makeLabel());
-      }
-      dialog.setContentCode('');
-      dialog.setContentLabel('');
-      dialog.showPosition(EUiPosition.Center);
+   if(sprite){
+      dialog.setDisplayLabel(sprite.makeLabel());
    }
-   MO.FDsModelCatalogToolBar_onCopyLoad = function FDsModelCatalogToolBar_onCopyLoad(event){
-      var o = this;
-      MO.Console.find(FDuiDesktopConsole).hide();
+   dialog.setContentCode('');
+   dialog.setContentLabel('');
+   dialog.showPosition(MO.EUiPosition.Center);
+}
+MO.FDsModelCatalogToolBar_onCopyLoad = function FDsModelCatalogToolBar_onCopyLoad(event){
+   var o = this;
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsModelCatalogToolBar_onCopyExecute = function FDsModelCatalogToolBar_onCopyExecute(event){
+   var o = this;
+   if(event.resultCd != MO.EResult.Success){
+      return;
    }
-   MO.FDsModelCatalogToolBar_onCopyExecute = function FDsModelCatalogToolBar_onCopyExecute(event){
-      var o = this;
-      if(event.resultCd != EResult.Success){
-         return;
-      }
-      var space = o._frameSet._activeSpace;
-      var spaceGuid = space.resource().guid();
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var connection = MO.Console.find(FDrSceneConsole).copyNode(spaceGuid, o._activeGuid);
-      connection.addLoadListener(o, o.onDeleteLoad);
+   var space = o._frameSet._activeSpace;
+   var spaceGuid = space.resource().guid();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
+   var connection = MO.Console.find(MO.FDrSceneConsole).copyNode(spaceGuid, o._activeGuid);
+   connection.addLoadListener(o, o.onDeleteLoad);
+}
+MO.FDsModelCatalogToolBar_onCopyClick = function FDsModelCatalogToolBar_onCopyClick(event){
+   var o = this;
+   var catalog = o._frameSet._catalogContent;
+   var node = catalog.focusNode();
+   if(!node){
+      return MO.Console.find(MO.FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
    }
-   MO.FDsModelCatalogToolBar_onCopyClick = function FDsModelCatalogToolBar_onCopyClick(event){
-      var o = this;
-      var catalog = o._frameSet._catalogContent;
-      var node = catalog.focusNode();
-      if(!node){
-         return MO.Console.find(FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
-      }
-      o._activeNodeGuid = node.guid();
-      var sprite = null;
-      var linker = node.dataPropertyGet('linker');
-      if(MO.Class.isClass(linker, FE3dSprite)){
-         sprite = linker;
-         o._activeGuid = linker.resource().guid();
-      }else{
-         return alert('不能复制当前选中的节点.');
-      }
-      var resource = sprite.resource();
-      var parentResource = resource.parent();
-      var displayResource = resource.clone();
-      parentResource.pushDisplay(displayResource);
-      var display = MO.Console.find(FE3dInstanceConsole).create(EE3dInstance.SceneDisplay);
-      display.linkGraphicContext(sprite);
-      display.loadResource(displayResource);
-      MO.Console.find(FE3dSceneConsole).loadDisplay(display);
-      var parent = sprite.parent();
-      parent.pushDisplay(display);
+   o._activeNodeGuid = node.guid();
+   var sprite = null;
+   var linker = node.dataPropertyGet('linker');
+   if(MO.Class.isClass(linker, MO.FE3dSprite)){
+      sprite = linker;
+      o._activeGuid = linker.resource().guid();
+   }else{
+      return alert('不能复制当前选中的节点.');
    }
-   MO.FDsModelCatalogToolBar_onDeleteLoad = function FDsModelCatalogToolBar_onDeleteLoad(event){
-      var o = this;
-      MO.Console.find(FDuiDesktopConsole).hide();
-      var catalog = o._frameSet._catalogContent;
-      var guid = o._activeNodeGuid;
-      if(guid){
-         var node = catalog.findByGuid(guid);
-         node.removeSelf();
-      }
-      o._activeNodeGuid = null;
+   var resource = sprite.resource();
+   var parentResource = resource.parent();
+   var displayResource = resource.clone();
+   parentResource.pushDisplay(displayResource);
+   var display = MO.Console.find(MO.FE3dInstanceConsole).create(EE3dInstance.SceneDisplay);
+   display.linkGraphicContext(sprite);
+   display.loadResource(displayResource);
+   MO.Console.find(FE3dSceneConsole).loadDisplay(display);
+   var parent = sprite.parent();
+   parent.pushDisplay(display);
+}
+MO.FDsModelCatalogToolBar_onDeleteLoad = function FDsModelCatalogToolBar_onDeleteLoad(event){
+   var o = this;
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+   var catalog = o._frameSet._catalogContent;
+   var guid = o._activeNodeGuid;
+   if(guid){
+      var node = catalog.findByGuid(guid);
+      node.removeSelf();
    }
-   MO.FDsModelCatalogToolBar_onDeleteExecute = function FDsModelCatalogToolBar_onDeleteExecute(event){
-      var o = this;
-      if(event.resultCd != EResult.Success){
-         return;
-      }
-      var space = o._frameSet._activeSpace;
-      var spaceGuid = space.resource().guid();
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var connection = MO.Console.find(FDrSceneConsole).deleteNode(spaceGuid, o._activeGuid);
-      connection.addLoadListener(o, o.onDeleteLoad);
+   o._activeNodeGuid = null;
+}
+MO.FDsModelCatalogToolBar_onDeleteExecute = function FDsModelCatalogToolBar_onDeleteExecute(event){
+   var o = this;
+   if(event.resultCd != MO.EResult.Success){
+      return;
    }
-   MO.FDsModelCatalogToolBar_onDeleteClick = function FDsModelCatalogToolBar_onDeleteClick(event){
-      var o = this;
-      var catalog = o._frameSet._catalogContent;
-      var node = catalog.focusNode();
-      if(!node){
-         return MO.Console.find(FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
-      }
-      o._activeNodeGuid = node.guid();
-      var linker = node.dataPropertyGet('linker');
-      if(MO.Class.isClass(linker, FE3dSprite)){
-         o._activeGuid = linker.resource().guid();
-      }else{
-         return alert('不能删除当前选中的节点.');
-      }
-      var dialog = MO.Console.find(FDuiMessageConsole).showConfirm('请确认是否删除当前节点？');
-      dialog.addResultListener(o, o.onDeleteExecute);
+   var space = o._frameSet._activeSpace;
+   var spaceGuid = space.resource().guid();
+   MO.Console.find(FDuiDesktopConsole).showUploading();
+   var connection = MO.Console.find(MO.FDrSceneConsole).deleteNode(spaceGuid, o._activeGuid);
+   connection.addLoadListener(o, o.onDeleteLoad);
+}
+MO.FDsModelCatalogToolBar_onDeleteClick = function FDsModelCatalogToolBar_onDeleteClick(event){
+   var o = this;
+   var catalog = o._frameSet._catalogContent;
+   var node = catalog.focusNode();
+   if(!node){
+      return MO.Console.find(MO.FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
    }
-   MO.FDsModelCatalogToolBar_onFolderOpenClick = function FDsModelCatalogToolBar_onFolderOpenClick(event){
+   o._activeNodeGuid = node.guid();
+   var linker = node.dataPropertyGet('linker');
+   if(MO.Class.isClass(linker, MO.FE3dSprite)){
+      o._activeGuid = linker.resource().guid();
+   }else{
+      return alert('不能删除当前选中的节点.');
    }
-   MO.FDsModelCatalogToolBar_onFolderCloseClick = function FDsModelCatalogToolBar_onFolderCloseClick(event){
-   }
-   MO.FDsModelCatalogToolBar_construct = function FDsModelCatalogToolBar_construct(){
-      var o = this;
-      o.__base.FDuiToolBar.construct.call(o);
-   }
-   MO.FDsModelCatalogToolBar_dispose = function FDsModelCatalogToolBar_dispose(){
-      var o = this;
-      o.__base.FDuiToolBar.dispose.call(o);
-   }
+   var dialog = MO.Console.find(MO.FDuiMessageConsole).showConfirm('请确认是否删除当前节点？');
+   dialog.addResultListener(o, o.onDeleteExecute);
+}
+MO.FDsModelCatalogToolBar_onFolderOpenClick = function FDsModelCatalogToolBar_onFolderOpenClick(event){
+}
+MO.FDsModelCatalogToolBar_onFolderCloseClick = function FDsModelCatalogToolBar_onFolderCloseClick(event){
+}
+MO.FDsModelCatalogToolBar_construct = function FDsModelCatalogToolBar_construct(){
+   var o = this;
+   o.__base.FDuiToolBar.construct.call(o);
+}
+MO.FDsModelCatalogToolBar_dispose = function FDsModelCatalogToolBar_dispose(){
+   var o = this;
+   o.__base.FDuiToolBar.dispose.call(o);
 }
 MO.FDsModelFrameSet = function FDsModelFrameSet(o){
    o = MO.Class.inherits(this, o, MO.FDsFrameSet);
@@ -1031,172 +1025,168 @@ MO.FDsModelFrameSet_dispose = function FDsModelFrameSet_dispose(){
    var o = this;
    o.__base.FDsFrameSet.dispose.call(o);
 }
-with(MO){
-   MO.FDsModelMenuBar = function FDsModelMenuBar(o){
-      o = MO.Class.inherits(this, o, FDuiMenuBar);
-      o._controlSaveButton    = null;
-      o._controlCaptureButton = null;
-      o.onSaveLoad            = FDsModelMenuBar_onSaveLoad;
-      o.onSaveClick           = FDsModelMenuBar_onSaveClick;
-      o.onCaptureLoad         = FDsModelMenuBar_onCaptureLoad;
-      o.onCaptureClick        = FDsModelMenuBar_onCaptureClick;
-      o.construct             = FDsModelMenuBar_construct;
-      o.dispose               = FDsModelMenuBar_dispose;
-      return o;
+MO.FDsModelMenuBar = function FDsModelMenuBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiMenuBar);
+   o._controlSaveButton    = null;
+   o._controlCaptureButton = null;
+   o.onSaveLoad            = MO.FDsModelMenuBar_onSaveLoad;
+   o.onSaveClick           = MO.FDsModelMenuBar_onSaveClick;
+   o.onCaptureLoad         = MO.FDsModelMenuBar_onCaptureLoad;
+   o.onCaptureClick        = MO.FDsModelMenuBar_onCaptureClick;
+   o.construct             = MO.FDsModelMenuBar_construct;
+   o.dispose               = MO.FDsModelMenuBar_dispose;
+   return o;
+}
+MO.FDsModelMenuBar_onSaveLoad = function FDsModelMenuBar_onSaveLoad(event){
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsModelMenuBar_onSaveClick = function FDsModelMenuBar_onSaveClick(p){
+   var o = this;
+   var space = o._frameSet._activeSpace;
+   var resource = space.resource();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
+   var xconfig = new MO.TXmlNode();
+   resource.saveConfig(xconfig);
+   var connection = MO.Console.find(MO.FDrModelConsole).update(xconfig);
+   connection.addLoadListener(o, o.onSaveLoad);
+}
+MO.FDsModelMenuBar_onCaptureLoad = function FDsModelMenuBar_onCaptureLoad(event){
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsModelMenuBar_onCaptureClick = function FDsModelMenuBar_onCaptureClick(event){
+   var o = this;
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
+   var connection = o._frameSet._canvasContent.capture();
+   connection.addLoadListener(o, o.onCaptureLoad);
+}
+MO.FDsModelMenuBar_construct = function FDsModelMenuBar_construct(){
+   var o = this;
+   o.__base.FDuiMenuBar.construct.call(o);
+}
+MO.FDsModelMenuBar_dispose = function FDsModelMenuBar_dispose(){
+   var o = this;
+   o.__base.FDuiMenuBar.dispose.call(o);
+}
+MO.FDsModelWorkspace = function FDsModelWorkspace(o){
+   o = MO.Class.inherits(this, o, MO.FDuiWorkspace);
+   o._frameName            = 'design3d.mesh.Workspace';
+   o._styleWorkspaceGround = MO.Class.register(o, new MO.AStyle('_styleWorkspaceGround', 'Workspace_Ground'));
+   o._styleToolbarGround   = MO.Class.register(o, new MO.AStyle('_styleToolbarGround', 'Toolbar_Ground'));
+   o._styleBodyGround      = MO.Class.register(o, new MO.AStyle('_styleBodyGround', 'Body_Ground'));
+   o._styleStatusbarGround = MO.Class.register(o, new MO.AStyle('_styleStatusbarGround', 'Statusbar_Ground'));
+   o._activeSpace          = null;
+   o._activeMesh           = null;
+   o._framesetMain         = null;
+   o._framesetBody         = null;
+   o._frameToolBar         = null;
+   o._frameBody            = null;
+   o._frameProperty        = null;
+   o._frameSet             = null;
+   o._propertyFrames       = null;
+   o.onBuilded             = MO.FDsModelWorkspace_onBuilded;
+   o.onMeshLoad            = MO.FDsModelWorkspace_onMeshLoad;
+   o.onCatalogSelected     = MO.FDsModelWorkspace_onCatalogSelected;
+   o.construct             = MO.FDsModelWorkspace_construct;
+   o.findPropertyFrame     = MO.FDsModelWorkspace_findPropertyFrame;
+   o.loadByGuid            = MO.FDsModelWorkspace_loadByGuid;
+   o.loadByCode            = MO.FDsModelWorkspace_loadByCode;
+   o.dispose               = MO.FDsModelWorkspace_dispose;
+   return o;
+}
+MO.FDsModelWorkspace_onBuilded = function FDsModelWorkspace_onBuilded(p){
+   var o = this;
+   o.__base.FDuiWorkspace.onBuilded.call(o, p);
+   var frame = o._frameToolBar = o.searchControl('toolbarFrame');
+   frame._hPanel.className = o.styleName('Toolbar_Ground');
+   var frame = o._frameBody = o.searchControl('bodyFrame');
+   frame._hPanel.className = o.styleName('Body_Ground');
+   var frame = o._frameStatusBar = o.searchControl('statusFrame');
+   frame._hPanel.className = o.styleName('Statusbar_Ground');
+   var menuBar = o._menuBar = MO.Class.create(MO.FDsModelMenuBar);
+   menuBar._workspace = o;
+   menuBar.buildDefine(p);
+   o._frameToolBar.push(menuBar);
+   var frameSet = o._frameSet = MO.Class.create(MO.FDsModelFrameSet);
+   frameSet._workspace = o;
+   frameSet.buildDefine(p);
+   o._frameBody.push(frameSet);
+   menuBar._frameSet = frameSet;
+}
+MO.FDsModelWorkspace_onMeshLoad = function FDsModelWorkspace_onMeshLoad(p){
+   var o = this;
+   o._activeSpace = p._activeSpace;
+   o._catalog.buildSpace(o._activeSpace);
+}
+MO.FDsModelWorkspace_onCatalogSelected = function FDsModelWorkspace_onCatalogSelected(p, pc){
+   var o = this;
+   var space = o._activeSpace;
+   var fs = o._propertyFrames;
+   var c = fs.count();
+   for(var i = 0; i < c; i++){
+      var f = fs.value(i);
+      f.hide();
    }
-   MO.FDsModelMenuBar_onSaveLoad = function FDsModelMenuBar_onSaveLoad(event){
-      MO.Console.find(FDuiDesktopConsole).hide();
-   }
-   MO.FDsModelMenuBar_onSaveClick = function FDsModelMenuBar_onSaveClick(p){
-      var o = this;
-      var space = o._frameSet._activeSpace;
-      var resource = space.resource();
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var xconfig = new TXmlNode();
-      resource.saveConfig(xconfig);
-      var connection = MO.Console.find(FDrModelConsole).update(xconfig);
-      connection.addLoadListener(o, o.onSaveLoad);
-   }
-   MO.FDsModelMenuBar_onCaptureLoad = function FDsModelMenuBar_onCaptureLoad(event){
-      MO.Console.find(FDuiDesktopConsole).hide();
-   }
-   MO.FDsModelMenuBar_onCaptureClick = function FDsModelMenuBar_onCaptureClick(event){
-      var o = this;
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var connection = o._frameSet._canvasContent.capture();
-      connection.addLoadListener(o, o.onCaptureLoad);
-   }
-   MO.FDsModelMenuBar_construct = function FDsModelMenuBar_construct(){
-      var o = this;
-      o.__base.FDuiMenuBar.construct.call(o);
-   }
-   MO.FDsModelMenuBar_dispose = function FDsModelMenuBar_dispose(){
-      var o = this;
-      o.__base.FDuiMenuBar.dispose.call(o);
+   if(MO.Class.isClass(p, MO.FE3dStage)){
+      var f = o.findPropertyFrame(EDsFrame.MO.MeshSpacePropertyFrame);
+      f.show();
+      f.loadObject(space, space);
+   }else if(MO.Class.isClass(p, MO.FG3dTechnique)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshTechniquePropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else if(MO.Class.isClass(p, MO.FE3dRegion)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshRegionPropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else if(MO.Class.isClass(p, MO.FE3dCamera)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshCameraPropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else if(MO.Class.isClass(p, MO.FG3dDirectionalLight)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshLightPropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else if(MO.Class.isClass(p, MO.FE3dMeshDisplay)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshDisplayPropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else if(MO.Class.isClass(p, MO.FG3dMaterial)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshMaterialPropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else if(MO.Class.isClass(p, MO.FE3dMeshRenderable)){
+      var f = o.findPropertyFrame(MO.EDsFrame.MeshRenderablePropertyFrame);
+      f.show();
+      f.loadObject(space, p);
+   }else{
+      throw new MO.TError('Unknown select object type. (value={1})', p);
    }
 }
-with(MO){
-   MO.FDsModelWorkspace = function FDsModelWorkspace(o){
-      o = MO.Class.inherits(this, o, FDuiWorkspace);
-      o._frameName            = 'design3d.mesh.Workspace';
-      o._styleWorkspaceGround = MO.Class.register(o, new MO.AStyle('_styleWorkspaceGround', 'Workspace_Ground'));
-      o._styleToolbarGround   = MO.Class.register(o, new MO.AStyle('_styleToolbarGround', 'Toolbar_Ground'));
-      o._styleBodyGround      = MO.Class.register(o, new MO.AStyle('_styleBodyGround', 'Body_Ground'));
-      o._styleStatusbarGround = MO.Class.register(o, new MO.AStyle('_styleStatusbarGround', 'Statusbar_Ground'));
-      o._activeSpace          = null;
-      o._activeMesh           = null;
-      o._framesetMain         = null;
-      o._framesetBody         = null;
-      o._frameToolBar         = null;
-      o._frameBody            = null;
-      o._frameProperty        = null;
-      o._frameSet             = null;
-      o._propertyFrames       = null;
-      o.onBuilded             = FDsModelWorkspace_onBuilded;
-      o.onMeshLoad            = FDsModelWorkspace_onMeshLoad;
-      o.onCatalogSelected     = FDsModelWorkspace_onCatalogSelected;
-      o.construct             = FDsModelWorkspace_construct;
-      o.findPropertyFrame     = FDsModelWorkspace_findPropertyFrame;
-      o.loadByGuid            = FDsModelWorkspace_loadByGuid;
-      o.loadByCode            = FDsModelWorkspace_loadByCode;
-      o.dispose               = FDsModelWorkspace_dispose;
-      return o;
+MO.FDsModelWorkspace_construct = function FDsModelWorkspace_construct(){
+   var o = this;
+   o.__base.FDuiWorkspace.construct.call(o);
+   o._propertyFrames = new MO.TDictionary();
+}
+MO.FDsModelWorkspace_findPropertyFrame = function FDsModelWorkspace_findPropertyFrame(p){
+   var o = this;
+   var f = o._propertyFrames.get(p);
+   if(!f){
+      var fc = MO.Console.find(MO.FFrameConsole);
+      f = fc.get(o, p, o._frameProperty._hContainer);
+      f._workspace = o;
+      o._propertyFrames.set(p, f);
    }
-   MO.FDsModelWorkspace_onBuilded = function FDsModelWorkspace_onBuilded(p){
-      var o = this;
-      o.__base.FDuiWorkspace.onBuilded.call(o, p);
-      var frame = o._frameToolBar = o.searchControl('toolbarFrame');
-      frame._hPanel.className = o.styleName('Toolbar_Ground');
-      var frame = o._frameBody = o.searchControl('bodyFrame');
-      frame._hPanel.className = o.styleName('Body_Ground');
-      var frame = o._frameStatusBar = o.searchControl('statusFrame');
-      frame._hPanel.className = o.styleName('Statusbar_Ground');
-      var menuBar = o._menuBar = MO.Class.create(FDsModelMenuBar);
-      menuBar._workspace = o;
-      menuBar.buildDefine(p);
-      o._frameToolBar.push(menuBar);
-      var frameSet = o._frameSet = MO.Class.create(FDsModelFrameSet);
-      frameSet._workspace = o;
-      frameSet.buildDefine(p);
-      o._frameBody.push(frameSet);
-      menuBar._frameSet = frameSet;
-   }
-   MO.FDsModelWorkspace_onMeshLoad = function FDsModelWorkspace_onMeshLoad(p){
-      var o = this;
-      o._activeSpace = p._activeSpace;
-      o._catalog.buildSpace(o._activeSpace);
-   }
-   MO.FDsModelWorkspace_onCatalogSelected = function FDsModelWorkspace_onCatalogSelected(p, pc){
-      var o = this;
-      var space = o._activeSpace;
-      var fs = o._propertyFrames;
-      var c = fs.count();
-      for(var i = 0; i < c; i++){
-         var f = fs.value(i);
-         f.hide();
-      }
-      if(MO.Class.isClass(p, FE3dStage)){
-         var f = o.findPropertyFrame(EDsFrame.MeshSpacePropertyFrame);
-         f.show();
-         f.loadObject(space, space);
-      }else if(MO.Class.isClass(p, FG3dTechnique)){
-         var f = o.findPropertyFrame(EDsFrame.MeshTechniquePropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else if(MO.Class.isClass(p, FE3dRegion)){
-         var f = o.findPropertyFrame(EDsFrame.MeshRegionPropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else if(MO.Class.isClass(p, FE3dCamera)){
-         var f = o.findPropertyFrame(EDsFrame.MeshCameraPropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else if(MO.Class.isClass(p, FG3dDirectionalLight)){
-         var f = o.findPropertyFrame(EDsFrame.MeshLightPropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else if(MO.Class.isClass(p, FE3dMeshDisplay)){
-         var f = o.findPropertyFrame(EDsFrame.MeshDisplayPropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else if(MO.Class.isClass(p, FG3dMaterial)){
-         var f = o.findPropertyFrame(EDsFrame.MeshMaterialPropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else if(MO.Class.isClass(p, FE3dMeshRenderable)){
-         var f = o.findPropertyFrame(EDsFrame.MeshRenderablePropertyFrame);
-         f.show();
-         f.loadObject(space, p);
-      }else{
-         throw new TError('Unknown select object type. (value={1})', p);
-      }
-   }
-   MO.FDsModelWorkspace_construct = function FDsModelWorkspace_construct(){
-      var o = this;
-      o.__base.FDuiWorkspace.construct.call(o);
-      o._propertyFrames = new TDictionary();
-   }
-   MO.FDsModelWorkspace_findPropertyFrame = function FDsModelWorkspace_findPropertyFrame(p){
-      var o = this;
-      var f = o._propertyFrames.get(p);
-      if(!f){
-         var fc = MO.Console.find(FFrameConsole);
-         f = fc.get(o, p, o._frameProperty._hContainer);
-         f._workspace = o;
-         o._propertyFrames.set(p, f);
-      }
-      return f;
-   }
-   MO.FDsModelWorkspace_loadByGuid = function FDsModelWorkspace_loadByGuid(guid){
-      this._frameSet.loadByGuid(guid);
-   }
-   MO.FDsModelWorkspace_loadByCode = function FDsModelWorkspace_loadByCode(code){
-      this._frameSet.loadByCode(code);
-   }
-   MO.FDsModelWorkspace_dispose = function FDsModelWorkspace_dispose(){
-      var o = this;
-      o.__base.FDuiWorkspace.dispose.call(o);
-      o._propertyFrames.dispose();
-      o._propertyFrames = null;
-   }
+   return f;
+}
+MO.FDsModelWorkspace_loadByGuid = function FDsModelWorkspace_loadByGuid(guid){
+   this._frameSet.loadByGuid(guid);
+}
+MO.FDsModelWorkspace_loadByCode = function FDsModelWorkspace_loadByCode(code){
+   this._frameSet.loadByCode(code);
+}
+MO.FDsModelWorkspace_dispose = function FDsModelWorkspace_dispose(){
+   var o = this;
+   o.__base.FDuiWorkspace.dispose.call(o);
+   o._propertyFrames.dispose();
+   o._propertyFrames = null;
 }

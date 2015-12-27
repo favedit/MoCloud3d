@@ -88,44 +88,26 @@ MO.FDrAbsResourceConsole_doDelete = function FDrAbsResourceConsole_doDelete(guid
    var connection = MO.Console.find(MO.FXmlConsole).sendAsync(url);
    return connection;
 }
-with(MO){
-   MO.FDrBitmap = function FDrBitmap(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode    = 'Bitmap';
-      o._sizeWidth    = 0;
-      o._sizeHeight   = 0;
-      o.sizeWidth     = FDrBitmap_sizeWidth;
-      o.setSizeWidth  = FDrBitmap_setSizeWidth;
-      o.sizeHeight    = FDrBitmap_sizeHeight;
-      o.setSizeHeight = FDrBitmap_setSizeHeight;
-      o.loadConfig    = FDrBitmap_loadConfig;
-      o.saveConfig    = FDrBitmap_saveConfig;
-      return o;
-   }
-   MO.FDrBitmap_sizeWidth = function FDrBitmap_sizeWidth(){
-      return this._sizeWidth;
-   }
-   MO.FDrBitmap_setSizeWidth = function FDrBitmap_setSizeWidth(width){
-      this._sizeWidth = width;
-   }
-   MO.FDrBitmap_sizeHeight = function FDrBitmap_sizeHeight(){
-      return this._sizeHeight;
-   }
-   MO.FDrBitmap_setSizeHeight = function FDrBitmap_setSizeHeight(height){
-      this._sizeHeight = height;
-   }
-   MO.FDrBitmap_loadConfig = function FDrBitmap_loadConfig(xconfig){
-      var o = this;
-      o.__base.FDrResource.loadConfig.call(o, xconfig);
-      o._sizeWidth = xconfig.getInteger('size_width');
-      o._sizeHeight = xconfig.getInteger('size_height');
-   }
-   MO.FDrBitmap_saveConfig = function FDrBitmap_saveConfig(xconfig){
-      var o = this;
-      o.__base.FDrResource.saveConfig.call(o, xconfig);
-      xconfig.set('size_width', o._sizeWidth);
-      xconfig.set('size_height', o._sizeHeight);
-   }
+MO.FDrBitmap = function FDrBitmap(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode    = 'Bitmap';
+   o._sizeWidth    = MO.Class.register(o, new MO.AGetSet('_sizeWidth'), 0);
+   o._sizeHeight   = MO.Class.register(o, new MO.AGetSet('_sizeHeight'), 0);
+   o.loadConfig    = MO.FDrBitmap_loadConfig;
+   o.saveConfig    = MO.FDrBitmap_saveConfig;
+   return o;
+}
+MO.FDrBitmap_loadConfig = function FDrBitmap_loadConfig(xconfig){
+   var o = this;
+   o.__base.FDrResource.loadConfig.call(o, xconfig);
+   o._sizeWidth = xconfig.getInteger('size_width');
+   o._sizeHeight = xconfig.getInteger('size_height');
+}
+MO.FDrBitmap_saveConfig = function FDrBitmap_saveConfig(xconfig){
+   var o = this;
+   o.__base.FDrResource.saveConfig.call(o, xconfig);
+   xconfig.set('size_width', o._sizeWidth);
+   xconfig.set('size_height', o._sizeHeight);
 }
 MO.FDrBitmapConsole = function FDrBitmapConsole(o){
    o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
@@ -155,22 +137,20 @@ MO.FDrBitmapConsole_update = function FDrBitmapConsole_update(xconfig){
    var url = MO.Window.Browser.hostPath(uri);
    return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
 }
-with(MO){
-   MO.FDrMaterial = function FDrMaterial(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode = 'Material';
-      o.loadConfig = FDrMaterial_loadConfig;
-      o.saveConfig = FDrMaterial_saveConfig;
-      return o;
-   }
-   MO.FDrMaterial_loadConfig = function FDrMaterial_loadConfig(xconfig){
-      var o = this;
-      o.__base.FDrResource.loadConfig.call(o, xconfig);
-   }
-   MO.FDrMaterial_saveConfig = function FDrMaterial_saveConfig(xconfig){
-      var o = this;
-      o.__base.FDrResource.saveConfig.call(o, xconfig);
-   }
+MO.FDrMaterial = function FDrMaterial(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode = 'Material';
+   o.loadConfig = MO.FDrMaterial_loadConfig;
+   o.saveConfig = MO.FDrMaterial_saveConfig;
+   return o;
+}
+MO.FDrMaterial_loadConfig = function FDrMaterial_loadConfig(xconfig){
+   var o = this;
+   o.__base.FDrResource.loadConfig.call(o, xconfig);
+}
+MO.FDrMaterial_saveConfig = function FDrMaterial_saveConfig(xconfig){
+   var o = this;
+   o.__base.FDrResource.saveConfig.call(o, xconfig);
 }
 MO.FDrMaterialConsole = function FDrMaterialConsole(o){
    o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
@@ -207,296 +187,247 @@ MO.FDrMaterialConsole_deleteBitmap = function FDrMaterialConsole_deleteBitmap(gu
    var url = MO.Window.Browser.hostPath(uri);
    return MO.Console.find(MO.FXmlConsole).sendAsync(url);
 }
-with(MO){
-   MO.FDrMesh = function FDrMesh(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode = 'Mesh';
-      return o;
-   }
+MO.FDrMesh = function FDrMesh(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode = 'Mesh';
+   return o;
 }
-with(MO){
-   MO.FDrMeshConsole = function FDrMeshConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode = 'cloud.resource.mesh';
-      o.update       = FDrMeshConsole_update;
-      return o;
-   }
-   MO.FDrMeshConsole_update = function FDrMeshConsole_update(config){
-      var o = this;
-      var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=update&date=' + RDate.format());
-      return MO.Console.find(FXmlConsole).sendAsync(url, config);
-   }
+MO.FDrMeshConsole = function FDrMeshConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode = 'cloud.resource.mesh';
+   o.update       = MO.FDrMeshConsole_update;
+   return o;
 }
-with(MO){
-   MO.FDrModel = function FDrModel(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode = 'Model';
-      return o;
-   }
+MO.FDrMeshConsole_update = function FDrMeshConsole_update(config){
+   var o = this;
+   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=update&date=' + RDate.format());
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
 }
-with(MO){
-   MO.FDrModelConsole = function FDrModelConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode = 'cloud.resource.model';
-      o.update       = FDrModelConsole_update;
-      return o;
-   }
-   MO.FDrModelConsole_update = function FDrModelConsole_update(config){
-      var o = this;
-      var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-      return MO.Console.find(FXmlConsole).sendAsync(url, config);
-   }
+MO.FDrModel = function FDrModel(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode = 'Model';
+   return o;
 }
-with(MO){
-   MO.FDrObject = function FDrObject(o){
-      o = MO.Class.inherits(this, o, FObject);
-      o._guid       = null;
-      o._code       = null;
-      o._label      = null;
-      o.guid        = FDrObject_guid;
-      o.code        = FDrObject_code;
-      o.setCode     = FDrObject_setCode;
-      o.label       = FDrObject_label;
-      o.setLabel    = FDrObject_setLabel;
-      o.unserialize = FDrObject_unserialize;
-      o.saveConfig  = FDrObject_saveConfig;
-      return o;
-   }
-   MO.FDrObject_guid = function FDrObject_guid(){
-      return this._guid;
-   }
-   MO.FDrObject_code = function FDrObject_code(){
-      return this._code;
-   }
-   MO.FDrObject_setCode = function FDrObject_setCode(p){
-      this._code = p;
-   }
-   MO.FDrObject_label = function FDrObject_label(){
-      return this._label;
-   }
-   MO.FDrObject_setLabel = function FDrObject_setLabel(p){
-      this._label = p;
-   }
-   MO.FDrObject_unserialize = function FDrObject_unserialize(p){
-      var o = this;
-      o._guid = p.readString();
-      o._code = p.readString();
-      o._label = p.readString();
-   }
-   MO.FDrObject_saveConfig = function FDrObject_saveConfig(xconfig){
-      var o = this;
-      xconfig.setNvl('guid', o._guid);
-      xconfig.setNvl('code', o._code);
-      xconfig.setNvl('label', o._label);
-   }
+MO.FDrModelConsole = function FDrModelConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode = 'cloud.resource.model';
+   o.update       = MO.FDrModelConsole_update;
+   return o;
 }
-with(MO){
-   MO.FDrProject = function FDrProject(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode   = 'Project';
-      o._projectGuid = null;
-      o.saveConfig   = FDrProject_saveConfig;
-      return o;
-   }
-   MO.FDrProject_saveConfig = function FDrProject_saveConfig(xconfig){
-      var o = this;
-      o.__base.FDrResource.saveConfig.call(o, xconfig);
-      xconfig.setNvl('project_guid', o._projectGuid);
-   }
+MO.FDrModelConsole_update = function FDrModelConsole_update(config){
+   var o = this;
+   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
 }
-with(MO){
-   MO.FDrProjectConsole = function FDrProjectConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode = 'cloud.solution.project';
-      return o;
-   }
+MO.FDrObject = function FDrObject(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._guid       = MO.Class.register(o, new MO.AGetSet('_guid'));
+   o._code       = MO.Class.register(o, new MO.AGetSet('_code'));
+   o._label      = MO.Class.register(o, new MO.AGetSet('_label'));
+   o.unserialize = MO.FDrObject_unserialize;
+   o.saveConfig  = MO.FDrObject_saveConfig;
+   return o;
 }
-with(MO){
-   MO.FDrResource = function FDrResource(o){
-      o = MO.Class.inherits(this, o, FDrObject);
-      o._classCode = MO.Class.register(o, new AGetter('_classCode'));
-      o._guid      = MO.Class.register(o, new AGetSet('_guid'));
-      o._code      = MO.Class.register(o, new AGetSet('_code'));
-      o._label     = MO.Class.register(o, new AGetSet('_label'));
-      o.loadConfig = FDrResource_loadConfig;
-      o.saveConfig = FDrResource_saveConfig;
-      return o;
-   }
-   MO.FDrResource_loadConfig = function FDrResource_loadConfig(xconfig){
-      var o = this;
-      o._guid = xconfig.get('guid');
-      o._code = xconfig.get('code');
-      o._label = xconfig.get('label');
-   }
-   MO.FDrResource_saveConfig = function FDrResource_saveConfig(xconfig){
-      var o = this;
-      xconfig.setName(o._classCode);
-      xconfig.set('guid', o._guid);
-      xconfig.set('code', o._code);
-      xconfig.set('label', o._label);
-   }
+MO.FDrObject_unserialize = function FDrObject_unserialize(p){
+   var o = this;
+   o._guid = p.readString();
+   o._code = p.readString();
+   o._label = p.readString();
 }
-with(MO){
-   MO.FDrResourceConsole = function FDrResourceConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode   = 'cloud.resource';
-      o._catalogCode   = 'cloud.resource.catalog';
-      o._resources     = null;
-      o.construct      = FDrResourceConsole_construct;
-      o.doList         = FDrResourceConsole_doList;
-      o.doShare        = FDrResourceConsole_doShare;
-      o.doDelete       = FDrResourceConsole_doDelete;
-      o.doListShare    = FDrResourceConsole_doListShare;
-      o.doFolderCreate = FDrResourceConsole_doFolderCreate;
-      o.doFolderUpdate = FDrResourceConsole_doFolderUpdate;
-      o.doFolderDelete = FDrResourceConsole_doFolderDelete;
-      return o;
-   }
-   MO.FDrResourceConsole_construct = function FDrResourceConsole_construct(){
-      var o = this;
-      o.__base.FDrAbsResourceConsole.construct.call(o);
-      o._resources = new TDictionary();
-   }
-   MO.FDrResourceConsole_doList = function FDrResourceConsole_doList(typeCd, search, order, pageSize, page){
-      var o = this;
-      var url = '/' + o._serviceCode + '.ws?action=list&type_cd=' + typeCd + '&serach=' + search + '&order=' + order + '&page_size=' + pageSize + '&page=' + page;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
-   MO.FDrResourceConsole_doShare = function FDrResourceConsole_doShare(guid, shareCd){
-      var o = this;
-      var url = o.makeServiceUrl('share') + '&guid=' + guid + '&share_cd=' + shareCd;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
-   MO.FDrResourceConsole_doDelete = function FDrResourceConsole_doDelete(typeCd, guid){
-      var o = this;
-      var url = '/' + o._serviceCode + '.ws?action=delete&type_cd=' + typeCd + '&guid=' + guid;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
-   MO.FDrResourceConsole_doListShare = function FDrResourceConsole_doListShare(typeCd, search, order, pageSize, page){
-      var o = this;
-      var url = '/' + o._serviceCode + '.ws?action=listShare&type_cd=' + typeCd + '&serach=' + search + '&order=' + order + '&page_size=' + pageSize + '&page=' + page;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
-   MO.FDrResourceConsole_doFolderCreate = function FDrResourceConsole_doFolderCreate(parentGuid, code, label){
-      var o = this;
-      var xdocument = new TXmlDocument();
-      var xroot = xdocument.root();
-      xroot.set('action', 'create');
-      var xfolder = xroot.create('Folder');
-      xfolder.set('parent_guid', parentGuid);
-      xfolder.set('code', code);
-      xfolder.set('label', label);
-      return MO.Console.find(FXmlConsole).sendAsync('/' + o._catalogCode + '.ws', xdocument);
-   }
-   MO.FDrResourceConsole_doFolderUpdate = function FDrResourceConsole_doFolderUpdate(guid, code, label){
-      var o = this;
-      var xdocument = new TXmlDocument();
-      var xroot = xdocument.root();
-      xroot.set('action', 'update');
-      var xfolder = xroot.create('Folder');
-      xfolder.set('guid', guid);
-      xfolder.set('code', code);
-      xfolder.set('label', label);
-      return MO.Console.find(FXmlConsole).sendAsync('/' + o._catalogCode + '.ws', xdocument);
-   }
-   MO.FDrResourceConsole_doFolderDelete = function FDrResourceConsole_doFolderDelete(guid){
-      var o = this;
-      var url = '/' + o._catalogCode + '.ws?action=delete&guid=' + guid;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
+MO.FDrObject_saveConfig = function FDrObject_saveConfig(xconfig){
+   var o = this;
+   xconfig.setNvl('guid', o._guid);
+   xconfig.setNvl('code', o._code);
+   xconfig.setNvl('label', o._label);
 }
-with(MO){
-   MO.FDrScene = function FDrScene(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode   = 'Scene';
-      o._projectGuid = null;
-      o.saveConfig   = FDrScene_saveConfig;
-      return o;
-   }
-   MO.FDrScene_saveConfig = function FDrScene_saveConfig(xconfig){
-      var o = this;
-      o.__base.FDrResource.saveConfig.call(o, xconfig);
-      xconfig.setNvl('project_guid', o._projectGuid);
-   }
+MO.FDrProject = function FDrProject(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode   = 'Project';
+   o._projectGuid = null;
+   o.saveConfig   = MO.FDrProject_saveConfig;
+   return o;
 }
-with(MO){
-   MO.FDrSceneConsole = function FDrSceneConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode = 'cloud.resource.scene';
-      o.createCamera = FDrSceneConsole_createCamera;
-      o.createLayer  = FDrSceneConsole_createLayer;
-      o.createSprite = FDrSceneConsole_createSprite;
-      o.createMovie  = FDrSceneConsole_createMovie;
-      o.copyNode     = FDrSceneConsole_copyNode;
-      o.deleteNode   = FDrSceneConsole_deleteNode;
-      o.update       = FDrSceneConsole_update;
-      return o;
-   }
-   MO.FDrSceneConsole_createCamera = function FDrSceneConsole_createCamera(xconfig){
-      var o = this;
-      var url = o.makeServiceUrl('createCamera');
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrSceneConsole_createLayer = function FDrSceneConsole_createLayer(xconfig){
-      var o = this;
-      var url = o.makeServiceUrl('createLayer');
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrSceneConsole_createSprite = function FDrSceneConsole_createSprite(xconfig){
-      var o = this;
-      var url = o.makeServiceUrl('createSprite');
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrSceneConsole_createMovie = function FDrSceneConsole_createMovie(xconfig){
-      var o = this;
-      var url = o.makeServiceUrl('createMovie');
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrSceneConsole_copyNode = function FDrSceneConsole_copyNode(sceneGuid, nodeGuid){
-      var o = this;
-      var url = o.makeServiceUrl('copyNode') + '&space_guid=' + sceneGuid + '&node_guid=' + nodeGuid;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
-   MO.FDrSceneConsole_deleteNode = function FDrSceneConsole_deleteNode(sceneGuid, nodeGuid){
-      var o = this;
-      var url = o.makeServiceUrl('deleteNode') + '&space_guid=' + sceneGuid + '&node_guid=' + nodeGuid;
-      return MO.Console.find(FXmlConsole).sendAsync(url);
-   }
-   MO.FDrSceneConsole_update = function FDrSceneConsole_update(p){
-      var o = this;
-      var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-      return MO.Console.find(FXmlConsole).sendAsync(url, p);
-   }
+MO.FDrProject_saveConfig = function FDrProject_saveConfig(xconfig){
+   var o = this;
+   o.__base.FDrResource.saveConfig.call(o, xconfig);
+   xconfig.setNvl('project_guid', o._projectGuid);
 }
-with(MO){
-   MO.FDrTemplate = function FDrTemplate(o){
-      o = MO.Class.inherits(this, o, FDrResource);
-      o._classCode = 'Template';
-      return o;
-   }
+MO.FDrProjectConsole = function FDrProjectConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode = 'cloud.solution.project';
+   return o;
 }
-with(MO){
-   MO.FDrTemplateConsole = function FDrTemplateConsole(o){
-      o = MO.Class.inherits(this, o, FDrAbsResourceConsole);
-      o._serviceCode   = 'cloud.resource.template';
-      o.selectMaterial = FDrTemplateConsole_selectMaterial;
-      o.createDisplay  = FDrTemplateConsole_createDisplay;
-      o.update         = FDrTemplateConsole_update;
-      return o;
-   }
-   MO.FDrTemplateConsole_selectMaterial = function FDrTemplateConsole_selectMaterial(xconfig){
-      var o = this;
-      var url = o.makeServiceUrl('createMaterial');
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrTemplateConsole_createDisplay = function FDrTemplateConsole_createDisplay(xconfig){
-      var o = this;
-      var url = o.makeServiceUrl('createDisplay');
-      return MO.Console.find(FXmlConsole).sendAsync(url, xconfig);
-   }
-   MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(config){
-      var o = this;
-      var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-      return MO.Console.find(FXmlConsole).sendAsync(url, config);
-   }
+MO.FDrResource = function FDrResource(o){
+   o = MO.Class.inherits(this, o, MO.FDrObject);
+   o._classCode = MO.Class.register(o, new MO.AGetter('_classCode'));
+   o.loadConfig = MO.FDrResource_loadConfig;
+   o.saveConfig = MO.FDrResource_saveConfig;
+   return o;
+}
+MO.FDrResource_loadConfig = function FDrResource_loadConfig(xconfig){
+   var o = this;
+   o._guid = xconfig.get('guid');
+   o._code = xconfig.get('code');
+   o._label = xconfig.get('label');
+}
+MO.FDrResource_saveConfig = function FDrResource_saveConfig(xconfig){
+   var o = this;
+   xconfig.setName(o._classCode);
+   xconfig.set('guid', o._guid);
+   xconfig.set('code', o._code);
+   xconfig.set('label', o._label);
+}
+MO.FDrResourceConsole = function FDrResourceConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode   = 'cloud.resource';
+   o._catalogCode   = 'cloud.resource.catalog';
+   o._resources     = null;
+   o.construct      = MO.FDrResourceConsole_construct;
+   o.doList         = MO.FDrResourceConsole_doList;
+   o.doShare        = MO.FDrResourceConsole_doShare;
+   o.doDelete       = MO.FDrResourceConsole_doDelete;
+   o.doListShare    = MO.FDrResourceConsole_doListShare;
+   o.doFolderCreate = MO.FDrResourceConsole_doFolderCreate;
+   o.doFolderUpdate = MO.FDrResourceConsole_doFolderUpdate;
+   o.doFolderDelete = MO.FDrResourceConsole_doFolderDelete;
+   return o;
+}
+MO.FDrResourceConsole_construct = function FDrResourceConsole_construct(){
+   var o = this;
+   o.__base.FDrAbsResourceConsole.construct.call(o);
+   o._resources = new MO.TDictionary();
+}
+MO.FDrResourceConsole_doList = function FDrResourceConsole_doList(typeCd, search, order, pageSize, page){
+   var o = this;
+   var url = '/' + o._serviceCode + '.ws?action=list&type_cd=' + typeCd + '&serach=' + search + '&order=' + order + '&page_size=' + pageSize + '&page=' + page;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrResourceConsole_doShare = function FDrResourceConsole_doShare(guid, shareCd){
+   var o = this;
+   var url = o.makeServiceUrl('share') + '&guid=' + guid + '&share_cd=' + shareCd;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrResourceConsole_doDelete = function FDrResourceConsole_doDelete(typeCd, guid){
+   var o = this;
+   var url = '/' + o._serviceCode + '.ws?action=delete&type_cd=' + typeCd + '&guid=' + guid;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrResourceConsole_doListShare = function FDrResourceConsole_doListShare(typeCd, search, order, pageSize, page){
+   var o = this;
+   var url = '/' + o._serviceCode + '.ws?action=listShare&type_cd=' + typeCd + '&serach=' + search + '&order=' + order + '&page_size=' + pageSize + '&page=' + page;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrResourceConsole_doFolderCreate = function FDrResourceConsole_doFolderCreate(parentGuid, code, label){
+   var o = this;
+   var xdocument = new MO.TXmlDocument();
+   var xroot = xdocument.root();
+   xroot.set('action', 'create');
+   var xfolder = xroot.create('Folder');
+   xfolder.set('parent_guid', parentGuid);
+   xfolder.set('code', code);
+   xfolder.set('label', label);
+   return MO.Console.find(MO.FXmlConsole).sendAsync('/' + o._catalogCode + '.ws', xdocument);
+}
+MO.FDrResourceConsole_doFolderUpdate = function FDrResourceConsole_doFolderUpdate(guid, code, label){
+   var o = this;
+   var xdocument = new MO.TXmlDocument();
+   var xroot = xdocument.root();
+   xroot.set('action', 'update');
+   var xfolder = xroot.create('Folder');
+   xfolder.set('guid', guid);
+   xfolder.set('code', code);
+   xfolder.set('label', label);
+   return MO.Console.find(MO.FXmlConsole).sendAsync('/' + o._catalogCode + '.ws', xdocument);
+}
+MO.FDrResourceConsole_doFolderDelete = function FDrResourceConsole_doFolderDelete(guid){
+   var o = this;
+   var url = '/' + o._catalogCode + '.ws?action=delete&guid=' + guid;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrScene = function FDrScene(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode   = 'Scene';
+   o._projectGuid = null;
+   o.saveConfig   = MO.FDrScene_saveConfig;
+   return o;
+}
+MO.FDrScene_saveConfig = function FDrScene_saveConfig(xconfig){
+   var o = this;
+   o.__base.FDrResource.saveConfig.call(o, xconfig);
+   xconfig.setNvl('project_guid', o._projectGuid);
+}
+MO.FDrSceneConsole = function FDrSceneConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode = 'cloud.resource.scene';
+   o.createCamera = MO.FDrSceneConsole_createCamera;
+   o.createLayer  = MO.FDrSceneConsole_createLayer;
+   o.createSprite = MO.FDrSceneConsole_createSprite;
+   o.createMovie  = MO.FDrSceneConsole_createMovie;
+   o.copyNode     = MO.FDrSceneConsole_copyNode;
+   o.deleteNode   = MO.FDrSceneConsole_deleteNode;
+   o.update       = MO.FDrSceneConsole_update;
+   return o;
+}
+MO.FDrSceneConsole_createCamera = function FDrSceneConsole_createCamera(xconfig){
+   var o = this;
+   var url = o.makeServiceUrl('createCamera');
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrSceneConsole_createLayer = function FDrSceneConsole_createLayer(xconfig){
+   var o = this;
+   var url = o.makeServiceUrl('createLayer');
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrSceneConsole_createSprite = function FDrSceneConsole_createSprite(xconfig){
+   var o = this;
+   var url = o.makeServiceUrl('createSprite');
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrSceneConsole_createMovie = function FDrSceneConsole_createMovie(xconfig){
+   var o = this;
+   var url = o.makeServiceUrl('createMovie');
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrSceneConsole_copyNode = function FDrSceneConsole_copyNode(sceneGuid, nodeGuid){
+   var o = this;
+   var url = o.makeServiceUrl('copyNode') + '&space_guid=' + sceneGuid + '&node_guid=' + nodeGuid;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrSceneConsole_deleteNode = function FDrSceneConsole_deleteNode(sceneGuid, nodeGuid){
+   var o = this;
+   var url = o.makeServiceUrl('deleteNode') + '&space_guid=' + sceneGuid + '&node_guid=' + nodeGuid;
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url);
+}
+MO.FDrSceneConsole_update = function FDrSceneConsole_update(p){
+   var o = this;
+   var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, p);
+}
+MO.FDrTemplate = function FDrTemplate(o){
+   o = MO.Class.inherits(this, o, MO.FDrResource);
+   o._classCode = 'Template';
+   return o;
+}
+MO.FDrTemplateConsole = function FDrTemplateConsole(o){
+   o = MO.Class.inherits(this, o, MO.FDrAbsResourceConsole);
+   o._serviceCode   = 'cloud.resource.template';
+   o.selectMaterial = MO.FDrTemplateConsole_selectMaterial;
+   o.createDisplay  = MO.FDrTemplateConsole_createDisplay;
+   o.update         = MO.FDrTemplateConsole_update;
+   return o;
+}
+MO.FDrTemplateConsole_selectMaterial = function FDrTemplateConsole_selectMaterial(xconfig){
+   var o = this;
+   var url = o.makeServiceUrl('createMaterial');
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrTemplateConsole_createDisplay = function FDrTemplateConsole_createDisplay(xconfig){
+   var o = this;
+   var url = o.makeServiceUrl('createDisplay');
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
+}
+MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(config){
+   var o = this;
+   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
 }

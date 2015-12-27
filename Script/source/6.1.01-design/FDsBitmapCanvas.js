@@ -54,10 +54,10 @@ MO.FDsBitmapCanvas_onBuild = function FDsBitmapCanvas_onBuild(p){
    // 创建简单舞台
    var space = o._activeSpace = MO.Class.create(MO.FE3dFlatStage);
    space.linkGraphicContext(o);
-   space.selectTechnique(o, FE3dGeneralTechnique);
+   space.selectTechnique(o, MO.FE3dGeneralTechnique);
    space.region().backgroundColor().set(1, 1, 1, 1);
    space.region().linkGraphicContext(o);
-   RStage.register('space.bitmap', space);
+   MO.RStage.register('space.bitmap', space);
    //g.addEnterFrameListener(o, o.onEnterFrame);
    // 设置相机
    var camera = space.camera();
@@ -70,7 +70,7 @@ MO.FDsBitmapCanvas_onBuild = function FDsBitmapCanvas_onBuild(p){
    projection.size().set(hPanel.width, hPanel.height);
    projection.update();
    // 注册事件
-   RWindow.lsnsMouseWheel.register(o, o.onMouseWheel);
+   MO.Window.lsnsMouseWheel.register(o, o.onMouseWheel);
 }
 
 //==========================================================
@@ -93,7 +93,7 @@ MO.FDsBitmapCanvas_onMouseCaptureStart = function FDsBitmapCanvas_onMouseCapture
    o._capturePosition.set(event.clientX, event.clientY);
    o._captureMatrix.assign(bitmap.matrix());
    // 设置鼠标
-   RHtml.cursorSet(o._hPanel, EUiCursor.Pointer);
+   MO.Window.Html.cursorSet(o._hPanel, MO.EUiCursor.Pointer);
 }
 
 //==========================================================
@@ -132,7 +132,7 @@ MO.FDsBitmapCanvas_onMouseCapture = function FDsBitmapCanvas_onMouseCapture(even
 MO.FDsBitmapCanvas_onMouseCaptureStop = function FDsBitmapCanvas_onMouseCaptureStop(event){
    var o = this;
    // 设置鼠标
-   RHtml.cursorSet(o._hPanel, EUiCursor.Auto);
+   MO.Window.Html.cursorSet(o._hPanel, MO.EUiCursor.Auto);
 }
 
 //==========================================================
@@ -171,7 +171,7 @@ MO.FDsBitmapCanvas_onMouseWheel = function FDsBitmapCanvas_onMouseWheel(event){
 MO.FDsBitmapCanvas_onLoaded = function FDsBitmapCanvas_onLoaded(event){
    var o = this;
    // 隐藏处理
-   MO.Console.find(FDuiDesktopConsole).hide();
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
 }
 
 //==========================================================
@@ -184,7 +184,7 @@ MO.FDsBitmapCanvas_oeResize = function FDsBitmapCanvas_oeResize(event){
    var o = this;
    o.__base.FDsCanvas.oeResize.call(o, event);
    // 设置范围
-   return EEventStatus.Stop;
+   return MO.EEventStatus.Stop;
 }
 
 //==========================================================
@@ -193,7 +193,7 @@ MO.FDsBitmapCanvas_oeResize = function FDsBitmapCanvas_oeResize(event){
 // @method
 //==========================================================
 MO.FDsBitmapCanvas_oeRefresh = function FDsBitmapCanvas_oeRefresh(p){
-   return EEventStatus.Stop;
+   return MO.EEventStatus.Stop;
 }
 
 //==========================================================
@@ -216,7 +216,7 @@ MO.FDsBitmapCanvas_loadByGuid = function FDsBitmapCanvas_loadByGuid(guid){
    var o = this;
    var size = o._graphicContext.size();
    // 显示加载进度
-   MO.Console.find(FDuiDesktopConsole).showLoading();
+   MO.Console.find(MO.FDuiDesktopConsole).showLoading();
    // 加载资源
    var resource = o._activeResource = MO.Console.find(MO.FDrBitmapConsole).query(guid);
    // 释放网格

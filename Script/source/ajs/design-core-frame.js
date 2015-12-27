@@ -302,7 +302,7 @@ MO.FDsCommonDisplayPropertyFrame_dispose = function FDsCommonDisplayPropertyFram
    o.__base.FDuiForm.dispose.call(o);
 }
 MO.FDsCommonLayerDialog = function FDsCommonLayerDialog(o){
-   o = MO.Class.inherits(this, o, FDuiDialog);
+   o = MO.Class.inherits(this, o, MO.FDuiDialog);
    o._frameName            = 'resource.common.dialog.LayerDialog';
    o._displayModeCd        = null;
    o._controlSpaceGuid     = null;

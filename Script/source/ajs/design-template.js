@@ -143,788 +143,774 @@ MO.FDsTemplateCanvasContent_dispose = function FDsTemplateCanvasContent_dispose(
   o._rotation = MO.Lang.Object.dispose(o._rotation);
    o.__base.FDsCanvas.dispose.call(o);
 }
-with(MO){
-   MO.FDsTemplateCanvasToolBar = function FDsTemplateCanvasToolBar(o){
-      o = MO.Class.inherits(this, o, FDuiToolBar);
-      o._refreshButton  = null;
-      o._saveButton     = null;
-      o._canvasModeCd   = EDsCanvasMode.Drop;
-      o.onBuilded       = FDsTemplateCanvasToolBar_onBuilded;
-      o.onModeClick     = FDsTemplateCanvasToolBar_onModeClick;
-      o.onLookClick     = FDsTemplateCanvasToolBar_onLookClick;
-      o.onPlayClick     = FDsTemplateCanvasToolBar_onPlayClick;
-      o.onViewClick     = FDsTemplateCanvasToolBar_onViewClick;
-      o.construct       = FDsTemplateCanvasToolBar_construct;
-      o.dispose         = FDsTemplateCanvasToolBar_dispose;
-      return o;
-   }
-   MO.FDsTemplateCanvasToolBar_onBuilded = function FDsTemplateCanvasToolBar_onBuilded(event){
-      var o = this;
-      o.__base.FDuiToolBar.onBuilded.call(o, event);
-      o._controlModeDrop.addClickListener(o, o.onModeClick);
-      o._controlModeSelect.addClickListener(o, o.onModeClick);
-      o._controlTranslate.addClickListener(o, o.onModeClick);
-      o._controlRotation.addClickListener(o, o.onModeClick);
-      o._controlScale.addClickListener(o, o.onModeClick);
-      o._controlLookFront.addClickListener(o, o.onLookClick);
-      o._controlLookUp.addClickListener(o, o.onLookClick);
-      o._controlLookLeft.addClickListener(o, o.onLookClick);
-      o._controlPlay.addClickListener(o, o.onPlayClick);
-      o._controlView.addClickListener(o, o.onViewClick);
-   }
-   MO.FDsTemplateCanvasToolBar_onModeClick = function FDsTemplateCanvasToolBar_onModeClick(p){
-      var o = this;
-      o._canvasModeCd = p._canvasModeCd;
-   }
-   MO.FDsTemplateCanvasToolBar_onLookClick = function FDsTemplateCanvasToolBar_onLookClick(p){
-      var o = this;
-      o._canvasModeCd = p._canvasModeCd;
-   }
-   MO.FDsTemplateCanvasToolBar_onPlayClick = function FDsTemplateCanvasToolBar_onPlayClick(p, v){
-      var o = this;
-      var c = o._frameSet._canvasContent;
-      c._rotationAble = v;
-   }
-   MO.FDsTemplateCanvasToolBar_onViewClick = function FDsTemplateCanvasToolBar_onViewClick(event){
-      var o = this;
-      var checked = event.checked;
-      var canvas = o._frameSet._canvasContent;
-      canvas.switchRotation(checked);
-   }
-   MO.FDsTemplateCanvasToolBar_construct = function FDsTemplateCanvasToolBar_construct(){
-      var o = this;
-      o.__base.FDuiToolBar.construct.call(o);
-   }
-   MO.FDsTemplateCanvasToolBar_dispose = function FDsTemplateCanvasToolBar_dispose(){
-      var o = this;
-      o.__base.FDuiToolBar.dispose.call(o);
+MO.FDsTemplateCanvasToolBar = function FDsTemplateCanvasToolBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiToolBar);
+   o._refreshButton  = null;
+   o._saveButton     = null;
+   o._canvasModeCd   = MO.EDsCanvasMode.Drop;
+   o.onBuilded       = MO.FDsTemplateCanvasToolBar_onBuilded;
+   o.onModeClick     = MO.FDsTemplateCanvasToolBar_onModeClick;
+   o.onLookClick     = MO.FDsTemplateCanvasToolBar_onLookClick;
+   o.onPlayClick     = MO.FDsTemplateCanvasToolBar_onPlayClick;
+   o.onViewClick     = MO.FDsTemplateCanvasToolBar_onViewClick;
+   o.construct       = MO.FDsTemplateCanvasToolBar_construct;
+   o.dispose         = MO.FDsTemplateCanvasToolBar_dispose;
+   return o;
+}
+MO.FDsTemplateCanvasToolBar_onBuilded = function FDsTemplateCanvasToolBar_onBuilded(event){
+   var o = this;
+   o.__base.FDuiToolBar.onBuilded.call(o, event);
+   o._controlModeDrop.addClickListener(o, o.onModeClick);
+   o._controlModeSelect.addClickListener(o, o.onModeClick);
+   o._controlTranslate.addClickListener(o, o.onModeClick);
+   o._controlRotation.addClickListener(o, o.onModeClick);
+   o._controlScale.addClickListener(o, o.onModeClick);
+   o._controlLookFront.addClickListener(o, o.onLookClick);
+   o._controlLookUp.addClickListener(o, o.onLookClick);
+   o._controlLookLeft.addClickListener(o, o.onLookClick);
+   o._controlPlay.addClickListener(o, o.onPlayClick);
+   o._controlView.addClickListener(o, o.onViewClick);
+}
+MO.FDsTemplateCanvasToolBar_onModeClick = function FDsTemplateCanvasToolBar_onModeClick(p){
+   var o = this;
+   o._canvasModeCd = p._canvasModeCd;
+}
+MO.FDsTemplateCanvasToolBar_onLookClick = function FDsTemplateCanvasToolBar_onLookClick(p){
+   var o = this;
+   o._canvasModeCd = p._canvasModeCd;
+}
+MO.FDsTemplateCanvasToolBar_onPlayClick = function FDsTemplateCanvasToolBar_onPlayClick(p, v){
+   var o = this;
+   var c = o._frameSet._canvasContent;
+   c._rotationAble = v;
+}
+MO.FDsTemplateCanvasToolBar_onViewClick = function FDsTemplateCanvasToolBar_onViewClick(event){
+   var o = this;
+   var checked = event.checked;
+   var canvas = o._frameSet._canvasContent;
+   canvas.switchRotation(checked);
+}
+MO.FDsTemplateCanvasToolBar_construct = function FDsTemplateCanvasToolBar_construct(){
+   var o = this;
+   o.__base.FDuiToolBar.construct.call(o);
+}
+MO.FDsTemplateCanvasToolBar_dispose = function FDsTemplateCanvasToolBar_dispose(){
+   var o = this;
+   o.__base.FDuiToolBar.dispose.call(o);
+}
+MO.FDsTemplateCatalogContent = function FDsTemplateCatalogContent(o){
+   o = MO.Class.inherits(this, o, MO.FDsCatalog);
+   o.onBuild        = MO.FDsTemplateCatalogContent_onBuild;
+   o.onNodeClick    = MO.FDsTemplateCatalogContent_onNodeClick;
+   o.construct      = MO.FDsTemplateCatalogContent_construct;
+   o.buildTechnique = MO.FDsTemplateCatalogContent_buildTechnique;
+   o.buildRegion    = MO.FDsTemplateCatalogContent_buildRegion;
+   o.buildMaterial  = MO.FDsTemplateCatalogContent_buildMaterial;
+   o.buildDisplay   = MO.FDsTemplateCatalogContent_buildDisplay;
+   o.buildSpace     = MO.FDsTemplateCatalogContent_buildSpace;
+   o.dispose        = MO.FDsTemplateCatalogContent_dispose;
+   return o;
+}
+MO.FDsTemplateCatalogContent_onBuild = function FDsTemplateCatalogContent_onBuild(p){
+   var o = this;
+   o.__base.FDsCatalog.onBuild.call(o, p);
+   o.loadDefine('resource.template');
+}
+MO.FDsTemplateCatalogContent_onNodeClick = function FDsTemplateCatalogContent_onNodeClick(event){
+   var o = this;
+   var node = event.node;
+   var linker = node.dataPropertyGet('linker');
+   o.selectObject(linker);
+}
+MO.FDsTemplateCatalogContent_construct = function FDsTemplateCatalogContent_construct(){
+   var o = this;
+   o.__base.FDsCatalog.construct.call(o);
+}
+MO.FDsTemplateCatalogContent_buildTechnique = function FDsTemplateCatalogContent_buildTechnique(n, p){
+   var o = this;
+   var nt = o.createNode();
+   nt.setLabel('Technique');
+   nt.setTypeCode('technique');
+   nt.dataPropertySet('linker', p);
+   n.appendNode(nt);
+}
+MO.FDsTemplateCatalogContent_buildRegion = function FDsTemplateCatalogContent_buildRegion(n, p){
+   var o = this;
+   var nr = o.createNode();
+   nr.setLabel('Region');
+   nr.setTypeCode('region');
+   nr.dataPropertySet('linker', p);
+   n.appendNode(nr);
+   var nc = o.createNode();
+   nc.setLabel('Camera');
+   nc.setTypeCode('camera');
+   nc.dataPropertySet('linker', p.camera());
+   nr.appendNode(nc);
+   var nl = o.createNode();
+   nl.setLabel('Light');
+   nl.setTypeCode('light');
+   nl.dataPropertySet('linker', p.directionalLight());
+   nr.appendNode(nl);
+}
+MO.FDsTemplateCatalogContent_buildMaterial = function FDsTemplateCatalogContent_buildMaterial(parentNode, material){
+   var o = this;
+   var resource = material.resource();
+   var node = o.createNode();
+   node.setTypeCode('Material');
+   node.setLabel(resource.code());
+   node.setNote(resource.label());
+   node.dataPropertySet('linker', material);
+   parentNode.appendNode(node);
+}
+MO.FDsTemplateCatalogContent_buildDisplay = function FDsTemplateCatalogContent_buildDisplay(parentNode, display){
+   var o = this;
+   var resource = display.resource();
+   var node = o.createNode();
+   node.setTypeCode('Display');
+   node.setLabel(MO.Lang.String.nvl(resource.code(), 'Display'));
+   node.setNote(resource.label());
+   node.dataPropertySet('linker', display);
+   parentNode.appendNode(node);
+   var renderables = display.renderables();
+   var renderableCount = renderables.count();
+   if(renderableCount > 0){
+      for(var i = 0; i < renderableCount; i++){
+         var renderable = renderables.at(i);
+         var renderableResource = renderable.resource();
+         var renderableNode = o.createNode();
+         renderableNode.setTypeCode('Renderable');
+         renderableNode.setLabel(renderableResource.code());
+         renderableNode.setNote(renderableResource.label());
+         renderableNode.dataPropertySet('linker', renderable);
+         node.appendNode(renderableNode);
+      }
    }
 }
-with(MO){
-   MO.FDsTemplateCatalogContent = function FDsTemplateCatalogContent(o){
-      o = MO.Class.inherits(this, o, FDsCatalog);
-      o.onBuild        = FDsTemplateCatalogContent_onBuild;
-      o.onNodeClick    = FDsTemplateCatalogContent_onNodeClick;
-      o.construct      = FDsTemplateCatalogContent_construct;
-      o.buildTechnique = FDsTemplateCatalogContent_buildTechnique;
-      o.buildRegion    = FDsTemplateCatalogContent_buildRegion;
-      o.buildMaterial  = FDsTemplateCatalogContent_buildMaterial;
-      o.buildDisplay   = FDsTemplateCatalogContent_buildDisplay;
-      o.buildSpace     = FDsTemplateCatalogContent_buildSpace;
-      o.dispose        = FDsTemplateCatalogContent_dispose;
-      return o;
+MO.FDsTemplateCatalogContent_buildSpace = function FDsTemplateCatalogContent_buildSpace(space){
+   var o = this;
+   o.clearAllNodes();
+   var resource = space.resource();
+   var spaceNode = o.createNode();
+   spaceNode.setTypeCode('Space');
+   spaceNode.setLabel(resource.code());
+   spaceNode.setNote(resource.label());
+   spaceNode.dataPropertySet('linker', space);
+   o.appendNode(spaceNode);
+   o.buildTechnique(spaceNode, space.technique())
+   o.buildRegion(spaceNode, space.region());
+   var materialsNode = o.createNode();
+   materialsNode.setTypeCode('Region');
+   materialsNode.setLabel('Materials');
+   spaceNode.appendNode(materialsNode);
+   var materials = space.materials();
+   var materialCount = materials.count();
+   for(var i = 0; i < materialCount; i++){
+      var material = materials.at(i);
+      o.buildMaterial(materialsNode, material);
    }
-   MO.FDsTemplateCatalogContent_onBuild = function FDsTemplateCatalogContent_onBuild(p){
-      var o = this;
-      o.__base.FDsCatalog.onBuild.call(o, p);
-      o.loadDefine('resource.template');
+   var displaysNode = o.createNode();
+   displaysNode.setTypeCode('Region');
+   displaysNode.setLabel('Displays');
+   spaceNode.appendNode(displaysNode);
+   var displays = space._sprites;
+   var displayCount = displays.count();
+   for(var i = 0; i < displayCount; i++){
+      var display = displays.at(i);
+      o.buildDisplay(displaysNode, display);
    }
-   MO.FDsTemplateCatalogContent_onNodeClick = function FDsTemplateCatalogContent_onNodeClick(event){
-      var o = this;
-      var node = event.node;
-      var linker = node.dataPropertyGet('linker');
-      o.selectObject(linker);
+   spaceNode.click();
+}
+MO.FDsTemplateCatalogContent_dispose = function FDsTemplateCatalogContent_dispose(){
+   var o = this;
+   o.__base.FDsCatalog.dispose.call(o);
+}
+MO.FDsTemplateCatalogToolBar = function FDsTemplateCatalogToolBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiToolBar);
+   o._frameName             = 'resource.template.CatalogToolBar';
+   o._activeNodeGuid        = null;
+   o._controlCreateCamera   = null;
+   o._controlCreateLayer    = null;
+   o._controlCreateSprite   = null;
+   o._controlDelete         = null;
+   o._controlFolderOpen     = null;
+   o._controlFolderClose    = null;
+   o.onBuilded              = MO.FDsTemplateCatalogToolBar_onBuilded;
+   o.onCreateCameraClick    = MO.FDsTemplateCatalogToolBar_onCreateCameraClick;
+   o.onCreateDisplayClick   = MO.FDsTemplateCatalogToolBar_onCreateDisplayClick;
+   o.onDeleteLoad           = MO.FDsTemplateCatalogToolBar_onDeleteLoad;
+   o.onDeleteExecute        = MO.FDsTemplateCatalogToolBar_onDeleteExecute;
+   o.onCopyLoad             = MO.FDsTemplateCatalogToolBar_onCopyLoad;
+   o.onCopyExecute          = MO.FDsTemplateCatalogToolBar_onCopyExecute;
+   o.onCopyClick            = MO.FDsTemplateCatalogToolBar_onCopyClick;
+   o.onDeleteClick          = MO.FDsTemplateCatalogToolBar_onDeleteClick;
+   o.onFolderOpenClick      = MO.FDsTemplateCatalogToolBar_onFolderOpenClick;
+   o.onFolderCloseClick     = MO.FDsTemplateCatalogToolBar_onFolderCloseClick;
+   o.construct              = MO.FDsTemplateCatalogToolBar_construct;
+   o.dispose                = MO.FDsTemplateCatalogToolBar_dispose;
+   return o;
+}
+MO.FDsTemplateCatalogToolBar_onBuilded = function FDsTemplateCatalogToolBar_onBuilded(p){
+   var o = this;
+   o.__base.FDuiToolBar.onBuilded.call(o, p);
+   o._controlCreateCamera.addClickListener(o, o.onCreateCameraClick);
+   o._controlCreateDisplay.addClickListener(o, o.onCreateDisplayClick);
+   o._controlCopy.addClickListener(o, o.onCopyClick);
+   o._controlDelete.addClickListener(o, o.onDeleteClick);
+   o._controlFolderOpen.addClickListener(o, o.onFolderOpenClick);
+   o._controlFolderClose.addClickListener(o, o.onFolderCloseClick);
+}
+MO.FDsTemplateCatalogToolBar_onCreateCameraClick = function FDsTemplateCatalogToolBar_onCreateCameraClick(event){
+   var o = this;
+}
+MO.FDsTemplateCatalogToolBar_onCreateDisplayClick = function FDsTemplateCatalogToolBar_onCreateDisplayClick(event){
+   var o = this;
+   var frameSet = o._frameSet;
+   var space = frameSet._activeSpace;
+   var dialog = MO.Console.find(MO.FDuiWindowConsole).find(MO.FDsCommonSpriteDialog);
+   dialog._frameSet = frameSet;
+   dialog._spaceGuid = space.resource().guid();
+   dialog.setContentCode('');
+   dialog.setContentLabel('');
+   dialog.showPosition(EUiPosition.Center);
+}
+MO.FDsTemplateCatalogToolBar_onCopyLoad = function FDsTemplateCatalogToolBar_onCopyLoad(event){
+   var o = this;
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsTemplateCatalogToolBar_onCopyExecute = function FDsTemplateCatalogToolBar_onCopyExecute(event){
+   var o = this;
+   if(event.resultCd != EResult.Success){
+      return;
    }
-   MO.FDsTemplateCatalogContent_construct = function FDsTemplateCatalogContent_construct(){
-      var o = this;
-      o.__base.FDsCatalog.construct.call(o);
+   var space = o._frameSet._activeSpace;
+   var spaceGuid = space.resource().guid();
+   MO.Console.find(FDuiDesktopConsole).showUploading();
+   var connection = MO.Console.find(MO.FDrSceneConsole).copyNode(spaceGuid, o._activeGuid);
+   connection.addLoadListener(o, o.onDeleteLoad);
+}
+MO.FDsTemplateCatalogToolBar_onCopyClick = function FDsTemplateCatalogToolBar_onCopyClick(event){
+   var o = this;
+   var catalog = o._frameSet._catalogContent;
+   var node = catalog.focusNode();
+   if(!node){
+      return MO.Console.find(MO.FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
    }
-   MO.FDsTemplateCatalogContent_buildTechnique = function FDsTemplateCatalogContent_buildTechnique(n, p){
-      var o = this;
-      var nt = o.createNode();
-      nt.setLabel('Technique');
-      nt.setTypeCode('technique');
-      nt.dataPropertySet('linker', p);
-      n.appendNode(nt);
+   o._activeNodeGuid = node.guid();
+   var sprite = null;
+   var linker = node.dataPropertyGet('linker');
+   if(MO.Class.isClass(linker, FE3dSprite)){
+      sprite = linker;
+      o._activeGuid = linker.resource().guid();
+   }else{
+      return alert('不能复制当前选中的节点.');
    }
-   MO.FDsTemplateCatalogContent_buildRegion = function FDsTemplateCatalogContent_buildRegion(n, p){
-      var o = this;
-      var nr = o.createNode();
-      nr.setLabel('Region');
-      nr.setTypeCode('region');
-      nr.dataPropertySet('linker', p);
-      n.appendNode(nr);
-      var nc = o.createNode();
-      nc.setLabel('Camera');
-      nc.setTypeCode('camera');
-      nc.dataPropertySet('linker', p.camera());
-      nr.appendNode(nc);
-      var nl = o.createNode();
-      nl.setLabel('Light');
-      nl.setTypeCode('light');
-      nl.dataPropertySet('linker', p.directionalLight());
-      nr.appendNode(nl);
+   var resource = sprite.resource();
+   var parentResource = resource.parent();
+   var displayResource = resource.clone();
+   parentResource.pushDisplay(displayResource);
+   var display = MO.Console.find(MO.FE3dInstanceConsole).create(MO.EE3dInstance.SceneDisplay);
+   display.linkGraphicContext(sprite);
+   display.loadResource(displayResource);
+   MO.Console.find(FE3dSceneConsole).loadDisplay(display);
+   var parent = sprite.parent();
+   parent.pushDisplay(display);
+}
+MO.FDsTemplateCatalogToolBar_onDeleteLoad = function FDsTemplateCatalogToolBar_onDeleteLoad(event){
+   var o = this;
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+   var catalog = o._frameSet._catalogContent;
+   var guid = o._activeNodeGuid;
+   if(guid){
+      var node = catalog.findByGuid(guid);
+      node.removeSelf();
    }
-   MO.FDsTemplateCatalogContent_buildMaterial = function FDsTemplateCatalogContent_buildMaterial(parentNode, material){
-      var o = this;
-      var resource = material.resource();
-      var node = o.createNode();
-      node.setTypeCode('Material');
-      node.setLabel(resource.code());
-      node.setNote(resource.label());
-      node.dataPropertySet('linker', material);
-      parentNode.appendNode(node);
+   o._activeNodeGuid = null;
+}
+MO.FDsTemplateCatalogToolBar_onDeleteExecute = function FDsTemplateCatalogToolBar_onDeleteExecute(event){
+   var o = this;
+   if(event.resultCd != EResult.Success){
+      return;
    }
-   MO.FDsTemplateCatalogContent_buildDisplay = function FDsTemplateCatalogContent_buildDisplay(parentNode, display){
-      var o = this;
-      var resource = display.resource();
-      var node = o.createNode();
-      node.setTypeCode('Display');
-      node.setLabel(MO.Lang.String.nvl(resource.code(), 'Display'));
-      node.setNote(resource.label());
-      node.dataPropertySet('linker', display);
-      parentNode.appendNode(node);
-      var renderables = display.renderables();
-      var renderableCount = renderables.count();
-      if(renderableCount > 0){
-         for(var i = 0; i < renderableCount; i++){
-            var renderable = renderables.at(i);
-            var renderableResource = renderable.resource();
-            var renderableNode = o.createNode();
-            renderableNode.setTypeCode('Renderable');
-            renderableNode.setLabel(renderableResource.code());
-            renderableNode.setNote(renderableResource.label());
-            renderableNode.dataPropertySet('linker', renderable);
-            node.appendNode(renderableNode);
-         }
-      }
+   var space = o._frameSet._activeSpace;
+   var spaceGuid = space.resource().guid();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
+   var connection = MO.Console.find(MO.FDrSceneConsole).deleteNode(spaceGuid, o._activeGuid);
+   connection.addLoadListener(o, o.onDeleteLoad);
+}
+MO.FDsTemplateCatalogToolBar_onDeleteClick = function FDsTemplateCatalogToolBar_onDeleteClick(event){
+   var o = this;
+   var catalog = o._frameSet._catalogContent;
+   var node = catalog.focusNode();
+   if(!node){
+      return MO.Console.find(MO.FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
    }
-   MO.FDsTemplateCatalogContent_buildSpace = function FDsTemplateCatalogContent_buildSpace(space){
-      var o = this;
-      o.clearAllNodes();
-      var resource = space.resource();
-      var spaceNode = o.createNode();
-      spaceNode.setTypeCode('Space');
-      spaceNode.setLabel(resource.code());
-      spaceNode.setNote(resource.label());
-      spaceNode.dataPropertySet('linker', space);
-      o.appendNode(spaceNode);
-      o.buildTechnique(spaceNode, space.technique())
-      o.buildRegion(spaceNode, space.region());
-      var materialsNode = o.createNode();
-      materialsNode.setTypeCode('Region');
-      materialsNode.setLabel('Materials');
-      spaceNode.appendNode(materialsNode);
-      var materials = space.materials();
-      var materialCount = materials.count();
-      for(var i = 0; i < materialCount; i++){
-         var material = materials.at(i);
-         o.buildMaterial(materialsNode, material);
-      }
-      var displaysNode = o.createNode();
-      displaysNode.setTypeCode('Region');
-      displaysNode.setLabel('Displays');
-      spaceNode.appendNode(displaysNode);
-      var displays = space._sprites;
-      var displayCount = displays.count();
-      for(var i = 0; i < displayCount; i++){
-         var display = displays.at(i);
-         o.buildDisplay(displaysNode, display);
-      }
-      spaceNode.click();
+   o._activeNodeGuid = node.guid();
+   var linker = node.dataPropertyGet('linker');
+   if(MO.Class.isClass(linker, MO.FE3dSprite)){
+      o._activeGuid = linker.resource().guid();
+   }else{
+      return alert('不能删除当前选中的节点.');
    }
-   MO.FDsTemplateCatalogContent_dispose = function FDsTemplateCatalogContent_dispose(){
-      var o = this;
-      o.__base.FDsCatalog.dispose.call(o);
+   var dialog = MO.Console.find(MO.FDuiMessageConsole).showConfirm('请确认是否删除当前节点？');
+   dialog.addResultListener(o, o.onDeleteExecute);
+}
+MO.FDsTemplateCatalogToolBar_onFolderOpenClick = function FDsTemplateCatalogToolBar_onFolderOpenClick(event){
+}
+MO.FDsTemplateCatalogToolBar_onFolderCloseClick = function FDsTemplateCatalogToolBar_onFolderCloseClick(event){
+}
+MO.FDsTemplateCatalogToolBar_construct = function FDsTemplateCatalogToolBar_construct(){
+   var o = this;
+   o.__base.FDuiToolBar.construct.call(o);
+}
+MO.FDsTemplateCatalogToolBar_dispose = function FDsTemplateCatalogToolBar_dispose(){
+   var o = this;
+   o.__base.FDuiToolBar.dispose.call(o);
+}
+MO.FDsTemplateFrameSet = function FDsTemplateFrameSet(o){
+   o = MO.Class.inherits(this, o, MO.FDsFrameSet);
+   o._frameCatalog         = null;
+   o._frameCatalogToolBar  = null;
+   o._frameCatalogContent  = null;
+   o._frameCanvas          = null;
+   o._frameCanvasToolBar   = null;
+   o._frameCanvasContent   = null;
+   o._frameProperty        = null;
+   o._framePropertyToolBar = null;
+   o._framePropertyContent = null;
+   o.onBuilded             = MO.FDsTemplateFrameSet_onBuilded;
+   o.onDataLoaded          = MO.FDsTemplateFrameSet_onDataLoaded;
+   o.onCatalogSelected     = MO.FDsTemplateFrameSet_onCatalogSelected;
+   o.construct             = MO.FDsTemplateFrameSet_construct;
+   o.loadByGuid            = MO.FDsTemplateFrameSet_loadByGuid;
+   o.loadByCode            = MO.FDsTemplateFrameSet_loadByCode;
+   o.dispose               = MO.FDsTemplateFrameSet_dispose;
+   return o;
+}
+MO.FDsTemplateFrameSet_onBuilded = function FDsTemplateFrameSet_onBuilded(event){
+   var o = this;
+   o.__base.FDsFrameSet.onBuilded.call(o, event);
+   o._frameCatalogToolBar._hPanel.className = o.styleName('ToolBar_Ground');
+   o._frameCatalogContent._hPanel.className = o.styleName('Catalog_Content');
+   o._frameCanvasToolBar._hPanel.className = o.styleName('ToolBar_Ground');
+   o._frameCanvasContent._hPanel.className = o.styleName('Canvas_Content');
+   o._framePropertyToolBar._hPanel.className = o.styleName('ToolBar_Ground');
+   o._framePropertyContent._hPanel.className = o.styleName('Property_Content');
+   var spliter = o._spliterCatalog;
+   spliter.setAlignCd(MO.EUiAlign.Left);
+   spliter.setSizeHtml(o._frameCatalog._hPanel);
+   var spliter = o._spliterProperty;
+   spliter.setAlignCd(MO.EUiAlign.Right);
+   spliter.setSizeHtml(o._frameProperty._hPanel);
+}
+MO.FDsTemplateFrameSet_onDataLoaded = function FDsTemplateFrameSet_onDataLoaded(event){
+   var o = this;
+   var canvas = event.sender;
+   var space = o._activeSpace = canvas.activeSpace();
+   o._catalogContent.buildSpace(space);
+}
+MO.FDsTemplateFrameSet_onCatalogSelected = function FDsTemplateFrameSet_onCatalogSelected(select, flag){
+   var o = this;
+   var space = o._activeSpace;
+   if(!space){
+      return;
+   }
+   o.hidePropertyFrames();
+   if(MO.Class.isClass(select, MO.FE3dSpace)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonSpacePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FG3dTechnique)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonTechniquePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dRegion)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonRegionPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dCamera)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonCameraPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FG3dDirectionalLight)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonLightPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dTemplateDisplay)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonDisplayPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FG3dMaterial)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonMaterialPropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else if(MO.Class.isClass(select, MO.FE3dRenderable)){
+      var frame = o.findPropertyFrame(MO.EDsFrame.CommonRenderablePropertyFrame);
+      frame.show();
+      frame.loadObject(space, select);
+   }else{
+      throw new MO.TError('Unknown select object type. (select={1})', select);
    }
 }
-with(MO){
-   MO.FDsTemplateCatalogToolBar = function FDsTemplateCatalogToolBar(o){
-      o = MO.Class.inherits(this, o, FDuiToolBar);
-      o._frameName             = 'resource.template.CatalogToolBar';
-      o._activeNodeGuid        = null;
-      o._controlCreateCamera   = null;
-      o._controlCreateLayer    = null;
-      o._controlCreateSprite   = null;
-      o._controlDelete         = null;
-      o._controlFolderOpen     = null;
-      o._controlFolderClose    = null;
-      o.onBuilded              = FDsTemplateCatalogToolBar_onBuilded;
-      o.onCreateCameraClick    = FDsTemplateCatalogToolBar_onCreateCameraClick;
-      o.onCreateDisplayClick   = FDsTemplateCatalogToolBar_onCreateDisplayClick;
-      o.onDeleteLoad           = FDsTemplateCatalogToolBar_onDeleteLoad;
-      o.onDeleteExecute        = FDsTemplateCatalogToolBar_onDeleteExecute;
-      o.onCopyLoad             = FDsTemplateCatalogToolBar_onCopyLoad;
-      o.onCopyExecute          = FDsTemplateCatalogToolBar_onCopyExecute;
-      o.onCopyClick            = FDsTemplateCatalogToolBar_onCopyClick;
-      o.onDeleteClick          = FDsTemplateCatalogToolBar_onDeleteClick;
-      o.onFolderOpenClick      = FDsTemplateCatalogToolBar_onFolderOpenClick;
-      o.onFolderCloseClick     = FDsTemplateCatalogToolBar_onFolderCloseClick;
-      o.construct              = FDsTemplateCatalogToolBar_construct;
-      o.dispose                = FDsTemplateCatalogToolBar_dispose;
-      return o;
-   }
-   MO.FDsTemplateCatalogToolBar_onBuilded = function FDsTemplateCatalogToolBar_onBuilded(p){
-      var o = this;
-      o.__base.FDuiToolBar.onBuilded.call(o, p);
-      o._controlCreateCamera.addClickListener(o, o.onCreateCameraClick);
-      o._controlCreateDisplay.addClickListener(o, o.onCreateDisplayClick);
-      o._controlCopy.addClickListener(o, o.onCopyClick);
-      o._controlDelete.addClickListener(o, o.onDeleteClick);
-      o._controlFolderOpen.addClickListener(o, o.onFolderOpenClick);
-      o._controlFolderClose.addClickListener(o, o.onFolderCloseClick);
-   }
-   MO.FDsTemplateCatalogToolBar_onCreateCameraClick = function FDsTemplateCatalogToolBar_onCreateCameraClick(event){
-      var o = this;
-   }
-   MO.FDsTemplateCatalogToolBar_onCreateDisplayClick = function FDsTemplateCatalogToolBar_onCreateDisplayClick(event){
-      var o = this;
-      var frameSet = o._frameSet;
-      var space = frameSet._activeSpace;
-      var dialog = MO.Console.find(FDuiWindowConsole).find(FDsCommonSpriteDialog);
-      dialog._frameSet = frameSet;
-      dialog._spaceGuid = space.resource().guid();
-      dialog.setContentCode('');
-      dialog.setContentLabel('');
-      dialog.showPosition(EUiPosition.Center);
-   }
-   MO.FDsTemplateCatalogToolBar_onCopyLoad = function FDsTemplateCatalogToolBar_onCopyLoad(event){
-      var o = this;
-      MO.Console.find(FDuiDesktopConsole).hide();
-   }
-   MO.FDsTemplateCatalogToolBar_onCopyExecute = function FDsTemplateCatalogToolBar_onCopyExecute(event){
-      var o = this;
-      if(event.resultCd != EResult.Success){
-         return;
+MO.FDsTemplateFrameSet_construct = function FDsTemplateFrameSet_construct(){
+   var o = this;
+   o.__base.FDsFrameSet.construct.call(o);
+}
+MO.FDsTemplateFrameSet_loadByGuid = function FDsTemplateFrameSet_loadByGuid(guid){
+   var o = this;
+   o._activeGuid = guid;
+   o._canvasContent.loadByGuid(guid);
+}
+MO.FDsTemplateFrameSet_loadByCode = function FDsTemplateFrameSet_loadByCode(code){
+   var o = this;
+   o._activeCode = code;
+   o._canvasContent.loadByCode(code);
+}
+MO.FDsTemplateFrameSet_dispose = function FDsTemplateFrameSet_dispose(){
+   var o = this;
+   o.__base.FDsFrameSet.dispose.call(o);
+}
+MO.FDsTemplateMenuBar = function FDsTemplateMenuBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiMenuBar);
+   o._controlSave           = null;
+   o._controlCapture        = null;
+   o._controlSelectMaterial = null;
+   o._controlCreateDisplay  = null;
+   o._controlDelete         = null;
+   o.onSaveLoad            = MO.FDsTemplateMenuBar_onSaveLoad;
+   o.onSaveClick           = MO.FDsTemplateMenuBar_onSaveClick;
+   o.onCaptureLoad         = MO.FDsTemplateMenuBar_onCaptureLoad;
+   o.onCaptureClick        = MO.FDsTemplateMenuBar_onCaptureClick;
+   o.onSelectMaterialClick = MO.FDsTemplateMenuBar_onSelectMaterialClick;
+   o.onCreateDisplayClick  = MO.FDsTemplateMenuBar_onCreateDisplayClick;
+   o.onDeleteClick         = MO.FDsTemplateMenuBar_onDeleteClick;
+   o.construct             = MO.FDsTemplateMenuBar_construct;
+   o.dispose               = MO.FDsTemplateMenuBar_dispose;
+   return o;
+}
+MO.FDsTemplateMenuBar_onSaveLoad = function FDsTemplateMenuBar_onSaveLoad(event){
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsTemplateMenuBar_onSaveClick = function FDsTemplateMenuBar_onSaveClick(p){
+   var o = this;
+   var space = o._frameSet._activeSpace;
+   var resource = space.resource();
+   MO.Console.find(FDuiDesktopConsole).showUploading();
+   var xconfig = new MO.TXmlNode();
+   resource.saveConfig(xconfig);
+   var connection = MO.Console.find(MO.FDrTemplateConsole).update(xconfig);
+   connection.addLoadListener(o, o.onSaveLoad);
+}
+MO.FDsTemplateMenuBar_onCaptureLoad = function FDsTemplateMenuBar_onCaptureLoad(event){
+   MO.Console.find(MO.FDuiDesktopConsole).hide();
+}
+MO.FDsTemplateMenuBar_onCaptureClick = function FDsTemplateMenuBar_onCaptureClick(event){
+   var o = this;
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
+   var canvas = o._frameSet._canvasContent;
+   var connection = canvas.capture();
+   connection.addLoadListener(o, o.onCaptureLoad);
+}
+MO.FDsTemplateMenuBar_onSelectMaterialClick = function FDsTemplateMenuBar_onSelectMaterialClick(event){
+   var o = this;
+   var frameSet = o._frameSet;
+   var space = frameSet._activeSpace;
+   var dialog = MO.Console.find(MO.FDuiWindowConsole).find(MO.FDsCommonMaterialDialog);
+   dialog._frameSet = frameSet;
+   dialog._spaceGuid = space.resource().guid();
+   dialog.setSpace(space);
+   dialog.setContentCode('');
+   dialog.setContentLabel('');
+   dialog.showPosition(MO.EUiPosition.Center);
+}
+MO.FDsTemplateMenuBar_onCreateDisplayClick = function FDsTemplateMenuBar_onCreateDisplayClick(event){
+   var o = this;
+   var frameSet = o._frameSet;
+   var space = frameSet._activeSpace;
+   var dialog = MO.Console.find(MO.FDuiWindowConsole).find(MO.FDsCommonDisplayDialog);
+   dialog._frameSet = frameSet;
+   dialog._spaceGuid = space.resource().guid();
+   dialog.setSpace(space);
+   dialog.setContentCode('');
+   dialog.setContentLabel('');
+   dialog.showPosition(MO.EUiPosition.Center);
+}
+MO.FDsTemplateMenuBar_onDeleteClick = function FDsTemplateMenuBar_onDeleteClick(event){
+   var o = this;
+   var frameSet = o._frameSet;
+   var space = frameSet._activeSpace;
+   var dialog = MO.Console.find(MO.FDuiWindowConsole).find(MO.FDsCommonDisplayDialog);
+   dialog._frameSet = frameSet;
+   dialog._spaceGuid = space.resource().guid();
+   dialog.setContentCode('');
+   dialog.setContentLabel('');
+   dialog.showPosition(MO.EUiPosition.Center);
+}
+MO.FDsTemplateMenuBar_construct = function FDsTemplateMenuBar_construct(){
+   var o = this;
+   o.__base.FDuiMenuBar.construct.call(o);
+}
+MO.FDsTemplateMenuBar_dispose = function FDsTemplateMenuBar_dispose(){
+   var o = this;
+   o.__base.FDuiMenuBar.dispose.call(o);
+}
+MO.FDsTemplateToolBar = function FDsTemplateToolBar(o){
+   o = MO.Class.inherits(this, o, MO.FDuiToolBar);
+   o._refreshButton = null;
+   o._saveButton    = null;
+   o.onBuild        = MO.FDsTemplateToolBar_onBuild;
+   o.onRefreshClick = MO.FDsTemplateToolBar_onRefreshClick;
+   o.onSaveClick    = MO.FDsTemplateToolBar_onSaveClick;
+   o.construct      = MO.FDsTemplateToolBar_construct;
+   o.dispose        = MO.FDsTemplateToolBar_dispose;
+   return o;
+}
+MO.FDsTemplateToolBar_onBuild = function FDsTemplateToolBar_onBuild(p){
+   var o = this;
+   o.__base.FDuiToolBar.onBuild.call(o, p);
+   var b = o._refreshButton  = MO.Class.create(MO.FDuiToolButton);
+   b.setLabel('刷新');
+   b.setIcon('design3d.tools.refresh');
+   b.build(p);
+   b.addClickListener(o, o.onRefreshClick);
+   o.push(b);
+   var b = o._saveButton = MO.Class.create(MO.FDuiToolButton);
+   b.setLabel('保存');
+   b.setIcon('design3d.tools.save');
+   b.build(p);
+   b.addClickListener(o, o.onSaveClick);
+   o.push(b);
+}
+MO.FDsTemplateToolBar_onRefreshClick = function FDsTemplateToolBar_onRefreshClick(p){
+   var o = this;
+}
+MO.FDsTemplateToolBar_onSaveClick = function FDsTemplateToolBar_onSaveClick(p){
+   var o = this;
+   var t = o._workspace._activeTemplate;
+   var rt = t._resource;
+   var ts = rt.themes();
+   var tc = ts.count();
+   var xr = new TXmlNode();
+   for(var ti = 0; ti < tc; ti++){
+      var t = ts.get(ti);
+      var ms = t.materials();
+      var mc = ms.count();
+      for(var mi = 0; mi < mc; mi++){
+         var m = ms.value(mi);
+         m.saveConfig(xr.create('Material'));
       }
-      var space = o._frameSet._activeSpace;
-      var spaceGuid = space.resource().guid();
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var connection = MO.Console.find(FDrSceneConsole).copyNode(spaceGuid, o._activeGuid);
-      connection.addLoadListener(o, o.onDeleteLoad);
    }
-   MO.FDsTemplateCatalogToolBar_onCopyClick = function FDsTemplateCatalogToolBar_onCopyClick(event){
-      var o = this;
-      var catalog = o._frameSet._catalogContent;
-      var node = catalog.focusNode();
-      if(!node){
-         return MO.Console.find(FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
-      }
-      o._activeNodeGuid = node.guid();
-      var sprite = null;
-      var linker = node.dataPropertyGet('linker');
-      if(MO.Class.isClass(linker, FE3dSprite)){
-         sprite = linker;
-         o._activeGuid = linker.resource().guid();
-      }else{
-         return alert('不能复制当前选中的节点.');
-      }
-      var resource = sprite.resource();
-      var parentResource = resource.parent();
-      var displayResource = resource.clone();
-      parentResource.pushDisplay(displayResource);
-      var display = MO.Console.find(FE3dInstanceConsole).create(EE3dInstance.SceneDisplay);
-      display.linkGraphicContext(sprite);
-      display.loadResource(displayResource);
-      MO.Console.find(FE3dSceneConsole).loadDisplay(display);
-      var parent = sprite.parent();
-      parent.pushDisplay(display);
+   MO.Console.find(MO.FE3sTemplateConsole).update(xr);
+}
+MO.FDsTemplateToolBar_construct = function FDsTemplateToolBar_construct(){
+   var o = this;
+   o.__base.FDuiToolBar.construct.call(o);
+}
+MO.FDsTemplateToolBar_dispose = function FDsTemplateToolBar_dispose(){
+   var o = this;
+   o.__base.FDuiToolBar.dispose.call(o);
+}
+MO.FDsTemplateWorkspace = function FDsTemplateWorkspace(o){
+   o = MO.Class.inherits(this, o, FDuiWorkspace);
+   o._styleToolbarGround    = MO.Class.register(o, new MO.AStyle('_styleToolbarGround', 'Toolbar_Ground'));
+   o._styleStatusbarGround  = MO.Class.register(o, new MO.AStyle('_styleStatusbarGround', 'Statusbar_Ground'));
+   o._styleCatalogGround    = MO.Class.register(o, new MO.AStyle('_styleCatalogGround', 'Catalog_Ground'));
+   o._styleWorkspaceGround  = MO.Class.register(o, new MO.AStyle('_styleWorkspaceGround', 'Workspace_Ground'));
+   o._stylePropertyGround   = MO.Class.register(o, new MO.AStyle('_stylePropertyGround', 'Property_Ground'));
+   o._framesetMain          = null;
+   o._framesetBody          = null;
+   o._frameToolBar          = null;
+   o._frameBody             = null;
+   o._frameProperty         = null;
+   o._frameCatalog          = null;
+   o._frameWorkspace        = null;
+   o._frameStatusBar        = null;
+   o._templatePropertyFrame = null;
+   o._themePropertyFrame    = null;
+   o._materialPropertyFrame = null;
+   o._displayPropertyFrame  = null;
+   o.onBuild                = MO.FDsTemplateWorkspace_onBuild;
+   o.onTemplateLoad         = MO.FDsTemplateWorkspace_onTemplateLoad;
+   o.onCatalogSelected      = MO.FDsTemplateWorkspace_onCatalogSelected;
+   o.construct              = MO.FDsTemplateWorkspace_construct;
+   o.templatePropertyFrame  = MO.FDsTemplateWorkspace_templatePropertyFrame;
+   o.themePropertyFrame     = MO.FDsTemplateWorkspace_themePropertyFrame;
+   o.materialPropertyFrame  = MO.FDsTemplateWorkspace_materialPropertyFrame;
+   o.displayPropertyFrame   = MO.FDsTemplateWorkspace_displayPropertyFrame;
+   o.loadTemplate           = MO.FDsTemplateWorkspace_loadTemplate;
+   o.dispose                = MO.FDsTemplateWorkspace_dispose;
+   return o;
+}
+MO.FDsTemplateWorkspace_onBuild = function FDsTemplateWorkspace_onBuild(p){
+   var o = this;
+   o.__base.FDuiWorkspace.onBuild.call(o, p);
+   o._hPanel.style.width = '100%';
+   o._hPanel.style.height = '100%';
+   var fs = o._framesetMain = MO.Class.create(MO.FDuiFrameSet);
+   fs.build(p);
+   var f = o._frameToolBar = MO.Class.create(MO.FDuiFramePage);
+   f.setHeight(26);
+   f.build(p);
+   f._hPanel.className = o.styleName('Toolbar_Ground');
+   fs.appendFrame(f);
+   var f = o._frameBody = MO.Class.create(MO.FDuiFramePage);
+   f.build(p);
+   fs.appendFrame(f);
+   var f = o._frameStatusBar = MO.Class.create(MO.FDuiFramePage);
+   f.setHeight(18);
+   f.build(p);
+   f._hPanel.className = o.styleName('Statusbar_Ground');
+   fs.appendFrame(f);
+   fs.setPanel(o._hPanel);
+   var fs = MO.Class.create(MO.FDuiFrameSet);
+   fs._directionCd = MO.EUiDirection.Horizontal;
+   fs.build(p);
+   var f = o._frameCatalog = MO.Class.create(MO.FDuiFramePage);
+   f.setWidth(400);
+   f.build(p);
+   f._hPanel.className = o.styleName('Catalog_Ground');
+   fs.appendFrame(f);
+   var sp1 = fs.appendSpliter();
+   var f = o._frameWorkspace = MO.Class.create(MO.FDuiFramePage);
+   f.build(p);
+   f._hPanel.className = o.styleName('Workspace_Ground');
+   fs.appendFrame(f);
+   var sp2 = fs.appendSpliter();
+   var f = o._frameProperty = MO.Class.create(MO.FDuiFramePage);
+   f.setWidth(240);
+   f.build(p);
+   f._hPanel.className = o.styleName('Property_Ground');
+   fs.appendFrame(f);
+   fs.setPanel(o._frameBody._hPanel);
+   sp1._alignCd = EUiAlign.Left;
+   sp1._hSize = o._frameCatalog._hPanel;
+   sp2._alignCd = EUiAlign.Right;
+   sp2._hSize = o._frameStatusBar._hPanel;
+   var c = o._catalog = MO.Class.create(MO.FDsTemplateCatalog);
+   c._workspace = o;
+   c.build(p);
+   c.setPanel(o._frameCatalog._hPanel);
+   c.addSelectedListener(o, o.onCatalogSelected);
+   o.push(c);
+   var c = o._toolbar = MO.Class.create(MO.FDsTemplateToolBar);
+   c._workspace = o;
+   c.build(p);
+   c.setPanel(o._frameToolBar._hPanel);
+   o.push(c);
+   var hf = MO.Window.Builder.appendTable(o._frameWorkspace._hPanel);
+   hf.style.width = '100%';
+   hf.style.height = '100%';
+   var hc = MO.Window.Builder.appendTableRowCell(hf);
+   hc.height = 20;
+   var c = o._canvasToolbar = MO.Class.create(MO.FDsTemplateCanvasToolBar);
+   c._workspace = o;
+   c.build(p);
+   c.setPanel(hc);
+   o.push(c);
+   var hc = MO.Window.Builder.appendTableRowCell(hf);
+   hc.vAlign = 'top';
+   var c = o._canvas = MO.Class.create(MO.FDsTemplateCanvas);
+   c.addLoadListener(o, o.onTemplateLoad);
+   c._workspace = o;
+   c._toolbar = o._canvasToolbar;
+   c.build(p);
+   c.setPanel(hc);
+   o.push(c);
+}
+MO.FDsTemplateWorkspace_onTemplateLoad = function FDsTemplateWorkspace_onTemplateLoad(p){
+   var o = this;
+   var t = o._activeTemplate = p._activeTemplate;
+   o._catalog.buildTemplate(t);
+   o.onCatalogSelected(t);
+}
+MO.FDsTemplateWorkspace_onCatalogSelected = function FDsTemplateWorkspace_onCatalogSelected(p){
+   var o = this;
+   var t = o._activeTemplate;
+   if(o._templatePropertyFrame){
+      o._templatePropertyFrame.hide();
    }
-   MO.FDsTemplateCatalogToolBar_onDeleteLoad = function FDsTemplateCatalogToolBar_onDeleteLoad(event){
-      var o = this;
-      MO.Console.find(FDuiDesktopConsole).hide();
-      var catalog = o._frameSet._catalogContent;
-      var guid = o._activeNodeGuid;
-      if(guid){
-         var node = catalog.findByGuid(guid);
-         node.removeSelf();
-      }
-      o._activeNodeGuid = null;
+   if(o._themePropertyFrame){
+      o._themePropertyFrame.hide();
    }
-   MO.FDsTemplateCatalogToolBar_onDeleteExecute = function FDsTemplateCatalogToolBar_onDeleteExecute(event){
-      var o = this;
-      if(event.resultCd != EResult.Success){
-         return;
-      }
-      var space = o._frameSet._activeSpace;
-      var spaceGuid = space.resource().guid();
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var connection = MO.Console.find(FDrSceneConsole).deleteNode(spaceGuid, o._activeGuid);
-      connection.addLoadListener(o, o.onDeleteLoad);
+   if(o._materialPropertyFrame){
+      o._materialPropertyFrame.hide();
    }
-   MO.FDsTemplateCatalogToolBar_onDeleteClick = function FDsTemplateCatalogToolBar_onDeleteClick(event){
-      var o = this;
-      var catalog = o._frameSet._catalogContent;
-      var node = catalog.focusNode();
-      if(!node){
-         return MO.Console.find(FDuiMessageConsole).showInfo('请选中节点后，再点击操作。');
-      }
-      o._activeNodeGuid = node.guid();
-      var linker = node.dataPropertyGet('linker');
-      if(MO.Class.isClass(linker, FE3dSprite)){
-         o._activeGuid = linker.resource().guid();
-      }else{
-         return alert('不能删除当前选中的节点.');
-      }
-      var dialog = MO.Console.find(FDuiMessageConsole).showConfirm('请确认是否删除当前节点？');
-      dialog.addResultListener(o, o.onDeleteExecute);
+   if(o._displayPropertyFrame){
+      o._displayPropertyFrame.hide();
    }
-   MO.FDsTemplateCatalogToolBar_onFolderOpenClick = function FDsTemplateCatalogToolBar_onFolderOpenClick(event){
-   }
-   MO.FDsTemplateCatalogToolBar_onFolderCloseClick = function FDsTemplateCatalogToolBar_onFolderCloseClick(event){
-   }
-   MO.FDsTemplateCatalogToolBar_construct = function FDsTemplateCatalogToolBar_construct(){
-      var o = this;
-      o.__base.FDuiToolBar.construct.call(o);
-   }
-   MO.FDsTemplateCatalogToolBar_dispose = function FDsTemplateCatalogToolBar_dispose(){
-      var o = this;
-      o.__base.FDuiToolBar.dispose.call(o);
+   if(MO.Class.isClass(p, MO.FE3dTemplate)){
+      var f = o.templatePropertyFrame();
+      f.show();
+      f.loadObject(t);
+   }else if(MO.Class.isClass(p, MO.FE3sTemplateTheme)){
+      var f = o.themePropertyFrame();
+      f.show();
+      f.loadObject(t, p);
+   }else if(MO.Class.isClass(p, MO.FE3sMaterial)){
+      var f = o.materialPropertyFrame();
+      f.show();
+      f.loadObject(t, p);
+   }else if(MO.Class.isClass(p, MO.MG3dRenderable)){
+      var f = o.displayPropertyFrame();
+      f.show();
+      f.loadObject(t, p);
+      o._canvas.selectRenderable(p);
+   }else{
+      throw new MO.TError('Unknown select object type. (value={1})', p);
    }
 }
-with(MO){
-   MO.FDsTemplateFrameSet = function FDsTemplateFrameSet(o){
-      o = MO.Class.inherits(this, o, FDsFrameSet);
-      o._frameCatalog         = null;
-      o._frameCatalogToolBar  = null;
-      o._frameCatalogContent  = null;
-      o._frameCanvas          = null;
-      o._frameCanvasToolBar   = null;
-      o._frameCanvasContent   = null;
-      o._frameProperty        = null;
-      o._framePropertyToolBar = null;
-      o._framePropertyContent = null;
-      o.onBuilded             = FDsTemplateFrameSet_onBuilded;
-      o.onDataLoaded          = FDsTemplateFrameSet_onDataLoaded;
-      o.onCatalogSelected     = FDsTemplateFrameSet_onCatalogSelected;
-      o.construct             = FDsTemplateFrameSet_construct;
-      o.loadByGuid            = FDsTemplateFrameSet_loadByGuid;
-      o.loadByCode            = FDsTemplateFrameSet_loadByCode;
-      o.dispose               = FDsTemplateFrameSet_dispose;
-      return o;
-   }
-   MO.FDsTemplateFrameSet_onBuilded = function FDsTemplateFrameSet_onBuilded(event){
-      var o = this;
-      o.__base.FDsFrameSet.onBuilded.call(o, event);
-      o._frameCatalogToolBar._hPanel.className = o.styleName('ToolBar_Ground');
-      o._frameCatalogContent._hPanel.className = o.styleName('Catalog_Content');
-      o._frameCanvasToolBar._hPanel.className = o.styleName('ToolBar_Ground');
-      o._frameCanvasContent._hPanel.className = o.styleName('Canvas_Content');
-      o._framePropertyToolBar._hPanel.className = o.styleName('ToolBar_Ground');
-      o._framePropertyContent._hPanel.className = o.styleName('Property_Content');
-      var spliter = o._spliterCatalog;
-      spliter.setAlignCd(EUiAlign.Left);
-      spliter.setSizeHtml(o._frameCatalog._hPanel);
-      var spliter = o._spliterProperty;
-      spliter.setAlignCd(EUiAlign.Right);
-      spliter.setSizeHtml(o._frameProperty._hPanel);
-   }
-   MO.FDsTemplateFrameSet_onDataLoaded = function FDsTemplateFrameSet_onDataLoaded(event){
-      var o = this;
-      var canvas = event.sender;
-      var space = o._activeSpace = canvas.activeSpace();
-      o._catalogContent.buildSpace(space);
-   }
-   MO.FDsTemplateFrameSet_onCatalogSelected = function FDsTemplateFrameSet_onCatalogSelected(select, flag){
-      var o = this;
-      var space = o._activeSpace;
-      if(!space){
-         return;
-      }
-      o.hidePropertyFrames();
-      if(MO.Class.isClass(select, FE3dSpace)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonSpacePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FG3dTechnique)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonTechniquePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dRegion)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonRegionPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dCamera)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonCameraPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FG3dDirectionalLight)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonLightPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dTemplateDisplay)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonDisplayPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FG3dMaterial)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonMaterialPropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else if(MO.Class.isClass(select, FE3dRenderable)){
-         var frame = o.findPropertyFrame(EDsFrame.CommonRenderablePropertyFrame);
-         frame.show();
-         frame.loadObject(space, select);
-      }else{
-         throw new TError('Unknown select object type. (select={1})', select);
-      }
-   }
-   MO.FDsTemplateFrameSet_construct = function FDsTemplateFrameSet_construct(){
-      var o = this;
-      o.__base.FDsFrameSet.construct.call(o);
-   }
-   MO.FDsTemplateFrameSet_loadByGuid = function FDsTemplateFrameSet_loadByGuid(guid){
-      var o = this;
-      o._activeGuid = guid;
-      o._canvasContent.loadByGuid(guid);
-   }
-   MO.FDsTemplateFrameSet_loadByCode = function FDsTemplateFrameSet_loadByCode(code){
-      var o = this;
-      o._activeCode = code;
-      o._canvasContent.loadByCode(code);
-   }
-   MO.FDsTemplateFrameSet_dispose = function FDsTemplateFrameSet_dispose(){
-      var o = this;
-      o.__base.FDsFrameSet.dispose.call(o);
-   }
+MO.FDsTemplateWorkspace_construct = function FDsTemplateWorkspace_construct(){
+   var o = this;
+   o.__base.FDuiWorkspace.construct.call(o);
 }
-with(MO){
-   MO.FDsTemplateMenuBar = function FDsTemplateMenuBar(o){
-      o = MO.Class.inherits(this, o, FDuiMenuBar);
-      o._controlSave           = null;
-      o._controlCapture        = null;
-      o._controlSelectMaterial = null;
-      o._controlCreateDisplay  = null;
-      o._controlDelete         = null;
-      o.onSaveLoad            = FDsTemplateMenuBar_onSaveLoad;
-      o.onSaveClick           = FDsTemplateMenuBar_onSaveClick;
-      o.onCaptureLoad         = FDsTemplateMenuBar_onCaptureLoad;
-      o.onCaptureClick        = FDsTemplateMenuBar_onCaptureClick;
-      o.onSelectMaterialClick = FDsTemplateMenuBar_onSelectMaterialClick;
-      o.onCreateDisplayClick  = FDsTemplateMenuBar_onCreateDisplayClick;
-      o.onDeleteClick         = FDsTemplateMenuBar_onDeleteClick;
-      o.construct             = FDsTemplateMenuBar_construct;
-      o.dispose               = FDsTemplateMenuBar_dispose;
-      return o;
+MO.FDsTemplateWorkspace_templatePropertyFrame = function FDsTemplateWorkspace_templatePropertyFrame(){
+   var o = this;
+   var f = o._templatePropertyFrame;
+   if(!f){
+      f = o._templatePropertyFrame = MO.Class.create(MO.FDsTemplatePropertyFrame);
+      f._workspace = o;
+      f.buildDefine(o._hPanel);
+      f.setPanel(o._frameProperty._hPanel);
    }
-   MO.FDsTemplateMenuBar_onSaveLoad = function FDsTemplateMenuBar_onSaveLoad(event){
-      MO.Console.find(FDuiDesktopConsole).hide();
-   }
-   MO.FDsTemplateMenuBar_onSaveClick = function FDsTemplateMenuBar_onSaveClick(p){
-      var o = this;
-      var space = o._frameSet._activeSpace;
-      var resource = space.resource();
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var xconfig = new TXmlNode();
-      resource.saveConfig(xconfig);
-      var connection = MO.Console.find(FDrTemplateConsole).update(xconfig);
-      connection.addLoadListener(o, o.onSaveLoad);
-   }
-   MO.FDsTemplateMenuBar_onCaptureLoad = function FDsTemplateMenuBar_onCaptureLoad(event){
-      MO.Console.find(FDuiDesktopConsole).hide();
-   }
-   MO.FDsTemplateMenuBar_onCaptureClick = function FDsTemplateMenuBar_onCaptureClick(event){
-      var o = this;
-      MO.Console.find(FDuiDesktopConsole).showUploading();
-      var canvas = o._frameSet._canvasContent;
-      var connection = canvas.capture();
-      connection.addLoadListener(o, o.onCaptureLoad);
-   }
-   MO.FDsTemplateMenuBar_onSelectMaterialClick = function FDsTemplateMenuBar_onSelectMaterialClick(event){
-      var o = this;
-      var frameSet = o._frameSet;
-      var space = frameSet._activeSpace;
-      var dialog = MO.Console.find(FDuiWindowConsole).find(FDsCommonMaterialDialog);
-      dialog._frameSet = frameSet;
-      dialog._spaceGuid = space.resource().guid();
-      dialog.setSpace(space);
-      dialog.setContentCode('');
-      dialog.setContentLabel('');
-      dialog.showPosition(EUiPosition.Center);
-   }
-   MO.FDsTemplateMenuBar_onCreateDisplayClick = function FDsTemplateMenuBar_onCreateDisplayClick(event){
-      var o = this;
-      var frameSet = o._frameSet;
-      var space = frameSet._activeSpace;
-      var dialog = MO.Console.find(FDuiWindowConsole).find(FDsCommonDisplayDialog);
-      dialog._frameSet = frameSet;
-      dialog._spaceGuid = space.resource().guid();
-      dialog.setSpace(space);
-      dialog.setContentCode('');
-      dialog.setContentLabel('');
-      dialog.showPosition(EUiPosition.Center);
-   }
-   MO.FDsTemplateMenuBar_onDeleteClick = function FDsTemplateMenuBar_onDeleteClick(event){
-      var o = this;
-      var frameSet = o._frameSet;
-      var space = frameSet._activeSpace;
-      var dialog = MO.Console.find(FDuiWindowConsole).find(FDsCommonDisplayDialog);
-      dialog._frameSet = frameSet;
-      dialog._spaceGuid = space.resource().guid();
-      dialog.setContentCode('');
-      dialog.setContentLabel('');
-      dialog.showPosition(EUiPosition.Center);
-   }
-   MO.FDsTemplateMenuBar_construct = function FDsTemplateMenuBar_construct(){
-      var o = this;
-      o.__base.FDuiMenuBar.construct.call(o);
-   }
-   MO.FDsTemplateMenuBar_dispose = function FDsTemplateMenuBar_dispose(){
-      var o = this;
-      o.__base.FDuiMenuBar.dispose.call(o);
-   }
+   return f;
 }
-with(MO){
-   MO.FDsTemplateToolBar = function FDsTemplateToolBar(o){
-      o = MO.Class.inherits(this, o, FDuiToolBar);
-      o._refreshButton = null;
-      o._saveButton    = null;
-      o.onBuild        = FDsTemplateToolBar_onBuild;
-      o.onRefreshClick = FDsTemplateToolBar_onRefreshClick;
-      o.onSaveClick    = FDsTemplateToolBar_onSaveClick;
-      o.construct      = FDsTemplateToolBar_construct;
-      o.dispose        = FDsTemplateToolBar_dispose;
-      return o;
+MO.FDsTemplateWorkspace_themePropertyFrame = function FDsTemplateWorkspace_themePropertyFrame(){
+   var o = this;
+   var f = o._themePropertyFrame;
+   if(!f){
+      var f = o._themePropertyFrame = MO.Class.create(MO.FDsTemplateThemePropertyFrame);
+      f._workspace = o;
+      f.buildDefine(o._hPanel);
+      f.setPanel(o._frameProperty._hPanel);
    }
-   MO.FDsTemplateToolBar_onBuild = function FDsTemplateToolBar_onBuild(p){
-      var o = this;
-      o.__base.FDuiToolBar.onBuild.call(o, p);
-      var b = o._refreshButton  = MO.Class.create(FDuiToolButton);
-      b.setLabel('刷新');
-      b.setIcon('design3d.tools.refresh');
-      b.build(p);
-      b.addClickListener(o, o.onRefreshClick);
-      o.push(b);
-      var b = o._saveButton = MO.Class.create(FDuiToolButton);
-      b.setLabel('保存');
-      b.setIcon('design3d.tools.save');
-      b.build(p);
-      b.addClickListener(o, o.onSaveClick);
-      o.push(b);
-   }
-   MO.FDsTemplateToolBar_onRefreshClick = function FDsTemplateToolBar_onRefreshClick(p){
-      var o = this;
-   }
-   MO.FDsTemplateToolBar_onSaveClick = function FDsTemplateToolBar_onSaveClick(p){
-      var o = this;
-      var t = o._workspace._activeTemplate;
-      var rt = t._resource;
-      var ts = rt.themes();
-      var tc = ts.count();
-      var xr = new TXmlNode();
-      for(var ti = 0; ti < tc; ti++){
-         var t = ts.get(ti);
-         var ms = t.materials();
-         var mc = ms.count();
-         for(var mi = 0; mi < mc; mi++){
-            var m = ms.value(mi);
-            m.saveConfig(xr.create('Material'));
-         }
-      }
-      MO.Console.find(FE3sTemplateConsole).update(xr);
-   }
-   MO.FDsTemplateToolBar_construct = function FDsTemplateToolBar_construct(){
-      var o = this;
-      o.__base.FDuiToolBar.construct.call(o);
-   }
-   MO.FDsTemplateToolBar_dispose = function FDsTemplateToolBar_dispose(){
-      var o = this;
-      o.__base.FDuiToolBar.dispose.call(o);
-   }
+   return f;
 }
-with(MO){
-   MO.FDsTemplateWorkspace = function FDsTemplateWorkspace(o){
-      o = MO.Class.inherits(this, o, FDuiWorkspace);
-      o._styleToolbarGround    = MO.Class.register(o, new MO.AStyle('_styleToolbarGround', 'Toolbar_Ground'));
-      o._styleStatusbarGround  = MO.Class.register(o, new MO.AStyle('_styleStatusbarGround', 'Statusbar_Ground'));
-      o._styleCatalogGround    = MO.Class.register(o, new MO.AStyle('_styleCatalogGround', 'Catalog_Ground'));
-      o._styleWorkspaceGround  = MO.Class.register(o, new MO.AStyle('_styleWorkspaceGround', 'Workspace_Ground'));
-      o._stylePropertyGround   = MO.Class.register(o, new MO.AStyle('_stylePropertyGround', 'Property_Ground'));
-      o._framesetMain          = null;
-      o._framesetBody          = null;
-      o._frameToolBar          = null;
-      o._frameBody             = null;
-      o._frameProperty         = null;
-      o._frameCatalog          = null;
-      o._frameWorkspace        = null;
-      o._frameStatusBar        = null;
-      o._templatePropertyFrame = null;
-      o._themePropertyFrame    = null;
-      o._materialPropertyFrame = null;
-      o._displayPropertyFrame  = null;
-      o.onBuild                = FDsTemplateWorkspace_onBuild;
-      o.onTemplateLoad         = FDsTemplateWorkspace_onTemplateLoad;
-      o.onCatalogSelected      = FDsTemplateWorkspace_onCatalogSelected;
-      o.construct              = FDsTemplateWorkspace_construct;
-      o.templatePropertyFrame  = FDsTemplateWorkspace_templatePropertyFrame;
-      o.themePropertyFrame     = FDsTemplateWorkspace_themePropertyFrame;
-      o.materialPropertyFrame  = FDsTemplateWorkspace_materialPropertyFrame;
-      o.displayPropertyFrame   = FDsTemplateWorkspace_displayPropertyFrame;
-      o.loadTemplate           = FDsTemplateWorkspace_loadTemplate;
-      o.dispose                = FDsTemplateWorkspace_dispose;
-      return o;
+MO.FDsTemplateWorkspace_materialPropertyFrame = function FDsTemplateWorkspace_materialPropertyFrame(){
+   var o = this;
+   var f = o._materialPropertyFrame;
+   if(!f){
+      f = o._materialPropertyFrame = MO.Class.create(MO.FDsTemplateMaterialPropertyFrame);
+      f._workspace = o;
+      f.buildDefine(o._hPanel);
+      f.setPanel(o._frameProperty._hPanel);
    }
-   MO.FDsTemplateWorkspace_onBuild = function FDsTemplateWorkspace_onBuild(p){
-      var o = this;
-      o.__base.FDuiWorkspace.onBuild.call(o, p);
-      o._hPanel.style.width = '100%';
-      o._hPanel.style.height = '100%';
-      var fs = o._framesetMain = MO.Class.create(FDuiFrameSet);
-      fs.build(p);
-      var f = o._frameToolBar = MO.Class.create(FDuiFramePage);
-      f.setHeight(26);
-      f.build(p);
-      f._hPanel.className = o.styleName('Toolbar_Ground');
-      fs.appendFrame(f);
-      var f = o._frameBody = MO.Class.create(FDuiFramePage);
-      f.build(p);
-      fs.appendFrame(f);
-      var f = o._frameStatusBar = MO.Class.create(FDuiFramePage);
-      f.setHeight(18);
-      f.build(p);
-      f._hPanel.className = o.styleName('Statusbar_Ground');
-      fs.appendFrame(f);
-      fs.setPanel(o._hPanel);
-      var fs = MO.Class.create(FDuiFrameSet);
-      fs._directionCd = EUiDirection.Horizontal;
-      fs.build(p);
-      var f = o._frameCatalog = MO.Class.create(FDuiFramePage);
-      f.setWidth(400);
-      f.build(p);
-      f._hPanel.className = o.styleName('Catalog_Ground');
-      fs.appendFrame(f);
-      var sp1 = fs.appendSpliter();
-      var f = o._frameWorkspace = MO.Class.create(FDuiFramePage);
-      f.build(p);
-      f._hPanel.className = o.styleName('Workspace_Ground');
-      fs.appendFrame(f);
-      var sp2 = fs.appendSpliter();
-      var f = o._frameProperty = MO.Class.create(FDuiFramePage);
-      f.setWidth(240);
-      f.build(p);
-      f._hPanel.className = o.styleName('Property_Ground');
-      fs.appendFrame(f);
-      fs.setPanel(o._frameBody._hPanel);
-      sp1._alignCd = EUiAlign.Left;
-      sp1._hSize = o._frameCatalog._hPanel;
-      sp2._alignCd = EUiAlign.Right;
-      sp2._hSize = o._frameStatusBar._hPanel;
-      var c = o._catalog = MO.Class.create(FDsTemplateCatalog);
-      c._workspace = o;
-      c.build(p);
-      c.setPanel(o._frameCatalog._hPanel);
-      c.addSelectedListener(o, o.onCatalogSelected);
-      o.push(c);
-      var c = o._toolbar = MO.Class.create(FDsTemplateToolBar);
-      c._workspace = o;
-      c.build(p);
-      c.setPanel(o._frameToolBar._hPanel);
-      o.push(c);
-      var hf = MO.Window.Builder.appendTable(o._frameWorkspace._hPanel);
-      hf.style.width = '100%';
-      hf.style.height = '100%';
-      var hc = MO.Window.Builder.appendTableRowCell(hf);
-      hc.height = 20;
-      var c = o._canvasToolbar = MO.Class.create(FDsTemplateCanvasToolBar);
-      c._workspace = o;
-      c.build(p);
-      c.setPanel(hc);
-      o.push(c);
-      var hc = MO.Window.Builder.appendTableRowCell(hf);
-      hc.vAlign = 'top';
-      var c = o._canvas = MO.Class.create(FDsTemplateCanvas);
-      c.addLoadListener(o, o.onTemplateLoad);
-      c._workspace = o;
-      c._toolbar = o._canvasToolbar;
-      c.build(p);
-      c.setPanel(hc);
-      o.push(c);
+   return f;
+}
+MO.FDsTemplateWorkspace_displayPropertyFrame = function FDsTemplateWorkspace_displayPropertyFrame(){
+   var o = this;
+   var f = o._displayPropertyFrame;
+   if(!f){
+      f = o._displayPropertyFrame = MO.Class.create(MO.FDsTemplateDisplayPropertyFrame);
+      f._workspace = o;
+      f.buildDefine(o._hPanel);
+      f.setPanel(o._frameProperty._hPanel);
    }
-   MO.FDsTemplateWorkspace_onTemplateLoad = function FDsTemplateWorkspace_onTemplateLoad(p){
-      var o = this;
-      var t = o._activeTemplate = p._activeTemplate;
-      o._catalog.buildTemplate(t);
-      o.onCatalogSelected(t);
-   }
-   MO.FDsTemplateWorkspace_onCatalogSelected = function FDsTemplateWorkspace_onCatalogSelected(p){
-      var o = this;
-      var t = o._activeTemplate;
-      if(o._templatePropertyFrame){
-         o._templatePropertyFrame.hide();
-      }
-      if(o._themePropertyFrame){
-         o._themePropertyFrame.hide();
-      }
-      if(o._materialPropertyFrame){
-         o._materialPropertyFrame.hide();
-      }
-      if(o._displayPropertyFrame){
-         o._displayPropertyFrame.hide();
-      }
-      if(MO.Class.isClass(p, FE3dTemplate)){
-         var f = o.templatePropertyFrame();
-         f.show();
-         f.loadObject(t);
-      }else if(MO.Class.isClass(p, FE3sTemplateTheme)){
-         var f = o.themePropertyFrame();
-         f.show();
-         f.loadObject(t, p);
-      }else if(MO.Class.isClass(p, FE3sMaterial)){
-         var f = o.materialPropertyFrame();
-         f.show();
-         f.loadObject(t, p);
-      }else if(MO.Class.isClass(p, MG3dRenderable)){
-         var f = o.displayPropertyFrame();
-         f.show();
-         f.loadObject(t, p);
-         o._canvas.selectRenderable(p);
-      }else{
-         throw new TError('Unknown select object type. (value={1})', p);
-      }
-   }
-   MO.FDsTemplateWorkspace_construct = function FDsTemplateWorkspace_construct(){
-      var o = this;
-      o.__base.FDuiWorkspace.construct.call(o);
-   }
-   MO.FDsTemplateWorkspace_templatePropertyFrame = function FDsTemplateWorkspace_templatePropertyFrame(){
-      var o = this;
-      var f = o._templatePropertyFrame;
-      if(!f){
-         f = o._templatePropertyFrame = MO.Class.create(FDsTemplatePropertyFrame);
-         f._workspace = o;
-         f.buildDefine(o._hPanel);
-         f.setPanel(o._frameProperty._hPanel);
-      }
-      return f;
-   }
-   MO.FDsTemplateWorkspace_themePropertyFrame = function FDsTemplateWorkspace_themePropertyFrame(){
-      var o = this;
-      var f = o._themePropertyFrame;
-      if(!f){
-         var f = o._themePropertyFrame = MO.Class.create(FDsTemplateThemePropertyFrame);
-         f._workspace = o;
-         f.buildDefine(o._hPanel);
-         f.setPanel(o._frameProperty._hPanel);
-      }
-      return f;
-   }
-   MO.FDsTemplateWorkspace_materialPropertyFrame = function FDsTemplateWorkspace_materialPropertyFrame(){
-      var o = this;
-      var f = o._materialPropertyFrame;
-      if(!f){
-         f = o._materialPropertyFrame = MO.Class.create(FDsTemplateMaterialPropertyFrame);
-         f._workspace = o;
-         f.buildDefine(o._hPanel);
-         f.setPanel(o._frameProperty._hPanel);
-      }
-      return f;
-   }
-   MO.FDsTemplateWorkspace_displayPropertyFrame = function FDsTemplateWorkspace_displayPropertyFrame(){
-      var o = this;
-      var f = o._displayPropertyFrame;
-      if(!f){
-         f = o._displayPropertyFrame = MO.Class.create(FDsTemplateDisplayPropertyFrame);
-         f._workspace = o;
-         f.buildDefine(o._hPanel);
-         f.setPanel(o._frameProperty._hPanel);
-      }
-      return f;
-   }
-   MO.FDsTemplateWorkspace_loadTemplate = function FDsTemplateWorkspace_loadTemplate(p){
-      var o = this;
-      o._canvas.loadTemplate(p);
-   }
-   MO.FDsTemplateWorkspace_dispose = function FDsTemplateWorkspace_dispose(){
-      var o = this;
-      o.__base.FDuiWorkspace.dispose.call(o);
-   }
+   return f;
+}
+MO.FDsTemplateWorkspace_loadTemplate = function FDsTemplateWorkspace_loadTemplate(p){
+   var o = this;
+   o._canvas.loadTemplate(p);
+}
+MO.FDsTemplateWorkspace_dispose = function FDsTemplateWorkspace_dispose(){
+   var o = this;
+   o.__base.FDuiWorkspace.dispose.call(o);
 }
