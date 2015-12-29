@@ -2627,55 +2627,6 @@ MO.FG3dViewport_set = function FG3dViewport_set(left, top, width, height){
    o.width = width;
    o.height= height;
 }
-MO.REngine3d = function REngine3d(){
-   var o = this;
-   o._setuped  = false;
-   o._contexts = null;
-   return o;
-}
-MO.REngine3d.prototype.onUnload = function REngine3d_onUnload(event){
-   this.dispose();
-}
-MO.REngine3d.prototype.setup = function REngine3d_setup(){
-   var o = this;
-   if(!o._setuped){
-      o._contexts = new MO.TObjects();
-      MO.Window.lsnsUnload.register(o, o.onUnload);
-      o._setuped = true;
-   }
-}
-MO.REngine3d.prototype.contexts = function REngine3d_contexts(){
-   return this._contexts;
-}
-MO.REngine3d.prototype.createContext = function REngine3d_createContext(clazz, hCanvas, attributes){
-   var o = this;
-   o.setup();
-   var context = MO.Class.create(clazz);
-   if(attributes){
-      context._optionAlpha = attributes.alpha;
-      context._optionAntialias = attributes.antialias;
-   }
-   if(!context.linkCanvas(hCanvas)){
-      return null;
-   }
-   o._contexts.push(context);
-   return context;
-}
-MO.REngine3d.prototype.dispose = function REngine3d_dispose(){
-   var o = this;
-   var contexts = o._contexts;
-   if(contexts){
-      var count = contexts.count();
-      for(var i = 0; i < count; i++){
-         var context = contexts.at(i);
-         context.dispose();
-      }
-      o._contexts = MO.Lang.Object.dispose(contexts);
-   }
-}
-MO.REngine3d = new MO.REngine3d();
-MO.Graphic.Context3d = MO.REngine3d;
-MO.Engine3d = MO.REngine3d;
 MO.EG3dAttribute = new function EG3dAttribute(){
    var o = this;
    o.Position   = 'position';

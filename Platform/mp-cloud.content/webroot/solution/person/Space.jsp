@@ -14,7 +14,7 @@
 function _load(){
    // 设置环境
    MO.initialize();
-   MO.Runtime.setVersion('151223');
+   MO.Runtime.setVersion('151229');
    MO.Runtime.setProcessCd(MO.EProcess.Debug);
    MO.Window.Browser.setContentPath('/script');
    // 设置环境
@@ -23,7 +23,7 @@ function _load(){
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.ServiceHost, '115.28.82.149');
    //MO.Console.find(MO.FEnvironmentConsole).registerValue(MO.EEaiConstant.Resource, '/script/ars/eai');
    // 加载工作区
-   var application = MO.Desktop.initialize(MO.FDuiWorkspaceApplication);
+   var application = MO.Desktop.initialize(MO.FDsApplication);
    var workspace = application.selectWorkspace(MO.FDsPrivateWorkspace);
    workspace.buildDefine(id_workspace);
    workspace.setPanel(id_workspace);

@@ -2155,6 +2155,48 @@ MO.RDuiService.prototype.parse = function RDuiService_parse(p){
    return s;
 }
 MO.RDuiService = new MO.RDuiService();
+MO.FDuiApplication = function FDuiApplication(o){
+   o = MO.Class.inherits(this, o, MO.FApplication);
+   o._activeWorkspace = MO.Class.register(o, new MO.AGetter('_activeWorkspace'));
+   o._workspaces      = MO.Class.register(o, new MO.AGetter('_workspaces'));
+   o.onOperationResize = MO.FDuiApplication_onOperationResize;
+   o.onProcess         = MO.FDuiApplication_onProcess;
+   o.construct        = MO.FDuiApplication_construct;
+   o.selectWorkspace  = MO.FDuiApplication_selectWorkspace;
+   o.dispose          = MO.FDuiApplication_dispose;
+   return o;
+}
+MO.FDuiApplication_onOperationResize = function FDuiApplication_onOperationResize(event){
+   var o = this;
+   o.__base.FApplication.onOperationResize.call(o, event);
+   var workspace = o._activeWorkspace;
+   if(workspace){
+      workspace.psResize();
+   }
+}
+MO.FDuiApplication_onProcess = function FDuiApplication_onProcess(event){
+   var o = this;
+   o.__base.FApplication.onProcess.call(o, event);
+   var workspace = o._activeWorkspace
+   if(workspace){
+      workspace.psFrame();
+   }
+}
+MO.FDuiApplication_construct = function FDuiApplication_construct(){
+   var o = this;
+   o.__base.FApplication.construct.call(o);
+   o._workspaces = new MO.TDictionary();
+}
+MO.FDuiApplication_selectWorkspace = function FDuiApplication_selectWorkspace(clazz){
+   var o = this;
+   var workspace = o._activeWorkspace = MO.Class.create(clazz);
+   return workspace;
+}
+MO.FDuiApplication_dispose = function FDuiApplication_dispose(){
+   var o = this;
+   o._workspaces = MO.Lang.Object.dispose(o._workspaces, true);
+   o.__base.FApplication.dispose.call(o);
+}
 MO.FDuiConfirmDialog = function FDuiConfirmDialog(o){
    o = MO.Class.inherits(this, o, MO.FDuiDialog, MO.MListenerResult);
    o._styleText            = MO.Class.register(o, new MO.AStyle('_styleText'));
@@ -3841,44 +3883,6 @@ MO.FDuiWindowConsole_onEventRelease = function FDuiWindowConsole_onEventRelease(
       this.windowList.clear();
       MoveManager.focus(null);
    }
-}
-MO.FDuiWorkspaceApplication = function FDuiWorkspaceApplication(o){
-   o = MO.Class.inherits(this, o, MO.FApplication);
-   o._workspaces      = MO.Class.register(o, new MO.AGetter('_workspaces'));
-   o._activeWorkspace = MO.Class.register(o, new MO.AGetter('_activeWorkspace'));
-   o.onProcess        = MO.FDuiWorkspaceApplication_onProcess;
-   o.construct        = MO.FDuiWorkspaceApplication_construct;
-   o.initialize       = MO.FDuiWorkspaceApplication_initialize;
-   o.selectWorkspace  = MO.FDuiWorkspaceApplication_selectWorkspace;
-   o.dispose          = MO.FDuiWorkspaceApplication_dispose;
-   return o;
-}
-MO.FDuiWorkspaceApplication_onProcess = function FDuiWorkspaceApplication_onProcess(){
-   var o = this;
-   var workspace = o._activeWorkspace
-   if(workspace){
-      workspace.psFrame();
-   }
-}
-MO.FDuiWorkspaceApplication_construct = function FDuiWorkspaceApplication_construct(){
-   var o = this;
-   o.__base.FApplication.construct.call(o);
-   o._workspaces = new MO.TDictionary();
-}
-MO.FDuiWorkspaceApplication_initialize = function FDuiWorkspaceApplication_initialize(){
-   var o = this;
-   o.__base.FApplication.initialize.call(o);
-   MO.RE3dEngine.setup();
-}
-MO.FDuiWorkspaceApplication_selectWorkspace = function FDuiWorkspaceApplication_selectWorkspace(clazz){
-   var o = this;
-   var workspace = o._activeWorkspace = MO.Class.create(clazz);
-   return workspace;
-}
-MO.FDuiWorkspaceApplication_dispose = function FDuiWorkspaceApplication_dispose(){
-   var o = this;
-   o._workspaces = MO.Lang.Object.dispose(o._workspaces, true);
-   o.__base.FApplication.dispose.call(o);
 }
 MO.FDuiWorkspaceConsole = function FDuiWorkspaceConsole(o){
    o = MO.Class.inherits(this, o, MO.FConsole);

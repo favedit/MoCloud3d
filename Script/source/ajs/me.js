@@ -1699,6 +1699,12 @@ MO.ESource = new function ESource(){
    o.Listener = 'listener';
    return o;
 }
+MO.SArgs = function SArgs(){
+   var o = this;
+   o.free    = MO.Method.freeStruct;
+   o.dispose = MO.Method.disposeStruct;
+   return o;
+}
 MO.SLogger = function SLogger(){
    var o = this;
    o.message = null;
@@ -19552,55 +19558,6 @@ MO.FG3dViewport_set = function FG3dViewport_set(left, top, width, height){
    o.width = width;
    o.height= height;
 }
-MO.REngine3d = function REngine3d(){
-   var o = this;
-   o._setuped  = false;
-   o._contexts = null;
-   return o;
-}
-MO.REngine3d.prototype.onUnload = function REngine3d_onUnload(event){
-   this.dispose();
-}
-MO.REngine3d.prototype.setup = function REngine3d_setup(){
-   var o = this;
-   if(!o._setuped){
-      o._contexts = new MO.TObjects();
-      MO.Window.lsnsUnload.register(o, o.onUnload);
-      o._setuped = true;
-   }
-}
-MO.REngine3d.prototype.contexts = function REngine3d_contexts(){
-   return this._contexts;
-}
-MO.REngine3d.prototype.createContext = function REngine3d_createContext(clazz, hCanvas, attributes){
-   var o = this;
-   o.setup();
-   var context = MO.Class.create(clazz);
-   if(attributes){
-      context._optionAlpha = attributes.alpha;
-      context._optionAntialias = attributes.antialias;
-   }
-   if(!context.linkCanvas(hCanvas)){
-      return null;
-   }
-   o._contexts.push(context);
-   return context;
-}
-MO.REngine3d.prototype.dispose = function REngine3d_dispose(){
-   var o = this;
-   var contexts = o._contexts;
-   if(contexts){
-      var count = contexts.count();
-      for(var i = 0; i < count; i++){
-         var context = contexts.at(i);
-         context.dispose();
-      }
-      o._contexts = MO.Lang.Object.dispose(contexts);
-   }
-}
-MO.REngine3d = new MO.REngine3d();
-MO.Graphic.Context3d = MO.REngine3d;
-MO.Engine3d = MO.REngine3d;
 MO.EG3dAttribute = new function EG3dAttribute(){
    var o = this;
    o.Position   = 'position';
@@ -26376,12 +26333,13 @@ MO.FE3dTranslateTimelineAction_dispose = function FE3dTranslateTimelineAction_di
    var o = this;
    o.__base.MTimelineAction.dispose.call(o);
 }
-MO.RE3dEngine = function RE3dEngine(){
+MO.REngine3d = function REngine3d(){
    var o = this;
-   o._setuped = false;
+   o._setuped  = false;
+   o._contexts = null;
    return o;
 }
-MO.RE3dEngine.prototype.onSetup = function RE3dEngine_onSetup(){
+MO.REngine3d.prototype.onSetup = function RE3dEngine_onSetup(){
    var effectConsole = MO.Console.find(MO.FG3dEffectConsole);
    effectConsole.register('select.select.flat', MO.FG3dSelectAutomaticEffect);
    effectConsole.register('select.select.control', MO.FG3dSelectAutomaticEffect);
@@ -26407,14 +26365,50 @@ MO.RE3dEngine.prototype.onSetup = function RE3dEngine_onSetup(){
    effectConsole.register('shadow.color.automatic', MO.FE3dShadowColorAutomaticEffect);
    effectConsole.register('shadow.color.skeleton', MO.FE3dShadowColorSkeletonEffect);
 }
-MO.RE3dEngine.prototype.setup = function RE3dEngine_setup(){
+MO.REngine3d.prototype.onUnload = function REngine3d_onUnload(event){
+   this.dispose();
+}
+MO.REngine3d.prototype.setup = function REngine3d_setup(){
    var o = this;
    if(!o._setuped){
       o.onSetup();
+      o._contexts = new MO.TObjects();
+      MO.Window.lsnsUnload.register(o, o.onUnload);
       o._setuped = true;
    }
 }
-MO.RE3dEngine = new MO.RE3dEngine();
+MO.REngine3d.prototype.contexts = function REngine3d_contexts(){
+   return this._contexts;
+}
+MO.REngine3d.prototype.createContext = function REngine3d_createContext(clazz, hCanvas, attributes){
+   var o = this;
+   o.setup();
+   var context = MO.Class.create(clazz);
+   if(attributes){
+      context._optionAlpha = attributes.alpha;
+      context._optionAntialias = attributes.antialias;
+   }
+   if(!context.linkCanvas(hCanvas)){
+      return null;
+   }
+   o._contexts.push(context);
+   return context;
+}
+MO.REngine3d.prototype.dispose = function REngine3d_dispose(){
+   var o = this;
+   var contexts = o._contexts;
+   if(contexts){
+      var count = contexts.count();
+      for(var i = 0; i < count; i++){
+         var context = contexts.at(i);
+         context.dispose();
+      }
+      o._contexts = MO.Lang.Object.dispose(contexts);
+   }
+}
+MO.REngine3d = new MO.REngine3d();
+MO.Graphic.Context3d = MO.REngine3d;
+MO.Engine3d = MO.REngine3d;
 MO.EE3sResource = new function EE3sResource(){
    var o = this;
    o.Unknown  = 'Unknown';
@@ -28121,6 +28115,11 @@ MO.FE3sSceneConsole_loadByCode = function FE3sSceneConsole_loadByCode(code){
    var scene = o.load(args);
    MO.Memory.free(args);
    return scene;
+}
+MO.FE3sSceneConsole_dispose = function FE3sSceneConsole_dispose(code){
+   var o = this;
+   o._scenes = MO.Lang.Object.dispose(o._scenes, true);
+   o.__base.FConsole.dispose.call(o);
 }
 MO.FE3sSceneDisplay = function FE3sSceneDisplay(o){
    o = MO.Class.inherits(this, o, MO.FE3sSprite);
@@ -38688,32 +38687,26 @@ MO.MFrameProcessor_dispose = function MFrameProcessor_dispose(){
    o._eventLeaveFrame = MO.Lang.Object.dispose(o._eventLeaveFrame);
 }
 MO.FApplication = function FApplication(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
-   o._sessionCode         = MO.Class.register(o, new MO.AGetSet('_sessionCode'));
-   o._activeChapter       = MO.Class.register(o, new MO.AGetter('_activeChapter'));
-   o._chapters            = MO.Class.register(o, new MO.AGetter('_chapters'));
-   o.onProcessReady       = MO.FApplication_onProcessReady;
-   o.onProcessInput       = MO.FApplication_onProcessInput;
-   o.onProcess            = MO.FApplication_onProcess;
-   o.construct            = MO.FApplication_construct;
-   o.initialize           = MO.Method.emptyTrue;
-   o.setup                = MO.Method.emptyTrue;
-   o.findSessionId        = MO.FApplication_findSessionId;
-   o.createChapter        = MO.Method.empty;
-   o.registerChapter      = MO.FApplication_registerChapter;
-   o.unregisterChapter    = MO.FApplication_unregisterChapter;
-   o.selectChapter        = MO.FApplication_selectChapter;
-   o.selectChapterByCode  = MO.FApplication_selectChapterByCode;
-   o.processResize        = MO.FApplication_processResize;
-   o.processEvent         = MO.FApplication_processEvent;
-   o.process              = MO.FApplication_process;
-   o.dispose              = MO.FApplication_dispose;
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MEventDispatcher, MO.MFrameProcessor);
+   o._sessionClass       = MO.Class.register(o, new MO.AGetSet('_sessionClass'));
+   o._activeChapter      = MO.Class.register(o, new MO.AGetter('_activeChapter'));
+   o._chapters           = MO.Class.register(o, new MO.AGetter('_chapters'));
+   o.onProcessReady      = MO.Method.empty;
+   o.onProcessInput      = MO.Method.empty;
+   o.onProcess           = MO.FApplication_onProcess;
+   o.construct           = MO.FApplication_construct;
+   o.initialize          = MO.Method.emptyTrue;
+   o.setup               = MO.Method.emptyTrue;
+   o.session             = MO.FApplication_session;
+   o.createChapter       = MO.Method.empty;
+   o.registerChapter     = MO.FApplication_registerChapter;
+   o.unregisterChapter   = MO.FApplication_unregisterChapter;
+   o.selectChapter       = MO.FApplication_selectChapter;
+   o.selectChapterByCode = MO.FApplication_selectChapterByCode;
+   o.processEvent        = MO.FApplication_processEvent;
+   o.process             = MO.FApplication_process;
+   o.dispose             = MO.FApplication_dispose;
    return o;
-}
-MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
-   MO.Logger.debug(this, 'Application process ready.');
-}
-MO.FApplication_onProcessInput = function FApplication_onProcessInput(event){
 }
 MO.FApplication_onProcess = function FApplication_onProcess(event){
    var o = this;
@@ -38726,8 +38719,16 @@ MO.FApplication_construct = function FApplication_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MFrameProcessor.construct.call(o);
-   o._sessionCode = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
    o._chapters = new MO.TDictionary();
+}
+MO.FApplication_session = function FApplication_session(){
+   var o = this;
+   var session = o._session;
+   if(!session){
+      session = o._session = MO.Class.create(MO.Runtime.nvl(o._sessionClass, MO.FSession));
+      session.setup();
+   }
+   return session;
 }
 MO.FApplication_registerChapter = function FApplication_registerChapter(chapter){
    var o = this;
@@ -38765,9 +38766,6 @@ MO.FApplication_selectChapterByCode = function FApplication_selectChapterByCode(
    o.selectChapter(chapter);
    return chapter;
 }
-MO.FApplication_processResize = function FApplication_processResize(){
-   var o = this;
-}
 MO.FApplication_processEvent = function FApplication_processEvent(event){
    var o = this;
    o.dispatchEvent(event);
@@ -38796,7 +38794,7 @@ MO.FApplication_dispose = function FApplication_dispose(){
    o.__base.FObject.dispose.call(o);
 }
 MO.FChapter = function FChapter(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MEventDispatcher, MO.MFrameProcessor);
    o._code                = MO.Class.register(o, new MO.AGetSet('_code'));
    o._application         = MO.Class.register(o, new MO.AGetSet('_application'));
    o._scenes              = MO.Class.register(o, new MO.AGetter('_scenes'));
@@ -38986,6 +38984,26 @@ MO.FScene_dispose = function FScene_dispose(){
    var o = this;
    o.__base.MFrameProcessor.dispose.call(o);
    o.__base.MListener.dispose.call(o);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FSession = function FSession(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._code     = MO.Class.register(o, new MO.AGetSet('_code'));
+   o.construct = MO.FSession_construct;
+   o.setup     = MO.FSession_setup;
+   o.dispose   = MO.FSession_dispose;
+   return o;
+}
+MO.FSession_construct = function FSession_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+}
+MO.FSession_setup = function FSession_setup(){
+   var o = this;
+   o._code = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
+}
+MO.FSession_dispose = function FSession_dispose(){
+   var o = this;
    o.__base.FObject.dispose.call(o);
 }
 MO.RDesktop = function RDesktop(){

@@ -6,7 +6,7 @@
 // @history 150106
 //==========================================================
 MO.FChapter = function FChapter(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MEventDispatcher, MO.MFrameProcessor);
    //..........................................................
    // @attribute
    o._code                = MO.Class.register(o, new MO.AGetSet('_code'));

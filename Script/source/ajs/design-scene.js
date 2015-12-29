@@ -1,34 +1,66 @@
 MO.FDsSceneCanvasContent = function FDsSceneCanvasContent(o){
-   o = MO.Class.inherits(this, o, MO.FDsSpaceCanvas);
+   o = MO.Class.inherits(this, o, MO.FDsSpaceDesignCanvas);
    o._resourceTypeCd = MO.EE3sResource.Scene;
    o.onDataLoaded    = MO.FDsSceneCanvasContent_onDataLoaded;
+   o.load            = MO.FDsSceneCanvasContent_load;
    o.loadByGuid      = MO.FDsSceneCanvasContent_loadByGuid;
+   o.loadByCode      = MO.FDsSceneCanvasContent_loadByCode;
    o.dispose         = MO.FDsSceneCanvasContent_dispose;
    return o;
 }
-MO.FDsSceneCanvasContent_onDataLoaded = function FDsSceneCanvasContent_onDataLoaded(p){
+MO.FDsSceneCanvasContent_onDataLoaded = function FDsSceneCanvasContent_onDataLoaded(event){
    var o = this;
+   var space = o._activeSpace;
    o.reloadRegion()
-   o.processLoadListener(o);
+   var event = MO.Memory.alloc(MO.SEvent);
+   event.sender = o;
+   event.space = space;
+   o.processLoadListener(event);
+   MO.Memory.free(event);
+   o.refreshSpace();
    MO.Console.find(MO.FDuiDesktopConsole).hide();
 }
-MO.FDsSceneCanvasContent_loadByGuid = function FDsSceneCanvasContent_loadByGuid(guid){
+MO.FDsSceneCanvasContent_load = function FDsSceneCanvasContent_load(args){
    var o = this;
    var space = o._activeSpace;
    var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
    if(space){
       sceneConsole.free(space);
    }
-   space = o._activeSpace = sceneConsole.allocByGuid(o, guid);
+   var guid = args.guid;
+   if(!MO.Lang.String.isEmpty(guid)){
+      space = o._activeSpace = sceneConsole.allocByGuid(o, guid);
+   }
+   var code = args.code;
+   if(!MO.Lang.String.isEmpty(code)){
+      space = o._activeSpace = sceneConsole.allocByCode(o, code);
+   }
    if(!space._linked){
       MO.Console.find(MO.FDuiDesktopConsole).showLoading();
       space.addLoadListener(o, o.onDataLoaded);
       space._linked = true;
    }
+   return space;
+}
+MO.FDsSceneCanvasContent_loadByGuid = function FDsSceneCanvasContent_loadByGuid(guid){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SArgs)
+   args.guid = guid;
+   var space = o.load(args);
+   MO.Memory.free(args)
+   return space;
+}
+MO.FDsSceneCanvasContent_loadByCode = function FDsSceneCanvasContent_loadByCode(code){
+   var o = this;
+   var args = MO.Memory.alloc(MO.SArgs)
+   args.code = code;
+   var space = o.load(args);
+   MO.Memory.free(args)
+   return space;
 }
 MO.FDsSceneCanvasContent_dispose = function FDsSceneCanvasContent_dispose(){
    var o = this;
-   o.__base.FDsSpaceCanvas.dispose.call(o);
+   o.__base.FDsSpaceDesignCanvas.dispose.call(o);
 }
 MO.FDsSceneCanvasToolBar = function FDsSceneCanvasToolBar(o){
    o = MO.Class.inherits(this, o, MO.FDuiToolBar);
@@ -514,9 +546,9 @@ MO.FDsSceneFrameSet_onBuilded = function FDsSceneFrameSet_onBuilded(event){
    sceneConsole.register(MO.EE3dInstance.SceneDisplay, MO.FDsSceneDisplay);
    sceneConsole.register(MO.EE3dInstance.SceneRenderable, MO.FDsSceneRenderable);
 }
-MO.FDsSceneFrameSet_onDataLoaded = function FDsSceneFrameSet_onDataLoaded(canvas){
+MO.FDsSceneFrameSet_onDataLoaded = function FDsSceneFrameSet_onDataLoaded(event){
    var o = this;
-   var space = o._activeSpace = canvas._activeSpace;
+   var space = o._activeSpace = event.space;
    o._catalogContent.buildSpace(space);
 }
 MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelected(select, flag){
@@ -527,27 +559,7 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
    }
    var canvas = o._canvasContent;
    o.hidePropertyFrames();
-   if(MO.Class.isClass(select, MO.FE3dScene)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonSpacePropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FG3dTechnique)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonTechniquePropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dRegion)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonRegionPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dCamera)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonCameraPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FG3dDirectionalLight)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonLightPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(select == 'layers'){
+   if(select == 'layers'){
       if(flag){
          canvas.selectLayers(select);
       }
@@ -572,14 +584,6 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
       var frame = o.findPropertyFrame(MO.EDsFrame.CommonMaterialPropertyFrame);
       frame.show();
       frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dAnimation)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonAnimationPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dMovie)){
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonMoviePropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
    }else if(MO.Class.isClass(select, MO.FE3dRenderable)){
       if(flag){
          canvas.selectRenderable(select);
@@ -587,13 +591,20 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
       var frame = o.findPropertyFrame(MO.EDsFrame.CommonRenderablePropertyFrame);
       frame.show();
       frame.loadObject(space, select);
-   }else{
+   }else if(!o.selectPropertyFrame(space, select)){
       throw new TError('Unknown select type. (select={1})', select);
    }
 }
 MO.FDsSceneFrameSet_construct = function FDsSceneFrameSet_construct(){
    var o = this;
    o.__base.FDsFrameSet.construct.call(o);
+   o.registerPropertyFrame(MO.FE3dScene, MO.EDsFrame.CommonSpacePropertyFrame);
+   o.registerPropertyFrame(MO.FG3dTechnique, MO.EDsFrame.CommonTechniquePropertyFrame);
+   o.registerPropertyFrame(MO.FE3dRegion, MO.EDsFrame.CommonRegionPropertyFrame);
+   o.registerPropertyFrame(MO.FE3dCamera, MO.EDsFrame.CommonCameraPropertyFrame);
+   o.registerPropertyFrame(MO.FG3dDirectionalLight, MO.EDsFrame.CommonLightPropertyFrame);
+   o.registerPropertyFrame(MO.FE3dAnimation, MO.EDsFrame.CommonAnimationPropertyFrame);
+   o.registerPropertyFrame(MO.FE3dMovie, MO.EDsFrame.CommonMoviePropertyFrame);
 }
 MO.FDsSceneFrameSet_loadByGuid = function FDsSceneFrameSet_loadByGuid(guid){
    var o = this;

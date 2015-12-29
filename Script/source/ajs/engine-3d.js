@@ -902,12 +902,13 @@ MO.FE3dTranslateTimelineAction_dispose = function FE3dTranslateTimelineAction_di
    var o = this;
    o.__base.MTimelineAction.dispose.call(o);
 }
-MO.RE3dEngine = function RE3dEngine(){
+MO.REngine3d = function REngine3d(){
    var o = this;
-   o._setuped = false;
+   o._setuped  = false;
+   o._contexts = null;
    return o;
 }
-MO.RE3dEngine.prototype.onSetup = function RE3dEngine_onSetup(){
+MO.REngine3d.prototype.onSetup = function RE3dEngine_onSetup(){
    var effectConsole = MO.Console.find(MO.FG3dEffectConsole);
    effectConsole.register('select.select.flat', MO.FG3dSelectAutomaticEffect);
    effectConsole.register('select.select.control', MO.FG3dSelectAutomaticEffect);
@@ -933,11 +934,47 @@ MO.RE3dEngine.prototype.onSetup = function RE3dEngine_onSetup(){
    effectConsole.register('shadow.color.automatic', MO.FE3dShadowColorAutomaticEffect);
    effectConsole.register('shadow.color.skeleton', MO.FE3dShadowColorSkeletonEffect);
 }
-MO.RE3dEngine.prototype.setup = function RE3dEngine_setup(){
+MO.REngine3d.prototype.onUnload = function REngine3d_onUnload(event){
+   this.dispose();
+}
+MO.REngine3d.prototype.setup = function REngine3d_setup(){
    var o = this;
    if(!o._setuped){
       o.onSetup();
+      o._contexts = new MO.TObjects();
+      MO.Window.lsnsUnload.register(o, o.onUnload);
       o._setuped = true;
    }
 }
-MO.RE3dEngine = new MO.RE3dEngine();
+MO.REngine3d.prototype.contexts = function REngine3d_contexts(){
+   return this._contexts;
+}
+MO.REngine3d.prototype.createContext = function REngine3d_createContext(clazz, hCanvas, attributes){
+   var o = this;
+   o.setup();
+   var context = MO.Class.create(clazz);
+   if(attributes){
+      context._optionAlpha = attributes.alpha;
+      context._optionAntialias = attributes.antialias;
+   }
+   if(!context.linkCanvas(hCanvas)){
+      return null;
+   }
+   o._contexts.push(context);
+   return context;
+}
+MO.REngine3d.prototype.dispose = function REngine3d_dispose(){
+   var o = this;
+   var contexts = o._contexts;
+   if(contexts){
+      var count = contexts.count();
+      for(var i = 0; i < count; i++){
+         var context = contexts.at(i);
+         context.dispose();
+      }
+      o._contexts = MO.Lang.Object.dispose(contexts);
+   }
+}
+MO.REngine3d = new MO.REngine3d();
+MO.Graphic.Context3d = MO.REngine3d;
+MO.Engine3d = MO.REngine3d;

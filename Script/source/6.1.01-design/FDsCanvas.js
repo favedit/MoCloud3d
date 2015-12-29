@@ -47,12 +47,11 @@ MO.FDsCanvas = function FDsCanvas(o){
    // @method
    o.construct            = MO.FDsCanvas_construct;
    // @method
-   o.activeSpace          = MO.FDsCanvas_activeSpace;
-   // @method
    o.switchSize           = MO.FDsCanvas_switchSize;
    o.switchRotation       = MO.FDsCanvas_switchRotation;
    o.reloadRegion         = MO.FDsCanvas_reloadRegion;
    o.capture              = MO.FDsCanvas_capture;
+   o.refreshSpace         = MO.FDsCanvas_refreshSpace;
    // @method
    o.dispose              = MO.FDsCanvas_dispose;
    return o;
@@ -73,17 +72,14 @@ MO.FDsCanvas_onBuild = function FDsCanvas_onBuild(event){
    hPanel.style.width = '100%';
    hPanel.style.height = '100%';
    // 创建渲染环境
-   var parameters = new Object();
+   var parameters = new MO.SArgs();
    parameters.alpha = false;
    parameters.antialias = true;
-   var context = o._graphicContext = MO.REngine3d.createContext(MO.FWglContext, hPanel, parameters);
+   var context = o._graphicContext = MO.Engine3d.createContext(MO.FWglContext, hPanel, parameters);
    // 创建坐标系
    var dimensional = o._dimensional = MO.Class.create(MO.FE3dDimensional);
    dimensional.linkGraphicContext(context);
    dimensional.setup();
-   // 启动处理
-   //MO.RStage.lsnsEnterFrame.register(o, o.onEnterFrame);
-   //MO.RStage.start(1000 / 60);
    // 注册鼠标捕捉监听
    MO.Console.find(MO.FMouseConsole).register(o);
 }
@@ -174,23 +170,16 @@ MO.FDsCanvas_onMouseCaptureStop = function FDsCanvas_onMouseCaptureStop(event){
 }
 
 //==========================================================
-// <T>刷新处理。</T>
+// <T>改变大小处理。</T>
 //
 // @method
+// @param event:SEvent 事件
 //==========================================================
-MO.FDsCanvas_oeResize = function FDsCanvas_oeResize(p){
+MO.FDsCanvas_oeResize = function FDsCanvas_oeResize(event){
    var o = this;
-   o.__base.FDuiCanvas.oeResize.call(o, p);
-   // 获得大小
-   var hp = o._hPanel;
-   var w = hp.offsetWidth;
-   var h = hp.offsetHeight - 6;
-   // 设置大小
-   hp.width = w;
-   hp.height = h;
-   // 设置投影
-   o._graphicContext.setViewport(0, 0, w, h);
-   // 设置范围
+   o.__base.FDuiCanvas.oeResize.call(o, event);
+   // 刷新空间
+   o.refreshSpace();
    return MO.EEventStatus.Stop;
 }
 
@@ -209,17 +198,17 @@ MO.FDsCanvas_oeFrame = function FDsCanvas_oeFrame(event){
    }
    // 帧前处理
    if(event.isBefore()){
-      var camera = space.camera();
-      //..........................................................
       // 计算间隔
+      var camera = space.camera();
       var timer = space.timer();
       var span = timer.spanSecond();
       var moveRate = o._cameraMoveRate * span;
       var rotationRate = o._cameraKeyRotation * span;
+      var keyboard = MO.Device.Keyboard;
       //..........................................................
       // 按键前后移动
-      var keyForward = MO.Device.Keyboard.isPress(MO.EStageKey.Forward);
-      var keyBack = MO.Device.Keyboard.isPress(MO.EStageKey.Back);
+      var keyForward = keyboard.isPress(MO.EStageKey.Forward);
+      var keyBack = keyboard.isPress(MO.EStageKey.Back);
       if(keyForward && !keyBack){
          camera.doWalk(moveRate);
       }
@@ -227,8 +216,8 @@ MO.FDsCanvas_oeFrame = function FDsCanvas_oeFrame(event){
          camera.doWalk(-moveRate);
       }
       // 按键上下移动
-      var keyUp = MO.Device.Keyboard.isPress(MO.EStageKey.Up);
-      var keyDown = MO.Device.Keyboard.isPress(MO.EStageKey.Down);
+      var keyUp = keyboard.isPress(MO.EStageKey.Up);
+      var keyDown = keyboard.isPress(MO.EStageKey.Down);
       if(keyUp && !keyDown){
          camera.doFly(moveRate);
       }
@@ -236,8 +225,8 @@ MO.FDsCanvas_oeFrame = function FDsCanvas_oeFrame(event){
          camera.doFly(-moveRate);
       }
       // 按键左右旋转
-      var keyRleft = MO.Device.Keyboard.isPress(MO.EStageKey.RotationLeft);
-      var keyRright = MO.Device.Keyboard.isPress(MO.EStageKey.RotationRight);
+      var keyRleft = keyboard.isPress(MO.EStageKey.RotationLeft);
+      var keyRright = keyboard.isPress(MO.EStageKey.RotationRight);
       if(keyRleft && !keyRright){
          camera.doYaw(rotationRate);
       }
@@ -245,8 +234,8 @@ MO.FDsCanvas_oeFrame = function FDsCanvas_oeFrame(event){
          camera.doYaw(-rotationRate);
       }
       // 按键上下旋转
-      var keyRup = MO.Device.Keyboard.isPress(MO.EStageKey.RotationUp);
-      var keyDown = MO.Device.Keyboard.isPress(MO.EStageKey.RotationDown);
+      var keyRup = keyboard.isPress(MO.EStageKey.RotationUp);
+      var keyDown = keyboard.isPress(MO.EStageKey.RotationDown);
       if(keyRup && !keyDown){
          camera.doPitch(rotationRate);
       }
@@ -298,16 +287,6 @@ MO.FDsCanvas_construct = function FDsCanvas_construct(){
    o._captureMatrix = new MO.SMatrix3d();
    o._rotation = new MO.SVector3();
    o._captureRotation = new MO.SVector3();
-}
-
-//==========================================================
-// <T>获得激活的空间。</T>
-//
-// @method
-// @return FE3dSpace 空间
-//==========================================================
-MO.FDsCanvas_activeSpace = function FDsCanvas_activeSpace(){
-   return this._activeSpace;
 }
 
 //==========================================================
@@ -380,13 +359,16 @@ MO.FDsCanvas_reloadRegion = function FDsCanvas_reloadRegion(){
 MO.FDsCanvas_capture = function FDsCanvas_capture(){
    var o = this;
    var space = o._activeSpace;
+   if(!space){
+      return;
+   }
    var resource = space.resource();
    var guid = resource.guid();
    // 缩小到缩略图
    var switchWidth = o._switchWidth;
    var switchHeight = o._switchHeight;
    o.switchSize(200, 150);
-   MO.RStage.process();
+   space.process();
    // 获得像素数据
    var context = o._graphicContext;
    var size = context.size();
@@ -395,10 +377,42 @@ MO.FDsCanvas_capture = function FDsCanvas_capture(){
    var data = context.readPixels(0, 0, width, height);
    // 切回原来大小
    o.switchSize(switchWidth, switchHeight);
-   MO.RStage.process();
+   space.process();
    // 上传缩略图
    var url = '/' + o._servicePreview + '.wv?do=upload&type_cd=' + o._resourceTypeCd + '&guid=' + guid + '&width=' + width + '&height=' + height;
    return MO.Console.find(MO.FHttpConsole).send(url, data.buffer);
+}
+
+//==========================================================
+// <T>刷新空间处理。</T>
+//
+// @method
+//==========================================================
+MO.FDsCanvas_refreshSpace = function FDsCanvas_refreshSpace(){
+   var o = this;
+   var graphic = o._graphicContext;
+   // 隐藏画板
+   var hPanel = o._hPanel;
+   MO.Window.Html.visibleSet(hPanel, false);
+   // 获得大小
+   var hParent = o._hParent;
+   var width = hParent.offsetWidth;
+   var height = hParent.offsetHeight - 6;
+   // 设置大小
+   hPanel.width = width;
+   hPanel.height = height;
+   graphic.setViewport(0, 0, width, height);
+   // 设置相机
+   var space = o._activeSpace;
+   if(space){
+      var camera = space.camera();
+      var projection = camera.projection();
+      projection.size().set(width, height);
+      projection.update();
+   }
+   // 显示画板
+   MO.Window.Html.visibleSet(hPanel, true);
+   return MO.EEventStatus.Stop;
 }
 
 //==========================================================

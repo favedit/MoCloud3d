@@ -1369,6 +1369,12 @@ MO.ESource = new function ESource(){
    o.Listener = 'listener';
    return o;
 }
+MO.SArgs = function SArgs(){
+   var o = this;
+   o.free    = MO.Method.freeStruct;
+   o.dispose = MO.Method.disposeStruct;
+   return o;
+}
 MO.SLogger = function SLogger(){
    var o = this;
    o.message = null;

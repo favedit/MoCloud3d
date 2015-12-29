@@ -26,9 +26,6 @@ MO.FDsSpaceCanvas = function FDsSpaceCanvas(o){
    o.onMouseCapture        = MO.FDsSpaceCanvas_onMouseCapture;
    o.onMouseCaptureStop    = MO.FDsSpaceCanvas_onMouseCaptureStop;
    //..........................................................
-   o.oeResize              = MO.FDsSpaceCanvas_oeResize;
-   o.oeRefresh             = MO.FDsSpaceCanvas_oeRefresh;
-   //..........................................................
    // @method
    o.construct             = MO.FDsSpaceCanvas_construct;
    // @method
@@ -179,38 +176,6 @@ MO.FDsSpaceCanvas_onMouseCapture = function FDsSpaceCanvas_onMouseCapture(event)
 MO.FDsSpaceCanvas_onMouseCaptureStop = function FDsSpaceCanvas_onMouseCaptureStop(event){
    var o = this;
    o.__base.FDsCanvas.onMouseCaptureStop.call(o, event);
-}
-
-//==========================================================
-// <T>刷新处理。</T>
-//
-// @method
-//==========================================================
-MO.FDsSpaceCanvas_oeResize = function FDsSpaceCanvas_oeResize(p){
-   var o = this;
-   o.__base.FDsCanvas.oeResize.call(o, p);
-   // 获得大小
-   var hp = o._hPanel;
-   var w = hp.offsetWidth;
-   var h = hp.offsetHeight;
-   // 设置投影
-   var s = o._activeSpace;
-   if(s){
-      var cp = s.camera().projection();
-      cp.size().set(w, h);
-      cp.update();
-   }
-   // 设置范围
-   return MO.EEventStatus.Stop;
-}
-
-//==========================================================
-// <T>刷新处理。</T>
-//
-// @method
-//==========================================================
-MO.FDsSpaceCanvas_oeRefresh = function FDsSpaceCanvas_oeRefresh(p){
-   return MO.EEventStatus.Stop;
 }
 
 //==========================================================

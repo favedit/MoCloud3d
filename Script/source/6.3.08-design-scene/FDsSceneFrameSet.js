@@ -69,15 +69,15 @@ MO.FDsSceneFrameSet_onBuilded = function FDsSceneFrameSet_onBuilded(event){
 }
 
 //==========================================================
-// <T>加载模板处理。</T>
+// <T>加载数据处理。</T>
 //
 // @method
-// @param canvas:FSceneCanvas 画板
+// @param event:SEvent 事件信息
 //==========================================================
-MO.FDsSceneFrameSet_onDataLoaded = function FDsSceneFrameSet_onDataLoaded(canvas){
+MO.FDsSceneFrameSet_onDataLoaded = function FDsSceneFrameSet_onDataLoaded(event){
    var o = this;
    // 加载完成
-   var space = o._activeSpace = canvas._activeSpace;
+   var space = o._activeSpace = event.space;
    o._catalogContent.buildSpace(space);
 }
 
@@ -99,32 +99,7 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
    // 隐藏所有属性面板
    o.hidePropertyFrames();
    // 显示选中属性面板
-   if(MO.Class.isClass(select, MO.FE3dScene)){
-      // 选中场景
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonSpacePropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FG3dTechnique)){
-      // 选中技术
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonTechniquePropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dRegion)){
-      // 选中区域
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonRegionPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dCamera)){
-      // 选中相机
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonCameraPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FG3dDirectionalLight)){
-      // 选中光源
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonLightPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(select == 'layers'){
+   if(select == 'layers'){
       // 选中显示层集合
       if(flag){
          canvas.selectLayers(select);
@@ -153,16 +128,6 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
       var frame = o.findPropertyFrame(MO.EDsFrame.CommonMaterialPropertyFrame);
       frame.show();
       frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dAnimation)){
-      // 选中动画
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonAnimationPropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
-   }else if(MO.Class.isClass(select, MO.FE3dMovie)){
-      // 选中动画
-      var frame = o.findPropertyFrame(MO.EDsFrame.CommonMoviePropertyFrame);
-      frame.show();
-      frame.loadObject(space, select);
    }else if(MO.Class.isClass(select, MO.FE3dRenderable)){
       // 选中渲染对象
       if(flag){
@@ -171,7 +136,7 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
       var frame = o.findPropertyFrame(MO.EDsFrame.CommonRenderablePropertyFrame);
       frame.show();
       frame.loadObject(space, select);
-   }else{
+   }else if(!o.selectPropertyFrame(space, select)){
       throw new TError('Unknown select type. (select={1})', select);
    }
 }
@@ -183,8 +148,15 @@ MO.FDsSceneFrameSet_onCatalogSelected = function FDsSceneFrameSet_onCatalogSelec
 //==========================================================
 MO.FDsSceneFrameSet_construct = function FDsSceneFrameSet_construct(){
    var o = this;
-   // 父处理
    o.__base.FDsFrameSet.construct.call(o);
+   // 注册属性页面
+   o.registerPropertyFrame(MO.FE3dScene, MO.EDsFrame.CommonSpacePropertyFrame);
+   o.registerPropertyFrame(MO.FG3dTechnique, MO.EDsFrame.CommonTechniquePropertyFrame);
+   o.registerPropertyFrame(MO.FE3dRegion, MO.EDsFrame.CommonRegionPropertyFrame);
+   o.registerPropertyFrame(MO.FE3dCamera, MO.EDsFrame.CommonCameraPropertyFrame);
+   o.registerPropertyFrame(MO.FG3dDirectionalLight, MO.EDsFrame.CommonLightPropertyFrame);
+   o.registerPropertyFrame(MO.FE3dAnimation, MO.EDsFrame.CommonAnimationPropertyFrame);
+   o.registerPropertyFrame(MO.FE3dMovie, MO.EDsFrame.CommonMoviePropertyFrame);
 }
 
 //==========================================================

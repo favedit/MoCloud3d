@@ -24,32 +24,26 @@ MO.MFrameProcessor_dispose = function MFrameProcessor_dispose(){
    o._eventLeaveFrame = MO.Lang.Object.dispose(o._eventLeaveFrame);
 }
 MO.FApplication = function FApplication(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
-   o._sessionCode         = MO.Class.register(o, new MO.AGetSet('_sessionCode'));
-   o._activeChapter       = MO.Class.register(o, new MO.AGetter('_activeChapter'));
-   o._chapters            = MO.Class.register(o, new MO.AGetter('_chapters'));
-   o.onProcessReady       = MO.FApplication_onProcessReady;
-   o.onProcessInput       = MO.FApplication_onProcessInput;
-   o.onProcess            = MO.FApplication_onProcess;
-   o.construct            = MO.FApplication_construct;
-   o.initialize           = MO.Method.emptyTrue;
-   o.setup                = MO.Method.emptyTrue;
-   o.findSessionId        = MO.FApplication_findSessionId;
-   o.createChapter        = MO.Method.empty;
-   o.registerChapter      = MO.FApplication_registerChapter;
-   o.unregisterChapter    = MO.FApplication_unregisterChapter;
-   o.selectChapter        = MO.FApplication_selectChapter;
-   o.selectChapterByCode  = MO.FApplication_selectChapterByCode;
-   o.processResize        = MO.FApplication_processResize;
-   o.processEvent         = MO.FApplication_processEvent;
-   o.process              = MO.FApplication_process;
-   o.dispose              = MO.FApplication_dispose;
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MEventDispatcher, MO.MFrameProcessor);
+   o._sessionClass       = MO.Class.register(o, new MO.AGetSet('_sessionClass'));
+   o._activeChapter      = MO.Class.register(o, new MO.AGetter('_activeChapter'));
+   o._chapters           = MO.Class.register(o, new MO.AGetter('_chapters'));
+   o.onProcessReady      = MO.Method.empty;
+   o.onProcessInput      = MO.Method.empty;
+   o.onProcess           = MO.FApplication_onProcess;
+   o.construct           = MO.FApplication_construct;
+   o.initialize          = MO.Method.emptyTrue;
+   o.setup               = MO.Method.emptyTrue;
+   o.session             = MO.FApplication_session;
+   o.createChapter       = MO.Method.empty;
+   o.registerChapter     = MO.FApplication_registerChapter;
+   o.unregisterChapter   = MO.FApplication_unregisterChapter;
+   o.selectChapter       = MO.FApplication_selectChapter;
+   o.selectChapterByCode = MO.FApplication_selectChapterByCode;
+   o.processEvent        = MO.FApplication_processEvent;
+   o.process             = MO.FApplication_process;
+   o.dispose             = MO.FApplication_dispose;
    return o;
-}
-MO.FApplication_onProcessReady = function FApplication_onProcessReady(event){
-   MO.Logger.debug(this, 'Application process ready.');
-}
-MO.FApplication_onProcessInput = function FApplication_onProcessInput(event){
 }
 MO.FApplication_onProcess = function FApplication_onProcess(event){
    var o = this;
@@ -62,8 +56,16 @@ MO.FApplication_construct = function FApplication_construct(){
    var o = this;
    o.__base.FObject.construct.call(o);
    o.__base.MFrameProcessor.construct.call(o);
-   o._sessionCode = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
    o._chapters = new MO.TDictionary();
+}
+MO.FApplication_session = function FApplication_session(){
+   var o = this;
+   var session = o._session;
+   if(!session){
+      session = o._session = MO.Class.create(MO.Runtime.nvl(o._sessionClass, MO.FSession));
+      session.setup();
+   }
+   return session;
 }
 MO.FApplication_registerChapter = function FApplication_registerChapter(chapter){
    var o = this;
@@ -101,9 +103,6 @@ MO.FApplication_selectChapterByCode = function FApplication_selectChapterByCode(
    o.selectChapter(chapter);
    return chapter;
 }
-MO.FApplication_processResize = function FApplication_processResize(){
-   var o = this;
-}
 MO.FApplication_processEvent = function FApplication_processEvent(event){
    var o = this;
    o.dispatchEvent(event);
@@ -132,7 +131,7 @@ MO.FApplication_dispose = function FApplication_dispose(){
    o.__base.FObject.dispose.call(o);
 }
 MO.FChapter = function FChapter(o){
-   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MGraphicObject, MO.MEventDispatcher, MO.MFrameProcessor);
+   o = MO.Class.inherits(this, o, MO.FObject, MO.MListener, MO.MEventDispatcher, MO.MFrameProcessor);
    o._code                = MO.Class.register(o, new MO.AGetSet('_code'));
    o._application         = MO.Class.register(o, new MO.AGetSet('_application'));
    o._scenes              = MO.Class.register(o, new MO.AGetter('_scenes'));
@@ -322,6 +321,26 @@ MO.FScene_dispose = function FScene_dispose(){
    var o = this;
    o.__base.MFrameProcessor.dispose.call(o);
    o.__base.MListener.dispose.call(o);
+   o.__base.FObject.dispose.call(o);
+}
+MO.FSession = function FSession(o){
+   o = MO.Class.inherits(this, o, MO.FObject);
+   o._code     = MO.Class.register(o, new MO.AGetSet('_code'));
+   o.construct = MO.FSession_construct;
+   o.setup     = MO.FSession_setup;
+   o.dispose   = MO.FSession_dispose;
+   return o;
+}
+MO.FSession_construct = function FSession_construct(){
+   var o = this;
+   o.__base.FObject.construct.call(o);
+}
+MO.FSession_setup = function FSession_setup(){
+   var o = this;
+   o._code = MO.Window.cookie(MO.EApplicationConstant.SessionCode);
+}
+MO.FSession_dispose = function FSession_dispose(){
+   var o = this;
    o.__base.FObject.dispose.call(o);
 }
 MO.RDesktop = function RDesktop(){

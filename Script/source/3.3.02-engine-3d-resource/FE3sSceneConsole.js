@@ -32,6 +32,7 @@ MO.FE3sSceneConsole = function FE3sSceneConsole(o){
 MO.FE3sSceneConsole_construct = function FE3sSceneConsole_construct(){
    var o = this;
    o.__base.FConsole.construct.call(o);
+   // 设置属性
    o._scenes = new MO.TDictionary();
 }
 
@@ -103,4 +104,19 @@ MO.FE3sSceneConsole_loadByCode = function FE3sSceneConsole_loadByCode(code){
    var scene = o.load(args);
    MO.Memory.free(args);
    return scene;
+}
+
+
+//==========================================================
+// <T>加载指定代码的场景资源。</T>
+//
+// @param code:String 代码
+// @return FE3sScene 场景资源
+//==========================================================
+MO.FE3sSceneConsole_dispose = function FE3sSceneConsole_dispose(code){
+   var o = this;
+   // 释放属性
+   o._scenes = MO.Lang.Object.dispose(o._scenes, true);
+   // 父处理
+   o.__base.FConsole.dispose.call(o);
 }

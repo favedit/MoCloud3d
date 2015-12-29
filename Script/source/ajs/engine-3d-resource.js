@@ -1705,6 +1705,11 @@ MO.FE3sSceneConsole_loadByCode = function FE3sSceneConsole_loadByCode(code){
    MO.Memory.free(args);
    return scene;
 }
+MO.FE3sSceneConsole_dispose = function FE3sSceneConsole_dispose(code){
+   var o = this;
+   o._scenes = MO.Lang.Object.dispose(o._scenes, true);
+   o.__base.FConsole.dispose.call(o);
+}
 MO.FE3sSceneDisplay = function FE3sSceneDisplay(o){
    o = MO.Class.inherits(this, o, MO.FE3sSprite);
    o._templateGuid        = MO.Class.register(o, new MO.AGetter('_templateGuid'));

@@ -93,12 +93,12 @@ MO.FDrSceneConsole_deleteNode = function FDrSceneConsole_deleteNode(sceneGuid, n
 //==========================================================
 // <T>更新处理。</T>
 //
-// @param p:config:TXmlNode 配置节点
+// @param xconfig:TXmlNode 配置节点
 //==========================================================
-MO.FDrSceneConsole_update = function FDrSceneConsole_update(p){
+MO.FDrSceneConsole_update = function FDrSceneConsole_update(xconfig){
    var o = this;
    // 生成地址
-   var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
+   var url = o.makeServiceUrl('updateContent') + '&date=' + MO.Lang.Date.format();
    // 发送数据
-   return MO.Console.find(MO.FXmlConsole).sendAsync(url, p);
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }

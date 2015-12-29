@@ -398,10 +398,10 @@ MO.FDrSceneConsole_deleteNode = function FDrSceneConsole_deleteNode(sceneGuid, n
    var url = o.makeServiceUrl('deleteNode') + '&space_guid=' + sceneGuid + '&node_guid=' + nodeGuid;
    return MO.Console.find(MO.FXmlConsole).sendAsync(url);
 }
-MO.FDrSceneConsole_update = function FDrSceneConsole_update(p){
+MO.FDrSceneConsole_update = function FDrSceneConsole_update(xconfig){
    var o = this;
-   var url = RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-   return MO.Console.find(MO.FXmlConsole).sendAsync(url, p);
+   var url = o.makeServiceUrl('updateContent') + '&date=' + MO.Lang.Date.format();
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }
 MO.FDrTemplate = function FDrTemplate(o){
    o = MO.Class.inherits(this, o, MO.FDrResource);
