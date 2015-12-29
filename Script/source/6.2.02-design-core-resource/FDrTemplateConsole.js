@@ -43,12 +43,12 @@ MO.FDrTemplateConsole_createDisplay = function FDrTemplateConsole_createDisplay(
 //==========================================================
 // <T>更新处理。</T>
 //
-// @param config:TXmlNode 配置节点
+// @param xconfig:TXmlNode 配置节点
 //==========================================================
-MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(config){
+MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(xconfig){
    var o = this;
    // 生成地址
-   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
+   var url = o.makeServiceUrl('updateContent') + '&date=' + MO.Lang.Date.format();
    // 发送数据
-   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }

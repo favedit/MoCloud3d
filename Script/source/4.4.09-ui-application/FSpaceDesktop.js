@@ -112,7 +112,7 @@ MO.FSpaceDesktop_build = function FSpaceDesktop_build(hPanel){
    canvas2d._hCanvas.style.position = 'absolute';
    o.canvasRegister(canvas2d);
    // 引擎配置
-   MO.RE3dEngine.setup();
+   MO.Engine3d.setup();
 }
 
 //==========================================================

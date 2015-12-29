@@ -176,7 +176,7 @@ MO.FSpaceApplication_setup = function FSpaceApplication_setup(hPanel){
    if(!context.isValid()){
       return;
    }
-   o.linkGraphicContext(canvas);
+   // o.linkGraphicContext(canvas);
    //..........................................................
    // 创建动态信息
    var control = o._dynamicInfo = MO.Class.create(MO.FCanvasDynamicInfo);

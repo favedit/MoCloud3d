@@ -46183,8 +46183,10 @@ MO.FModelSpaceApplication = function FModelSpaceApplication(o){
 }
 MO.FModelSpaceApplication_onDataLoaded = function FModelSpaceApplication_onDataLoaded(event){
    var o = this;
-   var graphic = o._graphicContext;
    var space = o._activeSpace = event.sender;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var size = graphic.size();
    var camerapPojection = space.camera().projection();
    camerapPojection.size().set(size.width, size.height);
@@ -46205,16 +46207,19 @@ MO.FModelSpaceApplication_loadByGuid = function FModelSpaceApplication_loadByGui
    if(o._activeSpace){
       modelConsole.free(o._activeSpace);
    }
-   var model = o._activeSpace = modelConsole.allocByGuid(o._graphicContext, guid);
+   var model = o._activeSpace = modelConsole.allocByGuid(graphic, guid);
    model.addLoadListener(o, o.onDataLoaded);
 }
 MO.FModelSpaceApplication_loadByCode = function FModelSpaceApplication_loadByCode(code){
    var o = this;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var modelConsole = MO.Console.find(MO.FE3dModelConsole);
    if(o._activeSpace){
       modelConsole.free(o._activeSpace);
    }
-   var model = o._activeSpace = modelConsole.allocByCode(o._graphicContext, code);
+   var model = o._activeSpace = modelConsole.allocByCode(graphic, code);
    model.addLoadListener(o, o.onDataLoaded);
 }
 MO.FModelSpaceApplication_dispose = function FModelSpaceApplication_dispose(){
@@ -46808,8 +46813,10 @@ MO.FSceneSpaceApplication = function FSceneSpaceApplication(o){
 }
 MO.FSceneSpaceApplication_onDataLoaded = function FSceneSpaceApplication_onDataLoaded(event){
    var o = this;
-   var graphic = o._graphicContext;
    var space = o._activeSpace = event.sender;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var size = graphic.size();
    var camerapPojection = space.camera().projection();
    camerapPojection.size().set(size.width, size.height);
@@ -46826,20 +46833,26 @@ MO.FSceneSpaceApplication_construct = function FSceneSpaceApplication_construct(
 }
 MO.FSceneSpaceApplication_loadByGuid = function FSceneSpaceApplication_loadByGuid(guid){
    var o = this;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
    if(o._activeSpace){
       sceneConsole.free(o._activeSpace);
    }
-   var scene = o._activeSpace = sceneConsole.allocByGuid(o._graphicContext, guid);
+   var scene = o._activeSpace = sceneConsole.allocByGuid(graphic, guid);
    scene.addLoadListener(o, o.onDataLoaded);
 }
 MO.FSceneSpaceApplication_loadByCode = function FSceneSpaceApplication_loadByCode(code){
    var o = this;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
    if(o._activeSpace){
       sceneConsole.free(o._activeSpace);
    }
-   var scene = o._activeSpace = sceneConsole.allocByCode(o._graphicContext, code);
+   var scene = o._activeSpace = sceneConsole.allocByCode(graphic, code);
    scene.addLoadListener(o, o.onDataLoaded);
 }
 MO.FSceneSpaceApplication_dispose = function FSceneSpaceApplication_dispose(){
@@ -46954,7 +46967,6 @@ MO.FSpaceApplication_setup = function FSpaceApplication_setup(hPanel){
    if(!context.isValid()){
       return;
    }
-   o.linkGraphicContext(canvas);
    var control = o._dynamicInfo = MO.Class.create(MO.FCanvasDynamicInfo);
    control.linkGraphicContext(canvas);
    control.setContext(canvas.graphicContext());
@@ -47311,7 +47323,7 @@ MO.FSpaceDesktop_build = function FSpaceDesktop_build(hPanel){
    canvas2d.setPanel(hPanel);
    canvas2d._hCanvas.style.position = 'absolute';
    o.canvasRegister(canvas2d);
-   MO.RE3dEngine.setup();
+   MO.Engine3d.setup();
 }
 MO.FSpaceDesktop_resize = function FSpaceDesktop_resize(targetWidth, targetHeight){
    var o = this;
@@ -47416,8 +47428,10 @@ MO.FTemplateSpaceApplication = function FTemplateSpaceApplication(o){
 }
 MO.FTemplateSpaceApplication_onDataLoaded = function FTemplateSpaceApplication_onDataLoaded(event){
    var o = this;
-   var graphic = o._graphicContext;
    var space = o._activeSpace = event.sender;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var size = graphic.size();
    var camerapPojection = space.camera().projection();
    camerapPojection.size().set(size.width, size.height);
@@ -47434,20 +47448,26 @@ MO.FTemplateSpaceApplication_construct = function FTemplateSpaceApplication_cons
 }
 MO.FTemplateSpaceApplication_loadByGuid = function FTemplateSpaceApplication_loadByGuid(guid){
    var o = this;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var templateConsole = MO.Console.find(MO.FE3dTemplateConsole);
    if(o._activeSpace){
       templateConsole.free(o._activeSpace);
    }
-   var template = o._activeSpace = templateConsole.allocByGuid(o._graphicContext, guid);
+   var template = o._activeSpace = templateConsole.allocByGuid(graphic, guid);
    template.addLoadListener(o, o.onDataLoaded);
 }
 MO.FTemplateSpaceApplication_loadByCode = function FTemplateSpaceApplication_loadByCode(code){
    var o = this;
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    var templateConsole = MO.Console.find(MO.FE3dTemplateConsole);
    if(o._activeSpace){
       templateConsole.free(o._activeSpace);
    }
-   var template = o._activeSpace = templateConsole.allocByCode(o._graphicContext, code);
+   var template = o._activeSpace = templateConsole.allocByCode(graphic, code);
    template.addLoadListener(o, o.onDataLoaded);
 }
 MO.FTemplateSpaceApplication_dispose = function FTemplateSpaceApplication_dispose(){
@@ -74966,10 +74986,10 @@ MO.FDrTemplateConsole_createDisplay = function FDrTemplateConsole_createDisplay(
    var url = o.makeServiceUrl('createDisplay');
    return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }
-MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(config){
+MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(xconfig){
    var o = this;
-   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
+   var url = o.makeServiceUrl('updateContent') + '&date=' + MO.Lang.Date.format();
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }
 MO.FDsCommonAnimationPropertyFrame = function FDsCommonAnimationPropertyFrame(o){
    o = MO.Class.inherits(this, o, MO.FDuiForm);
@@ -84752,7 +84772,7 @@ MO.FDsTemplateMenuBar_onSaveClick = function FDsTemplateMenuBar_onSaveClick(p){
    var o = this;
    var space = o._frameSet._activeSpace;
    var resource = space.resource();
-   MO.Console.find(FDuiDesktopConsole).showUploading();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
    var xconfig = new MO.TXmlNode();
    resource.saveConfig(xconfig);
    var connection = MO.Console.find(MO.FDrTemplateConsole).update(xconfig);

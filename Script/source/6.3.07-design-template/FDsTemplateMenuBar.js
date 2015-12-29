@@ -53,7 +53,7 @@ MO.FDsTemplateMenuBar_onSaveClick = function FDsTemplateMenuBar_onSaveClick(p){
    var space = o._frameSet._activeSpace;
    var resource = space.resource();
    // 画面禁止操作
-   MO.Console.find(FDuiDesktopConsole).showUploading();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
    // 存储配置
    var xconfig = new MO.TXmlNode();
    resource.saveConfig(xconfig);

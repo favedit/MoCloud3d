@@ -594,7 +594,7 @@ MO.FDsTemplateMenuBar_onSaveClick = function FDsTemplateMenuBar_onSaveClick(p){
    var o = this;
    var space = o._frameSet._activeSpace;
    var resource = space.resource();
-   MO.Console.find(FDuiDesktopConsole).showUploading();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
    var xconfig = new MO.TXmlNode();
    resource.saveConfig(xconfig);
    var connection = MO.Console.find(MO.FDrTemplateConsole).update(xconfig);

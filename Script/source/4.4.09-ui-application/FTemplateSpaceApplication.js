@@ -31,8 +31,11 @@ MO.FTemplateSpaceApplication = function FTemplateSpaceApplication(o){
 //==========================================================
 MO.FTemplateSpaceApplication_onDataLoaded = function FTemplateSpaceApplication_onDataLoaded(event){
    var o = this;
-   var graphic = o._graphicContext;
    var space = o._activeSpace = event.sender;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 设置投影
    var size = graphic.size();
    var camerapPojection = space.camera().projection();
@@ -73,13 +76,17 @@ MO.FTemplateSpaceApplication_construct = function FTemplateSpaceApplication_cons
 //==========================================================
 MO.FTemplateSpaceApplication_loadByGuid = function FTemplateSpaceApplication_loadByGuid(guid){
    var o = this;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 收集场景
    var templateConsole = MO.Console.find(MO.FE3dTemplateConsole);
    if(o._activeSpace){
       templateConsole.free(o._activeSpace);
    }
    // 监听加载完成
-   var template = o._activeSpace = templateConsole.allocByGuid(o._graphicContext, guid);
+   var template = o._activeSpace = templateConsole.allocByGuid(graphic, guid);
    template.addLoadListener(o, o.onDataLoaded);
 }
 
@@ -91,13 +98,17 @@ MO.FTemplateSpaceApplication_loadByGuid = function FTemplateSpaceApplication_loa
 //==========================================================
 MO.FTemplateSpaceApplication_loadByCode = function FTemplateSpaceApplication_loadByCode(code){
    var o = this;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 收集场景
    var templateConsole = MO.Console.find(MO.FE3dTemplateConsole);
    if(o._activeSpace){
       templateConsole.free(o._activeSpace);
    }
    // 监听加载完成
-   var template = o._activeSpace = templateConsole.allocByCode(o._graphicContext, code);
+   var template = o._activeSpace = templateConsole.allocByCode(graphic, code);
    template.addLoadListener(o, o.onDataLoaded);
 }
 

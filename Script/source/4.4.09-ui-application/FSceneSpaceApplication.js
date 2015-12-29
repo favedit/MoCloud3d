@@ -31,8 +31,11 @@ MO.FSceneSpaceApplication = function FSceneSpaceApplication(o){
 //==========================================================
 MO.FSceneSpaceApplication_onDataLoaded = function FSceneSpaceApplication_onDataLoaded(event){
    var o = this;
-   var graphic = o._graphicContext;
    var space = o._activeSpace = event.sender;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 设置投影
    var size = graphic.size();
    var camerapPojection = space.camera().projection();
@@ -65,13 +68,17 @@ MO.FSceneSpaceApplication_construct = function FSceneSpaceApplication_construct(
 //==========================================================
 MO.FSceneSpaceApplication_loadByGuid = function FSceneSpaceApplication_loadByGuid(guid){
    var o = this;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 收集场景
    var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
    if(o._activeSpace){
       sceneConsole.free(o._activeSpace);
    }
    // 监听加载完成
-   var scene = o._activeSpace = sceneConsole.allocByGuid(o._graphicContext, guid);
+   var scene = o._activeSpace = sceneConsole.allocByGuid(graphic, guid);
    scene.addLoadListener(o, o.onDataLoaded);
 }
 
@@ -83,13 +90,17 @@ MO.FSceneSpaceApplication_loadByGuid = function FSceneSpaceApplication_loadByGui
 //==========================================================
 MO.FSceneSpaceApplication_loadByCode = function FSceneSpaceApplication_loadByCode(code){
    var o = this;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 收集场景
    var sceneConsole = MO.Console.find(MO.FE3dSceneConsole);
    if(o._activeSpace){
       sceneConsole.free(o._activeSpace);
    }
    // 监听加载完成
-   var scene = o._activeSpace = sceneConsole.allocByCode(o._graphicContext, code);
+   var scene = o._activeSpace = sceneConsole.allocByCode(graphic, code);
    scene.addLoadListener(o, o.onDataLoaded);
 }
 

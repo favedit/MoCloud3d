@@ -2158,10 +2158,10 @@ MO.FDrTemplateConsole_createDisplay = function FDrTemplateConsole_createDisplay(
    var url = o.makeServiceUrl('createDisplay');
    return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }
-MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(config){
+MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(xconfig){
    var o = this;
-   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
+   var url = o.makeServiceUrl('updateContent') + '&date=' + MO.Lang.Date.format();
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }
 MO.FDsCommonAnimationPropertyFrame = function FDsCommonAnimationPropertyFrame(o){
    o = MO.Class.inherits(this, o, MO.FDuiForm);
@@ -11944,7 +11944,7 @@ MO.FDsTemplateMenuBar_onSaveClick = function FDsTemplateMenuBar_onSaveClick(p){
    var o = this;
    var space = o._frameSet._activeSpace;
    var resource = space.resource();
-   MO.Console.find(FDuiDesktopConsole).showUploading();
+   MO.Console.find(MO.FDuiDesktopConsole).showUploading();
    var xconfig = new MO.TXmlNode();
    resource.saveConfig(xconfig);
    var connection = MO.Console.find(MO.FDrTemplateConsole).update(xconfig);

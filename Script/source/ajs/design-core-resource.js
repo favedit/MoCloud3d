@@ -426,8 +426,8 @@ MO.FDrTemplateConsole_createDisplay = function FDrTemplateConsole_createDisplay(
    var url = o.makeServiceUrl('createDisplay');
    return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }
-MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(config){
+MO.FDrTemplateConsole_update = function FDrTemplateConsole_update(xconfig){
    var o = this;
-   var url = MO.RBrowser.hostPath('/' + o._serviceCode + '.ws?action=updateContent&date=' + RDate.format());
-   return MO.Console.find(MO.FXmlConsole).sendAsync(url, config);
+   var url = o.makeServiceUrl('updateContent') + '&date=' + MO.Lang.Date.format();
+   return MO.Console.find(MO.FXmlConsole).sendAsync(url, xconfig);
 }

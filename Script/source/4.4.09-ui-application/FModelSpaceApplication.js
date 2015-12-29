@@ -31,8 +31,11 @@ MO.FModelSpaceApplication = function FModelSpaceApplication(o){
 //==========================================================
 MO.FModelSpaceApplication_onDataLoaded = function FModelSpaceApplication_onDataLoaded(event){
    var o = this;
-   var graphic = o._graphicContext;
    var space = o._activeSpace = event.sender;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 设置投影
    var size = graphic.size();
    var camerapPojection = space.camera().projection();
@@ -79,7 +82,7 @@ MO.FModelSpaceApplication_loadByGuid = function FModelSpaceApplication_loadByGui
       modelConsole.free(o._activeSpace);
    }
    // 监听加载完成
-   var model = o._activeSpace = modelConsole.allocByGuid(o._graphicContext, guid);
+   var model = o._activeSpace = modelConsole.allocByGuid(graphic, guid);
    model.addLoadListener(o, o.onDataLoaded);
 }
 
@@ -91,13 +94,17 @@ MO.FModelSpaceApplication_loadByGuid = function FModelSpaceApplication_loadByGui
 //==========================================================
 MO.FModelSpaceApplication_loadByCode = function FModelSpaceApplication_loadByCode(code){
    var o = this;
+   // 获得属性
+   var desktop = o._desktop;
+   var canvas = desktop.canvas3d();
+   var graphic = canvas.graphicContext();
    // 收集场景
    var modelConsole = MO.Console.find(MO.FE3dModelConsole);
    if(o._activeSpace){
       modelConsole.free(o._activeSpace);
    }
    // 监听加载完成
-   var model = o._activeSpace = modelConsole.allocByCode(o._graphicContext, code);
+   var model = o._activeSpace = modelConsole.allocByCode(graphic, code);
    model.addLoadListener(o, o.onDataLoaded);
 }
 
