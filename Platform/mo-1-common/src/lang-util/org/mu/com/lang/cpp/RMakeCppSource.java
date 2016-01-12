@@ -6,9 +6,9 @@ import org.mo.com.lang.RString;
 //============================================================
 public class RMakeCppSource
 {
-   public static String _sourcePath = "D:\\ZW-Platform-Work\\mo-1-common\\src\\lang-util\\org\\mu\\com\\lang\\cpp";
+   public static String _sourcePath = "D:\\Microbject\\MoCloud3d\\Platform\\mo-1-common\\src\\lang-util\\org\\mu\\com\\lang\\cpp";
 
-   public static String _targetPath = "D:\\ZW-Mobile-Work\\Cross\\Common\\MoCommon";
+   public static String _targetPath = "D:\\Microbject\\MoCross\\Source\\Cross\\Common\\MoCommon";
 
    //============================================================
    public static void makeArray(){

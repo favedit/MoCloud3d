@@ -15,7 +15,7 @@ public class RFilenameRename
    public static FFileInfo findSource(String code){
       for(FFileInfo source : _sources){
          String shortName = source.name();
-         if(shortName.contains("第" + code + "話")){
+         if(shortName.contains("Seitokaichou][" + code + "話")){
             return source;
          }
       }
@@ -23,13 +23,13 @@ public class RFilenameRename
    }
 
    public static void main(String[] args){
-      String sourcePath = "H:/Download/Finish/[philosophy-raws][Soukyuu no Fafner]";
-      String targetPath = "H:/Download/Finish/[philosophy-raws][Soukyuu no Fafner]";
+      String sourcePath = "H:/Download/Finish/[ReinForce] Okusama ga Seitokaichou! (BDRip 1920x1080 x264 FLAC)";
+      String targetPath = "H:/Download/Finish/[ReinForce] Okusama ga Seitokaichou! (BDRip 1920x1080 x264 FLAC)";
       _sources = RDirectory.listFiles(sourcePath, false);
       _targets = RDirectory.listFiles(targetPath, false);
       for(FFileInfo target : _targets){
          String shortName = target.name();
-         String code = RString.mid(shortName, "灌篮高手", ".srt");
+         String code = RString.mid(shortName, "Seitokaichou! - ", "(BDRip 1920x1080 x264 FLAC)");
          if(code.startsWith("0")){
             code = code.substring(1);
          }
