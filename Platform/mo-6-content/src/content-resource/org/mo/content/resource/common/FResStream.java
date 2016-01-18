@@ -168,7 +168,7 @@ public class FResStream
       output.writeUint8((short)_elementCount);
       output.writeBoolean(false);
       output.writeUint8((short)_dataStride);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       output.write(_data, 0, _data.length);
    }
@@ -187,7 +187,7 @@ public class FResStream
       output.writeUint8((short)_elementCount);
       output.writeBoolean(false);
       output.writeUint8((short)_dataStride);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       output.write(_data, 0, _data.length);
    }
@@ -206,7 +206,7 @@ public class FResStream
       output.writeUint8((short)_elementCount);
       output.writeBoolean(false);
       output.writeUint8((short)_dataStride);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       output.write(_data, 0, _data.length);
    }
@@ -223,7 +223,7 @@ public class FResStream
          output.writeUint8((short)4);
          output.writeBoolean(true);
          output.writeUint8((short)4);
-         output.writeInt32(_dataCount);
+         output.writeUint32(_dataCount);
          // 输出数据
          FByteStream stream = new FByteStream(_data, _data.length);
          for(int n = 0; n < _dataCount; n++){
@@ -242,7 +242,7 @@ public class FResStream
          output.writeUint8((short)4);
          output.writeBoolean(true);
          output.writeUint8((short)4);
-         output.writeInt32(_dataCount);
+         output.writeUint32(_dataCount);
          // 输出数据
          FByteStream stream = new FByteStream(_data, _data.length);
          for(int n = 0; n < _dataCount; n++){
@@ -274,7 +274,7 @@ public class FResStream
       output.writeUint8((short)4);
       output.writeBoolean(true);
       output.writeUint8((short)4);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       FByteStream stream = new FByteStream(_data, _data.length);
       for(int n = 0; n < _dataCount; n++){
@@ -304,7 +304,7 @@ public class FResStream
       output.writeUint8((short)3);
       output.writeBoolean(false);
       output.writeUint8((short)6);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       FByteStream stream = new FByteStream(_data, _data.length);
       int total = _dataCount * 3;
@@ -332,7 +332,7 @@ public class FResStream
          output.writeUint8((short)3);
          output.writeBoolean(false);
          output.writeUint8((short)12);
-         output.writeInt32(_dataCount);
+         output.writeUint32(_dataCount);
          // 输出数据
          FByteStream stream = new FByteStream(_data, _data.length);
          int total = _dataCount * 3;
@@ -346,7 +346,7 @@ public class FResStream
          output.writeUint8((short)3);
          output.writeBoolean(false);
          output.writeUint8((short)6);
-         output.writeInt32(_dataCount);
+         output.writeUint32(_dataCount);
          // 输出数据
          FByteStream stream = new FByteStream(_data, _data.length);
          int total = _dataCount * 3;
@@ -370,7 +370,7 @@ public class FResStream
       output.writeUint8((short)4);
       output.writeBoolean(false);
       output.writeUint8((short)4);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       FByteStream stream = new FByteStream(_data, _data.length);
       int total = _dataCount * 4;
@@ -393,7 +393,7 @@ public class FResStream
       output.writeUint8((short)4);
       output.writeBoolean(true);
       output.writeUint8((short)4);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       FByteStream stream = new FByteStream(_data, _data.length);
       int total = _dataCount * 4;
@@ -413,7 +413,7 @@ public class FResStream
       output.writeUint8((short)_elementCount);
       output.writeBoolean(false);
       output.writeUint8((short)_dataStride);
-      output.writeInt32(_dataCount);
+      output.writeUint32(_dataCount);
       // 输出数据
       output.write(_data, 0, _data.length);
    }

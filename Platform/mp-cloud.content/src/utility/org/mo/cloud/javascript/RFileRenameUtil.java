@@ -32,18 +32,18 @@ public class RFileRenameUtil
    //============================================================
    public static void main(String[] args){
       String fileExt = ".mkv";
-      String sourcePath = "H:/Download/Finish/! [Cartoon] 新世纪福音战士 (26.mkv-1440x1080)";
+      String sourcePath = "H:\\Download\\Finish\\! [Cartoon] 战姬绝唱-2 (2013-13.mkv-1920x1080-36.9G)";
       FStrings fileNames = RFile.listFiles(sourcePath);
       for(String fileName : fileNames){
          if(fileName.endsWith(fileExt)){
-            String code = RString.mid(RFile.name(fileName), "Evangelion][", "][BDRIP]");
+            String code = RString.mid(RFile.name(fileName), "Symphogear G - ", " ");
             if(RInteger.isInteger(code)){
                String name = RFile.name(fileName);
-               String findFileName = findFile(fileNames, "Evangelion][" + code + "][BDRIP][", "tc.ssa");
+               String findFileName = findFile(fileNames, "[BDrip][" + code + "]", "-tc.ass");
                if(!RString.isEmpty(findFileName)){
                   String findName = RFile.name(findFileName);
                   System.out.println(code + " - " + name + " : " + findName);
-                  RFile.rename(sourcePath + "/" + findName, sourcePath + "/" + RString.replace(name, fileExt, ".tc.ssa"));
+                  RFile.rename(sourcePath + "/" + findName, sourcePath + "/" + RString.replace(name, fileExt, ".tc.ass"));
                }
             }
          }
