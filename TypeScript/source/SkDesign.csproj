@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{A973484A-608F-49A6-AF7C-0EFEFDCDB09A}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <OutputPath>bin</OutputPath>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <TypeScriptToolsVersion>1.7</TypeScriptToolsVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="app.css" />
+    <Content Include="Common\Lang\AAnnotation.js" />
+    <Content Include="Common\Lang\AConstructor.js" />
+    <Content Include="Common\Lang\ADispose.js" />
+    <Content Include="Common\Lang\AEnum.js" />
+    <Content Include="Common\Lang\AGetSet.js" />
+    <Content Include="Common\Lang\AGetter.js" />
+    <Content Include="Common\Lang\AGetterSource.js" />
+    <Content Include="Common\Lang\ALinker.js" />
+    <Content Include="Common\Lang\AProperty.js" />
+    <Content Include="Common\Lang\ASetter.js" />
+    <Content Include="Common\Lang\ASource.js" />
+    <Content Include="Common\Lang\AVirtual.js" />
+    <Content Include="Common\Lang\EAnnotation.js" />
+    <Content Include="Common\Lang\EBoolean.js" />
+    <Content Include="Common\Lang\ECharCase.js" />
+    <Content Include="Common\Lang\EDataType.js" />
+    <Content Include="Common\Lang\EDispose.js" />
+    <Content Include="Common\Lang\EEndian.js" />
+    <Content Include="Common\Lang\ENodeType.js" />
+    <Content Include="Common\Lang\ENumber.js" />
+    <Content Include="Common\Lang\ERegExp.js" />
+    <Content Include="Common\Lang\EResult.js" />
+    <Content Include="Common\Lang\ESource.js" />
+    <Content Include="Common\Lang\FConsole.js" />
+    <Content Include="Common\Lang\FObject.js" />
+    <Content Include="Common\Lang\FObjectPool.js" />
+    <Content Include="Common\Lang\FObjectPools.js" />
+    <Content Include="Common\Lang\FTimer.js" />
+    <Content Include="Common\Lang\MInstance.js" />
+    <Content Include="Common\Lang\MInvoke.js" />
+    <Content Include="Common\Lang\MPoolAble.js" />
+    <Content Include="Common\Lang\RArray.js" />
+    <Content Include="Common\Lang\RBlob.js" />
+    <Content Include="Common\Lang\RBoolean.js" />
+    <Content Include="Common\Lang\RByte.js" />
+    <Content Include="Common\Lang\RChar.js" />
+    <Content Include="Common\Lang\RClass.js" />
+    <Content Include="Common\Lang\RConsole.js" />
+    <Content Include="Common\Lang\RConst.js" />
+    <Content Include="Common\Lang\RDate.js" />
+    <Content Include="Common\Lang\REnum.js" />
+    <Content Include="Common\Lang\RFile.js" />
+    <Content Include="Common\Lang\RFloat.js" />
+    <Content Include="Common\Lang\RHex.js" />
+    <Content Include="Common\Lang\RInstance.js" />
+    <Content Include="Common\Lang\RInteger.js" />
+    <Content Include="Common\Lang\RJson.js" />
+    <Content Include="Common\Lang\RLogger.js" />
+    <Content Include="Common\Lang\RMethod.js" />
+    <Content Include="Common\Lang\RObject.js" />
+    <Content Include="Common\Lang\RRect.js" />
+    <Content Include="Common\Lang\RRegExp.js" />
+    <Content Include="Common\Lang\RSet.js" />
+    <Content Include="Common\Lang\RString.js" />
+    <Content Include="Common\Lang\RTimer.js" />
+    <Content Include="Common\Lang\SArguments.js" />
+    <Content Include="Common\Lang\SEnumItem.js" />
+    <Content Include="Common\Lang\SLogger.js" />
+    <Content Include="Common\Lang\TClass.js" />
+    <Content Include="Common\Lang\TClassBase.js" />
+    <Content Include="Common\Lang\TContext.js" />
+    <Content Include="Common\Lang\TDate.js" />
+    <Content Include="Common\Lang\TError.js" />
+    <Content Include="Common\Lang\TFatalError.js" />
+    <Content Include="Common\Lang\TInstancePool.js" />
+    <Content Include="Common\Lang\TInvoke.js" />
+    <Content Include="Common\Lang\TListener.js" />
+    <Content Include="Common\Lang\TListeners.js" />
+    <Content Include="Common\Lang\TLoaderListener.js" />
+    <Content Include="Common\Lang\TLocker.js" />
+    <Content Include="Common\Lang\TMessage.js" />
+    <Content Include="Common\Lang\TMessages.js" />
+    <Content Include="Common\Lang\TNode.js" />
+    <Content Include="Common\Lang\TRow.js" />
+    <Content Include="Common\Lang\TSpeed.js" />
+    <Content Include="Common\Lang\TTicker.js" />
+    <Content Include="Common\Lang\TUnsupportError.js" />
+    <Content Include="Common\Math\EFrustumPlane.js" />
+    <Content Include="Common\Math\RMath.js" />
+    <Content Include="Common\Math\RMatrix.js" />
+    <Content Include="Common\Math\RRandom.js" />
+    <Content Include="Common\Math\SColor4.js" />
+    <Content Include="Common\Math\SCorners.js" />
+    <Content Include="Common\Math\SFrustum.js" />
+    <Content Include="Common\Math\SFrustumPlanes.js" />
+    <Content Include="Common\Math\SMatrix3d.js" />
+    <Content Include="Common\Math\SMatrix3x3.js" />
+    <Content Include="Common\Math\SMatrix4x4.js" />
+    <Content Include="Common\Math\SOutline2.js" />
+    <Content Include="Common\Math\SOutline2d.js" />
+    <Content Include="Common\Math\SOutline3.js" />
+    <Content Include="Common\Math\SOutline3d.js" />
+    <Content Include="Common\Math\SPadding.js" />
+    <Content Include="Common\Math\SPlane.js" />
+    <Content Include="Common\Math\SPoint2.js" />
+    <Content Include="Common\Math\SPoint3.js" />
+    <Content Include="Common\Math\SPoint4.js" />
+    <Content Include="Common\Math\SQuaternion.js" />
+    <Content Include="Common\Math\SRange.js" />
+    <Content Include="Common\Math\SRectangle.js" />
+    <Content Include="Common\Math\SSize2.js" />
+    <Content Include="Common\Math\SSize3.js" />
+    <Content Include="Common\Math\SSquare.js" />
+    <Content Include="Common\Math\SValue2.js" />
+    <Content Include="Common\Math\SValue3.js" />
+    <Content Include="Common\Math\SValue4.js" />
+    <Content Include="Common\Math\SVector2.js" />
+    <Content Include="Common\Math\SVector3.js" />
+    <Content Include="Common\Math\SVector4.js" />
+    <Content Include="Common\Runtime\EScope.js" />
+    <Content Include="Common\Runtime\TArray.js" />
+    <Content Include="Common\Runtime\RMemory.js" />
+    <Content Include="Common\Runtime\SMemoryPoolEntry.js" />
+    <Content Include="Common\Runtime\TMemoryPool.js" />
+    <Content Include="Common\Runtime\SLooperEntry.js" />
+    <Content Include="Common\Runtime\TLooper.js" />
+    <Content Include="Common\Runtime\RGlobal.js" />
+    <Content Include="index.html" />
+    <Content Include="web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Common\Runtime\ELogger.ts" />
+    <TypeScriptCompile Include="Common\Runtime\EPlatform.ts" />
+    <TypeScriptCompile Include="Common\Runtime\EProcess.ts" />
+    <TypeScriptCompile Include="Common\Runtime\RAssert.ts" />
+    <TypeScriptCompile Include="Common\Runtime\RRuntime.ts" />
+    <TypeScriptCompile Include="Common\Runtime\RSingleton.ts" />
+    <TypeScriptCompile Include="Common\Space.ts" />
+    <TypeScriptCompile Include="Common\Runtime\TAttributes.ts" />
+    <TypeScriptCompile Include="Common\Runtime\TDictionary.ts" />
+    <TypeScriptCompile Include="Common\Runtime\TEnum.ts" />
+    <TypeScriptCompile Include="Common\Runtime\TMap.ts" />
+    <TypeScriptCompile Include="Common\Runtime\TObjects.ts" />
+    <TypeScriptCompile Include="Common\Runtime\TString.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Loader\" />
+    <Folder Include="Core\Plugin\" />
+    <Folder Include="Editor\" />
+    <Folder Include="Engine\UI\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>SkDesign</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets')" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>1038</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:1038/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
+    <TypeScriptSourceMap>false</TypeScriptSourceMap>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+</Project>

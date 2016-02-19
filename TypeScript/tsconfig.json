@@ -1,0 +1,51 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "target": "es5",
+        "module": "amd",
+        "noImplicitAny": false,
+        "removeComments": false,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "outDir": "./build"
+    },
+    "buildOnSave": true,
+    "compileOnSave": true,
+    "filesGlob": [
+        "./source/**/*.ts"
+    ],
+    "exclude": [],
+    "atom": {
+        "rewriteTsconfig": true
+    },
+    "files": [
+        "./source/app.ts",
+        "./source/common/lang/FArray.ts",
+        "./source/common/lang/FAttributes.ts",
+        "./source/common/lang/FDictionary.ts",
+        "./source/common/lang/FLooper.ts",
+        "./source/common/lang/FMap.ts",
+        "./source/common/lang/FObject.ts",
+        "./source/common/lang/FObjects.ts",
+        "./source/common/lang/FString.ts",
+        "./source/common/lang/REnum.ts",
+        "./source/common/lang/RFloat.ts",
+        "./source/common/lang/RInteger.ts",
+        "./source/common/lang/RString.ts",
+        "./source/common/lang/SLooperEntry.ts",
+        "./source/common/runtime/ELogger.ts",
+        "./source/common/runtime/EPlatform.ts",
+        "./source/common/runtime/EProcess.ts",
+        "./source/common/runtime/EScope.ts",
+        "./source/common/runtime/RAssert.ts",
+        "./source/common/runtime/RMemory.ts",
+        "./source/common/runtime/RRuntime.ts",
+        "./source/common/runtime/RSingleton.ts",
+        "./source/common/runtime/SMemoryPoolEntry.ts",
+        "./source/common/runtime/TMemoryPool.ts"
+    ]
+}
