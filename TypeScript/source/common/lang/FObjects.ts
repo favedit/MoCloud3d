@@ -6,7 +6,7 @@ module sk.common.lang {
    // @author maocy
    // @version 141230
    // =========================================================
-   export class TObjects {
+   export class FObjects extends FObject {
       //..........................................................
       // @attribute
       protected _count: number = 0;

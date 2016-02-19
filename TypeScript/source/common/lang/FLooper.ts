@@ -6,7 +6,7 @@
    // @author maocy
    // @version 150110
    //==========================================================
-   export class TLooper {
+   export class FLooper extends FObject {
       // 总数
       _count: number = 0;
       // 记录数
