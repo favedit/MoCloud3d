@@ -38,7 +38,7 @@
       // @param message:String 消息内容
       // @param params:Object... 消息参数列表
       //==========================================================
-      public static debug(owner, message, params) {
+      public static debug(owner: any, message: string, ...params: Array<any>) {
          var o = this;
          // 获得函数名称
          var name = null;
@@ -87,7 +87,7 @@
       // @param message:String 消息内容
       // @param params:Object... 消息参数列表
       //==========================================================
-      public static info(owner, message, params) {
+      public static info(owner: any, message: string, ...params: Array<any>) {
          var o = this;
          // 获得函数名称
          var name = null;
@@ -136,7 +136,7 @@
       // @param message:String 消息内容
       // @param params:Object... 消息参数列表
       //==========================================================
-      public static warn(owner, message, params) {
+      public static warn(owner: any, message: string, ...params: Array<any>) {
          var o = this;
          // 获得函数名称
          var name = null;
@@ -185,7 +185,7 @@
       // @param message:String 消息内容
       // @param params:Object... 消息参数列表
       //==========================================================
-      public static error(owner, message, params) {
+      public static error(owner: any, message: string, ...params: Array<any>) {
          var o = this;
          // 获得函数名称
          var name = null;
