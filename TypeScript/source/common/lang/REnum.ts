@@ -1,25 +1,67 @@
-module sk.common.lang {
+﻿module sk.common.lang {
    //============================================================
-   // <T>枚举基类。</T>
+   // <T>枚举管理类。</T>
    //
    // @reference
    // @author maocy
-   // @version 150730
+   // @version 141230
    //============================================================
    export class REnum {
       //============================================================
-      // <T>获得显示内容。</T>
+      // <T>是否含有当前内容。</T>
       //
       // @method
-      // @param value:Object 内容
-      // @param defaultValue:String 缺省内容
-      // @return String 显示内容
       //============================================================
-      public static toDisplay(value: any, defaultValue: string): string {
-         for (var name in this) {
-            var nameValue: String = this[name];
-            if (nameValue.constructor != Function) {
-               if (nameValue == value) {
+      public static contains() {
+      }
+
+      //============================================================
+      // <T>尝试获得枚举内容。</T>
+      //
+      // @method
+      // @param instance:Object 枚举对象
+      // @param value:Object 内容
+      // @param defaultValue:Object 缺省内容
+      //============================================================
+      public static tryEncode(instance, value, defaultValue: any = null) {
+         if (instance) {
+            for (var name in instance) {
+               if (name.toLowerCase() == value.toLowerCase()) {
+                  return instance[name];
+               }
+            }
+         }
+         return defaultValue;
+      }
+
+      //============================================================
+      // <T>获得枚举内容。</T>
+      //
+      // @method
+      // @param instance:Object 枚举对象
+      // @param value:Object 内容
+      //============================================================
+      public static encode(instance, value) {
+         var o = this;
+         var result = o.tryEncode(instance, value);
+         if (result == null) {
+            throw new FError(o, 'Invalid value (enum={1}, value={2})', sk.common.reflect.RClass.dump(instance), value);
+         }
+         return result;
+      }
+
+      //============================================================
+      // <T>尝试获得枚举描述。</T>
+      //
+      // @method
+      // @param instance:Object 枚举对象
+      // @param value:Object 描述
+      // @param defaultValue:Object 缺省描述
+      //============================================================
+      public static tryDecode(instance, value, defaultValue: any = null) {
+         if (instance) {
+            for (var name in instance) {
+               if (instance[name] == value) {
                   return name;
                }
             }
@@ -28,24 +70,18 @@ module sk.common.lang {
       }
 
       //============================================================
-      // <T>获得数据内容。</T>
+      // <T>获得枚举描述。</T>
       //
       // @method
+      // @param instance:Object 枚举对象
       // @param value:Object 描述
-      // @param defaultValue:Object 缺省描述
-      // @return Object 数据内容
       //============================================================
-      public static toValue(value: string, defaultValue: any): any {
-         var lowerValue = value.toLowerCase();
-         for (var name in this) {
-            var nameValue = this[name];
-            if (nameValue.constructor != Function) {
-               if (name.toLowerCase() == lowerValue) {
-                  return this[name];
-               }
-            }
+      public static decode(instance, value) {
+         var result = this.tryDecode(instance, value);
+         if (result == null) {
+            throw new FError(this, 'Invalid value (enum={1}, value={2})', sk.common.reflect.RClass.dump(instance), value);
          }
-         return defaultValue;
+         return result;
       }
    }
 }

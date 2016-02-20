@@ -208,7 +208,7 @@
       // @param defaultValue:Object 默认内容
       // @return Object 内容
       //==========================================================
-      public get(name, defaultValue): any {
+      public get(name, defaultValue:any = null): any {
          if (name != null) {
             var i = this._table[name.toString().toLowerCase()];
             if (i != null) {
