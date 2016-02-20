@@ -50,13 +50,7 @@
       // @param valueFalse:String 假字符串
       // @return String 字符串
       //==========================================================
-     public static toString(value, valueTrue, valueFalse) {
-         if (valueTrue == null) {
-            valueTrue = EBoolean.True;
-         }
-         if (valueFalse == null) {
-            valueFalse = EBoolean.False;
-         }
+      public static toString(value, valueTrue: string = EBoolean.True, valueFalse: string = EBoolean.False) {
          return value ? valueTrue : valueFalse;
       }
    }
