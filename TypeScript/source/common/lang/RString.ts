@@ -547,7 +547,7 @@ module sk.common.lang {
       // @param p:pad:String 补齐字符(默认为空格字符)
       // @return Boolean 补齐长度的字符串
       //==========================================================
-      public static rpad(v, l, p:string = null) {
+      public static rpad(v, l, p: string = null) {
          var o = this;
          v = (v != null) ? v.toString() : o.EMPTY;
          var n = l - v.length;

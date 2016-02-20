@@ -42,7 +42,7 @@
       //==========================================================
       public toString() {
          var o = this;
-         return RClass.name(o) + '(owner=' + RClass.name(o._owner) + ', callback=' + RMethod.name(o._callback) + ')';
+         return sk.common.reflect.RClass.name(o) + '(owner=' + sk.common.reflect.RClass.name(o._owner) + ', callback=' + sk.common.reflect.RMethod.name(o._callback) + ')';
       }
 
       //============================================================

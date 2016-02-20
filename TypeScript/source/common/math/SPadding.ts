@@ -131,7 +131,7 @@
       // @return String 运行信息
       //============================================================
       public dump(d) {
-         return sk.common.lang.RClass.dump(this) + ' [' + this.left + ',' + this.top + ',' + this.right + ',' + this.bottom + ']';
+         return sk.common.reflect.RClass.dump(this) + ' [' + this.left + ',' + this.top + ',' + this.right + ',' + this.bottom + ']';
       }
    }
 }

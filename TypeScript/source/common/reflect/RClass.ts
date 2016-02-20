@@ -1,6 +1,4 @@
-﻿import RAssert = sk.common.runtime.RAssert;
-
-module sk.common.lang {
+﻿module sk.common.reflect {
    //==========================================================
    // <T>对象类的管理工具类。</T>
    //
@@ -147,7 +145,7 @@ module sk.common.lang {
       //=========================================================
       public static isClass(value, clazz) {
          var o = this;
-         RAssert.debugNotNull(clazz);
+         sk.common.runtime.RAssert.debugNotNull(clazz);
          if (value) {
             var name = o.name(clazz);
             if (value.__base) {
@@ -168,7 +166,7 @@ module sk.common.lang {
       //==========================================================
       public static typeOf(o) {
          if (o && o.constructor) {
-            return RString.mid(o.constructor.toString(), 'function ', '(');
+            return sk.common.lang.RString.mid(o.constructor.toString(), 'function ', '(');
          }
          return 'Null';
       }
@@ -181,7 +179,7 @@ module sk.common.lang {
       // @param safe:safe:String 安全类型
       // @return String 类型名称字符串
       //==========================================================
-      public static safeTypeOf(value, safe:any = null) {
+      public static safeTypeOf(value, safe: any = null) {
          // 空对象的情况
          if (value == null) {
             return 'Null';
@@ -199,10 +197,10 @@ module sk.common.lang {
                return 'String';
             }
             if (c == Function) {
-               return RString.mid(c.toString(), 'function ', '(');
+               return sk.common.lang.RString.mid(c.toString(), 'function ', '(');
             }
             if (c.constructor == Function) {
-               return RString.mid(c.toString(), 'function ', '(');
+               return sk.common.lang.RString.mid(c.toString(), 'function ', '(');
             }
             // 一般类实例对象
             if (value.__class) {
@@ -279,7 +277,7 @@ module sk.common.lang {
             // 如果对象是普通对象的情况
             var method = value.constructor;
             if (method) {
-               return RString.mid(method.toString(), 'function ', '(');
+               return sk.common.lang.RString.mid(method.toString(), 'function ', '(');
             }
          }
          return null;
@@ -342,7 +340,7 @@ module sk.common.lang {
             } else if (v.constructor == Function) {
                n = RMethod.name(v);
             } else if (v.constructor != String) {
-               RLogger.fatal(o, null, 'Find class failure. (value={1})', v);
+               sk.common.lang.RLogger.fatal(o, null, 'Find class failure. (value={1})', v);
             }
          }
          return o._classes[n];
@@ -403,7 +401,7 @@ module sk.common.lang {
       //==========================================================
       public static createClass(className) {
          var o = this;
-         var clazz:any = o._classes[className] = new FClass();
+         var clazz: any = o._classes[className] = new FClass();
          clazz._name = className;
          clazz._base = o.createBase(className);
          clazz._clazz = new clazz._base.constructor();
@@ -508,9 +506,9 @@ module sk.common.lang {
             var inheritCount = inherits.length;
             for (var i = 0; i < inheritCount; i++) {
                var name = inherits[i];
-               if (RString.startsWith(name, 'F')) {
+               if (sk.common.lang.RString.startsWith(name, 'F')) {
                   if (finded) {
-                     RLogger.fatal(o, null, 'Parent class is too many. (name={1})', name);
+                     sk.common.lang.RLogger.fatal(o, null, 'Parent class is too many. (name={1})', name);
                   }
                   clazz._parent = RClass.forName(name);
                   finded = true;
@@ -525,10 +523,10 @@ module sk.common.lang {
             var inheritCount = inherits.length;
             for (var i = 0; i < inheritCount; i++) {
                var name = inherits[i];
-               if (!RString.startsWith(name, 'F')) {
+               if (!sk.common.lang.RString.startsWith(name, 'F')) {
                   var findClass = RClass.forName(name);
                   if (findClass == null) {
-                     RLogger.fatal(o, null, 'Parent class is not exists. (name={1})', name);
+                     sk.common.lang.RLogger.fatal(o, null, 'Parent class is not exists. (name={1})', name);
                   }
                   RClass.innerCopy(findClass._instance, instance);
                   clazz.assign(findClass);
@@ -604,7 +602,7 @@ module sk.common.lang {
       //==========================================================
       public static free(instance) {
          var clazz = instance.__class;
-         RAssert.debugNotNull(clazz);
+         sk.common.runtime.RAssert.debugNotNull(clazz);
          clazz.free(instance);
       }
 

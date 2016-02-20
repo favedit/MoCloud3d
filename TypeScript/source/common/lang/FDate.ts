@@ -465,7 +465,7 @@
       // @return TDate 时间
       //===========================================================
       public clone() {
-         var value = new Date(); 
+         var value = new Date();
          value.setTime(this.date.getTime());
          return new FDate(value);
       }
@@ -477,7 +477,7 @@
       // @return String 字符串
       //===========================================================
       public dump() {
-         return RClass.dump(this) + ' ' + RDate.formatDate(this);
+         return sk.common.reflect.RClass.dump(this) + ' ' + RDate.formatDate(this);
       }
    }
 }

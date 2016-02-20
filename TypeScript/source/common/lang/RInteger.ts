@@ -118,7 +118,7 @@
       // @param p:pad:String 补足字符串
       // @return String 格式化内容
       //==========================================================
-      public static format(v, l, p:string = null) {
+      public static format(v, l, p: string = null) {
          if (!p) {
             p = this.LEFT_CHAR;
          }

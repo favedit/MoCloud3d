@@ -71,7 +71,7 @@
       // @param rightPad:String 小数点右侧补足字符
       // @return String 浮点数
       //===========================================================
-      public static format(value, leftLength:number = 0, leftPad:string = null, rightLength:number = null, rightPad:string = null) {
+      public static format(value, leftLength: number = 0, leftPad: string = null, rightLength: number = null, rightPad: string = null) {
          var o = this;
          // 检查参数
          if (value == null) {

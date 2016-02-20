@@ -174,7 +174,7 @@
       //============================================================
       public dump(d) {
          d = sk.common.lang.RString.nvlString(d);
-         d.append(sk.common.lang.RClass.name(this));
+         d.append(sk.common.reflect.RClass.name(this));
          d.append(' [', this.left, ',', this.top, '-', this.right, ',', this.bottom, '] ');
          d.append('(', this.width(), '-', this.height(), ')');
          return d;

@@ -12,7 +12,7 @@
       top: number = 0;
       right: number = 0;
       bottom: number = 0;
-         
+
       //============================================================
       // <T>构造处理。</T>
       //
@@ -168,7 +168,7 @@
       //============================================================
       public dump(d) {
          d = sk.common.lang.RString.nvlString(d);
-         d.append(sk.common.lang.RClass.name(this));
+         d.append(sk.common.reflect.RClass.name(this));
          d.append(' [', this.left, ',', this.top, '-', this.right, ',', this.bottom, '] ');
          return d;
       }

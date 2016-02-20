@@ -182,7 +182,7 @@
       //==========================================================
       public dump() {
          var result = new FString();
-         result.append(RClass.name(this));
+         result.append(sk.common.reflect.RClass.name(this));
          var listeners = this._listeners;
          var count = listeners.count();
          for (var i = 0; i < count; i++) {

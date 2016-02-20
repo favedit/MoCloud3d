@@ -19,7 +19,7 @@
          var s = new FString();
          var t = new Array();
          while (f) {
-            if (RArray.contains(t, f)) { 
+            if (RArray.contains(t, f)) {
                break;
             }
             t.push(f);
@@ -31,7 +31,7 @@
             if (n > 0) {
                s.appendLine();
             }
-            s.append('   ' + (c - n) + ': ' + RMethod.name(f));
+            s.append('   ' + (c - n) + ': ' + sk.common.reflect.RMethod.name(f));
          }
          // 建立描述参数信息
          var a = arguments;
@@ -40,7 +40,7 @@
             var v = a[n];
             var vs = null;
             if (typeof (v) == 'function') {
-               vs = RMethod.name(v);
+               vs = sk.common.reflect.RMethod.name(v);
             } else {
                vs = v;
             }

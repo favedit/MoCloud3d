@@ -89,7 +89,7 @@
       //============================================================
       public dump() {
          var o = this;
-         return sk.common.lang.RClass.dump(o) + ' [' + o.toString() + ']';
+         return sk.common.reflect.RClass.dump(o) + ' [' + o.toString() + ']';
       }
    }
 }

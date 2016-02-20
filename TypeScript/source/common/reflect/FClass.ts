@@ -1,4 +1,4 @@
-﻿module sk.common.lang {
+﻿module sk.common.reflect {
    //==========================================================
    // <T>对象类的描述信息。</T>
    //
@@ -21,7 +21,7 @@
       protected _parent = null;
       // @attribute
       protected _instance = null;
-      protected _pool = new FMemoryPool();
+      protected _pool = new sk.common.lang.FMemoryPool();
       // @attribute
       protected _name = null;
 
@@ -54,7 +54,7 @@
          var annotations = o._annotations[annotationCd];
          if (!annotations) {
             if (ordered) {
-               annotations = new FObjects();
+               annotations = new sk.common.lang.FObjects();
             } else {
                annotations = new Object();
             }
@@ -108,7 +108,7 @@
                annotations = o._annotations[annotationName] = new clazzAnnotations.constructor();
             }
             // 复制指定对象内的类型到自己对象内
-            if (clazzAnnotations.constructor == FObjects) {
+            if (clazzAnnotations.constructor == sk.common.lang.FObjects) {
                annotations.append(clazzAnnotations);
             } else {
                for (var name in clazzAnnotations) {
@@ -147,7 +147,7 @@
          var o = this;
          var annotation = o._annotations[annotationCd];
          if (!annotation) {
-            RLogger.fatal(o, null, "Can't find annotations. (annotation_cd={1}, class={2})", annotationCd, o._name);
+            sk.common.lang.RLogger.fatal(o, null, "Can't find annotations. (annotation_cd={1}, class={2})", annotationCd, o._name);
          }
          return annotation;
       }
@@ -168,7 +168,7 @@
             annotation = annotations[name];
          }
          if (!annotation) {
-            RLogger.fatal(o, null, "Can't find annotation. (annotation_cd={1}, name={2}, class={3})", annotationCd, name, o._name);
+            sk.common.lang.RLogger.fatal(o, null, "Can't find annotation. (annotation_cd={1}, name={2}, class={3})", annotationCd, name, o._name);
          }
          return annotation;
       }
@@ -242,7 +242,7 @@
          }
          // 如果未注册，则告诉用户错误
          if (!annotation) {
-            RLogger.fatal(o, null, "No register style annotation. (class={1}, name={2})", o._name, o._name + '_' + name);
+            sk.common.lang.RLogger.fatal(o, null, "No register style annotation. (class={1}, name={2})", o._name, o._name + '_' + name);
          }
          // 生成样式名称
          var styleName = find._name + '_' + annotation.style();
@@ -302,7 +302,7 @@
          var instance = null;
          // 判断是否为虚类
          if (o._abstract) {
-            var message = new FString();
+            var message = new sk.common.lang.FString();
             for (var name in o._instance) {
                var value = o._instance[name];
                if (RMethod.isVirtual(value)) {
@@ -317,7 +317,7 @@
          // 同一个类的实例中全部共享base对象，中间不能存私有树据。
          var template = o._instance;
          if (!template) {
-            return RLogger.fatal(o, null, "Class instance is empty. (name={1})", o._name);
+            return sk.common.lang.RLogger.fatal(o, null, "Class instance is empty. (name={1})", o._name);
          }
          instance = new template.constructor();
          for (var name in template) {
@@ -330,7 +330,7 @@
                }
                // 递归创建所有子对象
                if (!RClass.isBase(value)) {
-                  value = RObject.clone(value);
+                  value = sk.common.lang.RObject.clone(value);
                }
             }
             instance[name] = value;

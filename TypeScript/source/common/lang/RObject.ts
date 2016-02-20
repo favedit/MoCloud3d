@@ -51,7 +51,7 @@
          for (var n in o) {
             var v = o[n];
             if (v != null) {
-               if (!RClass.isBaseType(v.constructor)) {
+               if (!sk.common.reflect.RClass.isBaseType(v.constructor)) {
                   v = RObject.clone(v);
                }
             }
@@ -73,7 +73,7 @@
                var v = s[n];
                if (v != null) {
                   var c: any = (v as any).constructor;
-                  if (!RClass.isBaseType(c)) {
+                  if (!sk.common.reflect.RClass.isBaseType(c)) {
                      if (t[n] == null) {
                         t[n] = new c();
                      }
@@ -105,7 +105,7 @@
                   // 检查类型
                   var value = item[name];
                   if (value != null) {
-                     if (!RClass.isBaseType(value.constructor)) {
+                     if (!sk.common.reflect.RClass.isBaseType(value.constructor)) {
                         throw new FError(this, 'Free object is not base object.');
                      }
                      item[name] = null;
@@ -127,7 +127,7 @@
       // @param item:Object 对象
       // @param flag:Boolean 标志
       //==========================================================
-      public static dispose(item, flag:boolean = false) {
+      public static dispose(item, flag: boolean = false) {
          if (item) {
             if (!item.__dispose) {
                item.dispose(flag);

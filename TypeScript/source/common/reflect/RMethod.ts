@@ -1,4 +1,4 @@
-﻿module sk.common.lang {
+﻿module sk.common.reflect {
    //==========================================================
    // <T>对象类的函数处理的工具类。</T>
    //
@@ -10,7 +10,7 @@
       // @attribute
       static _virtuals: any = new Object();
       static _properties: any = new Object();
-      
+
       //==========================================================
       // <T>构造处理。</T>
       //
@@ -69,7 +69,7 @@
                   return value.__name;
                }
                var source = value.toString();
-               var name = value.__name = RString.mid(source, 'function ', '(');
+               var name = value.__name = sk.common.lang.RString.mid(source, 'function ', '(');
                return name;
             }
          }
@@ -89,7 +89,7 @@
                return value.__fullname;
             }
             var source = value.toString();
-            var name = value.__fullname = RString.mid(source, 'function ', ')') + ')';
+            var name = value.__fullname = sk.common.lang.RString.mid(source, 'function ', ')') + ')';
             return name;
          }
          return null;

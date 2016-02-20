@@ -9,7 +9,7 @@
    export class RLogger {
       //..........................................................
       // @attribute
-      private static _labelLength:number = 40;
+      private static _labelLength: number = 40;
       //..........................................................
       // @listener
       private static _logger: SLogger = new SLogger();
@@ -24,7 +24,7 @@
       //==========================================================
       public static output(sender, message) {
          var o = this;
-         var logger:any = o._logger;
+         var logger: any = o._logger;
          logger.sender = sender
          logger.message = message;
          o.lsnsOutput.process(logger);
@@ -44,9 +44,9 @@
          var name = null;
          var caller = RLogger.debug.caller;
          if (caller) {
-            name = RMethod.name(caller);
+            name = sk.common.reflect.RMethod.name(caller);
          } else if ((arguments as any).caller) {
-            name = RMethod.name((arguments as any).caller[0]);
+            name = sk.common.reflect.RMethod.name((arguments as any).caller[0]);
          }
          if (name == null) {
             name = 'unknown';
@@ -67,7 +67,7 @@
             var value = '';
             if (parameter != null) {
                if (typeof (parameter) == 'function') {
-                  value = RMethod.name(parameter);
+                  value = sk.common.reflect.RMethod.name(parameter);
                } else {
                   value = parameter.toString();
                }
@@ -93,9 +93,9 @@
          var name = null;
          var caller = RLogger.info.caller;
          if (caller) {
-            name = RMethod.name(caller);
+            name = sk.common.reflect.RMethod.name(caller);
          } else if ((arguments as any).caller) {
-            name = RMethod.name((arguments as any).caller[0]);
+            name = sk.common.reflect.RMethod.name((arguments as any).caller[0]);
          }
          if (name == null) {
             name = 'unknown';
@@ -116,7 +116,7 @@
             var value = '';
             if (parameter != null) {
                if (typeof (parameter) == 'function') {
-                  value = RMethod.name(parameter);
+                  value = sk.common.reflect.RMethod.name(parameter);
                } else {
                   value = parameter.toString();
                }
@@ -142,9 +142,9 @@
          var name = null;
          var caller = RLogger.warn.caller;
          if (caller) {
-            name = RMethod.name(caller);
+            name = sk.common.reflect.RMethod.name(caller);
          } else if ((arguments as any).caller) {
-            name = RMethod.name((arguments as any).caller[0]);
+            name = sk.common.reflect.RMethod.name((arguments as any).caller[0]);
          }
          if (name == null) {
             name = 'unknown';
@@ -165,7 +165,7 @@
             var value = '';
             if (parameter != null) {
                if (typeof (parameter) == 'function') {
-                  value = RMethod.name(parameter);
+                  value = sk.common.reflect.RMethod.name(parameter);
                } else {
                   value = parameter.toString();
                }
@@ -191,9 +191,9 @@
          var name = null;
          var caller = RLogger.error.caller;
          if (caller) {
-            name = RMethod.name(caller);
+            name = sk.common.reflect.RMethod.name(caller);
          } else if ((arguments as any).caller) {
-            name = RMethod.name((arguments as any).caller[0]);
+            name = sk.common.reflect.RMethod.name((arguments as any).caller[0]);
          }
          if (name == null) {
             name = 'unknown';
@@ -214,7 +214,7 @@
             var value = '';
             if (parameter != null) {
                if (typeof (parameter) == 'function') {
-                  value = RMethod.name(parameter);
+                  value = sk.common.reflect.RMethod.name(parameter);
                } else {
                   value = parameter.toString();
                }
@@ -254,19 +254,19 @@
             if (i > 0) {
                stack.appendLine();
             }
-            stack.append('   ' + (count - i) + ': ' + RMethod.name(caller));
+            stack.append('   ' + (count - i) + ': ' + sk.common.reflect.RMethod.name(caller));
          }
          // 建立消息信息
          var result = new FString();
          //result.appendLine(RContext.get('RMessage:fatal'));
          result.appendLine(RString.repeat('-', 60));
-         result.append(RClass.dump(owner), ': ');
+         result.append(sk.common.reflect.RClass.dump(owner), ': ');
          if (message) {
             var count = arguments.length;
             for (var i = 3; i < count; i++) {
                var parameter = arguments[i];
                if ('function' == typeof (parameter)) {
-                  parameter = RMethod.name(parameter);
+                  parameter = sk.common.reflect.RMethod.name(parameter);
                }
                message = message.replace('{' + (i - 2) + '}', parameter);
             }
@@ -297,9 +297,9 @@
          var name = null;
          var caller = RLogger.show.caller;
          if (caller) {
-            name = RMethod.name(caller);
+            name = sk.common.reflect.RMethod.name(caller);
          } else if ((arguments as any).caller) {
-            name = RMethod.name((arguments as any).caller[0]);
+            name = sk.common.reflect.RMethod.name((arguments as any).caller[0]);
          }
          if (name == null) {
             name = 'unknown';
@@ -320,7 +320,7 @@
             var value = '';
             if (parameter != null) {
                if (typeof (parameter) == 'function') {
-                  value = RMethod.name(parameter);
+                  value = sk.common.reflect.RMethod.name(parameter);
                } else {
                   value = parameter.toString();
                }

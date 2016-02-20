@@ -257,9 +257,9 @@
       // @return Integer 字符串长度
       //==========================================================
       public static nameMaxLength(value) {
-         var length:number = 0;
+         var length: number = 0;
          for (var name in value) {
-            var nameLength:number = name.length;
+            var nameLength: number = name.length;
             if (length < nameLength) {
                length = nameLength;
             }
