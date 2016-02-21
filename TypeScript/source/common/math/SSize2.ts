@@ -11,8 +11,8 @@
    export class SSize2 {
       //..........................................................
       // @attribute
-      protected width: number = 0;
-      protected height: number = 0;
+      public width: number = 0;
+      public height: number = 0;
 
       //============================================================
       // <T>构造处理。</T>

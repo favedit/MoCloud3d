@@ -12,7 +12,7 @@
       __class: any = null;
       // 哈希值
       __hash: number = 0;
-      // 释放标志 
+      // 释放标志
       __dispose: boolean = false;
 
       //==========================================================
@@ -57,7 +57,7 @@
       //==========================================================
       public dispose(flag: boolean = false): void {
          var o = this;
-         //MO.Lang.Object.free(o);
+         //sk.common.lang.RObject.free(o);
          o.__dispose = true;
       }
    }

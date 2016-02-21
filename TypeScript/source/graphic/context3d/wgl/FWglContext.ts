@@ -6,32 +6,44 @@ module sk.graphic.context3d.wgl {
    // @refer https://www.khronos.org/registry/webgl
    // @history 141230
    //==========================================================
-   export class FWglContext extends sk.graphic.context3d.render.FG3dContext{
+   export class FWglContext extends sk.graphic.context3d.render.FG3dContext {
+      // 定义
+      private static EG3dParameterFormat = sk.graphic.context3d.EG3dParameterFormat;
+      private static EG3dAttributeFormat = sk.graphic.context3d.EG3dAttributeFormat;
       //..........................................................
       // @attribute
-      _handle = MO.Class.register(o, new MO.AGetter('_handle'));
-      _handleInstance = null;
-      _handleLayout = null;
-      _handleDrawBuffers = MO.Class.register(o, new MO.AGetter('_handleDrawBuffers'));
-      _handleSamplerS3tc = MO.Class.register(o, new MO.AGetter('_handleSamplerS3tc'));
-      _handleDebugShader = null;
+      //_handle = MO.Class.register(o, new MO.AGetter('_handle'));
+      protected _handle = null;
+      protected _handleInstance = null;
+      protected _handleLayout = null;
+      //_handleDrawBuffers = MO.Class.register(o, new MO.AGetter('_handleDrawBuffers'));
+      protected _handleDrawBuffers = null;
+      //_handleSamplerS3tc = MO.Class.register(o, new MO.AGetter('_handleSamplerS3tc'));
+      protected _handleSamplerS3tc = null;
+      protected _handleDebugShader = null;
       // @attribute
-      _activeRenderTarget = null;
-      _activeTextureSlot = null;
+      protected _activeRenderTarget = null;
+      protected _activeTextureSlot = null;
       // @attribute
-      _parameters = null;
-      _extensions = null;
+      protected _parameters = null;
+      protected _extensions = null;
       // @attribute
-      _statusRecord = false;
-      _recordBuffers = MO.Class.register(o, new MO.AGetter('_recordBuffers'));
-      _recordSamplers = MO.Class.register(o, new MO.AGetter('_recordSamplers'));
+      protected _statusRecord = false;
+      //_recordBuffers = MO.Class.register(o, new MO.AGetter('_recordBuffers'));
+      protected _recordBuffers: sk.common.lang.FObjects = new sk.common.lang.FObjects();
+      //_recordSamplers = MO.Class.register(o, new MO.AGetter('_recordSamplers'));
+      protected _recordSamplers: sk.common.lang.FObjects = new sk.common.lang.FObjects();
       // @attribute
-      _statusDepthMask = MO.Class.register(o, new MO.AGetter('_statusDepthMask'), false);
-      _statusFloatTexture = MO.Class.register(o, new MO.AGetter('_statusFloatTexture'), false);
-      _statusDrawBuffers = MO.Class.register(o, new MO.AGetter('_statusDrawBuffers'), false);
-      _statusScissor = MO.Class.register(o, new MO.AGetter('_statusScissor'), false);
-      _data9 = null;
-      _data16 = null;
+      //_statusDepthMask = MO.Class.register(o, new MO.AGetter('_statusDepthMask'), false);
+      _statusDepthMask = false;
+      //_statusFloatTexture = MO.Class.register(o, new MO.AGetter('_statusFloatTexture'), false);
+      _statusFloatTexture = false;
+      //_statusDrawBuffers = MO.Class.register(o, new MO.AGetter('_statusDrawBuffers'), false);
+      _statusDrawBuffers = false;
+      //_statusScissor = MO.Class.register(o, new MO.AGetter('_statusScissor'), false);
+      _statusScissor = false;
+      _data9 = new Float32Array(9);
+      _data16 = new Float32Array(16);
 
       //==========================================================
       // <T>构造处理。</T>
@@ -40,11 +52,7 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public constructor() {
          super();
-         this._capability = new MO.SG3dContextCapability();
-         this._data9 = new Float32Array(9);
-         this._data16 = new Float32Array(16);
-         this._recordBuffers = new MO.TObjects();
-         this._recordSamplers = new MO.TObjects();
+         this._capability = new sk.graphic.context3d.SG3dContextCapability();
       }
 
       //==========================================================
@@ -65,12 +73,12 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public linkCanvas(hCanvas) {
          var o = this;
-         o.__base.FG3dContext.linkCanvas.call(o, hCanvas)
+         super.linkCanvas(hCanvas)
          // 获得环境
          o._hCanvas = hCanvas;
          if (hCanvas.getContext) {
             // 设置参数
-            var parameters = new Object();
+            var parameters: any = new Object();
             parameters.alpha = o._optionAlpha;
             parameters.antialias = o._optionAntialias;
             parameters.depth = true;
@@ -84,33 +92,33 @@ module sk.graphic.context3d.wgl {
                var code = codes[i];
                handle = hCanvas.getContext(code, parameters);
                if (handle) {
-                  MO.Logger.debug(o, 'Create context3d. (code={1}, handle={2})', code, handle);
+                  sk.common.lang.RLogger.debug(o, 'Create context3d. (code={1}, handle={2})', code, handle);
                   break;
                }
             }
             if (!handle) {
-               MO.Logger.error(o, 'Create context3d failure.');
-               var event = new MO.SEvent(o);
-               event.code = MO.EGraphicError.UnsupportWebGL;
-               event.message = "Current browser can't support WebGL technique.";
-               MO.Window.processDeviceError(event);
+               sk.common.lang.RLogger.error(o, 'Create context3d failure.');
+               var event = new sk.common.lang.SEvent(o);
+               //event.code = MO.EGraphicError.UnsupportWebGL;
+               //event.message = "Current browser can't support WebGL technique.";
+               //MO.Window.processDeviceError(event);
                event.dispose();
                return false;
             }
             o._handle = handle;
-            o._contextAttributes = handle.getContextAttributes();
+            //o._contextAttributes = handle.getContextAttributes();
          } else {
-            var event = new MO.SEvent(o);
-            event.code = MO.EGraphicError.UnsupportWebGL;
-            event.message = "Canvas can't support WebGL technique.";
-            MO.Window.processDeviceError(event);
+            var event = new sk.common.lang.SEvent(o);
+            //event.code = MO.EGraphicError.UnsupportWebGL;
+            //event.message = "Canvas can't support WebGL technique.";
+            //MO.Window.processDeviceError(event);
             event.dispose();
             return false;
          }
          var handle = o._handle;
          // 设置状态
-         o.setDepthMode(true, MO.EG3dDepthMode.LessEqual);
-         o.setCullingMode(true, MO.EG3dCullMode.Front);
+         o.setDepthMode(true, sk.graphic.context3d.EG3dDepthMode.LessEqual);
+         o.setCullingMode(true, sk.graphic.context3d.EG3dCullMode.Front);
          // 获得渲染信息
          var capability = o._capability;
          capability.vendor = handle.getParameter(handle.VENDOR);
@@ -127,7 +135,7 @@ module sk.graphic.context3d.wgl {
          if (extension) {
             capability.optionInstance = true;
          }
-         capability.mergeCount = parseInt((capability.vertexConst - 32) / 4);
+         capability.mergeCount = parseInt(((capability.vertexConst - 32) / 4) as any);
          // 测试顶点布局支持
          var extension = o._handleLayout = handle.getExtension('OES_vertex_array_object');
          if (extension) {
@@ -150,8 +158,8 @@ module sk.graphic.context3d.wgl {
             capability.samplerCompressRgba = extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
          }
          // 测定渲染精度
-         var shader = capability.shader = new Object();
-         var vertexPrecision = shader.vertexPrecision = new Object();
+         var shader:any = capability.shader = new Object();
+         var vertexPrecision:any = shader.vertexPrecision = new Object();
          if (handle.getShaderPrecisionFormat) {
             vertexPrecision.floatLow = handle.getShaderPrecisionFormat(handle.VERTEX_SHADER, handle.LOW_FLOAT);
             vertexPrecision.floatMedium = handle.getShaderPrecisionFormat(handle.VERTEX_SHADER, handle.MEDIUM_FLOAT);
@@ -160,7 +168,7 @@ module sk.graphic.context3d.wgl {
             vertexPrecision.intMedium = handle.getShaderPrecisionFormat(handle.VERTEX_SHADER, handle.MEDIUM_INT);
             vertexPrecision.intHigh = handle.getShaderPrecisionFormat(handle.VERTEX_SHADER, handle.HIGH_INT);
          }
-         var fragmentPrecision = shader.fragmentPrecision = new Object();
+         var fragmentPrecision:any = shader.fragmentPrecision = new Object();
          if (handle.getShaderPrecisionFormat) {
             fragmentPrecision.floatLow = handle.getShaderPrecisionFormat(handle.FRAGMENT_SHADER, handle.LOW_FLOAT);
             fragmentPrecision.floatMedium = handle.getShaderPrecisionFormat(handle.FRAGMENT_SHADER, handle.MEDIUM_FLOAT);
@@ -423,7 +431,7 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createProgram() {
          var o = this;
-         var program = o.createObject(MO.FWglProgram);
+         var program = o.createObject(FWglProgram);
          o._storePrograms.push(program);
          o._statistics._programTotal++;
          return program;
@@ -437,7 +445,7 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createLayout() {
          var o = this;
-         var layout = MO.Class.create(MO.FWglLayout);
+         var layout = sk.common.reflect.RClass.create(FWglLayout);
          layout.linkGraphicContext(o);
          if (o._capability.optionLayout) {
             layout.setup();
@@ -456,12 +464,12 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createVertexBuffer(clazz) {
          var o = this;
-         var buffer = o.createObject(MO.Runtime.nvl(clazz, MO.FWglVertexBuffer));
-         buffer.linkGraphicContext(o);
-         buffer.setup();
-         o._storeBuffers.push(buffer);
-         o._statistics._vertexBufferTotal++;
-         return buffer;
+         //var buffer = o.createObject(MO.Runtime.nvl(clazz, MO.FWglVertexBuffer));
+         //buffer.linkGraphicContext(o);
+         //buffer.setup();
+         //o._storeBuffers.push(buffer);
+         //o._statistics._vertexBufferTotal++;
+         //return buffer;
       }
 
       //==========================================================
@@ -473,10 +481,10 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createIndexBuffer(clazz) {
          var o = this;
-         var buffer = o.createObject(MO.Runtime.nvl(clazz, MO.FWglIndexBuffer));
-         o._storeBuffers.push(buffer);
-         o._statistics._indexBufferTotal++;
-         return buffer;
+         //var buffer = o.createObject(MO.Runtime.nvl(clazz, MO.FWglIndexBuffer));
+         //o._storeBuffers.push(buffer);
+         //o._statistics._indexBufferTotal++;
+         //return buffer;
       }
 
       //==========================================================
@@ -488,10 +496,10 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createFlatTexture(clazz) {
          var o = this;
-         var texture = o.createObject(MO.Runtime.nvl(clazz, MO.FWglFlatTexture));
-         o._storeTextures.push(texture);
-         o._statistics._flatTextureTotal++;
-         return texture;
+         //var texture = o.createObject(MO.Runtime.nvl(clazz, MO.FWglFlatTexture));
+         //o._storeTextures.push(texture);
+         //o._statistics._flatTextureTotal++;
+         //return texture;
       }
 
       //==========================================================
@@ -503,10 +511,10 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createCubeTexture(clazz) {
          var o = this;
-         var texture = o.createObject(MO.Runtime.nvl(clazz, MO.FWglCubeTexture));
-         o._storeTextures.push(texture);
-         o._statistics._cubeTextureTotal++;
-         return texture;
+         //var texture = o.createObject(MO.Runtime.nvl(clazz, MO.FWglCubeTexture));
+         //o._storeTextures.push(texture);
+         //o._statistics._cubeTextureTotal++;
+         //return texture;
       }
 
       //==========================================================
@@ -518,10 +526,10 @@ module sk.graphic.context3d.wgl {
       //==========================================================
       public createRenderTarget(clazz) {
          var o = this;
-         var texture = o.createObject(MO.Runtime.nvl(clazz, MO.FWglRenderTarget));
-         o._storeTargets.push(texture);
-         o._statistics._targetTotal++;
-         return texture;
+         //var texture = o.createObject(MO.Runtime.nvl(clazz, MO.FWglRenderTarget));
+         //o._storeTargets.push(texture);
+         //o._statistics._targetTotal++;
+         //return texture;
       }
 
       //==========================================================
@@ -535,9 +543,9 @@ module sk.graphic.context3d.wgl {
       public setViewport(left, top, width, height) {
          var o = this;
          //o._size.set(width, height);
-         o._viewportRectangle.set(left, top, width, height);
+         //o._viewportRectangle.set(left, top, width, height);
          o._handle.viewport(left, top, width, height);
-         MO.Logger.debug(o, 'Context3d viewport. (location={1},{2}, size={3}x{4})', left, top, width, height);
+         sk.common.lang.RLogger.debug(o, 'Context3d viewport. (location={1},{2}, size={3}x{4})', left, top, width, height);
       }
 
       //==========================================================
@@ -566,7 +574,7 @@ module sk.graphic.context3d.wgl {
                graphic.polygonMode(graphic.FRONT, graphic.FILL);
                break;
             default:
-               throw new MO.TError('Invalid parameter. (fill_mode={1})', fillModeCd);
+               throw new sk.common.lang.FError('Invalid parameter. (fill_mode={1})', fillModeCd);
          }
          o._fillModeCd = fillModeCd;
          return true;
@@ -599,7 +607,7 @@ module sk.graphic.context3d.wgl {
          }
          // 设置内容
          if (depthFlag && (o._depthModeCd != depthCd)) {
-            var depthCode = MO.RWglUtility.convertDepthMode(graphic, depthCd);
+            var depthCode = RWglUtility.convertDepthMode(graphic, depthCd);
             graphic.depthFunc(depthCode);
             o._depthModeCd = depthCd;
          }
@@ -650,7 +658,7 @@ module sk.graphic.context3d.wgl {
          }
          // 设置内容
          if (cullFlag && (o._cullModeCd != cullCd)) {
-            var cullValue = MO.RWglUtility.convertCullMode(graphic, cullCd);
+            var cullValue = RWglUtility.convertCullMode(graphic, cullCd);
             graphic.cullFace(cullValue);
             o._cullModeCd = cullCd;
          }
@@ -687,8 +695,8 @@ module sk.graphic.context3d.wgl {
          }
          // 设置效果
          if (blendFlag && ((o._blendSourceCd != sourceCd) || (o._blendTargetCd != tagetCd))) {
-            var sourceValue = MO.RWglUtility.convertBlendFactors(graphic, sourceCd);
-            var tagetValue = MO.RWglUtility.convertBlendFactors(graphic, tagetCd);
+            var sourceValue = RWglUtility.convertBlendFactors(graphic, sourceCd);
+            var tagetValue = RWglUtility.convertBlendFactors(graphic, tagetCd);
             graphic.blendFunc(sourceValue, tagetValue);
             o._blendSourceCd = sourceCd;
             o._blendTargetCd = tagetCd;
@@ -751,8 +759,8 @@ module sk.graphic.context3d.wgl {
             // 修改视角
             // var size = o._size;
             // graphic.viewport(0, 0, size.width, size.height);
-            var rectangle = o._viewportRectangle;
-            graphic.viewport(0, 0, rectangle.width, rectangle.height);
+            //var rectangle = o._viewportRectangle;
+            //graphic.viewport(0, 0, rectangle.width, rectangle.height);
          } else {
             // 绑定渲染目标
             graphic.bindFramebuffer(graphic.FRAMEBUFFER, renderTarget._handle);
@@ -811,7 +819,7 @@ module sk.graphic.context3d.wgl {
          //............................................................
          // 修改数据
          switch (formatCd) {
-            case MO.EG3dParameterFormat.Float1: {
+            case EG3dParameterFormat.Float1: {
                // 修改数据
                graphic.uniform1fv(slot, data);
                o._statistics._frameConstLength += data.byteLength;
@@ -819,7 +827,7 @@ module sk.graphic.context3d.wgl {
                result = o.checkError("uniform1fv", "Bind const data failure. (shader_cd={1}, slot={2}, data={3}, count={4})", shaderCd, slot, data, count);
                break;
             }
-            case MO.EG3dParameterFormat.Float2: {
+            case EG3dParameterFormat.Float2: {
                // 修改数据
                graphic.uniform2fv(slot, data);
                o._statistics._frameConstLength += data.byteLength;
@@ -827,7 +835,7 @@ module sk.graphic.context3d.wgl {
                result = o.checkError("uniform2fv", "Bind const data failure. (shader_cd={1}, slot={2}, data={3}, count={4})", shaderCd, slot, data, count);
                break;
             }
-            case MO.EG3dParameterFormat.Float3: {
+            case EG3dParameterFormat.Float3: {
                // 修改数据
                graphic.uniform3fv(slot, data);
                o._statistics._frameConstLength += data.byteLength;
@@ -835,7 +843,7 @@ module sk.graphic.context3d.wgl {
                result = o.checkError("uniform3fv", "Bind const data failure. (shader_cd={1}, slot={2}, data={3}, count={4})", shaderCd, slot, data, count);
                break;
             }
-            case MO.EG3dParameterFormat.Float4: {
+            case EG3dParameterFormat.Float4: {
                // 修改数据
                graphic.uniform4fv(slot, data);
                o._statistics._frameConstLength += data.byteLength;
@@ -843,9 +851,9 @@ module sk.graphic.context3d.wgl {
                result = o.checkError("uniform4fv", "Bind const data failure. (shader_cd={1}, slot={2}, data={3}, count={4})", shaderCd, slot, data, count);
                break;
             }
-            case MO.EG3dParameterFormat.Float3x3: {
+            case EG3dParameterFormat.Float3x3: {
                // 修改数据
-               var bytes = o._data9;
+               let bytes = o._data9;
                bytes[0] = data[0];
                bytes[1] = data[4];
                bytes[2] = data[8];
@@ -861,16 +869,16 @@ module sk.graphic.context3d.wgl {
                result = o.checkError("uniformMatrix3fv", "Bind const matrix3x3 failure. (shader_cd={1}, slot={2}, data={3}, count={4})", shaderCd, slot, data, count);
                break;
             }
-            case MO.EG3dParameterFormat.Float4x4: {
+            case EG3dParameterFormat.Float4x4: {
                // 修改数据
-               var bytes = null;
+               let bytes = null;
                if (data.constructor == Float32Array) {
                   bytes = data;
                } else if (data.writeData) {
                   bytes = o._data16;
                   data.writeData(bytes, 0);
                } else {
-                  throw new MO.TError('Unknown data type.');
+                  throw new sk.common.lang.FError(this, 'Unknown data type.');
                }
                graphic.uniformMatrix4fv(slot, graphic.FALSE, bytes);
                o._statistics._frameConstLength += bytes.byteLength;
@@ -879,7 +887,7 @@ module sk.graphic.context3d.wgl {
                break;
             }
             default: {
-               throw new MO.TError(o, 'Unknown format type. (format_cd={1})', formatCd);
+               throw new sk.common.lang.FError(o, 'Unknown format type. (format_cd={1})', formatCd);
             }
          }
          return result;
@@ -901,7 +909,7 @@ module sk.graphic.context3d.wgl {
          //............................................................
          // 录制模式
          if (o._statusRecord) {
-            var layout = new MO.SG3dLayoutBuffer();
+            var layout = new sk.graphic.context3d.SG3dLayoutBuffer();
             layout.slot = slot;
             layout.buffer = vertexBuffer;
             layout.index = offset;
@@ -937,26 +945,26 @@ module sk.graphic.context3d.wgl {
          // 设置顶点流
          var stride = vertexBuffer._stride;
          switch (formatCd) {
-            case MO.EG3dAttributeFormat.Float1:
+            case EG3dAttributeFormat.Float1:
                graphic.vertexAttribPointer(slot, 1, graphic.FLOAT, false, stride, offset);
                break;
-            case MO.EG3dAttributeFormat.Float2:
+            case EG3dAttributeFormat.Float2:
                graphic.vertexAttribPointer(slot, 2, graphic.FLOAT, false, stride, offset);
                break;
-            case MO.EG3dAttributeFormat.Float3:
+            case EG3dAttributeFormat.Float3:
                graphic.vertexAttribPointer(slot, 3, graphic.FLOAT, false, stride, offset);
                break;
-            case MO.EG3dAttributeFormat.Float4:
+            case EG3dAttributeFormat.Float4:
                graphic.vertexAttribPointer(slot, 4, graphic.FLOAT, false, stride, offset);
                break;
-            case MO.EG3dAttributeFormat.Byte4:
+            case EG3dAttributeFormat.Byte4:
                graphic.vertexAttribPointer(slot, 4, graphic.UNSIGNED_BYTE, false, stride, offset);
                break;
-            case MO.EG3dAttributeFormat.Byte4Normal:
+            case EG3dAttributeFormat.Byte4Normal:
                graphic.vertexAttribPointer(slot, 4, graphic.UNSIGNED_BYTE, true, stride, offset);
                break;
             default:
-               throw new MO.TError(o, "Unknown vertex format. (format_cd=%d)", formatCd);
+               throw new sk.common.lang.FError(o, "Unknown vertex format. (format_cd=%d)", formatCd);
          }
          // 检查错误
          result = o.checkError("glVertexAttribPointer", "Bind vertex attribute pointer. (slot=%d, format_cd=%d)", slot, formatCd);
@@ -979,7 +987,7 @@ module sk.graphic.context3d.wgl {
          //............................................................
          // 录制模式
          if (o._statusRecord) {
-            var layout = new MO.SG3dLayoutSampler();
+            var layout = new sk.graphic.context3d.SG3dLayoutSampler();
             layout.slot = slot;
             layout.index = index;
             layout.texture = texture;
@@ -1008,7 +1016,7 @@ module sk.graphic.context3d.wgl {
          var handle = texture._handle;
          var textureCd = texture.textureCd();
          switch (textureCd) {
-            case MO.EG3dTexture.Flat2d: {
+            case sk.graphic.context3d.EG3dTexture.Flat2d: {
                graphic.bindTexture(graphic.TEXTURE_2D, handle);
                result = o.checkError("glBindTexture", "Bind flag texture failure. (texture_id=%d)", handle);
                if (!result) {
@@ -1016,7 +1024,7 @@ module sk.graphic.context3d.wgl {
                }
                break;
             }
-            case MO.EG3dTexture.Cube: {
+            case sk.graphic.context3d.EG3dTexture.Cube: {
                graphic.bindTexture(graphic.TEXTURE_CUBE_MAP, handle);
                result = o.checkError("glBindTexture", "Bind cube texture failure. (texture_id=%d)", handle);
                if (!result) {
@@ -1025,7 +1033,7 @@ module sk.graphic.context3d.wgl {
                break;
             }
             default: {
-               throw new MO.TError(o, 'Unknown texture type.');
+               throw new sk.common.lang.FError(o, 'Unknown texture type.');
             }
          }
          return result;
@@ -1122,28 +1130,28 @@ module sk.graphic.context3d.wgl {
          }
          // 计算位宽
          var strideCd = indexBuffer.strideCd();
-         var strideValue = MO.RWglUtility.convertIndexStride(graphic, strideCd);
+         var strideValue = RWglUtility.convertIndexStride(graphic, strideCd);
          var offsetValue = 0;
          switch (strideCd) {
-            case MO.EG3dIndexStride.Uint16:
+            case sk.graphic.context3d.EG3dIndexStride.Uint16:
                offsetValue = offset << 1;
                break;
-            case MO.EG3dIndexStride.Uint32:
+            case sk.graphic.context3d.EG3dIndexStride.Uint32:
                offsetValue = offset << 2;
                break;
          }
          // 绘制处理
          var drawModeCd = indexBuffer.drawModeCd();
-         var drawModeValue = MO.RWglUtility.convertDrawMode(graphic, drawModeCd);
+         var drawModeValue = RWglUtility.convertDrawMode(graphic, drawModeCd);
          switch (drawModeCd) {
-            case MO.EG3dDrawMode.Line:
+            case sk.graphic.context3d.EG3dDrawMode.Lines:
                //if(indexBuffer._lineWidth){
                //graphic.lineWidth(indexBuffer._lineWidth);
                //}
                //graphic.enable(graphic.BLEND);
                //graphic.enable(graphic.LINE_SMOOTH);
                //graphic.hint(graphic.LINE_SMOOTH_HINT, graphic.FASTEST);
-               //graphic.blendFunc(graphic.SRC_ALPHA, graphic.ONE_MINUS_SRC_ALPHA); 
+               //graphic.blendFunc(graphic.SRC_ALPHA, graphic.ONE_MINUS_SRC_ALPHA);
                break;
          }
          graphic.drawElements(drawModeValue, count, strideValue, offsetValue);
@@ -1177,15 +1185,15 @@ module sk.graphic.context3d.wgl {
       // @param message:String 消息
       // @param parameter1:String 参数1
       //==========================================================
-      public checkError(code, message, parameter1) {
+      public checkError(code, message, ...parameters) {
          var o = this;
          // 检查运行模式
          if (!o._capability.optionDebug) {
             return true;
          }
-         if (!MO.Runtime.isDebug()) {
-            return true;
-         }
+         //if (!MO.Runtime.isDebug()) {
+         //   return true;
+         //}
          // 获得错误原因
          var graphic = o._handle;
          var result = false;
@@ -1223,7 +1231,7 @@ module sk.graphic.context3d.wgl {
          //............................................................
          // 输出错误信息
          if (!result) {
-            MO.Logger.fatal(o, null, 'OpenGL check failure. (code={1}, description={2})', error, errorInfo);
+            sk.common.lang.RLogger.fatal(o, null, 'OpenGL check failure. (code={1}, description={2})', error, errorInfo);
          }
          return result;
       }
@@ -1239,11 +1247,11 @@ module sk.graphic.context3d.wgl {
          // 存储参数集合
          var parameters = o.parameters();
          var xparameters = xconfig.create('Parameters');
-         MO.Lang.Xml.saveObject(xparameters, 'Parameter', parameters);
+         sk.common.xml.RXml.saveObject(xparameters, 'Parameter', parameters);
          // 存储扩展集合
          var extensions = o.extensions();
          var xextensions = xconfig.create('Extensions');
-         MO.Lang.Xml.saveObject(xextensions, 'Extension', extensions);
+         sk.common.xml.RXml.saveObject(xextensions, 'Extension', extensions);
       }
 
       //==========================================================
@@ -1257,10 +1265,10 @@ module sk.graphic.context3d.wgl {
          o._data9 = null;
          o._data16 = null;
          // 释放属性
-         o._recordBuffers = MO.Lang.Object.dispose(o._recordBuffers);
-         o._recordSamplers = MO.Lang.Object.dispose(o._recordSamplers);
+         o._recordBuffers = sk.common.lang.RObject.dispose(o._recordBuffers);
+         o._recordSamplers = sk.common.lang.RObject.dispose(o._recordSamplers);
          // 释放属性
-         o._contextAttributes = null;
+         //o._contextAttributes = null;
          o._parameters = null;
          o._extensions = null;
          o._activeTextureSlot = null;
@@ -1268,7 +1276,7 @@ module sk.graphic.context3d.wgl {
          o._handleSamplerS3tc = null;
          o._handleDebugShader = null;
          // 父处理
-         o.__base.FG3dContext.dispose.call(o);
+         super.dispose();
       }
    }
 }

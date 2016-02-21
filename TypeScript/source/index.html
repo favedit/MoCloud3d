@@ -7,7 +7,16 @@
     <link rel="stylesheet" href="app.css" type="text/css" />
     <script src="app.js"></script>
 </head>
-<body>
+<script>
+function test(){
+   debugger
+   var a1 = new A();
+   var a2 = new A();
+   var e = (a1.name === a2.name)
+   var e2 = e;
+}
+</script>
+<body onload="test()">
     <h1>TypeScript HTML App</h1>
 
     <div id="content"></div>

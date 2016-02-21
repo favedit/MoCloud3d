@@ -12,7 +12,7 @@ module sk.graphic.context2d {
       _globalScale: sk.common.math.SSize2 = null;
       //_scale = MO.Class.register(o, new MO.AGetter('_scale'));
       _scale: sk.common.math.SSize2 = null;
-   
+
       //==========================================================
       // <T>构造处理。</T>
       //

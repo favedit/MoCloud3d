@@ -6,10 +6,11 @@
    // @author maocy
    // @version 150201
    //==========================================================
-   export class RHex {
+   export class RHex{
       // @define
       public static NUMBER: string = '0x123456789ABCDEF';
       public static PAD: string = '0';
+      public static PAD2: FObject = new FObject();
 
       //===========================================================
       // <T>判断是否有效16进制内容。</T>

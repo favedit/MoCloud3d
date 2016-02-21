@@ -8,19 +8,19 @@
    //===========================================================
    export class RBrowser {
       // @attribute
-      _agent = null;
-      _capability = null;
-      _defineProperties = null;
-      _defineEvents = null;
-      _defineMethods = null;
+      public static _agent = null;
+      public static _capability = null;
+      public static _defineProperties = null;
+      public static _defineEvents = null;
+      public static _defineMethods = null;
       // @attribute
-      _deviceCd = MO.EDevice.Unknown;
-      _softwareCd = MO.ESoftware.Unknown;
-      _typeCd = MO.EBrowser.Unknown;
-      _orientationCd = MO.EOrientation.Horizontal;
-      _supportHtml5 = false;
-      _hostPath = '';
-      _contentPath = '';
+      public static _deviceCd = EDevice.Unknown;
+      public static _softwareCd = ESoftware.Unknown;
+      public static _typeCd = EBrowser.Unknown;
+      public static _orientationCd = EOrientation.Horizontal;
+      public static _supportHtml5 = false;
+      public static _hostPath = '';
+      public static _contentPath = '';
 
       //===========================================================
       // <T>日志输出处理。</T>
@@ -38,33 +38,33 @@
       // @method
       //===========================================================
       public static construct() {
-         var o = this;
+         var o:any = this;
          var code = o._agent = window.navigator.userAgent.toString();
          var agent = code.toLowerCase();
          var properties = o._defineProperties = new Object();
          var events = o._defineEvents = new Object();
          var methods = o._defineMethods = new Object();
-         var capability = o._capability = new MO.SBrowserCapability();
+         var capability = o._capability = new SBrowserCapability();
          // 判断设备类型
          if (agent.indexOf("android") != -1) {
-            o._typeCd = MO.EDevice.Mobile;
-            o._softwareCd = MO.ESoftware.Android;
+            o._typeCd = EDevice.Mobile;
+            o._softwareCd = ESoftware.Android;
          }
          // 判断浏览器类型
          if (agent.indexOf("chrome") != -1) {
-            o._typeCd = MO.EBrowser.Chrome;
+            o._typeCd = EBrowser.Chrome;
          } else if (agent.indexOf("firefox") != -1) {
-            o._typeCd = MO.EBrowser.FireFox;
+            o._typeCd = EBrowser.FireFox;
          } else if ((agent.indexOf("msie") != -1) || (agent.indexOf("windows") != -1)) {
-            o._typeCd = MO.EBrowser.Explorer;
+            o._typeCd = EBrowser.Explorer;
          } else if ((agent.indexOf("safari") != -1) || (agent.indexOf("applewebkit") != -1)) {
-            o._typeCd = MO.EBrowser.Safari;
+            o._typeCd = EBrowser.Safari;
          } else {
             alert('Unknown browser.\n' + agent);
             return;
          }
          // 是否移动或PC模式
-         var platformCd = MO.EPlatform.Mobile;
+         /*var platformCd = MO.EPlatform.Mobile;
          var environmentConsole = MO.Console.find(MO.FEnvironmentConsole);
          if (MO.Lang.String.contains(agent, 'android', 'ipad', 'iphone', 'midp', 'rv:1.2.3.4', 'windows ce', 'windows mobile')) {
             platformCd = MO.EPlatform.Mobile;
@@ -142,10 +142,10 @@
          } else if (typeof hDocument.webkitHidden !== "undefined") {
             properties['hidden'] = 'webkitHidden';
             events['visibilitychange'] = 'webkitvisibilitychange';
-         }
+         }*/
          // 计算方向
          o.refreshOrientation();
-         MO.Logger.debug(o, 'Browser connect. (agent={1})', o._agent);
+         sk.common.lang.RLogger.debug(o, 'Browser connect. (agent={1})', o._agent);
       }
 
       //==========================================================
@@ -335,7 +335,7 @@
       // @return 是否横屏
       //===========================================================
       public static isOrientationHorizontal() {
-         return this._orientationCd == MO.EOrientation.Horizontal;
+         return this._orientationCd == EOrientation.Horizontal;
       }
 
       //===========================================================
@@ -345,7 +345,7 @@
       // @return 是否垂直
       //===========================================================
       public static isOrientationVertical() {
-         return this._orientationCd == MO.EOrientation.Vertical;
+         return this._orientationCd == EOrientation.Vertical;
       }
 
       //===========================================================
@@ -355,15 +355,15 @@
       // @return 是否垂直
       //===========================================================
       public static refreshOrientation() {
-         var o = this;
+         var o:any = this;
          var orientation = window.orientation;
          if (orientation != null) {
             if ((window.orientation == 180) || (window.orientation == 0)) {
-               o._orientationCd = MO.EOrientation.Vertical;
+               o._orientationCd = EOrientation.Vertical;
             } else if ((window.orientation == 90) || (window.orientation == -90)) {
-               o._orientationCd = MO.EOrientation.Horizontal;
+               o._orientationCd = EOrientation.Horizontal;
             } else {
-               throw new MO.TError(o, 'Unknown orientation mode.');
+               throw new sk.common.lang.FError(o, 'Unknown orientation mode.');
             }
          }
          return o._orientationCd;
@@ -388,7 +388,7 @@
       // @return 编码字符串
       //===========================================================
       public static encode(value) {
-         return escape(value);
+         //return escape(value);
       }
 
       //===========================================================
@@ -399,7 +399,7 @@
       // @return 解码字符串
       //===========================================================
       public static decode(value) {
-         return unescape(value);
+         //return unescape(value);
       }
 
       //===========================================================
@@ -475,10 +475,10 @@
       public static downloadBlob(fileName, blob) {
          var link = document.createElement('A');
          var event = document.createEvent("MouseEvents");
-         event.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-         link.download = fileName;
-         link.href = URL.createObjectURL(blob);
-         link.dispatchEvent(event);
+         //event.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+         //link.download = fileName;
+         //link.href = URL.createObjectURL(blob);
+         //link.dispatchEvent(event);
       }
 
       //===========================================================
@@ -489,8 +489,8 @@
       // @param text:String 文本内容
       //===========================================================
       public static downloadText(fileName, text) {
-         var blob = MO.Labg.Blob.fromText(text);
-         this.downloadBlob(fileName, blob);
+         //var blob = MO.Labg.Blob.fromText(text);
+         //this.downloadBlob(fileName, blob);
       }
 
       //===========================================================
@@ -502,7 +502,7 @@
       public static saveConfig(xconfig) {
          var o = this;
          var xagent = xconfig.create('Agent');
-         xagent.setValue(o._agent);
+         //xagent.setValue(o._agent);
       }
    }
 }

@@ -160,6 +160,17 @@
       // @param index:Integer 索引位置
       // @return Object 内容
       //==========================================================
+      public at(index): any {
+         return this._values[index];
+      }
+
+      //==========================================================
+      // <T>根据索引位置获得内容。</T>
+      //
+      // @method
+      // @param index:Integer 索引位置
+      // @return Object 内容
+      //==========================================================
       public valueAt(index): any {
          return this._values[index];
       }

@@ -8,46 +8,46 @@
    //==========================================================
    export class RWindow {
       // @attribute
-      _optionSelect = true;
+      public static _optionSelect = true;
       // @attribute
-      _statusError = false;
-      _statusEnable = true;
-      _disableDeep = 0;
+      public static _statusError = false;
+      public static _statusEnable = true;
+      public static _disableDeep = 0;
       // @attribute
-      _cookies = new sk.common.lang.FAttributes();
-      _localStorage = null;
-      _sessionStorage = null;
+      public static _cookies = new sk.common.lang.FAttributes();
+      public static _localStorage = null;
+      public static _sessionStorage = null;
       // @attribute
-      _eventMouse = new MO.SMouseEvent();
-      _eventKey = new MO.SKeyboardEvent();
-      _eventResize = new MO.SResizeEvent();
-      _eventVisibility = new MO.SEvent();
-      _eventOrientation = new MO.SEvent();
-      _eventUnload = new MO.SEvent();
+      public static _eventMouse = new SMouseEvent();
+      public static _eventKey = new SKeyboardEvent();
+      public static _eventResize = new SResizeEvent();
+      public static _eventVisibility = new sk.common.lang.SEvent();
+      public static _eventOrientation = new sk.common.lang.SEvent();
+      public static _eventUnload = new sk.common.lang.SEvent();
       //..........................................................
       // @html
-      _hWindow = null;
-      _hDocument = null;
-      _hContainer = null;
-      _hDisablePanel = null;
-      _hDisableImage = null;
+      public static _hWindow = null;
+      public static _hDocument = null;
+      public static _hContainer = null;
+      public static _hDisablePanel = null;
+      public static _hDisableImage = null;
       //..........................................................
       // @listeners
-      lsnsLoad = new sk.common.lang.FListeners();
-      lsnsLoaded = new sk.common.lang.FListeners();
-      lsnsUnload = new sk.common.lang.FListeners();
-      lsnsMouseDown = new sk.common.lang.FListeners();
-      lsnsMouseUp = new sk.common.lang.FListeners();
-      lsnsMouseOver = new sk.common.lang.FListeners();
-      lsnsMouseMove = new sk.common.lang.FListeners();
-      lsnsMouseWheel = new sk.common.lang.FListeners();
-      lsnsKeyDown = new sk.common.lang.FListeners();
-      lsnsKeyUp = new sk.common.lang.FListeners();
-      lsnsKeyPress = new sk.common.lang.FListeners();
-      lsnsResize = new sk.common.lang.FListeners();
-      lsnsVisibility = new sk.common.lang.FListeners();
-      lsnsOrientation = new sk.common.lang.FListeners();
-      lsnsDeviceError = new sk.common.lang.FListeners();
+      public static lsnsLoad = new sk.common.lang.FListeners();
+      public static lsnsLoaded = new sk.common.lang.FListeners();
+      public static lsnsUnload = new sk.common.lang.FListeners();
+      public static lsnsMouseDown = new sk.common.lang.FListeners();
+      public static lsnsMouseUp = new sk.common.lang.FListeners();
+      public static lsnsMouseOver = new sk.common.lang.FListeners();
+      public static lsnsMouseMove = new sk.common.lang.FListeners();
+      public static lsnsMouseWheel = new sk.common.lang.FListeners();
+      public static lsnsKeyDown = new sk.common.lang.FListeners();
+      public static lsnsKeyUp = new sk.common.lang.FListeners();
+      public static lsnsKeyPress = new sk.common.lang.FListeners();
+      public static lsnsResize = new sk.common.lang.FListeners();
+      public static lsnsVisibility = new sk.common.lang.FListeners();
+      public static lsnsOrientation = new sk.common.lang.FListeners();
+      public static lsnsDeviceError = new sk.common.lang.FListeners();
 
       //==========================================================
       // <T>鼠标按下处理。</T>
@@ -56,18 +56,18 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohMouseDown(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventMouse;
-         event.code = MO.EEvent.MouseDown;
-         event.attachEvent(hEvent);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventMouse;
+         //event.code = MO.EEvent.MouseDown;
+         //event.attachEvent(hEvent);
          //o.lsnsMouseDown._listeners.at(0).process(event);
          //o.lsnsMouseDown._listeners.at(1).process(event);
          //o.lsnsMouseDown._listeners.at(2).process(event);
          //o.lsnsMouseDown._listeners.at(3).process(event);
-         o.lsnsMouseDown.process(event);
+         //o.lsnsMouseDown.process(event);
       }
 
       //==========================================================
@@ -77,14 +77,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohMouseMove(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventMouse;
-         event.code = MO.EEvent.MouseMove;
-         event.attachEvent(hEvent);
-         o.lsnsMouseMove.process(event);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventMouse;
+         //event.code = MO.EEvent.MouseMove;
+         //event.attachEvent(hEvent);
+         //o.lsnsMouseMove.process(event);
       }
 
       //==========================================================
@@ -94,14 +94,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohMouseUp(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventMouse;
-         event.code = MO.EEvent.MouseUp;
-         event.attachEvent(hEvent);
-         o.lsnsMouseUp.process(event);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventMouse;
+         //event.code = MO.EEvent.MouseUp;
+         //event.attachEvent(hEvent);
+         //o.lsnsMouseUp.process(event);
       }
 
       //==========================================================
@@ -111,14 +111,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohMouseWheel(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventMouse;
-         event.code = MO.EEvent.MouseWheel;
-         event.attachEvent(hEvent);
-         o.lsnsMouseWheel.process(event);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventMouse;
+         //event.code = MO.EEvent.MouseWheel;
+         //event.attachEvent(hEvent);
+         //o.lsnsMouseWheel.process(event);
       }
 
       //==========================================================
@@ -128,14 +128,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohKeyDown(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventKey;
-         event.code = MO.EEvent.KeyDown;
-         event.attachEvent(hEvent);
-         o.lsnsKeyDown.process(event);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventKey;
+         //event.code = MO.EEvent.KeyDown;
+         //event.attachEvent(hEvent);
+         //o.lsnsKeyDown.process(event);
          //   MO.Logger.debug(o, 'Window key down. (key_code={1})', e.keyCode);
          //   var s = e.srcElement ? e.srcElement : e.target;
          //   var t = s.tagName;
@@ -173,14 +173,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohKeyUp(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventKey;
-         event.code = MO.EEvent.KeyUp;
-         event.attachEvent(hEvent);
-         o.lsnsKeyUp.process(event);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventKey;
+         //event.code = MO.EEvent.KeyUp;
+         //event.attachEvent(hEvent);
+         //o.lsnsKeyUp.process(event);
       }
 
       //==========================================================
@@ -190,14 +190,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohKeyPress(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
-         var event = o._eventKey;
-         event.code = MO.EEvent.KeyPress;
-         event.attachEvent(hEvent);
-         o.lsnsKeyPress.process(event);
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
+         //var event = o._eventKey;
+         //event.code = MO.EEvent.KeyPress;
+         //event.attachEvent(hEvent);
+         //o.lsnsKeyPress.process(event);
       }
 
       //==========================================================
@@ -207,15 +207,15 @@
       // @param event:htmlEvent 事件
       //==========================================================
       public static ohResize(hEvent) {
-         var o = MO.Window;
-         if (!hEvent) {
-            hEvent = o._hWindow.event;
-         }
+         //var o = MO.Window;
+         //if (!hEvent) {
+         //   hEvent = o._hWindow.event;
+         //}
          // 接收事件
-         var event = o._eventResize;
-         event.code = MO.EEvent.Resize;
-         event.attachEvent(hEvent);
-         o.lsnsResize.process(event);
+         //var event = o._eventResize;
+         //event.code = MO.EEvent.Resize;
+         //event.attachEvent(hEvent);
+         //o.lsnsResize.process(event);
          //   var o = this;
          //   var h = o._hDisablePanel;
          //   if(h){
@@ -246,7 +246,7 @@
       // @param event:htmlEvent 事件
       //==========================================================
       public static ohSelect(event) {
-         return MO.Window._optionSelect;
+         //return MO.Window._optionSelect;
       }
 
       //==========================================================
@@ -256,14 +256,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohVisibility(hEvent) {
-         var o = MO.Window;
+         //var o = MO.Window;
          // 刷新方向
-         var visibility = MO.Window.Browser.isVisibility();
+         //var visibility = MO.Window.Browser.isVisibility();
          // 分发消息
-         var event = o._eventVisibility;
-         event.visibility = visibility;
-         o.lsnsVisibility.process(event);
-         MO.Logger.debug(o, 'Window visibility changed. (visibility={1})', visibility);
+         //var event = o._eventVisibility;
+         //event.visibility = visibility;
+         //o.lsnsVisibility.process(event);
+         //MO.Logger.debug(o, 'Window visibility changed. (visibility={1})', visibility);
       }
 
       //==========================================================
@@ -273,14 +273,14 @@
       // @param hEvent:htmlEvent 事件
       //==========================================================
       public static ohOrientation(hEvent) {
-         var o = MO.Window;
+         //var o = MO.Window;
          // 刷新方向
-         var orientationCd = o.Browser.refreshOrientation();
+         //var orientationCd = o.Browser.refreshOrientation();
          // 分发消息
-         var event = o._eventOrientation;
-         event.orientationCd = orientationCd;
-         o.lsnsOrientation.process(event);
-         MO.Logger.debug(o, 'Window orientation changed. (orientation_cd={1})', orientationCd);
+         //var event = o._eventOrientation;
+         //event.orientationCd = orientationCd;
+         //o.lsnsOrientation.process(event);
+         //MO.Logger.debug(o, 'Window orientation changed. (orientation_cd={1})', orientationCd);
       }
 
       //==========================================================
@@ -290,12 +290,12 @@
       // @param event:htmlEvent 事件
       //==========================================================
       public static ohUnload(event) {
-         var o = MO.Window;
+         //var o = MO.Window;
          // 释放处理
-         var event = o._eventUnload;
-         o.lsnsUnload.process(event);
+         //var event = o._eventUnload;
+         //o.lsnsUnload.process(event);
          // 释放窗口
-         o.dispose();
+         //o.dispose();
       }
 
       //==========================================================
@@ -308,7 +308,7 @@
       public static connect(hWindow) {
          var o = this;
          // 设置事件
-         o._eventVisibility.code = MO.EEvent.Visibility;
+         /*o._eventVisibility.code = MO.EEvent.Visibility;
          o._eventOrientation.code = MO.EEvent.Orientation;
          // 设置属性
          var hWindow = o._hWindow = hWindow;
@@ -344,6 +344,7 @@
          // 检测事件
          o._requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame;
          o._cancelAnimationFrame = window.cancelRequestAnimationFrame || window.webkitCancelAnimationFrame || window.webkitCancelRequestAnimationFrame || window.mozCancelAnimationFrame || window.mozCancelRequestAnimationFrame || window.msCancelAnimationFrame || window.msCancelRequestAnimationFrame;
+         */
       }
 
       //==========================================================
@@ -375,9 +376,9 @@
       public static setOptionSelect(select) {
          var o = this;
          o._optionSelect = select;
-         if (MO.Window.Browser.isBrowser(MO.EBrowser.FireFox)) {
-            o._hContainer.style.MozUserSelect = select ? '' : 'none';
-         }
+         //if (MO.Window.Browser.isBrowser(EBrowser.FireFox)) {
+         //   o._hContainer.style.MozUserSelect = select ? '' : 'none';
+         //}
       }
 
       //==========================================================
@@ -419,7 +420,7 @@
       // @param value:String 标题
       //==========================================================
       public static setCaption(value) {
-         top.document.title = MO.Lang.String.nvl(value);
+         top.document.title = sk.common.lang.RString.nvl(value);
       }
 
       //==========================================================
@@ -429,7 +430,7 @@
       // @param value:String 状态
       //==========================================================
       public static setStatus(value) {
-         window.status = MO.Lang.String.nvl(value);
+         window.status = sk.common.lang.RString.nvl(value);
       }
 
       //==========================================================
@@ -461,6 +462,7 @@
       //==========================================================
       public static storage(scopeCd) {
          var o = this;
+         /*
          switch (scopeCd) {
             case MO.EScope.Local:
                var storage = o._localStorage;
@@ -476,8 +478,8 @@
                   storage.link(window.sessionStorage);
                }
                return storage;
-         }
-         throw new TError(o, 'Unknown scope. (scope_cd={1})', scopeCd);
+         }*/
+         throw new sk.common.lang.FError(o, 'Unknown scope. (scope_cd={1})', scopeCd);
       }
 
       //==========================================================
@@ -491,7 +493,7 @@
          var o = this;
          // 创建面板
          var hPanel = o._hDisablePanel;
-         if (!hPanel) {
+         /*if (!hPanel) {
             hPanel = o._hDisablePanel = MO.Window.Builder.createDiv(o._hDocument, 'RWindow_Disable');
             hPanel.style.zIndex = 5000;
          }
@@ -503,7 +505,7 @@
             hImage.style.margin = o._hContainer.offsetHeight / 2;
             hImage.style.display = 'none';
          }
-         MO.Window.Html.visibleSet(hImage, f);
+         MO.Window.Html.visibleSet(hImage, f);*/
          return hPanel;
       }
 
@@ -544,7 +546,7 @@
          var o = this;
          o._disableDeep--;
          if (o._disableDeep == 0) {
-            o.setEnable(true);
+            //o.setEnable(true);
          }
       }
 
@@ -556,7 +558,7 @@
       public static disable() {
          var o = this;
          if (o._disableDeep == 0) {
-            o.setEnable(false);
+            //o.setEnable(false);
          }
          o._disableDeep++;
       }
@@ -599,8 +601,8 @@
       // @param hPanel:HtmlTag 页面元素
       //==========================================================
       public static appendElement(hPanel) {
-         MO.Assert.debugNotNull(control);
-         this._hContainer.appendChild(hPanel);
+         //MO.Assert.debugNotNull(hPanel);
+         //this._hContainer.appendChild(hPanel);
       }
 
       //==========================================================
@@ -611,7 +613,8 @@
       // @param interval 调用间隔
       //==========================================================
       public static requestAnimationFrame(callback) {
-         var method = this._requestAnimationFrame;
+         //var method = this._requestAnimationFrame;
+         var method = null;
          if (method) {
             method(callback);
             return true;
@@ -626,7 +629,8 @@
       // @param callback 回调函数
       //==========================================================
       public static cancelRequestAnimationFrame(callback) {
-         var method = this._cancelAnimationFrame;
+         //var method = this._cancelAnimationFrame;
+         var method = null;
          if (method) {
             method(callback);
             return true;
@@ -663,47 +667,47 @@
       // <T>释放窗口所有对象。</T>
       //==========================================================
       public static dispose() {
-         var o = this;
+         var o:any = this;
          // 设置属性
          var hWindow = o._hWindow;
          var hDocument = o._hDocument;
          var hContainer = o._hContainer;
          // 关联鼠标事件
-         if (MO.Window.Browser.supportHtml5()) {
-            hContainer.removeEventListener('mousedown', o.onMouseDown, true);
-            hContainer.removeEventListener('mousemove', o.onMouseMove, true);
-            hContainer.removeEventListener('mouseup', o.onMouseUp, true);
-            hContainer.removeEventListener('mousewheel', o.onMouseWheel, true);
-            hContainer.removeEventListener('keydown', o.onKeyDown, true);
-            hContainer.removeEventListener('keyup', o.onKeyUp, true);
-            hContainer.removeEventListener('keypress', o.onKeyPress, true);
-            hWindow.removeEventListener('orientationchange', o.onOrientation);
-         } else {
-            hContainer.onmousedown = null;
-            hContainer.onmousemove = null;
-            hContainer.onmouseup = null;
-            hContainer.onmousewheel = null;
-            hContainer.onkeydown = null;
-            hContainer.onkeyup = null;
-            hContainer.onkeypress = null;
-            hWindow.onorientationchange = null;
-         }
+         //if (MO.Window.Browser.supportHtml5()) {
+         hContainer.removeEventListener('mousedown', o.onMouseDown, true);
+         hContainer.removeEventListener('mousemove', o.onMouseMove, true);
+         hContainer.removeEventListener('mouseup', o.onMouseUp, true);
+         hContainer.removeEventListener('mousewheel', o.onMouseWheel, true);
+         hContainer.removeEventListener('keydown', o.onKeyDown, true);
+         hContainer.removeEventListener('keyup', o.onKeyUp, true);
+         hContainer.removeEventListener('keypress', o.onKeyPress, true);
+         hWindow.removeEventListener('orientationchange', o.onOrientation);
+         //} else {
+         hContainer.onmousedown = null;
+         hContainer.onmousemove = null;
+         hContainer.onmouseup = null;
+         hContainer.onmousewheel = null;
+         hContainer.onkeydown = null;
+         hContainer.onkeyup = null;
+         hContainer.onkeypress = null;
+         hWindow.onorientationchange = null;
+         //}
          hContainer.onresize = null;
          hContainer.onselectstart = null;
          hContainer.onunload = null;
          // @attribute
-         o._localStorage = MO.Lang.Object.dispose(o._localStorage);
-         o._sessionStorage = MO.Lang.Object.dispose(o._sessionStorage);
+         o._localStorage = sk.common.lang.RObject.dispose(o._localStorage);
+         o._sessionStorage = sk.common.lang.RObject.dispose(o._sessionStorage);
          // @attribute
          o._hWindow = null;
          o._hDocument = null;
          o._hContainer = null;
          // @attribute
-         o._eventMouse = MO.Lang.Object.dispose(o._eventMouse);
-         o._eventKey = MO.Lang.Object.dispose(o._eventKey);
-         o._eventResize = MO.Lang.Object.dispose(o._eventResize);
-         o._eventOrientation = MO.Lang.Object.dispose(o._eventOrientation);
-         o._eventUnload = MO.Lang.Object.dispose(o._eventUnload);
+         o._eventMouse = sk.common.lang.RObject.dispose(o._eventMouse);
+         o._eventKey = sk.common.lang.RObject.dispose(o._eventKey);
+         o._eventResize = sk.common.lang.RObject.dispose(o._eventResize);
+         o._eventOrientation = sk.common.lang.RObject.dispose(o._eventOrientation);
+         o._eventUnload = sk.common.lang.RObject.dispose(o._eventUnload);
       }
    }
 }

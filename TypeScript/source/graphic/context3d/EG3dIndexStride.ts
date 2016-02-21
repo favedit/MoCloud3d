@@ -1,17 +1,17 @@
-﻿//==========================================================
-// <T>渲染索引宽度。</T>
-//
-// @enum
-// @author maocy
-// @version 141230
-//==========================================================
-MO.EG3dIndexStride = new function EG3dIndexStride(){
-   var o = this;
-   // @member 未知
-   o.Unknown = 0;
-   // @member 16bit
-   o.Uint16 = 1;
-   // @member 32bit
-   o.Uint32 = 2;
-   return o;
+﻿module sk.graphic.context3d {
+   //==========================================================
+   // <T>渲染索引宽度。</T>
+   //
+   // @enum
+   // @author maocy
+   // @version 141230
+   //==========================================================
+   export enum EG3dIndexStride {
+      // @member 未知
+      Unknown = 0,
+      // @member 16bit
+      Uint16 = 1,
+      // @member 32bit
+      Uint32 = 2
+   }
 }

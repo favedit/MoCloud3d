@@ -1,21 +1,19 @@
-﻿module sk.graphic.context3d.render {
-//==========================================================
-// <T>渲染流枚举。</T>
-//
-// @enum
-// @author maocy
-// @version 150114
-//==========================================================
-MO.EG3dAttribute = new function EG3dAttribute(){
-   var o = this;
-   o.Position   = 'position';
-   o.Color      = 'color';
-   o.Coord      = 'coord';
-   o.Normal     = 'normal';
-   o.Binormal   = 'binormal';
-   o.Tangent    = 'tangent';
-   o.BoneIndex  = 'bone_index';
-   o.BoneWeight = 'bone_weight';
-   return o;
-}
+﻿module sk.graphic.context3d {
+   //==========================================================
+   // <T>渲染流枚举。</T>
+   //
+   // @enum
+   // @author maocy
+   // @version 150114
+   //==========================================================
+   export class EG3dAttribute {
+      public static Position = 'position';
+      public static Color = 'color';
+      public static Coord = 'coord';
+      public static Normal = 'normal';
+      public static Binormal = 'binormal';
+      public static Tangent = 'tangent';
+      public static BoneIndex = 'bone_index';
+      public static BoneWeight = 'bone_weight';
+   }
 }

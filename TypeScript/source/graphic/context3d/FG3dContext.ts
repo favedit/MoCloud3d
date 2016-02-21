@@ -8,30 +8,33 @@ module sk.graphic.context3d.render {
    export class FG3dContext extends sk.graphic.context.FGraphicContext {
       //..........................................................
       // @attribute
-      _optionAlpha = true;
-      _optionAntialias = false;
-      _viewportRectangle = MO.Class.register(o, new MO.AGetter('_viewportRectangle'));
+      protected _optionAlpha = true;
+      protected _optionAntialias = false;
+      //_viewportRectangle = MO.Class.register(o, new MO.AGetter('_viewportRectangle'));
+      protected_viewportRectangle = null;
       //o._logicSize          = MO.Class.register(o, new MO.AGetter('_logicSize'));
       //o._ratio              = MO.Class.register(o, new MO.AGetSet('_ratio'));
       //o._sizeRatio          = MO.Class.register(o, new MO.AGetter('_sizeRatio'));
-      _capability = MO.Class.register(o, new MO.AGetter('_capability'));
-      _statistics = MO.Class.register(o, new MO.AGetter('_statistics'));
+      //_capability = MO.Class.register(o, new MO.AGetter('_capability'));
+      protected _capability = null;
+      //_statistics = MO.Class.register(o, new MO.AGetter('_statistics'));
+      protected _statistics = null;
       // @attribute
-      _fillModeCd = MO.EG3dFillMode.Face;
-      _optionDepth = false;
-      _optionCull = false;
-      _depthModeCd = 0;
-      _cullModeCd = 0;
-      _statusBlend = false;
-      _blendSourceCd = 0;
-      _blendTargetCd = 0;
-      _program = null;
+      protected _fillModeCd: EG3dFillMode = EG3dFillMode.Face;
+      protected _optionDepth = false;
+      protected _optionCull = false;
+      protected _depthModeCd = 0;
+      protected _cullModeCd = 0;
+      protected _statusBlend = false;
+      protected _blendSourceCd = 0;
+      protected _blendTargetCd = 0;
+      protected _program = null;
       // @attribute
-      _storePrograms = null;
-      _storeLayouts = null;
-      _storeBuffers = null;
-      _storeTextures = null;
-      _storeTargets = null;
+      protected _storePrograms = null;
+      protected _storeLayouts = null;
+      protected _storeBuffers = null;
+      protected _storeTextures = null;
+      protected _storeTargets = null;
       //..........................................................
       // @method
       //createObject = MO.FG3dContext_createObject;
@@ -72,17 +75,17 @@ module sk.graphic.context3d.render {
       public constructor() {
          super();
          // 设置属性
-         this._viewportRectangle = new MO.SRectangle();
+         //this._viewportRectangle = new MO.SRectangle();
          //o._logicSize = new MO.SSize2(1280, 720);
          //o._sizeRatio = new MO.SSize2(1, 1);
-         this._statistics = MO.Class.create(MO.FG3dStatistics);
+         //this._statistics = MO.Class.create(MO.FG3dStatistics);
          //MO.Console.find(MO.FStatisticsConsole).register('graphic3d.context', o._statistics);
          // 设置属性
-         this._storePrograms = new MO.TObjects();
-         this._storeLayouts = new MO.TObjects();
-         this._storeBuffers = new MO.TObjects();
-         this._storeTextures = new MO.TObjects();
-         this._storeTargets = new MO.TObjects();
+         this._storePrograms = new sk.common.lang.FObjects();
+         this._storeLayouts = new sk.common.lang.FObjects();
+         this._storeBuffers = new sk.common.lang.FObjects();
+         this._storeTextures = new sk.common.lang.FObjects();
+         this._storeTargets = new sk.common.lang.FObjects();
       }
 
       //==========================================================
@@ -104,9 +107,8 @@ module sk.graphic.context3d.render {
       // @return MGraphicObject 环境对象
       //==========================================================
       public createObject(clazz) {
-         var o = this;
-         var instance = MO.Class.create(clazz);
-         instance.linkGraphicContext(o);
+         var instance = sk.common.reflect.RClass.create(clazz);
+         instance.linkGraphicContext(this);
          instance.setup();
          return instance;
       }
@@ -135,7 +137,7 @@ module sk.graphic.context3d.render {
                var program = programs.at(i);
                program.dispose();
             }
-            o._storePrograms = MO.Lang.Object.dispose(programs);
+            o._storePrograms = sk.common.lang.RObject.dispose(programs);
          }
          // 释放布局集合
          var layouts = o._storeLayouts;
@@ -145,7 +147,7 @@ module sk.graphic.context3d.render {
                var layout = layouts.at(i);
                layout.dispose();
             }
-            o._storeLayouts = MO.Lang.Object.dispose(layouts);
+            o._storeLayouts = sk.common.lang.RObject.dispose(layouts);
          }
          // 释放顶点缓冲集合
          var buffers = o._storeBuffers;
@@ -155,7 +157,7 @@ module sk.graphic.context3d.render {
                var buffer = buffers.at(i);
                buffer.dispose();
             }
-            o._storeBuffers = MO.Lang.Object.dispose(buffers);
+            o._storeBuffers = sk.common.lang.RObject.dispose(buffers);
          }
          // 释放像素缓冲集合
          var textures = o._storeTextures;
@@ -165,7 +167,7 @@ module sk.graphic.context3d.render {
                var texture = textures.at(i);
                texture.dispose();
             }
-            o._storeTextures = MO.Lang.Object.dispose(textures);
+            o._storeTextures = sk.common.lang.RObject.dispose(textures);
          }
          // 释放目标集合
          var targets = o._storeTargets;
@@ -175,21 +177,21 @@ module sk.graphic.context3d.render {
                var target = targets.at(i);
                target.dispose();
             }
-            o._storeTargets = MO.Lang.Object.dispose(targets);
+            o._storeTargets = sk.common.lang.RObject.dispose(targets);
          }
          // 释放属性
          o._program = null;
-         o._viewportRectangle = MO.Lang.Object.dispose(o._viewportRectangle);
-         //o._logicSize = MO.Lang.Object.dispose(o._logicSize);
-         //o._sizeRatio = MO.Lang.Object.dispose(o._sizeRatio);
-         o._capability = MO.Lang.Object.dispose(o._capability);
-         o._statistics = MO.Lang.Object.dispose(o._statistics);
+         //o._viewportRectangle = sk.common.lang.RObject.dispose(o._viewportRectangle);
+         //o._logicSize = sk.common.lang.RObject.dispose(o._logicSize);
+         //o._sizeRatio = sk.common.lang.RObject.dispose(o._sizeRatio);
+         o._capability = sk.common.lang.RObject.dispose(o._capability);
+         o._statistics = sk.common.lang.RObject.dispose(o._statistics);
          // 释放属性
-         o._handleInstance = null;
-         o._handleLayout = null;
-         o._handle = null;
+         //o._handleInstance = null;
+         //o._handleLayout = null;
+         //o._handle = null;
          // 父处理
-         o.__base.FGraphicContext.dispose.call(o);
+         super.dispose();
       }
    }
 }

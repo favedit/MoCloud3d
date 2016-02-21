@@ -27,3 +27,4 @@ module sk.graphic.context2d {
          //o.__base.FObject.dispose.call(o);
       }
    }
+}

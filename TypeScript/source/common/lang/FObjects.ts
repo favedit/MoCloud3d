@@ -101,6 +101,17 @@ module sk.common.lang {
       // @param index:Integer 索引位置
       // @return 当前位置上的对象
       //===========================================================
+      public at(index): any {
+         return this._items[index];
+      }
+
+      //===========================================================
+      // <T>取得指定索引对应的对象。</T>
+      //
+      // @method
+      // @param index:Integer 索引位置
+      // @return 当前位置上的对象
+      //===========================================================
       public getAt(index): any {
          return this._items[index];
       }

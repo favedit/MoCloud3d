@@ -15,6 +15,7 @@
       protected _url = null;
       // @attribute
       //_heads = MO.Class.register(o, new MO.AGetter('_heads'));
+      protected _linker = null;
       protected _heads = null;
       //_attributes = MO.Class.register(o, new MO.AGetter('_attributes'));
       protected _attributes = null;
@@ -113,9 +114,9 @@
          this._attributes = new sk.common.lang.FAttributes();
          this._event = new sk.common.lang.SEvent(this);
          // 创建链接
-         var handle = this._handle = MO.Window.Xml.createConnection();
-         handle._linker = this;
-         handle.onreadystatechange = this.onConnectionReady;
+         //var handle = this._handle = MO.Window.Xml.createConnection();
+         //handle._linker = this;
+         //handle.onreadystatechange = this.onConnectionReady;
       }
 
       //==========================================================
@@ -151,15 +152,15 @@
          // 传输格式
          if (o._contentCd == EHttpContent.Binary) {
             // 二进制内容
-            if (MO.Window.Browser.isBrowser(MO.EBrowser.Explorer)) {
-               handle.setRequestHeader('Accept-Charset', 'x-user-defined');
-               handle.responseType = 'arraybuffer';
-            } else {
-               handle.overrideMimeType('text/plain; charset=x-user-defined');
-               if (o._asynchronous) {
-                  handle.responseType = 'arraybuffer';
-               }
-            }
+            //if (MO.Window.Browser.isBrowser(MO.EBrowser.Explorer)) {
+            //   handle.setRequestHeader('Accept-Charset', 'x-user-defined');
+            //   handle.responseType = 'arraybuffer';
+            //} else {
+            //   handle.overrideMimeType('text/plain; charset=x-user-defined');
+            //   if (o._asynchronous) {
+            //      handle.responseType = 'arraybuffer';
+            //   }
+            //}
          } else {
             // 文本内容
             handle.setRequestHeader('content-type', 'application/x-www-form-urlencoded');
@@ -176,12 +177,12 @@
             }
          }
          // 数据长度
-         if (!MO.Window.Browser.isBrowser(MO.EBrowser.Chrome)) {
-            var contentLength = o._contentLength;
-            if (contentLength > 0) {
-               handle.setRequestHeader('content-length', contentLength);
-            }
-         }
+         //if (!MO.Window.Browser.isBrowser(MO.EBrowser.Chrome)) {
+         //   var contentLength = o._contentLength;
+         //   if (contentLength > 0) {
+         //      handle.setRequestHeader('content-length', contentLength);
+         //   }
+         //}
       }
 
       //==========================================================
@@ -250,7 +251,7 @@
          handle.open(this._methodCd, this._url, true);
          this.setHeaders();
          handle.send(this._inputData);
-         sk.common.lang.RLogger.info(this, 'Send http asynchronous request. (method={1}, url={2})', o._methodCd, o._url);
+         sk.common.lang.RLogger.info(this, 'Send http asynchronous request. (method={1}, url={2})', this._methodCd, this._url);
       }
 
       //==========================================================

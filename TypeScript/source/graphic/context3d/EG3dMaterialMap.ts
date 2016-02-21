@@ -6,12 +6,12 @@ module sk.graphic.context2d {
    // @author maocy
    // @version 150212
    //==========================================================
-   export class EG3dMaterialMap {
-      public static AmbientColor = 0;
-      public static DiffuseColor = 1;
-      public static SpecularColor = 2;
-      public static ReflectColor = 3;
-      public static EmissiveColor = 4;
-      public static Count = 8;
+   export enum EG3dMaterialMap {
+      AmbientColor = 0,
+      DiffuseColor = 1,
+      SpecularColor = 2,
+      ReflectColor = 3,
+      EmissiveColor = 4,
+      Count = 8
    }
 }

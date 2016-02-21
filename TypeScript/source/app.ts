@@ -1,3 +1,13 @@
+class A{
+   private _name:string = 'abc'
+   public get name(){
+      return this._name;
+   }
+   public getName(){
+      return this.name;
+   }
+}
+
 ﻿class Greeter {
     element: HTMLElement;
     span: HTMLElement;

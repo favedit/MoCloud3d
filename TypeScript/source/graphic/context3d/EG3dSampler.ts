@@ -1,22 +1,22 @@
-﻿//==========================================================
-// <T>取样枚举。</T>
-//
-// @enum
-// @author maocy
-// @version 141230
-//==========================================================
-MO.EG3dSampler = new function EG3dSampler(){
-   var o = this;
-   o.Diffuse       = 'diffuse';
-   o.Alpha         = 'alpha';
-   o.Normal        = 'normal';
-   o.SpecularColor = 'specular.color';
-   o.SpecularLevel = 'specular.level';
-   o.Light         = 'light';
-   o.Reflect       = 'reflect';
-   o.Refract       = 'refract';
-   o.Emissive      = 'emissive';
-   o.Height        = 'height';
-   o.Environment   = 'environment';
-   return o;
+﻿module sk.graphic.context3d {
+   //==========================================================
+   // <T>取样枚举。</T>
+   //
+   // @enum
+   // @author maocy
+   // @version 141230
+   //==========================================================
+   export class EG3dSampler {
+      public static Diffuse = 'diffuse';
+      public static Alpha = 'alpha';
+      public static Normal = 'normal';
+      public static SpecularColor = 'specular.color';
+      public static SpecularLevel = 'specular.level';
+      public static Light = 'light';
+      public static Reflect = 'reflect';
+      public static Refract = 'refract';
+      public static Emissive = 'emissive';
+      public static Height = 'height';
+      public static Environment = 'environment';
+   }
 }

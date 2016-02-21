@@ -10,29 +10,35 @@
    export class SEvent {
       //..........................................................
       // @attribute
-      code = null;
+      public code = null;
       // @attribute
-      annotation = null;
+      public annotation = null;
       // @attribute
-      listener = null;
-      sender = null;
-      source = null;
+      public listener = null;
+      public sender = null;
+      public source = null;
       // @attribute
-      hEvent = null;
-      hSender = null;
-      hSource = null;
+      public hEvent = null;
+      public hSender = null;
+      public hSource = null;
       //..........................................................
       // @method
-      ohProcess = null;
-      onProcess = null;
+      public ohProcess = null;
+      public onProcess = null;
       // @method
-      process = null;
-      // @method
-      //free = sk.common.lang.RObject.fre . RMethod.freeStruct;
-      //dispose = sk.common.reflect.RMethod.disposeStruct;
+      public process = null;
 
-      constructor(sender) {
+      // @method
+      public constructor(sender:any = null) {
          this.sender = sender;
+      }
+
+      //free = sk.common.lang.RObject.fre . RMethod.freeStruct;
+      public free() {
+      }
+
+      //dispose = sk.common.reflect.RMethod.disposeStruct;
+      public dispose() {
       }
    }
 }
